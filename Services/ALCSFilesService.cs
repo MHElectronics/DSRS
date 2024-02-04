@@ -2,14 +2,18 @@
 
 namespace Services
 {
-    public class ALCSFilesService
+    public interface IALCSFilesService
     {
-        private FtpHelperService _ftpService;
-        public ALCSFilesService(FtpHelperService ftService)
+        Task Upload(ALCSFiles alcsFiles, byte[] byteFile);
+    }
+    public class ALCSFilesService : IALCSFilesService
+    {
+        private IFtpHelperService _ftpService;
+        public ALCSFilesService(IFtpHelperService ftService)
         {
             _ftpService = ftService;
         }
- 
+
         public async Task Upload(ALCSFiles alcsFiles, byte[] byteFile)
         {
             //await _ftpService.UploadFile()
