@@ -11,7 +11,7 @@
     <p class="alert alert-secondary" role="alert">@Message</p>
 }
 
-<EditForm Model="@Ticket" OnValidSubmit="@HandleValidSubmit" FormName="Tickets" method="post" enctype="multipart/form-data">
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" FormName="Tickets" method="post" enctype="multipart/form-data">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <InputText class="form-control mb-4" placeholder="Title" @bind-Value="@Ticket.Title" />
@@ -25,6 +25,15 @@
     private ServerStaticTicket Ticket { get; set; } = new();
     private string Message { get; set; } = String.Empty;
     private long maxFileSize = 5120000;
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        Ticket ??= new();
+        editContext = new(Ticket);
+        editContext.SetFieldCssClassProvider(new Helpers.CustomFieldClassProvider());
+    }
+
 
     private async Task HandleValidSubmit()
     {
