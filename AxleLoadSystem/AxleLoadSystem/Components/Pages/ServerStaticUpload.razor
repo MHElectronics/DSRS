@@ -2,8 +2,8 @@
 @inject IWebHostEnvironment env
 @inject IALCSFilesService fileService
 <div>
-    <h2 class="display-4">Static Server Upload</h2>
-    <p>This render mode is also known as "Blazor Server-side Rendering".</p>
+    <h2 class="display-4">Axle Load Data Upload</h2>
+    @* <p>This render mode is also known as "Blazor Server-side Rendering".</p> *@
 </div>
 
 @if (Message.Length > 0)
@@ -14,8 +14,8 @@
 <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" FormName="Tickets" method="post" enctype="multipart/form-data">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <InputText class="form-control mb-4" placeholder="Title" @bind-Value="@Ticket.Title" />
-    <InputText class="form-control mb-4" placeholder="Description" @bind-Value="@Ticket.Description" />
+    <InputText class="form-control mb-4" placeholder="Select Axle" @bind-Value="@Ticket.Title" />
+    <InputText class="form-control mb-4" placeholder="Date" @bind-Value="@Ticket.Description" />
     <InputFile class="form-control mb-4" placeholder="Attachment" name="Ticket.Attachments" multiple />
     <button class="btn btn-primary" type="submit">Submit</button>
 </EditForm>

@@ -1,6 +1,7 @@
 using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
 using Services;
+using Services.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 //builder.Services.AddControllers();
-
 builder.Services.AddScoped<IFtpHelperService, FtpHelperService>();
+builder.Services.AddScoped<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped<IALCSFilesService, ALCSFilesService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

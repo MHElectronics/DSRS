@@ -1,0 +1,94 @@
+﻿@page "/login"
+@layout LoginLayout
+@using AxleLoadSystem.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+@inject NavigationManager navigationManager
+@inject IUserService userService
+@inject AuthenticationStateProvider authStateProvider
+@* @rendermode InteractiveServerRenderMode *@
+@rendermode InteractiveWebAssembly
+@* @rendermode RenderMode.InteractiveServer *@
+
+<input type="hidden" id="loginpageid" />
+<EditForm Model="@loginModel" OnValidSubmit="LoginUser" OnInvalidSubmit="OnInvalidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form">
+        <label for="email">Email</label>
+        <input type="email" id="email" @bind="@loginModel.Email" autofocus>
+        <label for="password">Password</label>
+        <input type="password" id="password" @bind="@loginModel.Password">
+        <input type="submit" id="submit" value="Submit">
+        <label class="error">@ValidationSummary</label>
+    </div>
+</EditForm>
+
+@code {
+    private class LoginModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    LoginModel loginModel = new LoginModel();
+    string ValidationSummary = "";
+    private bool loggingin = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Initialize the dialog events the first time th ecomponent is rendered
+        if (firstRender)
+        {
+            IJSObjectReference module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/login.js");
+            await module.InvokeVoidAsync("InitLoginAnimation");
+        }
+    }
+
+    void OnInvalidSubmit()
+    {
+        ValidationSummary = "Please enter valid email and password";
+    }
+
+    async Task LoginUser(EditContext editContext)
+    {
+        loggingin = true;
+        ValidationSummary = "";
+
+        try
+        {
+            User user = new();
+            user.Email = loginModel.Email;
+            user.Password = loginModel.Password;
+
+            if (await userService.AuthenticateUser(user))
+            {
+                user = await userService.GetUser(user);
+                CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
+                await stateProvide.UpdateAuthenticationState(user);
+
+                if (user.HasRole("Admin"))
+                {
+                    navigationManager.NavigateTo("/dashboard", true);
+                }
+                else if (user.HasRole("User"))
+                {
+                    navigationManager.NavigateTo("/payment/list", true);
+                }
+                else
+                {
+                    navigationManager.NavigateTo("/", true);
+                }
+            }
+            else
+            {
+                loggingin = false;
+                ValidationSummary = "Authorization failed. Please enter valid email and password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            loggingin = false;
+            ValidationSummary = "Authorization failed. Error: " + ex.Message;
+        }
+    }
+}
