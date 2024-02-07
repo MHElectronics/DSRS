@@ -1,6 +1,3 @@
-$(document).ready(function () {
-    alert('t');
-});
 export function InitLoginAnimation() {
     alert('t');
     var current = null;

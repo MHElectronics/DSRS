@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxleLoadSystem.Client", "Ax
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxleLoadSystem.Api", "AxleLoadSystem.Api\AxleLoadSystem.Api.csproj", "{368FDEC4-EC2C-455B-849C-F64E9EC50478}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{39286BE6-E80C-44D0-9DF2-6CB950924369}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{39286BE6-E80C-44D0-9DF2-6CB950924369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOL", "BOL\BOL.csproj", "{DBCCA0A4-653B-4042-8C56-C15ED297539A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BOL", "BOL\BOL.csproj", "{DBCCA0A4-653B-4042-8C56-C15ED297539A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

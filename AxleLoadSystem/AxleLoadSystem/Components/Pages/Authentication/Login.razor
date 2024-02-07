@@ -6,9 +6,9 @@
 @inject NavigationManager navigationManager
 @inject IUserService userService
 @inject AuthenticationStateProvider authStateProvider
-@* @rendermode InteractiveServerRenderMode *@
-@rendermode InteractiveWebAssembly
-@* @rendermode RenderMode.InteractiveServer *@
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@* @rendermode @(new InteractiveServerRenderMode(prerender: false)) *@
 
 <input type="hidden" id="loginpageid" />
 <EditForm Model="@loginModel" OnValidSubmit="LoginUser" OnInvalidSubmit="OnInvalidSubmit">
