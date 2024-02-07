@@ -1,29 +1,80 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">AxleLoadSystem</a>
-    </div>
-</div>
+﻿<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+    <!-- Add icons to the links using the .nav-icon class
+         with font-awesome or any other icon font library -->
+    @* <li class="nav-item menu-open">
+        <a href="#" class="nav-link active">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+                Dashboard
+                <i class="right fas fa-angle-left"></i>
+            </p>
+        </a>
+        <ul class="nav nav-treeview">
+            <li class="nav-item">
+                <a href="./index.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard v1</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="./index2.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard v2</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="./index3.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard v3</p>
+                </a>
+            </li>
+        </ul>
+    </li> *@
+    <li class="nav-item">
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+                Home
+                @* <span class="right badge badge-danger">New</span> *@
+            </p>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+                Counter
+                @* <span class="right badge badge-danger">New</span> *@
+            </p>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link" href="counter2" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+                Counter 2
+                @* <span class="right badge badge-danger">New</span> *@
+            </p>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+                File Upload
+                @* <span class="right badge badge-danger">New</span> *@
+            </p>
+        </NavLink>
+    </li>
+    <li class="nav-item">
+        <NavLink class="nav-link" href="login" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+                Login
+                <span class="right badge badge-danger">New</span>
+            </p>
+        </NavLink>
+    </li>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    <li class="nav-header">EXAMPLES</li>
+</ul>

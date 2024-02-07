@@ -71,6 +71,16 @@
     @* <script src="dist/js/demo.js"></script> *@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     @* <script src="dist/js/pages/dashboard.js"></script> *@
+    <script>
+        function MenuOpenerClicked(){
+            if ($('body').hasClass('sidebar-collapse')) {
+                $('body').removeClass('sidebar-collapse');
+            }
+            else{
+                $('body').addClass('sidebar-collapse');
+            }
+        }
+    </script>
 </body>
 
 </html>
