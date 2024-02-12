@@ -1,0 +1,53 @@
+﻿@using System
+@using BOL
+@using Services
+@inject IUserService userService
+@rendermode InteractiveServer
+
+<PageTitle>List of User</PageTitle>
+<h1>List of User</h1>
+<NavLink class="btn btn-primary pull-right" href="/user/new" title="Add New">
+    <i class="fa fa-plus"></i> Add New
+</NavLink>
+@if (users is null)
+{
+    <Loader />
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th style="width:100px;"></th>
+                <th colspan="2">User</th>
+                <th colspan="2">Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users.OrderBy(c => c.Id))
+            {
+                <tr>
+                    <td>
+                        <a class="waves-effect" href="@("/user/details/" + user.Id)" title="Details Information">
+                            <i class="bi-info-circle"></i>
+                        </a>
+                        <a class="waves-effect" href="@("/user/edit/" + user.Id)" title="Edit Information">
+                            <i class="bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td colspan="2"><b>@user.Name</b></td>
+                    <td colspan="2"><b>@user.Role</b></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+@code {
+    private IEnumerable<User> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await userService.GetUsers();
+    }
+}

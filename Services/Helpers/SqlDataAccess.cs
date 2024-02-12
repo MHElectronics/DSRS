@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -12,6 +13,7 @@ public interface ISqlDataAccess
     Task<IEnumerable<T>> LoadData<T, U>(string query, U parameters);
     Task<int> DeleteData<T, U>(string query, U parameters);
     Task SaveData<T>(string query, T parameters);
+    Task<int> Insert<T>(T obj) where T : class;
 }
 public class SqlDataAccess : ISqlDataAccess
 {
@@ -28,6 +30,7 @@ public class SqlDataAccess : ISqlDataAccess
     }
     public async Task<IEnumerable<T>> LoadData<T, U>(string query, U parameters)
     {
+       // string test = _config.GetConnectionString(_connectionId);
         using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
 
         return await connection.QueryAsync<T>(query, parameters);
@@ -45,6 +48,18 @@ public class SqlDataAccess : ISqlDataAccess
         {
             using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
             await connection.ExecuteAsync(query, parameters);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+    public async Task<int> Insert<T>(T obj) where T : class
+    {
+        try
+        {
+            using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+            return await connection.InsertAsync(obj);
         }
         catch (Exception ex)
         {

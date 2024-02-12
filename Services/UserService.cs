@@ -44,8 +44,7 @@ public class UserService : IUserService
 
     public async Task<User> InsertUser(User user)
     {
-        //int id = await _db.Insert<User>(user);
-        int id = 0;
+        int id = await _db.Insert<User>(user);
 
         if (id != 0)
         {

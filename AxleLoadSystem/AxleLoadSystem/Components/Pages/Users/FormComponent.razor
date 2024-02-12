@@ -1,0 +1,179 @@
+﻿@using System
+@using BOL
+@using Services
+@rendermode InteractiveServer
+@inject IUserService userService
+
+@if (user is null)
+{
+    <Loader />
+}
+else
+{
+    <EditForm Model="@user" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit" FormName="Users" method="post">
+        <DataAnnotationsValidator /> 
+
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">Email</label>
+                        <label class="form-control">@user.Email</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">Email</label>
+                        <input type="text" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
+                        <ValidationMessage For="() => user.Email" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">Password</label>
+                        <label class="form-control">@user.Password</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">Password</label>
+                        <input type="text" @bind-value="user.Password" required class="form-control" placeholder="Password" id="name" />
+                        <ValidationMessage For="() => user.Password" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">Name of User</label>
+                        <label class="form-control">@user.Name</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">Name of User</label>
+                        <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" />
+                        <ValidationMessage For="() => user.Name" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">Role</label>
+                        <label class="form-control">@user.Role</label>
+                    }
+                    else
+                    {
+                        <label for="Role" class="form-label">Role</label>
+                        <div class="form-control">
+                            <div class="col-12">
+                                @foreach (var item in Enum.GetValues(typeof(UserRole)))
+                                {
+                                    string value = item.ToString();
+                                    bool check = selectedRoles.Contains(value);
+                                    <label class="col-md-4 col-sm-2"><input type="checkbox" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" /> @value</label>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="btn-group">
+                        @if (Mode == FormMode.Details)
+                        {
+                            string editLink = "/user/edit/" + user.Id;
+                            <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
+                        }
+                        <NavLink class="btn btn-primary" href="/user">Back</NavLink>
+                        @if (!string.IsNullOrEmpty(ValidationSummary))
+                        {
+                            <label class="error">@ValidationSummary</label>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    // [SupplyParameterFromForm(FormName = "Users")]
+    public User user { get; set; } = new();
+    [Parameter]
+    public FormMode Mode { get; set; } = FormMode.Details;
+    private List<string> selectedRoles = new();
+    string ValidationSummary;
+
+    protected override void OnParametersSet()
+    {
+        if (user is not null && !string.IsNullOrEmpty(user.Role))
+        {
+            selectedRoles = user.Role.Split(',').ToList();
+        }
+    }
+
+    void OnInvalidSubmit()
+    {
+        ValidationSummary = "Please enter valid data";
+    }
+    async Task OnValidSubmit(EditContext editContext)
+    {
+        ValidationSummary = "";
+
+        int count = selectedRoles.Count();
+        if (count == 0)
+        {
+            ValidationSummary = "Select atleast 1 role";
+            return;
+        }
+
+        string role = "";
+        foreach (string r in selectedRoles)
+        {
+            role += r + ",";
+        }
+
+        role = role.TrimEnd(',');
+        user.Role = role;
+
+        if (Mode == FormMode.Edit)
+        {
+            await userService.UpdateUser(user);
+            ValidationSummary = "User Updated Successfully";
+        }
+        else
+        {
+            await userService.InsertUser(user);
+            ValidationSummary = "New User added";
+        }
+    }
+    public void CheckboxClicked(string aSelectedId, object aChecked)
+    {
+        if ((bool)aChecked)
+        {
+            if (!selectedRoles.Contains(aSelectedId))
+            {
+                selectedRoles.Add(aSelectedId);
+            }
+        }
+        else
+        {
+            if (selectedRoles.Contains(aSelectedId))
+            {
+                selectedRoles.Remove(aSelectedId);
+            }
+        }
+    }
+}
