@@ -63,8 +63,8 @@
             if (await userService.AuthenticateUser(user))
             {
                 user = await userService.GetUser(user);
-                CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
-                await stateProvide.UpdateAuthenticationState(user);
+                // CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
+                // await stateProvide.UpdateAuthenticationState(user);
 
                 if (user.HasRole("Admin"))
                 {

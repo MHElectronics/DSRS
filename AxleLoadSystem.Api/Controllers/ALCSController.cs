@@ -19,7 +19,7 @@ namespace AxleLoadSystem.Api.Controllers
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload([FromHeader] string authorization, ALCSFiles alcsFile, IFormFile uploadFile)
+        public async Task<IActionResult> Upload(ALCSFiles alcsFile, IFormFile uploadFile)
         {
             if (uploadFile == null || uploadFile.Length == 0 || alcsFile == null)
             {

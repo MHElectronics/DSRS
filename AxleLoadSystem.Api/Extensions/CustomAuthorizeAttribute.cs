@@ -16,7 +16,7 @@ namespace AxleLoadSystem.Api.Extensions
 		/// <returns></returns>
 		protected override bool IsAuthorized(HttpActionContext actionContext)
 		{
-			KeyValuePair<string, string> webAuthenticationValue = new KeyValuePair<string, string>("MRT6", "jkWp709VGzI4UWwvLN7ZDN$XJaWOd69C3oht");
+			KeyValuePair<string, string> webAuthenticationValue = new KeyValuePair<string, string>("alcs_1", "authKey");
 
             AuthenticationHeaderValue authenticationHeaderValue = actionContext.Request.Headers.Authorization;
 
