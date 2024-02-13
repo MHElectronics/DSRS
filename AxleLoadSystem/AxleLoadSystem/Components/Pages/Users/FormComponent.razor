@@ -73,9 +73,13 @@ else
                             <div class="col-12">
                                 @foreach (var item in Enum.GetValues(typeof(UserRole)))
                                 {
-                                    string value = item.ToString();
+                                    string value = item.ToString() ?? "";
                                     bool check = selectedRoles.Contains(value);
-                                    <label class="col-md-4 col-sm-2"><input type="checkbox" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" /> @value</label>
+                                    <div class="icheck-primary d-inline">
+                                        @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
+                                        <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
+                                        <label for="checkId@(value)">@value</label>
+                                    </div>
                                 }
                             </div>
                         </div>
