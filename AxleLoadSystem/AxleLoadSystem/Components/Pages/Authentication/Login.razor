@@ -68,11 +68,11 @@
 
                 if (user.HasRole("Admin"))
                 {
-                    navigationManager.NavigateTo("/dashboard", true);
+                    navigationManager.NavigateTo("/fileupload", true);
                 }
                 else if (user.HasRole("User"))
                 {
-                    navigationManager.NavigateTo("/payment/list", true);
+                    navigationManager.NavigateTo("/fileupload", true);
                 }
                 else
                 {
