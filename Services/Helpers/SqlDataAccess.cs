@@ -11,6 +11,7 @@ public interface ISqlDataAccess
     void SetConnection(string connectionId);
 
     Task<IEnumerable<T>> LoadData<T, U>(string query, U parameters);
+    Task<T> LoadSingleAsync<T, U>(string query, U parameters);
     Task<int> DeleteData<T, U>(string query, U parameters);
     Task SaveData<T>(string query, T parameters);
     Task<int> Insert<T>(T obj) where T : class;
@@ -34,6 +35,12 @@ public class SqlDataAccess : ISqlDataAccess
         using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
 
         return await connection.QueryAsync<T>(query, parameters);
+    }
+    public async Task<T> LoadSingleAsync<T, U>(string query, U parameters)
+    {
+        using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+
+        return await connection.QuerySingleAsync<T>(query, parameters);
     }
     public async Task<int> DeleteData<T, U>(string query, U parameters)
     {
