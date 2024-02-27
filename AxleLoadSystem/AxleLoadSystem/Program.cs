@@ -11,7 +11,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 //builder.Services.AddControllers();
-builder.Services.AddScoped<IFtpHelperService, FtpHelperService>();
+builder.Services.AddScoped<IFtpHelper, FtpHelper>();
 builder.Services.AddScoped<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped<IALCSFilesService, ALCSFilesService>();
 builder.Services.AddScoped<IUserService, UserService>();

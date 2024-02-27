@@ -1,4 +1,5 @@
 ﻿using BOL;
+using Services.Helpers;
 
 namespace Services
 {
@@ -8,15 +9,15 @@ namespace Services
     }
     public class ALCSFilesService : IALCSFilesService
     {
-        private IFtpHelperService _ftpService;
-        public ALCSFilesService(IFtpHelperService ftService)
+        private IFtpHelper _ftpHelper;
+        public ALCSFilesService(IFtpHelper ftpHelper)
         {
-            _ftpService = ftService;
+            _ftpHelper = ftpHelper;
         }
 
         public async Task Upload(ALCSFiles alcsFiles, byte[] byteFile)
         {
-            //await _ftpService.UploadFile()
+            //await _ftpHelper.UploadFile()
         }
     }
 }

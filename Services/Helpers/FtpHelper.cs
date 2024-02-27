@@ -1,12 +1,12 @@
 ﻿using System.Net;
 
-namespace Services
+namespace Services.Helpers
 {
-    public interface IFtpHelperService
+    public interface IFtpHelper
     {
         bool UploadFile(byte[] byteFile, string fileName, string path = "");
         bool FileExists(string path);
-        byte[] DownloadFile(string path); 
+        byte[] DownloadFile(string path);
         void DeleteFile(string path);
 
         string Rename(string path = "", string renamePath = "");
@@ -17,7 +17,7 @@ namespace Services
     /// <summary>
     /// Ftp Helper class to handle all ftp requests
     /// </summary>
-    public class FtpHelperService: IFtpHelperService
+    public class FtpHelper : IFtpHelper
     {
         private FtpWebRequest _ftpRequest;
 
@@ -30,7 +30,7 @@ namespace Services
             string ftpUser = "";
             string ftpPassword = "";
             string ftpAddress = "";
-            if(string.IsNullOrEmpty(ftpUser) || string.IsNullOrEmpty(ftpPassword) || string.IsNullOrEmpty(ftpAddress))
+            if (string.IsNullOrEmpty(ftpUser) || string.IsNullOrEmpty(ftpPassword) || string.IsNullOrEmpty(ftpAddress))
             {
                 throw new Exception("Ftp authentication information not fount");
             }
@@ -53,7 +53,7 @@ namespace Services
             _ftpRequest.KeepAlive = false; //close the connection when done
 
             //Rename file or directory
-            if(method == WebRequestMethods.Ftp.Rename && !string.IsNullOrEmpty(renamePath))
+            if (method == WebRequestMethods.Ftp.Rename && !string.IsNullOrEmpty(renamePath))
             {
                 _ftpRequest.RenameTo = renamePath;
             }
@@ -70,7 +70,7 @@ namespace Services
 
             path = path.TrimEnd('/') + "/" + fileName;
 
-            this.OpenConnection(WebRequestMethods.Ftp.UploadFile, path);
+            OpenConnection(WebRequestMethods.Ftp.UploadFile, path);
 
             // Notify the server about the size of the uploaded file
             _ftpRequest.ContentLength = byteFile.Length;
@@ -86,7 +86,7 @@ namespace Services
         public bool FileExists(string path)
         {
             //Open connection
-            this.OpenConnection(WebRequestMethods.Ftp.GetDateTimestamp, path);
+            OpenConnection(WebRequestMethods.Ftp.GetDateTimestamp, path);
 
             //Get response
             try
@@ -108,7 +108,7 @@ namespace Services
 
         public byte[] DownloadFile(string path)
         {
-            this.OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
+            OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
 
             FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
             Stream reader = response.GetResponseStream();
@@ -147,7 +147,7 @@ namespace Services
 
         public void DeleteFile(string path)
         {
-            this.OpenConnection(WebRequestMethods.Ftp.DeleteFile, path);
+            OpenConnection(WebRequestMethods.Ftp.DeleteFile, path);
 
             FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
 
@@ -165,7 +165,7 @@ namespace Services
             string statusDescription = "";
 
             //Open connection
-            this.OpenConnection(WebRequestMethods.Ftp.Rename, path, renamePath);
+            OpenConnection(WebRequestMethods.Ftp.Rename, path, renamePath);
 
             try
             {
@@ -183,19 +183,19 @@ namespace Services
 
                 throw;
             }
-            
+
         }
 
         #region Director/Folder functions
         public string MakeDirectory(string directory = "")
         {
             string statusDescription = "";
-            
+
             //Make full path
             string fullPath = "/" + directory;
-            
+
             //Open connection
-            this.OpenConnection(WebRequestMethods.Ftp.MakeDirectory, fullPath);
+            OpenConnection(WebRequestMethods.Ftp.MakeDirectory, fullPath);
 
             //Get response
             using (FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse())
@@ -213,7 +213,7 @@ namespace Services
             string fullPath = "/" + directory + "/";
 
             //Open connection
-            this.OpenConnection(WebRequestMethods.Ftp.ListDirectory, fullPath);
+            OpenConnection(WebRequestMethods.Ftp.ListDirectory, fullPath);
 
             //Get response
             try
@@ -226,7 +226,7 @@ namespace Services
                 return false;
             }
         }
-        
+
         public string DeleteDirectory(string directory = "")
         {
             string statusDescription = "";
@@ -235,7 +235,7 @@ namespace Services
             string fullpath = "/" + directory;
 
             //Open connection
-            this.OpenConnection(WebRequestMethods.Ftp.RemoveDirectory, fullpath);
+            OpenConnection(WebRequestMethods.Ftp.RemoveDirectory, fullpath);
 
             //Get response
             try
@@ -250,7 +250,7 @@ namespace Services
             {
                 throw;
             }
-            
+
 
             return statusDescription;
         }
