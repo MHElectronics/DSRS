@@ -1,0 +1,42 @@
+﻿@using System.Globalization
+@inject IConfiguration configuration
+@inject NavigationManager navigation
+
+@if(cultures is not null)
+{
+    <select class="form-control" @bind="Culture">
+        @foreach (KeyValuePair<string, string> item in cultures)
+        {
+            <option value="@item.Key">@item.Value</option>
+        }
+    </select>
+}
+
+@code {
+
+    private Dictionary<string, string> cultures = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cultures = configuration.GetSection("Cultures").GetChildren().ToDictionary(x => x.Key, x => x.Value);
+    }
+
+    private CultureInfo Culture
+    {
+        get
+        {
+            return CultureInfo.CurrentCulture;
+        }
+        set
+        {
+            if(CultureInfo.CurrentCulture != value)
+            {
+                var uri = new Uri(navigation.Uri).GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+                var cultureEscape = Uri.EscapeDataString(value.Name);
+                var uriEscaped = Uri.EscapeDataString(uri);
+
+                navigation.NavigateTo($"Culture/Set?culture={cultureEscape}&redirectUri={uriEscaped}", forceLoad: true);
+            }
+        }
+    }
+}
