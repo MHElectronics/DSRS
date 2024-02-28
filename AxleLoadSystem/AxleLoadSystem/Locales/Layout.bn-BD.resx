@@ -123,4 +123,7 @@
   <data name="Menu.Counter2" xml:space="preserve">
     <value>কাউন্টার দুই</value>
   </data>
+  <data name="Menu.User" xml:space="preserve">
+    <value>ব্যবহারকারী</value>
+  </data>
 </root>

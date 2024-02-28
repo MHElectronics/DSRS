@@ -4,16 +4,9 @@
 
 @if(cultures is not null)
 {
-    @* <img src="images/locales/@(Culture.Name).png" style="max-height:30px; max-width: 30px;" alt="Localization Culture" />
-    <select class="form-control" @bind="Culture">
-        @foreach (KeyValuePair<string, string> item in cultures)
-        {
-            <option value="@item.Key"> @item.Value</option>
-        }
-    </select> *@
     <li class="nav-item dropdown mt-3">
         <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false" title="@CurrentCultureTitle()">
-            <img src="images/locales/@(Culture.Name).png" style="max-height:38px; max-width: 38px;" alt="Localization Culture" />
+            <img src="images/locales/@(CultureInfo.CurrentCulture.Name).png" style="max-height:38px; max-width: 38px;" alt="Localization Culture" />
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
             @foreach (KeyValuePair<string, string> item in cultures)
@@ -38,24 +31,6 @@
     private string CurrentCultureTitle()
     {
         return cultures.FirstOrDefault(c => c.Key == CultureInfo.CurrentCulture.Name).Value;
-    }
-    private CultureInfo Culture
-    {
-        get
-        {
-            return CultureInfo.CurrentCulture;
-        }
-        set
-        {
-            if(CultureInfo.CurrentCulture != value)
-            {
-                var uri = new Uri(navigation.Uri).GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
-                var cultureEscape = Uri.EscapeDataString(value.Name);
-                var uriEscaped = Uri.EscapeDataString(uri);
-
-                navigation.NavigateTo($"Culture/Set?culture={cultureEscape}&redirectUri={uriEscaped}", forceLoad: true);
-            }
-        }
     }
     private void CultureChanged(string culture)
     {

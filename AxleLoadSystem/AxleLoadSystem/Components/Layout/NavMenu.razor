@@ -1,5 +1,4 @@
-﻿@rendermode InteractiveServer
-@inject IStringLocalizer<Locales.Layout> localizer
+﻿@inject IStringLocalizer<Locales.Layout> localizer
 
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <!-- Add icons to the links using the .nav-icon class
@@ -64,7 +63,7 @@
         <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-users"></i>
             <p>
-                User
+                @localizer["Menu.User"]
                 @* <span class="right badge badge-danger">New</span> *@
             </p>
         </NavLink>
