@@ -1,4 +1,5 @@
-﻿@inject IStringLocalizer<Locales.NavMenu> localizer
+﻿@rendermode InteractiveServer
+@inject IStringLocalizer<Locales.Layout> localizer
 
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <!-- Add icons to the links using the .nav-icon class
@@ -45,7 +46,7 @@
         <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-th"></i>
             <p>
-                @localizer["Counter"]
+                @localizer["Menu.Counter"]
                 @* <span class="right badge badge-danger">New</span> *@
             </p>
         </NavLink>
@@ -54,8 +55,7 @@
         <NavLink class="nav-link" href="counter2" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-th"></i>
             <p>
-                @localizer["HomeText"]
-                @* Counter 2 *@
+                @localizer["Menu.Counter2"]
                 @* <span class="right badge badge-danger">New</span> *@
             </p>
         </NavLink>

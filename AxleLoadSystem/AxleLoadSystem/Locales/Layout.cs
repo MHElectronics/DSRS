@@ -1,5 +1,5 @@
 ﻿namespace AxleLoadSystem.Locales;
 
-public class NavMenu
+public class Layout
 {
 }

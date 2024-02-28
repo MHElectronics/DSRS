@@ -3,12 +3,13 @@
 }
 
 .switch {
-    position: relative;
+    /*position: relative;*/
     /*overflow: hidden;*/
     width: 7.5rem;
     height: 4rem;
     /*Adjust size of toggle button*/
     transform: scale(0.5);
+    margin-right:-2rem; /*To adjust right side gap*/
 }
 
     .switch input {
