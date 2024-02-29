@@ -32,13 +32,11 @@ public class UserService : IUserService
 
     public async Task<User?> GetUser(User user)
     {
-        var results = await _db.LoadData<User, dynamic>("SELECT * FROM Users WHERE Id=@Id OR Email=@Email", new { Id = user.Id, Email = user.Email });
-        return results.FirstOrDefault();
+        return await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Id=@Id OR Email=@Email", new { Id = user.Id, Email = user.Email });
     }
     public async Task<User?> GetUserById(int id)
     {
-        var results = await _db.LoadData<User, dynamic>("SELECT * FROM Users WHERE Id=@Id", new { Id = id });
-        return results.FirstOrDefault();
+        return await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Id=@Id", new { Id = id });
     }
 
     public async Task<User> InsertUser(User user)
