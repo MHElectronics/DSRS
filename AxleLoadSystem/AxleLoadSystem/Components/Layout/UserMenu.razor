@@ -1,0 +1,39 @@
+﻿@inject AuthenticationStateProvider authStateProvider
+@inject IWebHostEnvironment environment
+@rendermode InteractiveServer
+
+@if (currentUser is not null)
+{
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="images/users/@(hasImage ? currentUser.Id.ToString() : "default").jpg" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+            <a href="#" class="d-block">@currentUser.Name</a>
+        </div>
+    </div>
+}
+
+<style>
+    .user-panel:hover .img-circle {
+        outline: 2px solid orangered;
+    }
+</style>
+
+@code {
+    private User? currentUser { get; set; }
+    private bool hasImage { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            currentUser = await customStateProvider.GetAuthorizedUser();
+
+            var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
+            hasImage = File.Exists(path);
+            await this.InvokeAsync(StateHasChanged);
+
+        }
+    }
+}

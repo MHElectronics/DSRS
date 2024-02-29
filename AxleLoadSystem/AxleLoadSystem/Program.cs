@@ -1,5 +1,7 @@
+using AxleLoadSystem.Authentication;
 using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Services;
 using Services.Helpers;
 
@@ -10,6 +12,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<IFtpHelper, FtpHelper>();
 builder.Services.AddScoped<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped<IALCSFilesService, ALCSFilesService>();

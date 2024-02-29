@@ -1,5 +1,7 @@
-﻿@rendermode InteractiveServer
+﻿@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
 @inject IJSRuntime JS
+@rendermode InteractiveServer
 
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
@@ -33,15 +35,44 @@
         <li class="nav-item">
             <CultureSelector/>
         </li>
-        <li class="nav-item" title="Logout">
-            <i class="fas fa-door-open fa-2x mt-4"></i>
-        </li>
+        @if (currentUser is not null)
+        {
+            <li class="nav-item" title="Logout" @onclick="Logout">
+                <i class="fas fa-door-open fa-2x mt-4"></i>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item" title="Login" @onclick="Login">
+                <i class="fas fa-door-closed fa-2x mt-4"></i>
+            </li>
+        }
     </ul>
 </nav>
 
 @code {
+    private User? currentUser { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            currentUser = await customStateProvider.GetAuthorizedUser();
+            await this.InvokeAsync(StateHasChanged);
+        }
+    }
     private async Task MenuClicked()
     {
         await JS.InvokeVoidAsync("MenuOpenerClicked");
+    }
+    private void Login()
+    {
+        navigationManager.NavigateTo("/login", true);
+    }
+    private async Task Logout()
+    {
+        CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
+        await stateProvide.UpdateAuthenticationState(null);
+        navigationManager.NavigateTo("/login", true);
     }
 }
