@@ -1,17 +1,44 @@
 ﻿@rendermode InteractiveServer
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IJSRuntime JS
 
-<div class="switch" title="dark/light mode">
-    <label for="toggle">
-        <input id="toggle" class="toggle-switch" type="checkbox" @onchange="ThemeToggleClicked" />
+<div class="switch" title="dark/light mode" @onclick="ThemeToggleClicked">
+    <label2 for="toggle">
+        <input id="toggle" class="toggle-switch" type="checkbox" checked="@IsLight" />
         <div class="sun-moon"><div class="dots"></div></div>
         <div class="background"><div class="stars1"></div><div class="stars2"></div></div>
-    </label>
+    </label2>
 </div>
 
 @code {
+    public bool IsLight;
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && await localStorage.ContainKeyAsync("design-mode"))
+        {
+            bool isLight = true;
+            string mode = await localStorage.GetItemAsync<string>("design-mode");
+
+            if (mode == "dark")
+            {
+                isLight = false;
+            }
+
+            IsLight = isLight;
+            await this.InvokeAsync(StateHasChanged);
+        }
+    }
     private async Task ThemeToggleClicked()
     {
+        if (IsLight)
+        {
+            await localStorage.SetItemAsync<string>("design-mode", "dark");
+        }
+        else
+        {
+            await localStorage.SetItemAsync<string>("design-mode", "light");
+        }
+        IsLight = !IsLight;
         await JS.InvokeVoidAsync("ThemeToggleClicked");
     }
 }

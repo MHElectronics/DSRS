@@ -69,7 +69,12 @@
     @* <script src="dist/js/demo.js"></script> *@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     @* <script src="dist/js/pages/dashboard.js"></script> *@
+    
     <script>
+        $(document).ready(function () {
+            ThemeToggleClicked();
+        });
+
         function MenuOpenerClicked(){
             if ($('body').hasClass('sidebar-collapse')) {
                 $('body').removeClass('sidebar-collapse');
@@ -80,11 +85,12 @@
         }
 
         function ThemeToggleClicked() {
-            if ($('body').hasClass('dark-mode')) {
-                $('body').removeClass('dark-mode');
+            var mode = window.localStorage.getItem('design-mode');
+            if (mode === '"dark"') {
+                $('body').addClass('dark-mode');
             }
             else {
-                $('body').addClass('dark-mode');
+                $('body').removeClass('dark-mode');
             }
         }
     </script>

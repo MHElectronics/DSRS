@@ -1,6 +1,7 @@
 using AxleLoadSystem.Authentication;
 using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Services;
 using Services.Helpers;
@@ -19,9 +20,10 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 //Localization
-//builder.Services.AddLocalization(options => options.ResourcesPath = "Locales");
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
+
+builder.Services.AddBlazoredLocalStorage();
 
 
 var app = builder.Build();
