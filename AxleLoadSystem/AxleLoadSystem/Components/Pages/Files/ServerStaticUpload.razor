@@ -1,85 +1,117 @@
 ﻿@page "/fileupload"
+@using AxleLoadSystem.Models
 @inject IWebHostEnvironment env
 @inject IFileService fileService
 
-<PageTitle>File Upload</PageTitle>
-@* <div>
-    <h4 class="display-4">File Upload</h4>
-    <p>Manual File Upload</p>
-</div> *@
+<PageTitle>Manual File Upload</PageTitle>
 
-@if (Message.Length > 0)
-{
-    <p class="alert alert-secondary" role="alert">@Message</p>
-}
-
-<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" FormName="Tickets" method="post" enctype="multipart/form-data">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="row">
-        <div class="col-6">
-            @if (stations is not null)
-            {
-                <select @bind="@file.StationId" class="form-control">
-                    @foreach (Station item in stations)
-                    {
-                        <option value="@item.StationId">@item.StationName</option>
-                    }
-                </select>
-            }
-        </div>
-        <div class="col-6">
-            <InputDate class="form-control mb-4" @bind-Value="@file.Date" />
-        </div>
-        <div class="col-6">
-            <div class="icheck-primary d-inline">
-                <input type="radio" name="fileType" id="type1" />
-                <label for="type1">Slow Moving Weight</label>
-            </div>
-            <div class="icheck-primary d-inline">
-                <input type="radio" name="fileType" id="type2" />
-                <label for="type2">Fast Moving Weight</label>
-            </div>
-            <div class="icheck-primary d-inline">
-                <input type="radio" name="fileType" id="type3" />
-                <label for="type3">Fine/Reinforcement</label>
-            </div>
-        </div>
-        <div class="col-6">
-            <InputFile class="form-control mb-4" placeholder="Attachment" name="Ticket.Attachments" multiple />
-        </div>
-        <button class="btn btn-primary" type="submit">Submit</button>
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Manual File Upload</h3>
     </div>
+    <div class="card-body">
+        @if (Message.Length > 0)
+        {
+            <p class="alert alert-secondary" role="alert">@Message</p>
+        }
 
-</EditForm>
+        <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" FormName="formFileUpload" method="post" enctype="multipart/form-data">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="file_Date">ALCS</label>
+                        <div class="input-group">
+                            @if (stations is not null)
+                            {
+                                <select @bind="@file.StationId" class="form-control">
+                                    @foreach (Station item in stations)
+                                    {
+                                        <option value="@item.StationId">@item.StationName</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="file_Date">Date</label>
+                        <div class="input-group">
+                            <InputDate class="form-control mb-4" @bind-Value="@file.Date" max="@(DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label>File Type</label>
+                        <div class="input-group">
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" name="fileType" id="type1" />
+                                <label for="type1">Slow Moving Weight</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" name="fileType" id="type2" />
+                                <label for="type2">Fast Moving Weight</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="radio" name="fileType" id="type3" />
+                                <label for="type3">Fine/Reinforcement</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="exampleInputFile">File input</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                @* <InputFile class="form-control mb-4" placeholder="Attachment" name="Ticket.Attachments" multiple /> *@
+                                <InputFile class="custom-file-input" placeholder="Attachment" name="file.Attachments" />
+                                @* <input type="file" class="custom-file-input" id="exampleInputFile"> *@
+                                <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <button class="btn btn-primary" type="submit" disabled="@(!isFileSelected)">Submit</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
 
 @code {
-    [SupplyParameterFromForm(FormName = "Tickets")]
-    private ServerStaticTicket Ticket { get; set; } = new();
-    private Files file { get; set; } = new Files() { Date = DateTime.Today };
+    [SupplyParameterFromForm(FormName = "formFileUpload")]
+    private FileUploadModel file { get; set; } = new FileUploadModel() { Date = DateTime.Today.AddDays(-1) };
     private List<Station> stations { get; set; }
     private string Message { get; set; } = String.Empty;
     private long maxFileSize = 5120000;
     private EditContext? editContext;
+    private bool isFileSelected { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        Ticket ??= new();
-        editContext = new(Ticket);
+        editContext = new(file);
         editContext.SetFieldCssClassProvider(new Helpers.CustomFieldClassProvider());
 
         //stations = await fileService.Get();
         stations = new List<Station>();
         stations.Add(new Station() { StationId = 1, StationName = "ALCS 1" });
+        stations.Add(new Station() { StationId = 2, StationName = "ALCS 2" });
     }
 
-
+    private void FileSelected(InputFileChangeEventArgs e)
+    {
+        isFileSelected = true;
+    }
     private async Task HandleValidSubmit()
     {
         try
         {
-            foreach (var file in Ticket.Attachments)
+            foreach (var file in file.Attachments)
             {
                 string safeFileName = WebUtility.HtmlEncode(file.FileName);
 
@@ -96,23 +128,13 @@
                 await fileService.Upload(fileBytes, new Files());
             }
 
-            Ticket = new();
+            file = new();
             Message = "File uploaded!";
         }
         catch (Exception e)
         {
             Message = "Error: " + e.Message;
         }
-    }
-
-    private class ServerStaticTicket
-    {
-        [Required]
-        public string Title { get; set; } = String.Empty;
-        [Required]
-        public string Description { get; set; } = String.Empty;
-
-        public IFormFileCollection Attachments { get; set; }
     }
 }
 
