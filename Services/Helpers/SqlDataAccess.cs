@@ -12,6 +12,7 @@ public interface ISqlDataAccess
     Task<T> LoadSingleAsync<T, U>(string query, U parameters);
     Task<int> DeleteData<T, U>(string query, U parameters);
     Task SaveData<T>(string query, T parameters);
+    Task InsertDataTable(DataTable csvFileData, string destinationTableName);
     Task<int> Insert<T>(T obj) where T : class;
 }
 public class SqlDataAccess : ISqlDataAccess
