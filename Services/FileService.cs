@@ -18,10 +18,10 @@ public class FileService : IFileService
 {
     private readonly ISqlDataAccess _db;
     private readonly IFtpHelper _ftpHelper;
-    public FileService(ISqlDataAccess db)
+    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper)
     {
         _db = db;
-        _ftpHelper = new FtpHelper();
+        _ftpHelper = ftpHelper;
     }
 
     public async Task<IEnumerable<Files>> Get(int stationId = 0, DateTime? date = null)
@@ -50,12 +50,11 @@ public class FileService : IFileService
 
     public async Task<Files> Upload(byte[] fileBytes, Files file)
     {
-        string Path = "D:/Test.csv";
         string destinationTableName = "FinePayment";
-        bool test = await _ftpHelper.UploadFile(fileBytes,file.FileName);
+        bool test = await _ftpHelper.UploadFile(fileBytes,file.FileName, "AxleLoad");
         if (test)
         {
-            DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(Path);
+            DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(file.FileName);
             await _db.InsertDataTable(csvData, destinationTableName);
 
         }

@@ -32,9 +32,9 @@ namespace Services.Helpers
 
         public FtpHelper(IConfiguration config)
         {
-            _ftpAddress = config.GetSection("FtpAccess:Address").ToString();
-            _ftpUser = config.GetSection("FtpAccess:User").ToString();
-            _ftpPassword = config.GetSection("FtpAccess:Password").ToString();
+            _ftpAddress = config.GetSection("FtpAccess:Address").Value;
+            _ftpUser = config.GetSection("FtpAccess:User").Value;
+            _ftpPassword = config.GetSection("FtpAccess:Password").Value;
         }
 
         /// <summary>
@@ -87,12 +87,15 @@ namespace Services.Helpers
 
             // Notify the server about the size of the uploaded file
             _ftpRequest.ContentLength = byteFile.Length;
+            try {
+                // Stream to which the file to be upload is written
+                Stream responseStream = await _ftpRequest.GetRequestStreamAsync();
+                responseStream.Write(byteFile, 0, byteFile.Length);
 
-            // Stream to which the file to be upload is written
-            Stream responseStream = await _ftpRequest.GetRequestStreamAsync();
-            responseStream.Write(byteFile, 0, byteFile.Length);
+                responseStream.Close();
+            }
+            catch (Exception ex) { }
 
-            responseStream.Close();
 
             return true;
         }
