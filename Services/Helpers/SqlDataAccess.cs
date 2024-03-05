@@ -8,8 +8,6 @@ namespace Services.Helpers;
 
 public interface ISqlDataAccess
 {
-    void SetConnection(string connectionId);
-
     Task<IEnumerable<T>> LoadData<T, U>(string query, U parameters);
     Task<T> LoadSingleAsync<T, U>(string query, U parameters);
     Task<int> DeleteData<T, U>(string query, U parameters);
@@ -18,33 +16,27 @@ public interface ISqlDataAccess
 }
 public class SqlDataAccess : ISqlDataAccess
 {
-    private readonly IConfiguration _config;
-    private string _connectionId;
+    private string _connectionString;
     public SqlDataAccess(IConfiguration config)
     {
-        _config = config;
-        _connectionId = "AxleLoadDB";
-    }
-    public void SetConnection(string connectionId)
-    {
-        _connectionId = connectionId;
+        _connectionString = config.GetConnectionString("AxleLoadDB");
     }
     public async Task<IEnumerable<T>> LoadData<T, U>(string query, U parameters)
     {
        // string test = _config.GetConnectionString(_connectionId);
-        using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+        using IDbConnection connection = new SqlConnection(_connectionString);
 
         return await connection.QueryAsync<T>(query, parameters);
     }
     public async Task<T> LoadSingleAsync<T, U>(string query, U parameters)
     {
-        using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+        using IDbConnection connection = new SqlConnection(_connectionString);
 
         return await connection.QuerySingleAsync<T>(query, parameters);
     }
     public async Task<int> DeleteData<T, U>(string query, U parameters)
     {
-        using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+        using IDbConnection connection = new SqlConnection(_connectionString);
 
         return await connection.ExecuteAsync(query, parameters);
     }
@@ -53,7 +45,7 @@ public class SqlDataAccess : ISqlDataAccess
     {
         try
         {
-            using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+            using IDbConnection connection = new SqlConnection(_connectionString);
             await connection.ExecuteAsync(query, parameters);
         }
         catch (Exception ex)
@@ -65,12 +57,27 @@ public class SqlDataAccess : ISqlDataAccess
     {
         try
         {
-            using IDbConnection connection = new SqlConnection(_config.GetConnectionString(_connectionId));
+            using IDbConnection connection = new SqlConnection(_connectionString);
             return await connection.InsertAsync(obj);
         }
         catch (Exception ex)
         {
             throw ex;
+        }
+    }
+
+    public async Task InsertDataTable(DataTable csvFileData, string destinationTableName)
+    {
+        using (SqlBulkCopy bulkCopy = new SqlBulkCopy(_connectionString))
+        {
+            bulkCopy.DestinationTableName = destinationTableName;
+
+            foreach (var column in csvFileData.Columns)
+            {
+                bulkCopy.ColumnMappings.Add(column.ToString(), column.ToString());
+            }
+
+            await bulkCopy.WriteToServerAsync(csvFileData);
         }
     }
 }

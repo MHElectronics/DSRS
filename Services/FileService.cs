@@ -6,9 +6,12 @@ public interface IFileService
 {
     Task<IEnumerable<Files>> Get(int stationId = 0, DateTime? date = null);
     Task<Files> GetById(Files file);
+    Task<bool> Add(LoadDataSlowMoving obj);
+    Task<bool> Add(List<LoadDataSlowMoving> obj);
+    Task<bool> Add(LoadDataFastMoving obj);
+    Task<bool> Add(List<LoadDataFastMoving> obj);
     Task<Files> Upload(byte[] fileBytes, Files file);
     Task<bool> Update();
-    Task<bool> Delete();
 }
 public class FileService : IFileService
 {
@@ -52,7 +55,22 @@ public class FileService : IFileService
         throw new NotImplementedException();
     }
 
-    public Task<bool> Delete()
+
+    public Task<bool> Add(LoadDataSlowMoving obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Add(List<LoadDataSlowMoving> obj)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<bool> Add(LoadDataFastMoving obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> Add(List<LoadDataFastMoving> obj)
     {
         throw new NotImplementedException();
     }

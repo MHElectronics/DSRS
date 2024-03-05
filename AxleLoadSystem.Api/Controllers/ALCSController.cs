@@ -10,8 +10,8 @@ namespace AxleLoadSystem.Api.Controllers
     [Route("[controller]")]
     public class ALCSController : ControllerBase
     {
-        private ALCSFilesService _fileService;
-        public ALCSController(ALCSFilesService fileService)
+        private FileService _fileService;
+        public ALCSController(FileService fileService)
         {
             _fileService = fileService;
         }
@@ -19,18 +19,20 @@ namespace AxleLoadSystem.Api.Controllers
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload(ALCSFiles alcsFile, IFormFile uploadFile)
+        public async Task<IActionResult> Upload(Files alcsFile, IFormFile uploadFile)
         {
+            if (this.HttpContext.Response.Headers.ContainsKey("StationCode"))
+            {
+                return new BadRequestResult();
+            }
             if (uploadFile == null || uploadFile.Length == 0 || alcsFile == null)
             {
                 return new BadRequestResult();
             }
 
-            //FileName = FileName from uploaded file information if FileName is missing
-            if (string.IsNullOrEmpty(alcsFile.FileName))
-            {
-                string fileName = uploadFile.FileName;
-            }
+            //Check station code
+            string stationCode  = this.HttpContext.Response.Headers["StationCode"].ToString();
+            string key = this.HttpContext.Response.Headers.Authorization[0].ToString();
             
             byte[] byteFile;
             using (MemoryStream ms = new MemoryStream())
@@ -39,10 +41,59 @@ namespace AxleLoadSystem.Api.Controllers
                 byteFile = ms.ToArray();
             }
 
-            await _fileService.Upload(alcsFile, byteFile);
+            await _fileService.Upload(byteFile, alcsFile);
 
             return Ok(true);
         }
 
+        [HttpPost("[action]")]
+        public async Task<IActionResult> SlowMoving(LoadDataSlowMoving obj)
+        {
+            if (obj == null)
+            {
+                return new BadRequestResult();
+            }
+            
+            await _fileService.Add(obj);
+
+            return Ok(true);
+        }
+        [HttpPost("[action]")]
+        public async Task<IActionResult> SlowMovingMultiple(List<LoadDataSlowMoving> obj)
+        {
+            if (obj == null)
+            {
+                return new BadRequestResult();
+            }
+
+            await _fileService.Add(obj);
+
+            return Ok(true);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> FastMoving(LoadDataFastMoving obj)
+        {
+            if (obj == null)
+            {
+                return new BadRequestResult();
+            }
+
+            await _fileService.Add(obj);
+
+            return Ok(true);
+        }
+        [HttpPost("[action]")]
+        public async Task<IActionResult> FastMovingMultiple(List<LoadDataFastMoving> obj)
+        {
+            if (obj == null)
+            {
+                return new BadRequestResult();
+            }
+
+            await _fileService.Add(obj);
+
+            return Ok(true);
+        }
     }
 }

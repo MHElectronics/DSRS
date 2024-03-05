@@ -1,18 +1,23 @@
-﻿using System.Net;
+﻿using Microsoft.VisualBasic.FileIO;
+using System.Data;
+using System.Net;
+using System.Reflection.PortableExecutable;
 
 namespace Services.Helpers
 {
     public interface IFtpHelper
     {
-        bool UploadFile(byte[] byteFile, string fileName, string path = "");
-        bool FileExists(string path);
-        byte[] DownloadFile(string path);
-        void DeleteFile(string path);
+        Task<bool> UploadFile(byte[] byteFile, string fileName, string path = "");
+        Task<bool> FileExists(string path);
+        Task<byte[]> DownloadFile(string path);
+        Task DeleteFile(string path);
 
-        string Rename(string path = "", string renamePath = "");
-        string MakeDirectory(string path = "");
-        bool DirectoryExists(string path = "");
-        string DeleteDirectory(string path = "");
+        Task<string> Rename(string path = "", string renamePath = "");
+        Task<string> MakeDirectory(string path = "");
+        Task<bool> DirectoryExists(string path = "");
+        Task<string> DeleteDirectory(string path = "");
+
+        Task<DataTable> GetDataTabletFromCSVFile(string path);
     }
     /// <summary>
     /// Ftp Helper class to handle all ftp requests
@@ -60,7 +65,7 @@ namespace Services.Helpers
         }
 
         #region File Functions
-        public bool UploadFile(byte[] byteFile, string fileName, string path = "")
+        public async Task<bool> UploadFile(byte[] byteFile, string fileName, string path = "")
         {
             //return falase if file size is 0
             if (byteFile.Length == 0)
@@ -76,14 +81,14 @@ namespace Services.Helpers
             _ftpRequest.ContentLength = byteFile.Length;
 
             // Stream to which the file to be upload is written
-            Stream responseStream = _ftpRequest.GetRequestStream();
+            Stream responseStream = await _ftpRequest.GetRequestStreamAsync();
             responseStream.Write(byteFile, 0, byteFile.Length);
 
             responseStream.Close();
 
             return true;
         }
-        public bool FileExists(string path)
+        public async Task<bool> FileExists(string path)
         {
             //Open connection
             OpenConnection(WebRequestMethods.Ftp.GetDateTimestamp, path);
@@ -91,7 +96,7 @@ namespace Services.Helpers
             //Get response
             try
             {
-                using FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
+                using FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
             }
             catch (WebException ex)
             {
@@ -106,11 +111,11 @@ namespace Services.Helpers
             return true;
         }
 
-        public byte[] DownloadFile(string path)
+        public async Task<byte[]> DownloadFile(string path)
         {
             OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
 
-            FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
+            FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
             Stream reader = response.GetResponseStream();
 
             //Download to memory
@@ -145,17 +150,17 @@ namespace Services.Helpers
             return byteData;
         }
 
-        public void DeleteFile(string path)
+        public async Task DeleteFile(string path)
         {
             OpenConnection(WebRequestMethods.Ftp.DeleteFile, path);
 
-            FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
+            FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
 
             response.Close();
         }
         #endregion
 
-        public string Rename(string path = "", string renamePath = "")
+        public async Task<string> Rename(string path = "", string renamePath = "")
         {
             if (string.IsNullOrEmpty(renamePath))
             {
@@ -170,7 +175,7 @@ namespace Services.Helpers
             try
             {
                 //Get response
-                using (FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse())
+                using (FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync())
                 {
                     statusDescription = response.StatusDescription;
                     response.Close();
@@ -187,7 +192,7 @@ namespace Services.Helpers
         }
 
         #region Director/Folder functions
-        public string MakeDirectory(string directory = "")
+        public async Task<string> MakeDirectory(string directory = "")
         {
             string statusDescription = "";
 
@@ -198,7 +203,7 @@ namespace Services.Helpers
             OpenConnection(WebRequestMethods.Ftp.MakeDirectory, fullPath);
 
             //Get response
-            using (FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse())
+            using (FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync())
             {
                 statusDescription = response.StatusDescription;
                 response.Close();
@@ -206,7 +211,7 @@ namespace Services.Helpers
 
             return statusDescription;
         }
-        public bool DirectoryExists(string directory = "")
+        public async Task<bool> DirectoryExists(string directory = "")
         {
             //Make full path
             //Add \ at the end to make sure ListDirectory runs properly
@@ -218,7 +223,7 @@ namespace Services.Helpers
             //Get response
             try
             {
-                using FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
+                using FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
                 return true;
             }
             catch (Exception ex)
@@ -227,7 +232,7 @@ namespace Services.Helpers
             }
         }
 
-        public string DeleteDirectory(string directory = "")
+        public async Task<string> DeleteDirectory(string directory = "")
         {
             string statusDescription = "";
 
@@ -240,7 +245,7 @@ namespace Services.Helpers
             //Get response
             try
             {
-                using (FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse())
+                using (FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync())
                 {
                     statusDescription = response.StatusDescription;
                     response.Close();
@@ -255,5 +260,57 @@ namespace Services.Helpers
             return statusDescription;
         }
         #endregion
+
+        public async Task<DataTable> GetDataTabletFromCSVFile(string path)
+        {
+            OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
+
+            FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
+            Stream responseStream = response.GetResponseStream();
+
+            //StreamReader reader = new StreamReader(responseStream);
+            //string[] allLines = reader.ReadToEnd().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            DataTable csvData = new DataTable();
+            try
+            {
+                using (TextFieldParser csvReader = new TextFieldParser(responseStream))
+                {
+                    csvReader.SetDelimiters(new string[] { "," });
+                    csvReader.HasFieldsEnclosedInQuotes = true;
+                    string[] colFields = csvReader.ReadFields();
+                    foreach (string column in colFields)
+                    {
+                        DataColumn datecolumn = new DataColumn(column);
+                        datecolumn.AllowDBNull = true;
+                        csvData.Columns.Add(datecolumn);
+                    }
+                    while (!csvReader.EndOfData)
+                    {
+                        string[] fieldData = csvReader.ReadFields();
+                        //Making empty value as null
+                        for (int i = 0; i < fieldData.Length; i++)
+                        {
+                            if (fieldData[i] == "")
+                            {
+                                fieldData[i] = null;
+                            }
+                        }
+                        csvData.Rows.Add(fieldData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+            //Clean up
+            responseStream.Close();
+            //reader.Close();
+            response.Close();
+            
+            return csvData;
+        }
     }
 }
