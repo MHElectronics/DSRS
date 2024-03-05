@@ -125,7 +125,7 @@
                 await file.CopyToAsync(ms);
                 byte[] fileBytes = ms.ToArray();
 
-                await fileService.Upload(fileBytes, new Files());
+                await fileService.Upload(fileBytes, this.file);
             }
 
             file = new();

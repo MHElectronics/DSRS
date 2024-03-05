@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic.FileIO;
 using System.Data;
 using System.Net;
 using System.Reflection.PortableExecutable;
@@ -25,6 +26,16 @@ namespace Services.Helpers
     public class FtpHelper : IFtpHelper
     {
         private FtpWebRequest _ftpRequest;
+        private string _ftpAddress;
+        private string _ftpUser;
+        private string _ftpPassword;
+
+        public FtpHelper(IConfiguration config)
+        {
+            _ftpAddress = config.GetSection("FtpAccess:Address").ToString();
+            _ftpUser = config.GetSection("FtpAccess:User").ToString();
+            _ftpPassword = config.GetSection("FtpAccess:Password").ToString();
+        }
 
         /// <summary>
         /// Subsction Object used for authentication
@@ -32,15 +43,12 @@ namespace Services.Helpers
 
         private void OpenConnection(string method, string path, string renamePath = "")
         {
-            string ftpUser = "";
-            string ftpPassword = "";
-            string ftpAddress = "";
-            if (string.IsNullOrEmpty(ftpUser) || string.IsNullOrEmpty(ftpPassword) || string.IsNullOrEmpty(ftpAddress))
+            if (string.IsNullOrEmpty(_ftpUser) || string.IsNullOrEmpty(_ftpPassword) || string.IsNullOrEmpty(_ftpAddress))
             {
                 throw new Exception("Ftp authentication information not fount");
             }
 
-            string uri = ftpAddress;
+            string uri = _ftpAddress;
 
             if (!string.IsNullOrEmpty(path))
             {
@@ -52,7 +60,7 @@ namespace Services.Helpers
 
             //Now get the actual data
             _ftpRequest.Method = method;
-            _ftpRequest.Credentials = new NetworkCredential(ftpUser, ftpPassword);
+            _ftpRequest.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
             _ftpRequest.UsePassive = true;
             _ftpRequest.UseBinary = true;
             _ftpRequest.KeepAlive = false; //close the connection when done
