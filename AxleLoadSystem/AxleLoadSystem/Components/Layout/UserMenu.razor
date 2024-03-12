@@ -30,9 +30,9 @@
             var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
             currentUser = await customStateProvider.GetAuthorizedUser();
 
-            var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
-            hasImage = File.Exists(path);
-            await this.InvokeAsync(StateHasChanged);
+            // var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
+            // hasImage = File.Exists(path);
+            // await this.InvokeAsync(StateHasChanged);
         }
     }
 }

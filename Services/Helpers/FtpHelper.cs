@@ -87,7 +87,8 @@ namespace Services.Helpers
 
             // Notify the server about the size of the uploaded file
             _ftpRequest.ContentLength = byteFile.Length;
-            try {
+            try
+            {
                 // Stream to which the file to be upload is written
                 Stream responseStream = await _ftpRequest.GetRequestStreamAsync();
                 responseStream.Write(byteFile, 0, byteFile.Length);
@@ -274,54 +275,59 @@ namespace Services.Helpers
 
         public async Task<DataTable> GetDataTabletFromCSVFile(string path)
         {
-            OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
+            // Open the FTP Server stream
+            //OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
 
-            FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
-            Stream responseStream = response.GetResponseStream();
+            //FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
+            //Stream responseStream = response.GetResponseStream();
 
-            //StreamReader reader = new StreamReader(responseStream);
-            //string[] allLines = reader.ReadToEnd().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-            DataTable csvData = new DataTable();
-            try
+            // Open the local file steam
+            using (FileStream responseStream = new FileStream(path, FileMode.Open))
             {
-                using (TextFieldParser csvReader = new TextFieldParser(responseStream))
+                StreamReader reader = new StreamReader(responseStream);
+                string[] allLines = reader.ReadToEnd().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                DataTable csvData = new DataTable();
+                try
                 {
-                    csvReader.SetDelimiters(new string[] { "," });
-                    csvReader.HasFieldsEnclosedInQuotes = true;
-                    string[] colFields = csvReader.ReadFields();
-                    foreach (string column in colFields)
+                    using (TextFieldParser csvReader = new TextFieldParser(responseStream))
                     {
-                        DataColumn datecolumn = new DataColumn(column);
-                        datecolumn.AllowDBNull = true;
-                        csvData.Columns.Add(datecolumn);
-                    }
-                    while (!csvReader.EndOfData)
-                    {
-                        string[] fieldData = csvReader.ReadFields();
-                        //Making empty value as null
-                        for (int i = 0; i < fieldData.Length; i++)
+                        csvReader.SetDelimiters(new string[] { "," });
+                        csvReader.HasFieldsEnclosedInQuotes = true;
+                        string[] colFields = csvReader.ReadFields();
+                        foreach (string column in colFields)
                         {
-                            if (fieldData[i] == "")
-                            {
-                                fieldData[i] = null;
-                            }
+                            DataColumn datecolumn = new DataColumn(column);
+                            datecolumn.AllowDBNull = true;
+                            csvData.Columns.Add(datecolumn);
                         }
-                        csvData.Rows.Add(fieldData);
+                        while (!csvReader.EndOfData)
+                        {
+                            string[] fieldData = csvReader.ReadFields();
+                            //Making empty value as null
+                            for (int i = 0; i < fieldData.Length; i++)
+                            {
+                                if (fieldData[i] == "")
+                                {
+                                    fieldData[i] = null;
+                                }
+                            }
+                            csvData.Rows.Add(fieldData);
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+                catch (Exception ex)
+                {
+                    return null;
+                }
 
-            //Clean up
-            responseStream.Close();
-            //reader.Close();
-            response.Close();
-            
-            return csvData;
+                //Clean up
+                responseStream.Close();
+                //reader.Close();
+                //response.Close();
+
+                return csvData;
+            }
         }
     }
 }
