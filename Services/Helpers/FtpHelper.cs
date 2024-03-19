@@ -2,7 +2,6 @@
 using Microsoft.VisualBasic.FileIO;
 using System.Data;
 using System.Net;
-using System.Reflection.PortableExecutable;
 
 namespace Services.Helpers
 {
@@ -23,20 +22,15 @@ namespace Services.Helpers
     /// <summary>
     /// Ftp Helper class to handle all ftp requests
     /// </summary>
-    public class FtpHelper : IFtpHelper
+    public class FtpHelper(IConfiguration config) : IFtpHelper
     {
+        private readonly string _ftpAddress = config.GetSection("FtpAccess:Address").Value ?? "";
+        private readonly string _ftpRootFolder = config.GetSection("FtpAccess:RootFolder").Value ?? "";
+        private readonly string _ftpUser = config.GetSection("FtpAccess:User").Value ?? "";
+        private readonly string _ftpPassword = config.GetSection("FtpAccess:Password").Value ?? "";
+        
         private FtpWebRequest _ftpRequest;
-        private string _ftpAddress;
-        private string _ftpUser;
-        private string _ftpPassword;
-
-        public FtpHelper(IConfiguration config)
-        {
-            _ftpAddress = config.GetSection("FtpAccess:Address").Value;
-            _ftpUser = config.GetSection("FtpAccess:User").Value;
-            _ftpPassword = config.GetSection("FtpAccess:Password").Value;
-        }
-
+        
         /// <summary>
         /// Subsction Object used for authentication
         /// </summary>
@@ -48,11 +42,16 @@ namespace Services.Helpers
                 throw new Exception("Ftp authentication information not fount");
             }
 
-            string uri = _ftpAddress;
+            string uri = _ftpAddress.TrimEnd('/') + "/" + _ftpRootFolder.Trim('/') + "/";
+            
+            if (!string.IsNullOrEmpty(_ftpRootFolder.Trim('/')))
+            {
+                uri += _ftpRootFolder.Trim('/') + "/";
+            }
 
             if (!string.IsNullOrEmpty(path))
             {
-                uri = uri + path.Trim('/');
+                uri += path.Trim('/');
             }
 
             //Create FTP request
