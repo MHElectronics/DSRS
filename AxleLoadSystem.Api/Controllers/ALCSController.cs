@@ -1,6 +1,8 @@
 ﻿using AxleLoadSystem.Api.Extensions;
+using AxleLoadSystem.Api.Models;
 using BOL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Services;
 
 namespace AxleLoadSystem.Api.Controllers
@@ -19,13 +21,13 @@ namespace AxleLoadSystem.Api.Controllers
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload(Files alcsFile, IFormFile uploadFile)
+        public async Task<IActionResult> Upload([ModelBinder(BinderType = typeof(JsonModelBinder))] FileUploadModel station, IFormFile uploadFile)
         {
             if (this.HttpContext.Response.Headers.ContainsKey("StationCode"))
             {
-                return new BadRequestResult();
+                return new UnauthorizedResult();
             }
-            if (uploadFile == null || uploadFile.Length == 0 || alcsFile == null)
+            if (uploadFile == null || uploadFile.Length == 0 || station == null)
             {
                 return new BadRequestResult();
             }
@@ -41,7 +43,10 @@ namespace AxleLoadSystem.Api.Controllers
                 byteFile = ms.ToArray();
             }
 
-            await _fileService.Upload(byteFile, alcsFile);
+            Files file = new Files();
+            file.StationId = station.StationId;
+            file.Date = station.Date;
+            await _fileService.Upload(byteFile, file);
 
             return Ok(true);
         }
