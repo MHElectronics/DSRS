@@ -1,0 +1,48 @@
+﻿@page "/station/{mode?}/{id?}"
+@inject IStationService stationService
+
+@if (string.IsNullOrEmpty(Mode))
+{
+    <StationList/>
+}
+else
+{
+    <FormComponent station="station" Mode="SelectedFormMode" />
+}
+
+@code {
+    [Parameter]
+    public string Mode { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    private Station station { get; set; } = null;
+    private FormMode SelectedFormMode { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Mode))
+        {
+            return;
+        }
+
+        if (Mode.ToLower() == "new")
+        {
+            SelectedFormMode = FormMode.Add;
+            station = new();
+        }
+        else if (!string.IsNullOrEmpty(Id))
+        {
+            station = new() { StationId = Convert.ToInt32(Id) };
+            station = await stationService.GetById(station);
+
+            if (Mode.ToLower() == "details")
+            {
+                SelectedFormMode = FormMode.Details;
+            }
+            else if (Mode.ToLower() == "edit")
+            {
+                SelectedFormMode = FormMode.Edit;
+            }
+        }
+    }
+}

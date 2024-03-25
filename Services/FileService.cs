@@ -38,7 +38,7 @@ public class FileService : IFileService
             param.Add("@Date", date);
         }
 
-        return await _db.LoadData<Files, dynamic>("SELECT * FROM Files", param);
+        return await _db.LoadData<Files, dynamic>(sql, param);
     }
 
 

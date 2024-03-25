@@ -2,6 +2,7 @@
 @using AxleLoadSystem.Models
 @inject IWebHostEnvironment env
 @inject IFileService fileService
+@inject IStationService stationService
 
 <PageTitle>Manual File Upload</PageTitle>
 
@@ -86,7 +87,7 @@
 @code {
     [SupplyParameterFromForm(FormName = "formFileUpload")]
     private FileUploadModel file { get; set; } = new FileUploadModel() { Date = DateTime.Today.AddDays(-1) };
-    private List<Station> stations { get; set; }
+    private IEnumerable<Station> stations { get; set; }
     private string Message { get; set; } = String.Empty;
     private long maxFileSize = 5120000;
     private EditContext? editContext;
@@ -97,10 +98,7 @@
         editContext = new(file);
         editContext.SetFieldCssClassProvider(new Helpers.CustomFieldClassProvider());
 
-        //stations = await fileService.Get();
-        stations = new List<Station>();
-        stations.Add(new Station() { StationId = 1, StationName = "ALCS 1" });
-        stations.Add(new Station() { StationId = 2, StationName = "ALCS 2" });
+        stations = await stationService.Get();
     }
 
     private void FileSelected(InputFileChangeEventArgs e)

@@ -123,7 +123,10 @@
   <data name="Menu.Counter2" xml:space="preserve">
     <value>Counter 2</value>
   </data>
+  <data name="Menu.Station" xml:space="preserve">
+    <value>Stations</value>
+  </data>
   <data name="Menu.User" xml:space="preserve">
-    <value>User</value>
+    <value>Users</value>
   </data>
 </root>
