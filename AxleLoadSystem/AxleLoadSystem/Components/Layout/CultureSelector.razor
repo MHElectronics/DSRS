@@ -4,17 +4,17 @@
 
 @if(cultures is not null)
 {
-    <li class="nav-item dropdown mt-3">
-        <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false" title="@CurrentCultureTitle()">
+    <li class="nav-item dropdown mt-3" style="cursor:pointer;">
+        <span class="nav-link" data-toggle="dropdown" aria-expanded="false" title="@CurrentCultureTitle()">
             <img src="images/locales/@(CultureInfo.CurrentCulture.Name).png" style="max-height:38px; max-width: 38px;" alt="Localization Culture" />
-        </a>
+        </span>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
             @foreach (KeyValuePair<string, string> item in cultures)
             {
-                <a href="#" class="dropdown-item" @onclick="@(() => CultureChanged(item.Key))">
+                <span class="dropdown-item" @onclick="@(() => CultureChanged(item.Key))">
                     <i class="fas fa-language mr-2"></i> @item.Value
                     <span class="float-right text-muted text-sm"><img src="images/locales/@(item.Key).png" style="max-height:30px; max-width: 30px;" alt="Localization Culture" /></span>
-                </a>
+                </span>
             }
         </div>
     </li>

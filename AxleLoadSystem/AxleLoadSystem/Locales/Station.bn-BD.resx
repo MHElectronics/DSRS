@@ -117,25 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Button.Add" xml:space="preserve">
-    <value>যোগ করুন</value>
+  <data name="Address" xml:space="preserve">
+    <value>ঠিকানা</value>
   </data>
-  <data name="Button.Back" xml:space="preserve">
-    <value>ফিরে যাও</value>
+  <data name="AuthKey" xml:space="preserve">
+    <value>এপিআই চাবি</value>
   </data>
-  <data name="Button.Cancel" xml:space="preserve">
-    <value>বাতিল করুন</value>
+  <data name="Code" xml:space="preserve">
+    <value>সংকেত</value>
   </data>
-  <data name="Button.Edit" xml:space="preserve">
-    <value>সম্পাদনা করুন</value>
+  <data name="GenerateKey" xml:space="preserve">
+    <value>চাবি তৈরি করি</value>
   </data>
-  <data name="Button.Save" xml:space="preserve">
-    <value>সংরক্ষণ</value>
+  <data name="Name" xml:space="preserve">
+    <value>নাম</value>
   </data>
-  <data name="Button.Update" xml:space="preserve">
-    <value>হালনাগাদ</value>
+  <data name="StationId" xml:space="preserve">
+    <value>স্টেশন নং</value>
   </data>
-  <data name="HomeText" xml:space="preserve">
-    <value>হোম পেজে স্বাগতম</value>
+  <data name="StationList" xml:space="preserve">
+    <value>স্টেশনের তালিকা</value>
   </data>
 </root>

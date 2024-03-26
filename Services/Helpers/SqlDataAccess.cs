@@ -11,7 +11,7 @@ public interface ISqlDataAccess
     Task<IEnumerable<T>> LoadData<T, U>(string query, U parameters);
     Task<T> LoadSingleAsync<T, U>(string query, U parameters);
     Task<int> DeleteData<T, U>(string query, U parameters);
-    Task SaveData<T>(string query, T parameters);
+    Task<bool> SaveData<T>(string query, T parameters);
     Task InsertDataTable(DataTable csvFileData, string destinationTableName);
     Task<int> Insert<T>(T obj) where T : class;
 }
@@ -42,12 +42,13 @@ public class SqlDataAccess : ISqlDataAccess
         return await connection.ExecuteAsync(query, parameters);
     }
 
-    public async Task SaveData<T>(string query, T parameters)
+    public async Task<bool> SaveData<T>(string query, T parameters)
     {
         try
         {
             using IDbConnection connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(query, parameters);
+            int count = await connection.ExecuteAsync(query, parameters);
+            return count > 0;
         }
         catch (Exception ex)
         {

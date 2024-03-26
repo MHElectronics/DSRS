@@ -3,12 +3,14 @@
 @using Services
 @inject IStationService stationService
 @rendermode InteractiveServer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Station> localizer
 
-<PageTitle>List of Stations</PageTitle>
-<h1>List of Stations</h1>
+<PageTitle>@localizer["StationList"]</PageTitle>
+<h1>@localizer["StationList"]</h1>
 
 <NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New">
-    <i class="fa fa-plus"></i> Add New
+    <i class="fa fa-plus"></i> @localizerResource["Button.Add"]
 </NavLink>
 @if (stations is null)
 {
@@ -19,11 +21,11 @@ else
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>API Key</th>
+                <th>@localizer["StationId"]</th>
+                <th>@localizer["Code"]</th>
+                <th>@localizer["Name"]</th>
+                <th>@localizer["Address"]</th>
+                <th>@localizer["AuthKey"]</th>
                 <th></th>
                 <th></th>
             </tr>

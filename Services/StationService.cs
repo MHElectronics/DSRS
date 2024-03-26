@@ -1,4 +1,5 @@
 ﻿using BOL;
+using Microsoft.Extensions.Configuration;
 using Services.Helpers;
 
 namespace Services;
@@ -13,10 +14,12 @@ public interface IStationService
 public class StationService : IStationService
 {
     private static Random random = new Random();
-    private readonly ISqlDataAccess _db;
-    public StationService(ISqlDataAccess db)
+    private ISqlDataAccess _db { get; set; }
+    private IConfiguration _configuration { get; set; }
+    public StationService(ISqlDataAccess db, IConfiguration configuration)
     {
         _db = db;
+        _configuration = configuration;
     }
 
     public async Task<IEnumerable<Station>> Get()
@@ -36,14 +39,15 @@ public class StationService : IStationService
         int count = await _db.Insert<Station>(obj);
         return count > 0;
     }
-    public Task<bool> Update(Station obj)
+    public async Task<bool> Update(Station obj)
     {
-        throw new NotImplementedException();
+        string query = "UPDATE Station SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey WHERE StationId=@StationId";
+        return await _db.SaveData<Station>(query, obj);
     }
 
     public string GenerateKey()
     {
-        int length = 20;
+        int length = Convert.ToInt16(_configuration.GetSection("Settings:ApiKeyLength").Value);
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
     }

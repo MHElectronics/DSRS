@@ -3,6 +3,8 @@
 @using Services
 @rendermode InteractiveServer
 @inject IStationService stationService
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Station> localizer
 
 @if (station is null)
 {
@@ -18,13 +20,13 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Name</label>
+                        <label for="name" class="form-label">@localizer["Name"]</label>
                         <label class="form-control">@station.StationName</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" @bind-value="station.StationName" required class="form-control" placeholder="Station Name" id="name" />
+                        <label for="name" class="form-label">@localizer["Name"]</label>
+                        <input type="text" @bind-value="station.StationName" required class="form-control" placeholder="@localizer["Name"]" id="name" />
                         <ValidationMessage For="() => station.StationName" />
                     }
                 </div>
@@ -33,13 +35,13 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Code</label>
+                        <label for="name" class="form-label">@localizer["Code"]</label>
                         <label class="form-control">@station.StationCode</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">Code</label>
-                        <input type="text" @bind-value="station.StationCode" required class="form-control" placeholder="Station Code" id="code" />
+                        <label for="name" class="form-label">@localizer["Code"]</label>
+                        <input type="text" @bind-value="station.StationCode" required class="form-control" placeholder="@localizer["Code"]" id="code" />
                         <ValidationMessage For="() => station.StationCode" />
                     }
                 </div>
@@ -48,13 +50,13 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Address</label>
+                        <label for="name" class="form-label">@localizer["Address"]</label>
                         <label class="form-control">@station.Address</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">Address</label>
-                        <input type="text" @bind-value="station.Address" required class="form-control" placeholder="Address" id="address" />
+                        <label for="name" class="form-label">@localizer["Address"]</label>
+                        <input type="text" @bind-value="station.Address" required class="form-control" placeholder="@localizer["Address"]" id="address" />
                         <ValidationMessage For="() => station.Address" />
                     }
                 </div>
@@ -63,15 +65,15 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">API Key</label>
+                        <label for="name" class="form-label">@localizer["AuthKey"]</label>
                         <label class="form-control">@station.AuthKey</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">API Key</label>
+                        <label for="name" class="form-label">@localizer["AuthKey"]</label>
                         <div class="input-group mb-3">
-                            <input type="text" @bind-value="station.AuthKey" required class="form-control" placeholder="API Key" aria-label="API Key" id="authkey" aria-describedby="basic-addon2" />
-                            <span class="input-group-text" id="basic-addon2" @onclick="GenerateKey">Generate Key</span>
+                            <input type="text" @bind-value="station.AuthKey" required class="form-control" placeholder="@localizer["AuthKey"]" aria-label="API Key" id="authkey" aria-describedby="basic-addon2" />
+                            <span class="input-group-text" id="basic-addon2" @onclick="GenerateKey">@localizer["GenerateKey"]</span>
                         </div>
 
                         <ValidationMessage For="() => station.AuthKey" />
@@ -79,18 +81,18 @@ else
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-12 col-sm-12">
                     <div class="btn-group">
                         @if (Mode == FormMode.Details)
                         {
                             string editLink = "/station/edit/" + station.StationId;
-                            <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
+                            <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
                         }
                         else
                         {
-                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
+                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                         }
-                        <NavLink class="btn btn-primary" href="/user">Back</NavLink>
+                        <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
                         @if (!string.IsNullOrEmpty(ValidationSummary))
                         {
                             <label class="error">@ValidationSummary</label>
