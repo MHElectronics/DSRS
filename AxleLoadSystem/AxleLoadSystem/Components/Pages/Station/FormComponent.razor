@@ -124,12 +124,12 @@ else
         if (Mode == FormMode.Edit)
         {
             await stationService.Update(station);
-            ValidationSummary = "User Updated Successfully";
+            ValidationSummary = "Station Updated Successfully";
         }
         else
         {
             await stationService.Add(station);
-            ValidationSummary = "New User added";
+            ValidationSummary = "Station User added";
         }
     }
 

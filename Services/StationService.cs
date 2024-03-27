@@ -44,7 +44,12 @@ public class StationService : IStationService
         string query = "UPDATE Station SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey WHERE StationId=@StationId";
         return await _db.SaveData<Station>(query, obj);
     }
-
+    public async Task<bool> Delete(Station obj)
+    {
+        string query = "DELETE FROM Station WHERE StationId=@StationId";
+        int count = await _db.DeleteData<Station, object>(query, new { obj.StationId });
+        return count > 0;
+    }
     public string GenerateKey()
     {
         int length = Convert.ToInt16(_configuration.GetSection("Settings:ApiKeyLength").Value);

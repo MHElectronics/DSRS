@@ -1,16 +1,20 @@
 ﻿@using System
 @using BOL
 @using Services
-@inject IStationService stationService
 @rendermode InteractiveServer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Station> localizer
+@inject IStationService stationService
+@inject IWIMScaleService wimService
 
 <PageTitle>@localizer["StationList"]</PageTitle>
 <h1>@localizer["StationList"]</h1>
 
-<NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New">
-    <i class="fa fa-plus"></i> @localizerResource["Button.Add"]
+<NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New Station">
+    <i class="fa fa-plus"></i> @localizer["Button.AddStation"]
+</NavLink>
+<NavLink class="btn btn-primary pull-right" href="/wimscale" title="Add New WIM Scale">
+    <i class="fa fa-plus"></i> @localizer["Button.AddWim"]
 </NavLink>
 @if (stations is null)
 {
@@ -49,17 +53,37 @@ else
                             <i class="fa fa-edit"></i>
                         </a>
                     </td>
+                    <td>Add Wim</td>
                 </tr>
-            }
 
+                @if(wims is not null && wims.Any(w => w.StationId == item.StationId))
+                {
+                    foreach (WIMScale wim in wims.Where(w => w.StationId == item.StationId))
+                    {
+                        <tr>
+                            <td></td>
+                            <td>Lane: @wim.LaneNumber</td>
+                            <td>High Speed: @(wim.IsHighSpeed ? "Yes" : "No")</td>
+                            <td>Eq. Code: @wim.EquipmentCode</td>
+                            <td>Direction: @wim.LaneDirection</td>
+                            <td>
+                                <a class="waves-effect" href="@("/wimscale/" + wim.Id)" title="Details Information">
+                                    <i class="fa fa-info"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            }
         </tbody>
     </table>
 }
 @code {
     private IEnumerable<Station> stations;
-
+    private IEnumerable<WIMScale> wims;
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
+        wims = await wimService.Get(new WIMScale());
     }
 }

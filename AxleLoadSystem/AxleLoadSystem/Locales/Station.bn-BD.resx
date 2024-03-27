@@ -123,6 +123,12 @@
   <data name="AuthKey" xml:space="preserve">
     <value>এপিআই চাবি</value>
   </data>
+  <data name="Button.AddStation" xml:space="preserve">
+    <value>Add New Station</value>
+  </data>
+  <data name="Button.AddWim" xml:space="preserve">
+    <value>Add New WIM Scale</value>
+  </data>
   <data name="Code" xml:space="preserve">
     <value>সংকেত</value>
   </data>

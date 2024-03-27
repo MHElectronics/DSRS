@@ -2,6 +2,7 @@ using AxleLoadSystem.Authentication;
 using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
 using Blazored.LocalStorage;
+using BOL;
 using Microsoft.AspNetCore.Components.Authorization;
 using Services;
 using Services.Helpers;
@@ -18,6 +19,7 @@ builder.Services.AddScoped<IFtpHelper, FtpHelper>();
 builder.Services.AddScoped<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IStationService, StationService>();
+builder.Services.AddScoped<IWIMScaleService, WIMScaleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 //Localization

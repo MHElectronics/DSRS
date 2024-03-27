@@ -1,0 +1,176 @@
+﻿@page "/wimscale/{id?}"
+@using System
+@using BOL
+@using Services
+@rendermode InteractiveServer
+@inject IStationService stationService
+@inject IWIMScaleService wimService
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Station> localizer
+
+@if (wimScale is null || stations is null)
+{
+    <Loader />
+}
+else
+{
+    <EditForm Model="@wimScale" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit" FormName="WimForm" method="post">
+        <DataAnnotationsValidator /> 
+
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                    @if (formMode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">@localizer["Station"]</label>
+                        <label class="form-control">@stations.FirstOrDefault(s => s.StationId == wimScale.StationId).StationName</label>
+                    }
+                    else
+                    {
+                        <label for="station" class="form-label">@localizer["Station"]</label>
+                        <select class="form-control" @bind="wimScale.StationId" id="station">
+                            @foreach(Station station in stations)
+                            {
+                                <option value="@station.StationId">@station.StationName</option>
+                            }
+                        </select>
+                        <ValidationMessage For="() => wimScale.StationId" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                    @if (formMode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">@localizer["WimLaneNumber"]</label>
+                        <label class="form-control">@wimScale.LaneNumber</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">@localizer["WimLaneNumber"]</label>
+                        <input type="number" @bind-value="wimScale.LaneNumber" required class="form-control" id="wimLaneNumber" />
+                        <ValidationMessage For="() => wimScale.LaneNumber" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                    @if (formMode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">@localizer["WimEquipmentCode"]</label>
+                        <label class="form-control">@wimScale.EquipmentCode</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">@localizer["WimEquipmentCode"]</label>
+                        <input type="text" @bind-value="wimScale.EquipmentCode" required class="form-control" placeholder="@localizer["WimEquipmentCode"]" id="address" />
+                        <ValidationMessage For="() => wimScale.EquipmentCode" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-8 col-sm-12">
+                <div class="form-group">
+                    @if (formMode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">@localizer["WimLaneDirection"]</label>
+                        <label class="form-control">@wimScale.LaneDirection</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">@localizer["WimLaneDirection"]</label>
+                        <input type="text" @bind-value="wimScale.LaneDirection" required class="form-control" placeholder="@localizer["WimLaneDirection"]" id="wimLaneDirection" />
+                        <ValidationMessage For="() => wimScale.LaneDirection" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="form-group">
+                    @if (formMode == FormMode.Details)
+                    {
+                        <label for="wimHighSpeed" class="form-label">@localizer["WimHighSpeed"]</label>
+                        <label class="form-control" id="wimHighSpeed">@(wimScale.IsHighSpeed ? "High Speed": "Slow Speed")</label>
+                    }
+                    else
+                    {
+                        <label for="wimHighSpeed" class="form-label">@localizer["WimHighSpeed"]</label>
+                        <br/>
+                        <div class="icheck-primary d-inline">
+                            <input type="checkbox" id="chkHighSpeed" @bind="@wimScale.IsHighSpeed" />
+                            <label for="chkHighSpeed">@localizer["WimHighSpeed"]</label>
+                        </div>
+                        <ValidationMessage For="() => wimScale.IsHighSpeed" />
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="btn-group">
+                        @if (formMode == FormMode.Details)
+                        {
+                            <span @onclick="Edit" class="btn btn-primary">@localizerResource["Button.Edit"]</span>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" type="submit">@(formMode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
+                        }
+                        <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
+                        @if (!string.IsNullOrEmpty(ValidationSummary))
+                        {
+                            <label class="error">@ValidationSummary</label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    // [Parameter]
+    // public string Mode { get; set; } = "details";
+    [Parameter]
+    public string Id { get; set; }
+
+    private FormMode formMode = FormMode.Details;
+    private WIMScale wimScale { get; set; } = null;
+    private IEnumerable<Station> stations;
+    string ValidationSummary;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            wimScale = new();
+            formMode = FormMode.Add;
+        }
+        else
+        {
+            wimScale = await wimService.GetById(new WIMScale() { Id = Convert.ToInt16(this.Id) });
+        }
+        stations = await stationService.Get();
+    }
+
+    void OnInvalidSubmit()
+    {
+        ValidationSummary = "Please enter valid data";
+    }
+    async Task OnValidSubmit(EditContext editContext)
+    {
+        ValidationSummary = "";
+
+        if (formMode == FormMode.Edit)
+        {
+            await wimService.Update(wimScale);
+            ValidationSummary = "WIM Updated Successfully";
+        }
+        else
+        {
+            await wimService.Add(wimScale);
+            ValidationSummary = "WIM User added";
+        }
+    }
+    private void Edit()
+    {
+        formMode = FormMode.Edit;
+    }
+}
