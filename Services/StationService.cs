@@ -24,13 +24,13 @@ public class StationService : IStationService
 
     public async Task<IEnumerable<Station>> Get()
     {
-        string query = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Station";
+        string query = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Stations";
         return await _db.LoadData<Station, dynamic>(query, null);
     }
 
     public async Task<Station> GetById(Station obj)
     {
-        string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Station WHERE StationId=@StationId";
+        string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Stations WHERE StationId=@StationId";
         return await _db.LoadSingleAsync<Station, dynamic>(sql, new { obj.StationId });
     }
 
@@ -41,12 +41,12 @@ public class StationService : IStationService
     }
     public async Task<bool> Update(Station obj)
     {
-        string query = "UPDATE Station SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey WHERE StationId=@StationId";
+        string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey WHERE StationId=@StationId";
         return await _db.SaveData<Station>(query, obj);
     }
     public async Task<bool> Delete(Station obj)
     {
-        string query = "DELETE FROM Station WHERE StationId=@StationId";
+        string query = "DELETE FROM Stations WHERE StationId=@StationId";
         int count = await _db.DeleteData<Station, object>(query, new { obj.StationId });
         return count > 0;
     }
