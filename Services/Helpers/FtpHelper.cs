@@ -42,7 +42,7 @@ namespace Services.Helpers
                 throw new Exception("Ftp authentication information not fount");
             }
 
-            string uri = _ftpAddress.TrimEnd('/') + "/" + _ftpRootFolder.Trim('/') + "/";
+            string uri = _ftpAddress.TrimEnd('/') + "/";// + _ftpRootFolder.Trim('/') + "/";
             
             if (!string.IsNullOrEmpty(_ftpRootFolder.Trim('/')))
             {
