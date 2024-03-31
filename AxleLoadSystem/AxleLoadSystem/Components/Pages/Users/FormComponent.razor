@@ -3,6 +3,8 @@
 @using Services
 @rendermode InteractiveServer
 @inject IUserService userService
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.User> localizer
 
 @if (user is null)
 {
@@ -18,12 +20,12 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Email</label>
+                        <label for="name" class="form-label">@localizer["Email"]</label>
                         <label class="form-control">@user.Email</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">Email</label>
+                        <label for="name" class="form-label">@localizer["Email"]</label>
                         <input type="text" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
                         <ValidationMessage For="() => user.Email" />
                     }
@@ -33,12 +35,12 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Password</label>
+                        <label for="name" class="form-label">@localizer["Password"]</label>
                         <label class="form-control">@user.Password</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">Password</label>
+                        <label for="name" class="form-label">@localizer["Password"]</label>
                         <input type="text" @bind-value="user.Password" required class="form-control" placeholder="Password" id="name" />
                         <ValidationMessage For="() => user.Password" />
                     }
@@ -48,12 +50,12 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Name of User</label>
+                        <label for="name" class="form-label">@localizer["Name of User"]</label>
                         <label class="form-control">@user.Name</label>
                     }
                     else
                     {
-                        <label for="name" class="form-label">Name of User</label>
+                        <label for="name" class="form-label">@localizer["Name of User"]</label>
                         <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" />
                         <ValidationMessage For="() => user.Name" />
                     }
@@ -63,12 +65,12 @@ else
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Role</label>
+                        <label for="name" class="form-label">@localizer["Role"]</label>
                         <label class="form-control">@user.Role</label>
                     }
                     else
                     {
-                        <label for="Role" class="form-label">Role</label>
+                        <label for="Role" class="form-label">@localizer["Role"]</label>
                         <div class="form-control">
                             <div class="col-12">
                                 @foreach (var item in Enum.GetValues(typeof(UserRole)))
@@ -87,18 +89,18 @@ else
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-12 col-sm-12">
                     <div class="btn-group">
                         @if (Mode == FormMode.Details)
                         {
                             string editLink = "/user/edit/" + user.Id;
-                            <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
+                            <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
                         }
                         else
                         {
-                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
+                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                         }
-                        <NavLink class="btn btn-primary" href="/user">Back</NavLink>
+                        <NavLink class="btn btn-primary" href="/user">@localizerResource["Button.Back"]</NavLink>
                         @if (!string.IsNullOrEmpty(ValidationSummary))
                         {
                             <label class="error">@ValidationSummary</label>

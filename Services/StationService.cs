@@ -9,6 +9,7 @@ public interface IStationService
     Task<Station> GetById(Station obj);
     Task<bool> Add(Station obj);
     Task<bool> Update(Station obj);
+    Task<bool> Delete(Station obj);
     string GenerateKey();
 }
 public class StationService : IStationService

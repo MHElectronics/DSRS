@@ -10,6 +10,7 @@ public interface IUserService
     Task<User?> GetUserById(int id);
     Task<User> InsertUser(User user);
     Task<User> UpdateUser(User user);
+    Task<bool> Delete(User user);
     Task<IEnumerable<User>> GetUsers();
 }
 
@@ -58,6 +59,12 @@ public class UserService : IUserService
         string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, Password=@Password WHERE Id=@Id";
         await _db.SaveData(sql, user);
         return user;
+    }
+    public async Task<bool> Delete(User obj)
+    {
+        string query = "DELETE FROM Users WHERE Id=@Id";
+        int count = await _db.DeleteData<User, object>(query, new { obj.Id });
+        return count > 0;
     }
 
 }

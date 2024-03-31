@@ -8,6 +8,7 @@ public interface IWIMScaleService
     Task<WIMScale> GetById(WIMScale obj);
     Task<bool> Add(WIMScale obj);
     Task<bool> Update(WIMScale obj);
+    Task<bool> Delete(WIMScale obj);
 }
 public class WIMScaleService : IWIMScaleService
 {
