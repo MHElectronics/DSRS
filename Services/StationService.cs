@@ -36,8 +36,8 @@ public class StationService : IStationService
 
     public async Task<bool> Add(Station obj)
     {
-        int count = await _db.Insert<Station>(obj);
-        return count > 0;
+        string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey) VALUES(@StationCode,@StationName,@Address,@AuthKey)";
+        return await _db.SaveData<Station>(query, obj);
     }
     public async Task<bool> Update(Station obj)
     {

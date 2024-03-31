@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-namespace BOL;
+﻿namespace BOL;
 
 public class User
 {
