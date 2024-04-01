@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.FileIO;
 using System.Data;
 using System.Net;
+using System.Text;
 
 namespace Services.Helpers
 {
@@ -28,9 +29,10 @@ namespace Services.Helpers
         private readonly string _ftpRootFolder = config.GetSection("FtpAccess:RootFolder").Value ?? "";
         private readonly string _ftpUser = config.GetSection("FtpAccess:User").Value ?? "";
         private readonly string _ftpPassword = config.GetSection("FtpAccess:Password").Value ?? "";
-        
+
         private FtpWebRequest _ftpRequest;
-        
+        private byte[] streamInByte;
+
         /// <summary>
         /// Subsction Object used for authentication
         /// </summary>
@@ -43,7 +45,7 @@ namespace Services.Helpers
             }
 
             string uri = _ftpAddress.TrimEnd('/') + "/";// + _ftpRootFolder.Trim('/') + "/";
-            
+
             if (!string.IsNullOrEmpty(_ftpRootFolder.Trim('/')))
             {
                 uri += _ftpRootFolder.Trim('/') + "/";
@@ -274,57 +276,54 @@ namespace Services.Helpers
 
         public async Task<DataTable> GetDataTabletFromCSVFile(string path)
         {
-            // Open the FTP Server stream
-            //OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
-
-            //FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
-            //Stream responseStream = response.GetResponseStream();
-
-            // Open the local file steam
-            using (FileStream responseStream = new FileStream(path, FileMode.Open))
+            OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
+            using (FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync())
+            using (Stream responseStream = response.GetResponseStream())
+            { 
+                if (responseStream != null)
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    { 
+                        responseStream.CopyTo(ms);
+                        streamInByte = ms.ToArray();
+                    }
+                }
+            }
+            using (TextFieldParser csvReader = new TextFieldParser(new MemoryStream(streamInByte), Encoding.Default))
             {
-                StreamReader reader = new StreamReader(responseStream);
-                string[] allLines = reader.ReadToEnd().Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                csvReader.SetDelimiters(new string[] { "," });
+                csvReader.HasFieldsEnclosedInQuotes = true;
 
                 DataTable csvData = new DataTable();
                 try
                 {
-                    using (TextFieldParser csvReader = new TextFieldParser(responseStream))
+                    string[] colFields = csvReader.ReadFields();
+                    foreach (string column in colFields)
                     {
-                        csvReader.SetDelimiters(new string[] { "," });
-                        csvReader.HasFieldsEnclosedInQuotes = true;
-                        string[] colFields = csvReader.ReadFields();
-                        foreach (string column in colFields)
+                        DataColumn datecolumn = new DataColumn(column);
+                        datecolumn.AllowDBNull = true;
+                        csvData.Columns.Add(datecolumn);
+                    }
+                    while (!csvReader.EndOfData)
+                    {
+                        string[] fieldData = csvReader.ReadFields();
+                        //Making empty value as null
+                        for (int i = 0; i < fieldData.Length; i++)
                         {
-                            DataColumn datecolumn = new DataColumn(column);
-                            datecolumn.AllowDBNull = true;
-                            csvData.Columns.Add(datecolumn);
-                        }
-                        while (!csvReader.EndOfData)
-                        {
-                            string[] fieldData = csvReader.ReadFields();
-                            //Making empty value as null
-                            for (int i = 0; i < fieldData.Length; i++)
+                            if (fieldData[i] == "")
                             {
-                                if (fieldData[i] == "")
-                                {
-                                    fieldData[i] = null;
-                                }
+                                fieldData[i] = null;
                             }
-                            csvData.Rows.Add(fieldData);
                         }
+                        csvData.Rows.Add(fieldData);
                     }
                 }
                 catch (Exception ex)
                 {
+                    // Handle exception
+                    Console.WriteLine(ex.Message);
                     return null;
                 }
-
-                //Clean up
-                responseStream.Close();
-                //reader.Close();
-                //response.Close();
-
                 return csvData;
             }
         }

@@ -50,13 +50,11 @@ public class FileService : IFileService
 
     public async Task<Files> Upload(byte[] fileBytes, Files file)
     {
-        string destinationTableName = "FinePayment";
-        bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, "AxleLoad");
+        string destinationTableName = "AxleLoadMeasuredData";
+        bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, "");
         if (FileUploaded)
         {
-            //local directory path
-            string path = "D:/AxleLoad" + "/" + file.FileName;
-            DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(path);
+            DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(file.FileName);
             if (csvData is not null)
             {
                 await _db.InsertDataTable(csvData, destinationTableName);
