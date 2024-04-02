@@ -7,12 +7,9 @@ public interface IFileService
 {
     Task<IEnumerable<Files>> Get(int stationId = 0, DateTime? date = null);
     Task<Files> GetById(Files file);
-    Task<bool> Add(LoadDataSlowMoving obj);
-    Task<bool> Add(List<LoadDataSlowMoving> obj);
-    Task<bool> Add(LoadDataFastMoving obj);
-    Task<bool> Add(List<LoadDataFastMoving> obj);
+    Task<bool> Add(Files obj);
     Task<Files> Upload(byte[] fileBytes, Files file);
-    Task<bool> Update();
+    Task<bool> Update(Files obj);
 }
 public class FileService : IFileService
 {
@@ -41,7 +38,6 @@ public class FileService : IFileService
         return await _db.LoadData<Files, dynamic>(sql, param);
     }
 
-
     public async Task<Files> GetById(Files file)
     {
         string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM Files WHERE Id=@Id";
@@ -54,37 +50,45 @@ public class FileService : IFileService
         bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, "");
         if (FileUploaded)
         {
-            DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(file.FileName);
-            if (csvData is not null)
+            if(await this.Add(file))
             {
-                await _db.InsertDataTable(csvData, destinationTableName);
+                try
+                {
+                    DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(file.FileName);
+                    if (csvData is not null)
+                    {
+                        await _db.InsertDataTable(csvData, destinationTableName);
+
+                        file.IsProcessed = true;
+                        bool isUpdated = await this.Update(file);
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
         return file;
     }
 
-    public Task<bool> Update()
+    public Task<bool> Update(Files obj)
     {
-        throw new NotImplementedException();
+        string query = @"UPDATE Files
+            SET StationId=@StationId
+            ,Date=@Date
+            ,FileType=@FileType
+            ,FileName=@FileName
+            ,ManualUpload=@ManualUpload
+            ,UploadDate=@UploadDate
+            ,IsProcessed=@IsProcessed
+            WHERE Id=@Id";
+        return _db.SaveData(query, obj);
     }
 
-
-    public Task<bool> Add(LoadDataSlowMoving obj)
+    public async Task<bool> Add(Files obj)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> Add(List<LoadDataSlowMoving> obj)
-    {
-        throw new NotImplementedException();
-    }
-    public Task<bool> Add(LoadDataFastMoving obj)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> Add(List<LoadDataFastMoving> obj)
-    {
-        throw new NotImplementedException();
+        obj.Id = await _db.Insert<Files>(obj);
+        return obj.Id > 0;
     }
 }

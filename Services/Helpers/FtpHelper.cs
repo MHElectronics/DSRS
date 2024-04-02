@@ -282,31 +282,35 @@ namespace Services.Helpers
             { 
                 if (responseStream != null)
                 {
-                    using (MemoryStream ms = new MemoryStream())
+                    using (MemoryStream ms = new())
                     { 
                         responseStream.CopyTo(ms);
                         streamInByte = ms.ToArray();
                     }
                 }
             }
-            using (TextFieldParser csvReader = new TextFieldParser(new MemoryStream(streamInByte), Encoding.Default))
+            
+            using (TextFieldParser csvReader = new(new MemoryStream(streamInByte), Encoding.Default))
             {
-                csvReader.SetDelimiters(new string[] { "," });
+                csvReader.SetDelimiters([","]);
                 csvReader.HasFieldsEnclosedInQuotes = true;
 
-                DataTable csvData = new DataTable();
+                DataTable csvData = new();
                 try
                 {
-                    string[] colFields = csvReader.ReadFields();
+                    string[] colFields = csvReader.ReadFields() ?? [];
                     foreach (string column in colFields)
                     {
-                        DataColumn datecolumn = new DataColumn(column);
-                        datecolumn.AllowDBNull = true;
-                        csvData.Columns.Add(datecolumn);
+                        DataColumn dataColumn = new(column)
+                        {
+                            AllowDBNull = true
+                        };
+                        csvData.Columns.Add(dataColumn);
                     }
+                    
                     while (!csvReader.EndOfData)
                     {
-                        string[] fieldData = csvReader.ReadFields();
+                        string[] fieldData = csvReader.ReadFields() ?? [];
                         //Making empty value as null
                         for (int i = 0; i < fieldData.Length; i++)
                         {
@@ -318,12 +322,11 @@ namespace Services.Helpers
                         csvData.Rows.Add(fieldData);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    // Handle exception
-                    Console.WriteLine(ex.Message);
-                    return null;
+                    throw;
                 }
+
                 return csvData;
             }
         }
