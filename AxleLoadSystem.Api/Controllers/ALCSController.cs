@@ -23,19 +23,25 @@ namespace AxleLoadSystem.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload([ModelBinder(BinderType = typeof(JsonModelBinder))] FileUploadModel station, IFormFile uploadFile)
         {
-            if (this.HttpContext.Response.Headers.ContainsKey("StationCode"))
-            {
-                return new UnauthorizedResult();
-            }
+            //if (this.HttpContext.Response.Headers.ContainsKey("StationCode"))
+            //{
+            //    return new UnauthorizedResult();
+            //}
             if (uploadFile == null || uploadFile.Length == 0 || station == null)
             {
                 return new BadRequestResult();
             }
 
             //Check station code
-            string stationCode  = this.HttpContext.Response.Headers["StationCode"].ToString();
-            string key = this.HttpContext.Response.Headers.Authorization[0].ToString();
+            string stationId  = this.HttpContext.Request.Headers["Station"].ToString();
+            //string apiKey = this.HttpContext.Response.Headers["ApiKey"].ToString();
+            //string key = this.HttpContext.Response.Headers.Authorization[0].ToString();
             
+            if(Convert.ToInt16(stationId) != station.StationId)
+            {
+                return BadRequest("Station Id doesn't match");
+            }
+
             byte[] byteFile;
             using (MemoryStream ms = new MemoryStream())
             {
@@ -44,8 +50,11 @@ namespace AxleLoadSystem.Api.Controllers
             }
 
             Files file = new Files();
+            //file.FileName = "S" + station.StationId + "_" + station.Date.ToString("yyyyMMdd");
+            file.FileName = uploadFile.FileName;
             file.StationId = station.StationId;
             file.Date = station.Date;
+            file.UploadDate = DateTime.Now;
             await _fileService.Upload(byteFile, file);
 
             return Ok(true);
