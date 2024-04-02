@@ -8,16 +8,16 @@ using Services;
 namespace AxleLoadSystem.Api.Controllers
 {
     [ApiController]
-	[CustomAuthorize]
     [Route("[controller]")]
     public class ALCSController : ControllerBase
     {
-        private FileService _fileService;
-        public ALCSController(FileService fileService)
+        private IFileService _fileService;
+        public ALCSController(IFileService fileService)
         {
             _fileService = fileService;
         }
 
+	    [CustomAuthorize]
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]
         [HttpPost("[action]")]
@@ -59,7 +59,7 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
             
-            await _fileService.Add(obj);
+            //await _fileService.Add(obj);
 
             return Ok(true);
         }
@@ -71,7 +71,7 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
 
-            await _fileService.Add(obj);
+            //await _fileService.Add(obj);
 
             return Ok(true);
         }
@@ -84,7 +84,7 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
 
-            await _fileService.Add(obj);
+            //await _fileService.Add(obj);
 
             return Ok(true);
         }
@@ -96,7 +96,7 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
 
-            await _fileService.Add(obj);
+            //await _fileService.Add(obj);
 
             return Ok(true);
         }
