@@ -54,7 +54,8 @@ namespace AxleLoadSystem.Api.Controllers
             file.FileName = uploadFile.FileName;
             file.StationId = station.StationId;
             file.Date = station.Date;
-            file.UploadDate = DateTime.Now;
+            file.ManualUpload = false;
+            
             await _fileService.Upload(byteFile, file);
 
             return Ok(true);

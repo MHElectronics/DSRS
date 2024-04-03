@@ -125,6 +125,7 @@
 
                 Files fileInfo = new();
                 fileInfo.FileName = file.FileName;
+                fileInfo.ManualUpload = true;
 
                 await fileService.Upload(fileBytes, fileInfo);
             }

@@ -11,13 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddTransient<CustomAuthorizeAttribute>();
-builder.Services.AddTransient<IFtpHelper, FtpHelper>();
-builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
-builder.Services.AddTransient<IFileService, FileService>();
-builder.Services.AddTransient<IStationService, StationService>();
-builder.Services.AddTransient<IWIMScaleService, WIMScaleService>();
-builder.Services.AddTransient<IUserService, UserService>();
+//Add service dependencies
+builder.Services.AddServiceLayer();
 
 var app = builder.Build();
 

@@ -18,12 +18,12 @@ namespace Services.Helpers
         Task<bool> DirectoryExists(string path = "");
         Task<string> DeleteDirectory(string path = "");
 
-        Task<DataTable> GetDataTabletFromCSVFile(string path);
+        Task<DataTable> GetDataTableFromCSV(string path);
     }
     /// <summary>
     /// Ftp Helper class to handle all ftp requests
     /// </summary>
-    public class FtpHelper(IConfiguration config) : IFtpHelper
+    public class FtpHelper(IConfiguration config, ICsvHelper csvHelper) : IFtpHelper
     {
         private readonly string _ftpAddress = config.GetSection("FtpAccess:Address").Value ?? "";
         private readonly string _ftpRootFolder = config.GetSection("FtpAccess:RootFolder").Value ?? "";
@@ -31,12 +31,10 @@ namespace Services.Helpers
         private readonly string _ftpPassword = config.GetSection("FtpAccess:Password").Value ?? "";
 
         private FtpWebRequest _ftpRequest;
-        private byte[] streamInByte;
-
+        
         /// <summary>
-        /// Subsction Object used for authentication
+        /// Open FTP Connection
         /// </summary>
-
         private void OpenConnection(string method, string path, string renamePath = "")
         {
             if (string.IsNullOrEmpty(_ftpUser) || string.IsNullOrEmpty(_ftpPassword) || string.IsNullOrEmpty(_ftpAddress))
@@ -274,61 +272,16 @@ namespace Services.Helpers
         }
         #endregion
 
-        public async Task<DataTable> GetDataTabletFromCSVFile(string path)
+        public async Task<DataTable> GetDataTableFromCSV(string path)
         {
-            OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
-            using (FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync())
-            using (Stream responseStream = response.GetResponseStream())
-            { 
-                if (responseStream != null)
-                {
-                    using (MemoryStream ms = new())
-                    { 
-                        responseStream.CopyTo(ms);
-                        streamInByte = ms.ToArray();
-                    }
-                }
-            }
+            byte[] streamInByte = await this.DownloadFile(path);
             
-            using (TextFieldParser csvReader = new(new MemoryStream(streamInByte), Encoding.Default))
+            if(streamInByte is not null)
             {
-                csvReader.SetDelimiters([","]);
-                csvReader.HasFieldsEnclosedInQuotes = true;
-
-                DataTable csvData = new();
-                try
-                {
-                    string[] colFields = csvReader.ReadFields() ?? [];
-                    foreach (string column in colFields)
-                    {
-                        DataColumn dataColumn = new(column)
-                        {
-                            AllowDBNull = true
-                        };
-                        csvData.Columns.Add(dataColumn);
-                    }
-                    
-                    while (!csvReader.EndOfData)
-                    {
-                        string[] fieldData = csvReader.ReadFields() ?? [];
-                        //Making empty value as null
-                        for (int i = 0; i < fieldData.Length; i++)
-                        {
-                            if (fieldData[i] == "")
-                            {
-                                fieldData[i] = null;
-                            }
-                        }
-                        csvData.Rows.Add(fieldData);
-                    }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-
-                return csvData;
+                return csvHelper.GetDataTableFromByte(streamInByte);
             }
+
+            return null;
         }
     }
 }

@@ -15,10 +15,12 @@ public class FileService : IFileService
 {
     private readonly ISqlDataAccess _db;
     private readonly IFtpHelper _ftpHelper;
-    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper)
+    private readonly ICsvHelper _csvHelper;
+    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper, ICsvHelper csvHelper)
     {
         _db = db;
         _ftpHelper = ftpHelper;
+        _csvHelper = csvHelper;
     }
 
     public async Task<IEnumerable<Files>> Get(int stationId = 0, DateTime? date = null)
@@ -30,7 +32,7 @@ public class FileService : IFileService
         {
             param.Add("@StationId", stationId);
         }
-        if(date != null)
+        if (date != null)
         {
             param.Add("@Date", date);
         }
@@ -46,18 +48,24 @@ public class FileService : IFileService
 
     public async Task<Files> Upload(byte[] fileBytes, Files file)
     {
-        string destinationTableName = "AxleLoadMeasuredData";
+        //Generate file name
+        file.FileName = this.GetFileName(file);
+        //Set upload date time
+        file.UploadDate = DateTime.Now;
+
         bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, "");
+
         if (FileUploaded)
         {
-            if(await this.Add(file))
+            if (await this.Add(file))
             {
                 try
                 {
-                    DataTable csvData = await _ftpHelper.GetDataTabletFromCSVFile(file.FileName);
+                    //DataTable csvData = await _ftpHelper.GetDataTableFromCSV(file.FileName);
+                    DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes);
                     if (csvData is not null)
                     {
-                        await _db.InsertDataTable(csvData, destinationTableName);
+                        await _db.InsertDataTable(csvData, destinationTableName: "AxleLoadMeasuredData");
 
                         file.IsProcessed = true;
                         bool isUpdated = await this.Update(file);
@@ -71,7 +79,10 @@ public class FileService : IFileService
         }
         return file;
     }
-
+    private string GetFileName(Files file)
+    {
+        return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + Path.GetExtension(file.FileName);
+    }
     public Task<bool> Update(Files obj)
     {
         string query = @"UPDATE Files
