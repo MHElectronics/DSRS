@@ -52,7 +52,8 @@ public class FileService : IFileService
         file.FileName = this.GetFileName(file);
         //Set upload date time
         file.UploadDate = DateTime.Now;
-
+        //Set File Date time
+        file.Date = File.GetCreationTime(file.FileName);
         bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, "");
 
         if (FileUploaded)
@@ -99,7 +100,7 @@ public class FileService : IFileService
 
     public async Task<bool> Add(Files obj)
     {
-        obj.Id = await _db.Insert<Files>(obj);
-        return obj.Id > 0;
+        string query = "INSERT INTO Files(StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed) VALUES(@StationId,@Date,@FileType,@FileName,@ManualUpload,@UploadDate,@IsProcessed)";
+        return await _db.SaveData<Files>(query, obj);
     }
 }
