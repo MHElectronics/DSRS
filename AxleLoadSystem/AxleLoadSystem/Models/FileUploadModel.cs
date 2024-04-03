@@ -2,7 +2,7 @@
 
 namespace AxleLoadSystem.Models;
 
-public class FileUploadModel : Files
+public class FileUploadModel : UploadedFile
 {
     public IFormFileCollection Attachments { get; set; }
 }

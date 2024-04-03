@@ -1,5 +1,5 @@
 ﻿namespace BOL;
-public class Files
+public class UploadedFile
 {
     public int Id { get; set; }
     public int StationId { get; set; }

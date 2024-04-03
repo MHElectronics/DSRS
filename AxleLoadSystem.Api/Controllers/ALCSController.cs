@@ -49,7 +49,7 @@ namespace AxleLoadSystem.Api.Controllers
                 byteFile = ms.ToArray();
             }
 
-            Files file = new Files();
+            UploadedFile file = new UploadedFile();
             //file.FileName = "S" + station.StationId + "_" + station.Date.ToString("yyyyMMdd");
             file.FileName = uploadFile.FileName;
             file.StationId = station.StationId;

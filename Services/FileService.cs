@@ -5,11 +5,11 @@ using System.Data;
 namespace Services;
 public interface IFileService
 {
-    Task<IEnumerable<Files>> Get(int stationId = 0, DateTime? date = null);
-    Task<Files> GetById(Files file);
-    Task<bool> Add(Files obj);
-    Task<Files> Upload(byte[] fileBytes, Files file);
-    Task<bool> Update(Files obj);
+    Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null);
+    Task<UploadedFile> GetById(UploadedFile file);
+    Task<bool> Add(UploadedFile obj);
+    Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file);
+    Task<bool> Update(UploadedFile obj);
 }
 public class FileService : IFileService
 {
@@ -23,9 +23,9 @@ public class FileService : IFileService
         _csvHelper = csvHelper;
     }
 
-    public async Task<IEnumerable<Files>> Get(int stationId = 0, DateTime? date = null)
+    public async Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null)
     {
-        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM Files WHERE 1=1 ";
+        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFile WHERE 1=1 ";
         Dictionary<string, object> param = new Dictionary<string, object>();
 
         if (stationId > 0)
@@ -37,16 +37,16 @@ public class FileService : IFileService
             param.Add("@Date", date);
         }
 
-        return await _db.LoadData<Files, dynamic>(sql, param);
+        return await _db.LoadData<UploadedFile, dynamic>(sql, param);
     }
 
-    public async Task<Files> GetById(Files file)
+    public async Task<UploadedFile> GetById(UploadedFile file)
     {
-        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM Files WHERE Id=@Id";
-        return await _db.LoadSingleAsync<Files, dynamic>(sql, file.Id);
+        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFile WHERE Id=@Id";
+        return await _db.LoadSingleAsync<UploadedFile, dynamic>(sql, file.Id);
     }
 
-    public async Task<Files> Upload(byte[] fileBytes, Files file)
+    public async Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file)
     {
         //Generate file name
         file.FileName = this.GetFileName(file);
@@ -79,13 +79,13 @@ public class FileService : IFileService
         }
         return file;
     }
-    private string GetFileName(Files file)
+    private string GetFileName(UploadedFile file)
     {
         return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + Path.GetExtension(file.FileName);
     }
-    public Task<bool> Update(Files obj)
+    public Task<bool> Update(UploadedFile obj)
     {
-        string query = @"UPDATE Files
+        string query = @"UPDATE UploadedFile
             SET StationId=@StationId
             ,Date=@Date
             ,FileType=@FileType
@@ -97,9 +97,9 @@ public class FileService : IFileService
         return _db.SaveData(query, obj);
     }
 
-    public async Task<bool> Add(Files obj)
+    public async Task<bool> Add(UploadedFile obj)
     {
-        obj.Id = await _db.Insert<Files>(obj);
+        obj.Id = await _db.Insert<UploadedFile>(obj);
         return obj.Id > 0;
     }
 }
