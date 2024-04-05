@@ -65,7 +65,13 @@ public class FileService : IFileService
                     DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes);
                     if (csvData is not null)
                     {
-                        await _db.InsertDataTable(csvData, destinationTableName: "AxleLoadMeasuredData");
+                        string destinationTableName = "AxleLoadMeasuredData";
+                        if(file.FileType == (int)UploadedFileType.FineData)
+                        {
+                            destinationTableName = "FinePayment";
+                        }
+
+                        await _db.InsertDataTable(csvData, destinationTableName);
 
                         file.IsProcessed = true;
                         bool isUpdated = await this.Update(file);
@@ -85,7 +91,7 @@ public class FileService : IFileService
     }
     public Task<bool> Update(UploadedFile obj)
     {
-        string query = @"UPDATE UploadedFile
+        string query = @"UPDATE UploadedFiles
             SET StationId=@StationId
             ,Date=@Date
             ,FileType=@FileType

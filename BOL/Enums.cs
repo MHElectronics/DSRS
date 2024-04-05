@@ -21,4 +21,10 @@
         Admin,
         User
     }
+
+    public enum UploadedFileType
+    {
+        LoadData = 1,
+        FineData = 2
+    }
 }
