@@ -57,24 +57,25 @@ public class FileService : IFileService
 
         if (FileUploaded)
         {
-            if (await this.Add(file))
+            //if (await this.Add(file))
+            file.Id = 11;
             {
                 try
                 {
                     //DataTable csvData = await _ftpHelper.GetDataTableFromCSV(file.FileName);
-                    DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes);
+                    DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes, file);
                     if (csvData is not null)
                     {
                         string destinationTableName = "AxleLoadMeasuredData";
                         if(file.FileType == (int)UploadedFileType.FineData)
                         {
-                            destinationTableName = "FinePayment";
+                            destinationTableName = "FinePaymentProcess";
                         }
 
                         await _db.InsertDataTable(csvData, destinationTableName);
 
                         file.IsProcessed = true;
-                        bool isUpdated = await this.Update(file);
+                        //bool isUpdated = await this.Update(file);
                     }
                 }
                 catch (Exception)

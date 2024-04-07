@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BOL;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic.FileIO;
 using System.Data;
 using System.Net;
@@ -18,7 +19,7 @@ namespace Services.Helpers
         Task<bool> DirectoryExists(string path = "");
         Task<string> DeleteDirectory(string path = "");
 
-        Task<DataTable> GetDataTableFromCSV(string path);
+        Task<DataTable> GetDataTableFromCSV(string path, UploadedFile file);
     }
     /// <summary>
     /// Ftp Helper class to handle all ftp requests
@@ -272,13 +273,13 @@ namespace Services.Helpers
         }
         #endregion
 
-        public async Task<DataTable> GetDataTableFromCSV(string path)
+        public async Task<DataTable> GetDataTableFromCSV(string path, UploadedFile file)
         {
             byte[] streamInByte = await this.DownloadFile(path);
             
             if(streamInByte is not null)
             {
-                return csvHelper.GetDataTableFromByte(streamInByte);
+                return csvHelper.GetDataTableFromByte(streamInByte, file);
             }
 
             return null;
