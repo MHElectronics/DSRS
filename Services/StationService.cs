@@ -28,7 +28,6 @@ public class StationService : IStationService
         string query = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Stations";
         return await _db.LoadData<Station, dynamic>(query, null);
     }
-
     public async Task<Station> GetById(Station obj)
     {
         string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Stations WHERE StationId=@StationId";
@@ -51,11 +50,11 @@ public class StationService : IStationService
         int count = await _db.DeleteData<Station, object>(query, new { obj.StationId });
         return count > 0;
     }
+    
     public string GenerateKey()
     {
         int length = Convert.ToInt16(_configuration.GetSection("Settings:ApiKeyLength").Value);
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
     }
-    
 }

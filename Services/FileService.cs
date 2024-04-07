@@ -57,8 +57,7 @@ public class FileService : IFileService
 
         if (FileUploaded)
         {
-            //if (await this.Add(file))
-            file.Id = 11;
+            if (await this.Add(file))
             {
                 try
                 {

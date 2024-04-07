@@ -59,10 +59,10 @@ public class CsvHelper : ICsvHelper
                         fieldData[i] = fieldData[i] == "1" ? "true" : "false";
                     }
 
-                    if (fieldData[i] == "")
-                    {
-                        fieldData[i] = null;
-                    }
+                    //if (fieldData[i] == "")
+                    //{
+                    //    fieldData[i] = null;
+                    //}
                 }
                 csvData.Rows.Add(fieldData);
             }
@@ -80,33 +80,33 @@ public class CsvHelper : ICsvHelper
         //Default FileId column
         dt.Columns.Add("FileId", typeof(int));
 
-        dt.Columns.Add("TransactionNumber", typeof(string));
-        dt.Columns.Add("LaneNumber", typeof(int));
-        dt.Columns.Add("DateTime", typeof(DateTime));
-        dt.Columns.Add("PlateNumber", typeof(string));
-        dt.Columns.Add("VehicleId", typeof(string));
-        dt.Columns.Add("NumberOfAxle", typeof(int));
-        dt.Columns.Add("VehicleSpeed", typeof(decimal));
-        dt.Columns.Add("Axle1st", typeof(decimal));
-        dt.Columns.Add("Axle2nd", typeof(decimal));
-        dt.Columns.Add("Axle3rd", typeof(decimal));
-        dt.Columns.Add("Axle4th", typeof(decimal));
-        dt.Columns.Add("Axle5th", typeof(decimal));
-        dt.Columns.Add("Axle6th", typeof(decimal));
-        dt.Columns.Add("Axle7th", typeof(decimal));
-        dt.Columns.Add("AxleRemaining", typeof(decimal));
-        dt.Columns.Add("GrossVehicleWeight", typeof(decimal));
-        dt.Columns.Add("IsUnloaded", typeof(bool));
-        dt.Columns.Add("IsOverloaded", typeof(bool));
-        dt.Columns.Add("OverSizedModified", typeof(bool));
-        dt.Columns.Add("Wheelbase", typeof(int));
-        dt.Columns.Add("Axle1stTime", typeof(DateTime));
-        dt.Columns.Add("Axle2ndTime", typeof(DateTime));
-        dt.Columns.Add("Axle3rdTime", typeof(DateTime));
-        dt.Columns.Add("Axle4thTime", typeof(DateTime));
-        dt.Columns.Add("Axle5thTime", typeof(DateTime));
-        dt.Columns.Add("Axle6thTime", typeof(DateTime));
-        dt.Columns.Add("Axle7thTime", typeof(DateTime));
+        dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("LaneNumber", typeof(int)));
+        dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("PlateNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("VehicleId", typeof(string)));
+        dt.Columns.Add(NewDataColumn("NumberOfAxle", typeof(int)));
+        dt.Columns.Add(NewDataColumn("VehicleSpeed", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle1st", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle2nd", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle3rd", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle4th", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle5th", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle6th", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("Axle7th", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("AxleRemaining", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("GrossVehicleWeight", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("IsUnloaded", typeof(bool)));
+        dt.Columns.Add(NewDataColumn("IsOverloaded", typeof(bool)));
+        dt.Columns.Add(NewDataColumn("OverSizedModified", typeof(bool)));
+        dt.Columns.Add(NewDataColumn("Wheelbase", typeof(int)));
+        dt.Columns.Add(NewDataColumn("Axle1stTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("Axle2ndTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("Axle3rdTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("Axle4thTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("Axle5thTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("Axle6thTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("Axle7thTime", typeof(DateTime)));
         
         return dt;
     }
@@ -116,16 +116,25 @@ public class CsvHelper : ICsvHelper
         //Default FileId column
         dt.Columns.Add("FileId", typeof(int));
 
-        dt.Columns.Add("TransactionNumber", typeof(string));
-        dt.Columns.Add("DateTime", typeof(DateTime));
-        dt.Columns.Add("IsPaid", typeof(bool));
-        dt.Columns.Add("FineAmount", typeof(decimal));
-        dt.Columns.Add("PaymentMethod", typeof(string));
-        dt.Columns.Add("ReceiptNumber", typeof(string));
-        dt.Columns.Add("BillNumber", typeof(string));
-        dt.Columns.Add("WarehouseCharge", typeof(decimal));
-        dt.Columns.Add("DriversLicenseNumber", typeof(string));
+        dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
+        dt.Columns.Add(NewDataColumn("IsPaid", typeof(bool)));
+        dt.Columns.Add(NewDataColumn("FineAmount", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("PaymentMethod", typeof(string)));
+        dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("BillNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("WarehouseCharge", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("DriversLicenseNumber", typeof(string)));
 
         return dt;
+    }
+    private DataColumn NewDataColumn(string columnName, Type type)
+    {
+        return new()
+        {
+            ColumnName = columnName,
+            DataType = type,
+            DefaultValue = null
+        };
     }
 }

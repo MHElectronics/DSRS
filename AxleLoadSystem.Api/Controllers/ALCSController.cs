@@ -2,7 +2,6 @@
 using AxleLoadSystem.Api.Models;
 using BOL;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Services;
 
 namespace AxleLoadSystem.Api.Controllers
@@ -11,7 +10,7 @@ namespace AxleLoadSystem.Api.Controllers
     [Route("[controller]")]
     public class ALCSController : ControllerBase
     {
-        private IFileService _fileService;
+        private readonly IFileService _fileService;
         public ALCSController(IFileService fileService)
         {
             _fileService = fileService;
