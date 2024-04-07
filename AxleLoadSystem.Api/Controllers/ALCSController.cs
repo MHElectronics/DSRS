@@ -40,7 +40,7 @@ namespace AxleLoadSystem.Api.Controllers
 
             station.StationId = Convert.ToInt16(stationId);
             UploadedFile file = station.ToUploadedFile();
-            file.FileType = (int)UploadedFileType.FineData;
+            file.FileType = (int)UploadedFileType.LoadData;
 
             file = await this.UploadFile(file, uploadFile);
 

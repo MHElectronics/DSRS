@@ -66,16 +66,18 @@ public class FileService : IFileService
                     DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes, file);
                     if (csvData is not null)
                     {
-                        string destinationTableName = "AxleLoadMeasuredData";
-                        if(file.FileType == (int)UploadedFileType.FineData)
+                        string destinationTableName = "AxleLoadProcess";
+                        if (file.FileType == (int)UploadedFileType.FineData)
                         {
                             destinationTableName = "FinePaymentProcess";
                         }
 
                         await _db.InsertDataTable(csvData, destinationTableName);
-
+                        
+                        //Process inserted data
+                        //await this.RunProcess(file);
                         file.IsProcessed = true;
-                        //bool isUpdated = await this.Update(file);
+                        bool isUpdated = await this.Update(file);
                     }
                 }
                 catch (Exception)
@@ -86,9 +88,19 @@ public class FileService : IFileService
         }
         return file;
     }
+    private async Task<bool> RunProcess(UploadedFile file)
+    {
+        string query = "EXEC dbo.ProcessAxleLoad FileId=@Id";
+        if (file.FileType == (int)UploadedFileType.FineData)
+        {
+            query = "EXEC dbo.ProcessFinePayment FileId=@Id";
+        }
+
+        return await _db.SaveData(query, new { file.Id });
+    }
     private string GetFileName(UploadedFile file)
     {
-        return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + Path.GetExtension(file.FileName);
+        return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + "_" + file.FileType.ToString() + Path.GetExtension(file.FileName);
     }
     public Task<bool> Update(UploadedFile obj)
     {
