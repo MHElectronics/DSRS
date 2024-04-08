@@ -123,6 +123,9 @@
   <data name="Menu.Counter2" xml:space="preserve">
     <value>কাউন্টার দুই</value>
   </data>
+  <data name="Menu.Map" xml:space="preserve">
+    <value>বাংলাদেশ</value>
+  </data>
   <data name="Menu.Station" xml:space="preserve">
     <value>স্টেশন</value>
   </data>
