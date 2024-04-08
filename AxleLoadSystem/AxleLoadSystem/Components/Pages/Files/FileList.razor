@@ -1,0 +1,57 @@
+﻿@page "/filelist"
+@using AxleLoadSystem.Models
+@inject IFileService fileService
+@inject IStationService stationService
+@rendermode InteractiveServer
+
+<PageTitle>List of Uploaded Files</PageTitle>
+<h1>List of Uploaded Files</h1>
+
+@if (uploadedFiles is null)
+{
+    <Loader />
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Station</th>
+                <th>Date</th>
+                <th>File Name</th>
+                <th>File Type</th>
+                <th>Uploaded From</th>
+                <th>Upload Date</th>
+                <th>Processed</th>
+  @*               <th>Summaryt</th> *@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var uploadedFile in uploadedFiles.OrderBy(c => c.Id))
+            {
+                string stationName = stations.Where(d => d.StationId == uploadedFile.StationId).FirstOrDefault()?.StationName;
+                <tr>                    
+                    <td>
+                        @stationName
+                    </td>
+                    <td>@uploadedFile.Date.ToString("dd-MM-yyyy")</td>
+                    <td><b>@uploadedFile.FileName</b></td>
+                    <td>@Enum.GetName(typeof(UploadedFileType),uploadedFile.FileType)</td>
+                    <td>@(uploadedFile.ManualUpload ? "Manual" : "API")</td>
+                    <td>@uploadedFile.UploadDate</td>
+                    <td>@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+@code {
+    private IEnumerable<UploadedFile> uploadedFiles;
+    private IEnumerable<Station> stations;
+    protected override async Task OnInitializedAsync()
+    {
+        stations = await stationService.Get();
+        uploadedFiles = await fileService.GetUploadedFiles();
+    }
+}
