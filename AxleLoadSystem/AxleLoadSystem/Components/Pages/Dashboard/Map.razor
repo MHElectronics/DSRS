@@ -3,26 +3,41 @@
 @inject IStationService stationService
 @rendermode InteractiveServer
 
-<div class="img-overlay-wrap">
-    <img src="./images/Bangladesh_RHD_High_Resolution.jpg">
-    <svg id="svgMap" viewBox="0 0 1325 1872">
+<div class="row">
+    <div class="col">
+        <div class="img-overlay-wrap">
+            <img src="./images/Bangladesh_RHD_High_Resolution.jpg">
+            <svg id="svgMap" viewBox="0 0 1325 1872">
 
-        @if(stations is not null)
+                @if (stations is not null)
+                {
+                    foreach (Station item in stations.Where(s => !string.IsNullOrEmpty(s.MapX)))
+                    {
+                        <g class="alcs" transform="matrix(0.9299 0 0 1 @item.MapX @item.MapY)" data-id="@item.StationId" data-name="@item.StationName" @onclick="(() => MapClicked(item))">
+                            <rect width="150" height="50" style="fill:rgba(0,0,255,0.5);stroke-width:0;stroke:rgb(0,0,0)" rx="10" ry="10" />
+                            <text class="bay-of-bengal" x="7" y="15" style="font-size:12pt;fill:white;">@item.StationName</text>
+                        </g>
+                    }
+                }
+            </svg>
+        </div>
+    </div>
+    <div class="col">
+        @if(station is not null)
         {
-            foreach(Station item in stations.Where(s=>!string.IsNullOrEmpty(s.MapX)))
-            {
-                <g class="alcs" transform="matrix(0.9299 0 0 1 @item.MapX @item.MapY)">
-                    <rect width="150" height="50" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
-                    <text class="bay-of-bengal" x="@item.MapX" y="@item.MapY" style="font-size:12pt">@item.StationName</text>
-                </g>
-            }
+            <dl>
+                <dt>Id</dt>
+                <dd>@station.StationId</dd>
+                <dt>Station</dt>
+                <dd>@station.StationName</dd>
+            </dl>
         }
-    </svg>
+    </div>
 </div>
 
 <style>
     #svgMap{
-        border:1px solid red;
+        /* border:1px solid red; */
     }
     .img-overlay-wrap {
         position: relative;
@@ -44,21 +59,25 @@
     }
 </style>
 
-@code {
-    private IEnumerable<Station> stations { get; set; }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Initialize the dialog events the first time th ecomponent is rendered
-        if (firstRender)
+        @code {
+        private IEnumerable<Station> stations { get; set; }
+        private Station station { get; set; }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            IJSObjectReference module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/map.js");
-            await module.InvokeVoidAsync("InitMap");
+            // Initialize the dialog events the first time th ecomponent is rendered
+            if (firstRender)
+            {
+                // IJSObjectReference module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/map.js");
+                // await module.InvokeVoidAsync("InitMap");
+            }
         }
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        stations = await stationService.Get();
-            
-    }
+        protected override async Task OnInitializedAsync()
+        {
+            stations = await stationService.Get();
+
+        }
+        private void MapClicked(Station item)
+        {
+            station = item;
+        }
 }
