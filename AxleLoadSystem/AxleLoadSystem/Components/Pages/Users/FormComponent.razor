@@ -78,14 +78,14 @@ else
                 <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="name" class="form-label">@localizer["Password"]</label>
-                        <input type="text" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" />
+                        <input type="password" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" />
                         <ValidationMessage For="() => user.Password" />
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="name" class="form-label">@localizer["ConfirmPassword"]</label>
-                        <input type="text" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" />
+                        <input type="password" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" />
                         <ValidationMessage For="() => confirmPassword" />
                     </div>
                 </div>
