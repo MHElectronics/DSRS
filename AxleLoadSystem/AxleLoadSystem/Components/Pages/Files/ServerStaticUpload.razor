@@ -4,7 +4,6 @@
 @inject IFileService fileService
 @inject IStationService stationService
 
-
 <PageTitle>Manual File Upload</PageTitle>
 
 <div class="card card-primary">
@@ -17,7 +16,7 @@
             <p class="alert alert-secondary" role="alert">@Message</p>
         }
 
-        <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit" FormName="formFileUpload" method="post" enctype="multipart/form-data">
+        <EditForm EditContext="@editContext"  OnValidSubmit="@HandleValidSubmit" FormName="formFileUpload" method="post" enctype="multipart/form-data">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
@@ -48,21 +47,26 @@
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        <label>File Type</label>
-                        <div class="input-group">
+                        @* <label>File Type</label> *@
+                        <InputRadioGroup @bind-Value="@file.FileType">
+                            File Type
+                            <br>
+                            @foreach (var item in Enum.GetValues(typeof(UploadedFileType)))
+                            {
+                                int fileType = (int)Enum.Parse(typeof(UploadedFileType), item.ToString());
+                                <InputRadio class="btn btn-check" Value="fileType" /> @item
+                            }
+                        </InputRadioGroup>
+                        @* <div class="input-group">
                             <div class="icheck-primary d-inline">
-                                <input type="radio" name="fileType" id="type1" />
-                                <label for="type1">Slow Moving Weight</label>
+                                <input type="radio" @onchange="@(() => file.FileType = (int)UploadedFileType.LoadData)" name="fileType" id="type1" />
+                                <label for="type1">Load Data </label>
                             </div>
                             <div class="icheck-primary d-inline">
-                                <input type="radio" name="fileType" id="type2" />
-                                <label for="type2">Fast Moving Weight</label>
+                                <input type="radio" @onchange="@(() => file.FileType = (int)UploadedFileType.FineData)" name="fileType" id="type2" />
+                                <label for="type2">Fine/Reinforcement Data</label>
                             </div>
-                            <div class="icheck-primary d-inline">
-                                <input type="radio" name="fileType" id="type3" />
-                                <label for="type3">Fine/Reinforcement</label>
-                            </div>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
                 <div class="col-6">
@@ -71,7 +75,7 @@
                         <div class="input-group">
                             <div class="custom-file">
                                 @* <InputFile class="form-control mb-4" placeholder="Attachment" name="Ticket.Attachments" multiple /> *@
-                                <InputFile class="custom-file-input" placeholder="Attachment" name="file.Attachments" />
+                                <InputFile class="custom-file-input" placeholder="Attachment" name="file.Attachments" accept=".csv" />
                                 @* <input type="file" class="custom-file-input" id="exampleInputFile"> *@
                                 <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                             </div>
@@ -86,18 +90,16 @@
 </div>
 
 @code {
-    private EditContext? editContext;
-    [SupplyParameterFromForm]
+    [SupplyParameterFromForm(FormName = "formFileUpload")]
     private FileUploadModel file { get; set; } = new FileUploadModel() { Date = DateTime.Today.AddDays(-1) };
-
     private IEnumerable<Station> stations { get; set; }
     private string Message { get; set; } = String.Empty;
     private long maxFileSize = 5120000;
+    private EditContext? editContext;
     private bool isFileSelected { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        file ??= new();
         editContext = new(file);
         editContext.SetFieldCssClassProvider(new Helpers.CustomFieldClassProvider());
 
@@ -112,9 +114,9 @@
     {
         try
         {
-            foreach (var attachment in file.Attachments)
+            foreach (var uploadfile in file.Attachments)
             {
-                string safeFileName = WebUtility.HtmlEncode(attachment.FileName);
+                string safeFileName = WebUtility.HtmlEncode(file.FileName);
 
                 // Save file locally
                 // var path = Path.Combine(env.ContentRootPath, "images", safeFileName);
@@ -123,12 +125,12 @@
 
                 // Save to byte
                 await using MemoryStream ms = new MemoryStream();
-                await attachment.CopyToAsync(ms);
+                await uploadfile.CopyToAsync(ms);
                 byte[] fileBytes = ms.ToArray();
 
                 UploadedFile fileInfo = new();
-                fileInfo.StationId = file.StationId;
-                fileInfo.FileName = attachment.FileName;
+                fileInfo = file;
+                fileInfo.FileName = uploadfile.FileName;
                 fileInfo.ManualUpload = true;
 
                 await fileService.Upload(fileBytes, fileInfo);

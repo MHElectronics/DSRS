@@ -26,7 +26,10 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return new BadRequestResult();
             }
-
+            if (Path.GetExtension(uploadFile.FileName).ToLower() != ".csv") 
+            {
+                return BadRequest("Only CSV files are allowed.");
+            }
             //Check station code
             string stationId = this.HttpContext.Request.Headers["Station"].ToString();
             //string apiKey = this.HttpContext.Response.Headers["ApiKey"].ToString();
@@ -56,7 +59,10 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return new BadRequestResult();
             }
-            
+            if (Path.GetExtension(uploadFile.FileName).ToLower() != ".csv")
+            {
+                return BadRequest("Only CSV files are allowed.");
+            }
             //Check station code
             string stationId = this.HttpContext.Request.Headers["Station"].ToString();
             //string apiKey = this.HttpContext.Response.Headers["ApiKey"].ToString();
