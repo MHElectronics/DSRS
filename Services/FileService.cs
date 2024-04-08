@@ -89,13 +89,13 @@ public class FileService : IFileService
     }
     private async Task<bool> RunProcess(UploadedFile file)
     {
-        string query = "EXEC dbo.ProcessAxleLoad FileId=@Id";
+        string query = "EXEC dbo.ProcessAxleLoad @FileId";
         if (file.FileType == (int)UploadedFileType.FineData)
         {
-            query = "EXEC dbo.ProcessFinePayment FileId=@Id";
+            query = "EXEC dbo.ProcessFinePayment @FileId";
         }
 
-        return await _db.SaveData(query, new { file.Id });
+        return await _db.SaveData(query, new { FileId = file.Id });
     }
     private string GetFileName(UploadedFile file)
     {
