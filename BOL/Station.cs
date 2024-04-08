@@ -6,4 +6,6 @@ public class Station
     public string StationName { get; set; }
     public string Address { get; set; }
     public string AuthKey { get; set; }
+    public string MapX { get; set; }
+    public string MapY { get; set; }
 }

@@ -1,0 +1,64 @@
+﻿@page "/map"
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+@inject IStationService stationService
+@rendermode InteractiveServer
+
+<div class="img-overlay-wrap">
+    <img src="./images/Bangladesh_RHD_High_Resolution.jpg">
+    <svg id="svgMap" viewBox="0 0 1325 1872">
+
+        @if(stations is not null)
+        {
+            foreach(Station item in stations.Where(s=>!string.IsNullOrEmpty(s.MapX)))
+            {
+                <g class="alcs" transform="matrix(0.9299 0 0 1 @item.MapX @item.MapY)">
+                    <rect width="150" height="50" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
+                    <text class="bay-of-bengal" x="@item.MapX" y="@item.MapY" style="font-size:12pt">@item.StationName</text>
+                </g>
+            }
+        }
+    </svg>
+</div>
+
+<style>
+    #svgMap{
+        border:1px solid red;
+    }
+    .img-overlay-wrap {
+        position: relative;
+        display: inline-block; /* shrinks container to image size */
+        transition: transform 150ms ease-in-out;
+        /* width:500px; */
+    }
+
+    .img-overlay-wrap img { /* optional, for responsiveness */
+        display: block;
+        max-width: 100%;
+        max-height: auto;
+    }
+
+    .img-overlay-wrap svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
+
+@code {
+    private IEnumerable<Station> stations { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Initialize the dialog events the first time th ecomponent is rendered
+        if (firstRender)
+        {
+            IJSObjectReference module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/map.js");
+            await module.InvokeVoidAsync("InitMap");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        stations = await stationService.Get();
+            
+    }
+}

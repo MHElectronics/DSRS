@@ -4,6 +4,7 @@
 @inject IFileService fileService
 @inject IStationService stationService
 
+
 <PageTitle>Manual File Upload</PageTitle>
 
 <div class="card card-primary">
@@ -27,12 +28,12 @@
                         <div class="input-group">
                             @if (stations is not null)
                             {
-                                <select @bind="@file.StationId" class="form-control">
+                                <InputSelect @bind-Value="@file.StationId" class="form-control">
                                     @foreach (Station item in stations)
                                     {
                                         <option value="@item.StationId">@item.StationName</option>
                                     }
-                                </select>
+                                </InputSelect>
                             }
                         </div>
                     </div>
@@ -85,16 +86,18 @@
 </div>
 
 @code {
-    [SupplyParameterFromForm(FormName = "formFileUpload")]
+    private EditContext? editContext;
+    [SupplyParameterFromForm]
     private FileUploadModel file { get; set; } = new FileUploadModel() { Date = DateTime.Today.AddDays(-1) };
+
     private IEnumerable<Station> stations { get; set; }
     private string Message { get; set; } = String.Empty;
     private long maxFileSize = 5120000;
-    private EditContext? editContext;
     private bool isFileSelected { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
+        file ??= new();
         editContext = new(file);
         editContext.SetFieldCssClassProvider(new Helpers.CustomFieldClassProvider());
 
@@ -109,9 +112,9 @@
     {
         try
         {
-            foreach (var file in file.Attachments)
+            foreach (var attachment in file.Attachments)
             {
-                string safeFileName = WebUtility.HtmlEncode(file.FileName);
+                string safeFileName = WebUtility.HtmlEncode(attachment.FileName);
 
                 // Save file locally
                 // var path = Path.Combine(env.ContentRootPath, "images", safeFileName);
@@ -120,11 +123,12 @@
 
                 // Save to byte
                 await using MemoryStream ms = new MemoryStream();
-                await file.CopyToAsync(ms);
+                await attachment.CopyToAsync(ms);
                 byte[] fileBytes = ms.ToArray();
 
                 UploadedFile fileInfo = new();
-                fileInfo.FileName = file.FileName;
+                fileInfo.StationId = file.StationId;
+                fileInfo.FileName = attachment.FileName;
                 fileInfo.ManualUpload = true;
 
                 await fileService.Upload(fileBytes, fileInfo);

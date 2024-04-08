@@ -25,23 +25,23 @@ public class StationService : IStationService
 
     public async Task<IEnumerable<Station>> Get()
     {
-        string query = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Stations";
+        string query = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations";
         return await _db.LoadData<Station, dynamic>(query, null);
     }
     public async Task<Station> GetById(Station obj)
     {
-        string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey FROM Stations WHERE StationId=@StationId";
+        string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations WHERE StationId=@StationId";
         return await _db.LoadSingleAsync<Station, dynamic>(sql, new { obj.StationId });
     }
 
     public async Task<bool> Add(Station obj)
     {
-        string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey) VALUES(@StationCode,@StationName,@Address,@AuthKey)";
+        string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey,MapX,MapY) VALUES(@StationCode,@StationName,@Address,@AuthKey,@MapX,@MapY)";
         return await _db.SaveData<Station>(query, obj);
     }
     public async Task<bool> Update(Station obj)
     {
-        string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey WHERE StationId=@StationId";
+        string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
         return await _db.SaveData<Station>(query, obj);
     }
     public async Task<bool> Delete(Station obj)

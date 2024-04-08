@@ -8,7 +8,6 @@
 @inject AuthenticationStateProvider authStateProvider
 @attribute [StreamRendering]
 @rendermode InteractiveServer
-@* @rendermode @(new InteractiveServerRenderMode(prerender: false)) *@
 
 <input type="hidden" id="loginpageid" />
 <EditForm Model="@loginModel" OnValidSubmit="LoginUser" OnInvalidSubmit="OnInvalidSubmit">
