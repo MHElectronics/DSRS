@@ -54,7 +54,9 @@
                             @foreach (var item in Enum.GetValues(typeof(UploadedFileType)))
                             {
                                 int fileType = (int)Enum.Parse(typeof(UploadedFileType), item.ToString());
-                                <InputRadio class="btn btn-check" Value="fileType" /> @item
+                                <span class="col-12">
+                                    <InputRadio class="btn btn-check" Value="fileType"/> @item
+                                </span>   
                             }
                         </InputRadioGroup>
                         @* <div class="input-group">
@@ -136,8 +138,8 @@
                 await fileService.Upload(fileBytes, fileInfo);
             }
 
-            file = new();
             Message = "File uploaded!";
+            StateHasChanged();
         }
         catch (Exception e)
         {
