@@ -13,7 +13,7 @@
 else
 {
     <EditForm Model="@user" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit" FormName="Users" method="post">
-        <DataAnnotationsValidator /> 
+        <DataAnnotationsValidator />
 
         <div class="row">
             <div class="col-md-6 col-sm-12">
@@ -28,21 +28,6 @@ else
                         <label for="name" class="form-label">@localizer["Email"]</label>
                         <input type="text" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
                         <ValidationMessage For="() => user.Email" />
-                    }
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                        <label for="name" class="form-label">@localizer["Password"]</label>
-                        <label class="form-control">@user.Password</label>
-                    }
-                    else
-                    {
-                        <label for="name" class="form-label">@localizer["Password"]</label>
-                        <input type="text" @bind-value="user.Password" required class="form-control" placeholder="Password" id="name" />
-                        <ValidationMessage For="() => user.Password" />
                     }
                 </div>
             </div>
@@ -88,27 +73,44 @@ else
                     }
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="btn-group">
-                        @if (Mode == FormMode.Details)
-                        {
-                            string editLink = "/user/edit/" + user.Id;
-                            <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
-                        }
-                        else
-                        {
-                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
-                        }
-                        <NavLink class="btn btn-primary" href="/user">@localizerResource["Button.Back"]</NavLink>
-                        @if (!string.IsNullOrEmpty(ValidationSummary))
-                        {
-                            <label class="error">@ValidationSummary</label>
-                        }
+            @if (Mode == FormMode.Add)
+            {
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="name" class="form-label">@localizer["Password"]</label>
+                        <input type="text" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" />
+                        <ValidationMessage For="() => user.Password" />
                     </div>
                 </div>
-
+                <div class="col-md-6 col-sm-12">
+                    <div class="form-group">
+                        <label for="name" class="form-label">@localizer["ConfirmPassword"]</label>
+                        <input type="text" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" />
+                        <ValidationMessage For="() => confirmPassword" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="btn-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        string editLink = "/user/edit/" + user.Id;
+                        <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
+                    }
+                    <NavLink class="btn btn-primary" href="/user">@localizerResource["Button.Back"]</NavLink>
+                        @if (!string.IsNullOrEmpty(ValidationSummary))
+                    {
+                        <label class="error">@ValidationSummary</label>
+                    }
+                </div>
             </div>
+
         </div>
     </EditForm>
 }
@@ -121,6 +123,8 @@ else
     public FormMode Mode { get; set; } = FormMode.Details;
     private List<string> selectedRoles = new();
     string ValidationSummary;
+    [Required]
+    private string confirmPassword { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -142,6 +146,12 @@ else
         if (count == 0)
         {
             ValidationSummary = "Select atleast 1 role";
+            return;
+        }
+
+        if(user.Password != confirmPassword)
+        {
+            ValidationSummary = "Password and Confirm Password doesn't match";
             return;
         }
 

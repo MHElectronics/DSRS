@@ -19,7 +19,7 @@ else
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>User</th>
+                <th>Email</th>
                 <th>Name</th>
                 <th>Role(s)</th>
                 <th></th>
@@ -30,9 +30,7 @@ else
             @foreach (var user in users.OrderBy(c => c.Id))
             {
                 <tr>
-                    <td>
-                        @user.Name
-                    </td>
+                    <td><b>@user.Email</b></td>
                     <td><b>@user.Name</b></td>
                     <td><b>@user.Role</b></td>
                     <td>
