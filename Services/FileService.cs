@@ -99,7 +99,7 @@ public class FileService : IFileService
     }
     private string GetFileName(UploadedFile file)
     {
-        return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + "_" + file.FileType.ToString() + Path.GetExtension(file.FileName);
+        return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + "_" + file.FileType.ToString() + ".csv";
     }
     public Task<bool> Update(UploadedFile obj)
     {
