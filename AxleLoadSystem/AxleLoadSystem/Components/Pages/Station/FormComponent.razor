@@ -93,10 +93,7 @@ else
                             <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                         }
                         <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
-                        @if (!string.IsNullOrEmpty(ValidationSummary))
-                        {
-                            <label class="error">@ValidationSummary</label>
-                        }
+                        <CustomNotification Notification="notification"/>
                     </div>
                 </div>
 
@@ -111,25 +108,43 @@ else
     public Station station { get; set; } = new();
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
-    string ValidationSummary;
+    private Notification notification { get; set; } = new();
 
     void OnInvalidSubmit()
     {
-        ValidationSummary = "Please enter valid data";
+        notification.Type = Notification.NotificationType.Warning;
+        notification.Message = "Please enter valid data";
     }
     async Task OnValidSubmit(EditContext editContext)
     {
-        ValidationSummary = "";
+        notification = new();
 
         if (Mode == FormMode.Edit)
         {
-            await stationService.Update(station);
-            ValidationSummary = "Station Updated Successfully";
+            if(await stationService.Update(station))
+            {
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "Station Updated Successfully";
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "Station Update Failed";
+            }
         }
         else
         {
-            await stationService.Add(station);
-            ValidationSummary = "Station User added";
+            if (await stationService.Add(station))
+            {
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "Station Added Successfully";
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "Station Add Failed";
+            }
+
         }
     }
 

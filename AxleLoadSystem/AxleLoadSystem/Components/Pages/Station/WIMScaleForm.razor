@@ -15,7 +15,7 @@
 else
 {
     <EditForm Model="@wimScale" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit" FormName="WimForm" method="post">
-        <DataAnnotationsValidator /> 
+        <DataAnnotationsValidator />
 
         <div class="row">
             <div class="col-md-4 col-sm-12">
@@ -29,7 +29,7 @@ else
                     {
                         <label for="station" class="form-label">@localizer["Station"]</label>
                         <select class="form-control" @bind="wimScale.StationId" id="station">
-                            @foreach(Station station in stations)
+                            @foreach (Station station in stations)
                             {
                                 <option value="@station.StationId">@station.StationName</option>
                             }
@@ -88,12 +88,12 @@ else
                     @if (formMode == FormMode.Details)
                     {
                         <label for="wimHighSpeed" class="form-label">@localizer["WimHighSpeed"]</label>
-                        <label class="form-control" id="wimHighSpeed">@(wimScale.IsHighSpeed ? "High Speed": "Slow Speed")</label>
+                        <label class="form-control" id="wimHighSpeed">@(wimScale.IsHighSpeed ? "High Speed" : "Slow Speed")</label>
                     }
                     else
                     {
                         <label for="wimHighSpeed" class="form-label">@localizer["WimHighSpeed"]</label>
-                        <br/>
+                        <br />
                         <div class="icheck-primary d-inline">
                             <input type="checkbox" id="chkHighSpeed" @bind="@wimScale.IsHighSpeed" />
                             <label for="chkHighSpeed">@localizer["WimHighSpeed"]</label>
@@ -114,10 +114,7 @@ else
                             <button class="btn btn-primary" type="submit">@(formMode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                         }
                         <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
-                        @if (!string.IsNullOrEmpty(ValidationSummary))
-                        {
-                            <label class="error">@ValidationSummary</label>
-                        }
+                        <CustomNotification Notification="notification" />
                     </div>
                 </div>
             </div>
@@ -134,7 +131,7 @@ else
     private FormMode formMode = FormMode.Details;
     private WIMScale wimScale { get; set; } = null;
     private IEnumerable<Station> stations;
-    string ValidationSummary;
+    private Notification notification { get; set; } = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -152,21 +149,38 @@ else
 
     void OnInvalidSubmit()
     {
-        ValidationSummary = "Please enter valid data";
+        notification.Type = Notification.NotificationType.Warning;
+        notification.Message = "Please enter valid data";
     }
     async Task OnValidSubmit(EditContext editContext)
     {
-        ValidationSummary = "";
+        notification = new();
 
         if (formMode == FormMode.Edit)
         {
-            await wimService.Update(wimScale);
-            ValidationSummary = "WIM Updated Successfully";
+            if (await wimService.Update(wimScale))
+            {
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "WIM Updated Successfully";
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "WIM Update Failed";
+            }
         }
         else
         {
-            await wimService.Add(wimScale);
-            ValidationSummary = "WIM User added";
+            if (await wimService.Add(wimScale))
+            {
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "WIM Added Successfully";
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "WIM Add Failed";
+            }
         }
     }
     private void Edit()

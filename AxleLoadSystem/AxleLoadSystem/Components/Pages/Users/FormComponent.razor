@@ -104,13 +104,9 @@ else
                         <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                     }
                     <NavLink class="btn btn-primary" href="/user">@localizerResource["Button.Back"]</NavLink>
-                        @if (!string.IsNullOrEmpty(ValidationSummary))
-                    {
-                        <label class="error">@ValidationSummary</label>
-                    }
+                    <CustomNotification Notification="notification" />
                 </div>
             </div>
-
         </div>
     </EditForm>
 }
@@ -122,7 +118,7 @@ else
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
     private List<string> selectedRoles = new();
-    string ValidationSummary;
+    private Notification notification { get; set; } = new();
     [Required]
     private string confirmPassword { get; set; }
 
@@ -136,22 +132,25 @@ else
 
     void OnInvalidSubmit()
     {
-        ValidationSummary = "Please enter valid data";
+        notification.Type = Notification.NotificationType.Warning;
+        notification.Message = "Please enter valid data";
     }
     async Task OnValidSubmit(EditContext editContext)
     {
-        ValidationSummary = "";
+        notification = new();
 
         int count = selectedRoles.Count();
         if (count == 0)
         {
-            ValidationSummary = "Select atleast 1 role";
+            notification.Type = Notification.NotificationType.Warning;
+            notification.Message = "Select atleast one role";
             return;
         }
 
         if(user.Password != confirmPassword)
         {
-            ValidationSummary = "Password and Confirm Password doesn't match";
+            notification.Type = Notification.NotificationType.Warning;
+            notification.Message = "Password and Confirm Password doesn't match";
             return;
         }
 
@@ -167,12 +166,14 @@ else
         if (Mode == FormMode.Edit)
         {
             await userService.UpdateUser(user);
-            ValidationSummary = "User Updated Successfully";
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "User Updated Successfully";
         }
         else
         {
             await userService.InsertUser(user);
-            ValidationSummary = "New User added";
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "User Added Successfully";
         }
     }
     public void CheckboxClicked(string aSelectedId, object aChecked)
