@@ -48,6 +48,10 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return BadRequest("File already uploaded");
             }
+            if (station.Date >= DateTime.Today)
+            {
+                return BadRequest("Only date before today is allowed");
+            }
 
             file = await this.UploadFile(file, uploadFile);
 
@@ -76,6 +80,10 @@ namespace AxleLoadSystem.Api.Controllers
             if (Convert.ToInt16(stationId) != station.StationId)
             {
                 return BadRequest("Station Id doesn't match");
+            }
+            if(station.Date >= DateTime.Today)
+            {
+                return BadRequest("Only date before today is allowed");
             }
 
             station.StationId = Convert.ToInt16(stationId);

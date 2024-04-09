@@ -26,6 +26,8 @@
             <Loader />
         }
 
+        <hr />
+
         @if (stationId == 0)
         {
             <p>No station is selected</p>
@@ -56,11 +58,11 @@
                     @foreach (var uploadedFile in uploadedFiles.OrderByDescending(f => f.Date))
                     {
                         <tr>
-                            <td>@uploadedFile.Date.ToString("dd-MM-yyyy")</td>
+                            <td>@uploadedFile.Date.ToString("dd MMM yyyy")</td>
                             <td><b>@uploadedFile.FileName</b></td>
                             <td>@Enum.GetName(typeof(UploadedFileType), uploadedFile.FileType)</td>
                             <td>@(uploadedFile.ManualUpload ? "Manual" : "API")</td>
-                            <td>@uploadedFile.UploadDate</td>
+                            <td>@uploadedFile.UploadDate.ToString("dd MMM yyyy hh:mm:ss tt")</td>
                             <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
                             <td>@uploadedFile.Summary</td>
                         </tr>
