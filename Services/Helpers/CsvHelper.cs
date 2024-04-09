@@ -31,39 +31,26 @@ public class CsvHelper : ICsvHelper
             else
             {
                 csvData = this.GetNewDataTableAxleLoad();
-                
-                ////Default FileId column
-                //csvData.Columns.Add("FileId");
-
-                //foreach (string column in colFields)
-                //{
-                //    DataColumn dataColumn = new(column)
-                //    {
-                //        AllowDBNull = true
-                //    };
-                //    csvData.Columns.Add(dataColumn);
-                //}
             }
             
             while (!csvReader.EndOfData)
             {
                 string[] fieldData = [file.Id.ToString()];
                 string[] csvFieldData = csvReader.ReadFields() ?? [];
-                fieldData = fieldData.Union(csvFieldData).ToArray();
+                fieldData = fieldData.Concat(csvFieldData).ToArray();
                 
-                //Making empty value as null
-                for (int i = 0; i < fieldData.Length; i++)
+                //Check booleans
+                List<int> boolenIndexes = [3];
+                if(file.FileType == (int)UploadedFileType.LoadData)
                 {
-                    if(csvData.Columns[i].DataType == typeof(bool))
-                    {
-                        fieldData[i] = fieldData[i] == "1" ? "true" : "false";
-                    }
-
-                    //if (fieldData[i] == "")
-                    //{
-                    //    fieldData[i] = null;
-                    //}
+                    boolenIndexes = [17,18,19];
                 }
+
+                foreach(int i in boolenIndexes)
+                {
+                    fieldData[i] = fieldData[i] == "1" ? "true" : "false";
+                }
+
                 csvData.Rows.Add(fieldData);
             }
         }

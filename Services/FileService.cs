@@ -56,6 +56,7 @@ public class FileService : IFileService
     public async Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file)
     {
         //Check file format
+        //Check file format for load or fine is OK
 
         //Generate file name
         file.FileName = GetFiledName(file);
@@ -63,7 +64,7 @@ public class FileService : IFileService
         file.UploadDate = DateTime.Now;
 
         string folderName = file.Date.ToString("yyyyMM");
-        if(!await _ftpHelper.DirectoryExists(folderName))
+        if (!await _ftpHelper.DirectoryExists(folderName))
         {
             await _ftpHelper.MakeDirectory(folderName);
         }
