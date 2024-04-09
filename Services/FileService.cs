@@ -7,6 +7,7 @@ public interface IFileService
 {
     Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null);
     Task<UploadedFile> GetById(UploadedFile file);
+    Task<bool> FileExists(UploadedFile file);
     Task<IEnumerable<UploadedFile>> GetUploadedFiles();
     Task<bool> Add(UploadedFile obj);
     Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file);
@@ -26,7 +27,7 @@ public class FileService : IFileService
 
     public async Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null)
     {
-        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFile WHERE 1=1 ";
+        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFiles WHERE 1=1 ";
         Dictionary<string, object> param = new Dictionary<string, object>();
 
         if (stationId > 0)
@@ -40,11 +41,16 @@ public class FileService : IFileService
 
         return await _db.LoadData<UploadedFile, dynamic>(sql, param);
     }
-
     public async Task<UploadedFile> GetById(UploadedFile file)
     {
-        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFile WHERE Id=@Id";
+        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFiles WHERE Id=@Id";
         return await _db.LoadSingleAsync<UploadedFile, dynamic>(sql, file.Id);
+    }
+    public async Task<bool> FileExists(UploadedFile file)
+    {
+        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFiles WHERE StationId=@StationId AND FileType=@FileType AND DATEDIFF(DAY,Date,@Date)=0";
+        IEnumerable<UploadedFile> files = await _db.LoadData<UploadedFile, dynamic>(sql, file);
+        return file is not null && files.Any();
     }
 
     public async Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file)
@@ -52,11 +58,17 @@ public class FileService : IFileService
         //Check file format
 
         //Generate file name
-        file.FileName = this.GetFileName(file);
+        file.FileName = GetFiledName(file);
         //Set upload date time
         file.UploadDate = DateTime.Now;
 
-        bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, "");
+        string folderName = file.Date.ToString("yyyyMM");
+        if(!await _ftpHelper.DirectoryExists(folderName))
+        {
+            await _ftpHelper.MakeDirectory(folderName);
+        }
+
+        bool FileUploaded = await _ftpHelper.UploadFile(fileBytes, file.FileName, folderName);
 
         if (FileUploaded)
         {
@@ -100,10 +112,8 @@ public class FileService : IFileService
 
         return await _db.SaveData(query, new { FileId = file.Id });
     }
-    private string GetFileName(UploadedFile file)
-    {
-        return "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + "_" + file.FileType.ToString() + ".csv";
-    }
+    private static string GetFiledName(UploadedFile file) => "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + "_" + Enum.GetName(typeof(UploadedFileType), file.FileType) + ".csv";
+    
     public Task<bool> Update(UploadedFile obj)
     {
         string query = @"UPDATE UploadedFiles

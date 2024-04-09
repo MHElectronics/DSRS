@@ -209,7 +209,7 @@ namespace Services.Helpers
             string statusDescription = "";
 
             //Make full path
-            string fullPath = "/" + directory;
+            string fullPath = "/" + directory.Trim('/');
 
             //Open connection
             OpenConnection(WebRequestMethods.Ftp.MakeDirectory, fullPath);
@@ -227,7 +227,7 @@ namespace Services.Helpers
         {
             //Make full path
             //Add \ at the end to make sure ListDirectory runs properly
-            string fullPath = "/" + directory + "/";
+            string fullPath = "/" + directory.Trim('/') + "/";
 
             //Open connection
             OpenConnection(WebRequestMethods.Ftp.ListDirectory, fullPath);

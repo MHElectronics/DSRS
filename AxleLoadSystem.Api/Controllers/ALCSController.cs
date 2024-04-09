@@ -39,10 +39,15 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return BadRequest("Station Id doesn't match");
             }
-
+            
             station.StationId = Convert.ToInt16(stationId);
             UploadedFile file = station.ToUploadedFile();
             file.FileType = (int)UploadedFileType.LoadData;
+            
+            if (await _fileService.FileExists(file))
+            {
+                return BadRequest("File already uploaded");
+            }
 
             file = await this.UploadFile(file, uploadFile);
 
@@ -76,6 +81,11 @@ namespace AxleLoadSystem.Api.Controllers
             station.StationId = Convert.ToInt16(stationId);
             UploadedFile file = station.ToUploadedFile();
             file.FileType = (int)UploadedFileType.FineData;
+
+            if (await _fileService.FileExists(file))
+            {
+                return BadRequest("File already uploaded");
+            }
 
             file = await this.UploadFile(file, uploadFile);
 

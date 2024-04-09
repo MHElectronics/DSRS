@@ -12,10 +12,7 @@
         <h3 class="card-title">Manual File Upload</h3>
     </div>
     <div class="card-body">
-        @if (Message.Length > 0)
-        {
-            <p class="alert alert-secondary" role="alert">@Message</p>
-        }
+        <CustomNotification Notification="notification"/>
 
         <EditForm EditContext="@editContext"  OnValidSubmit="@HandleValidSubmit" FormName="formFileUpload" method="post" enctype="multipart/form-data">
             <DataAnnotationsValidator />
@@ -48,19 +45,6 @@
                 </div>
                 <div class="col-6">
                     <div class="form-group">
-                        @* <label>File Type</label> *@
-                        @* <InputRadioGroup @bind-Value="@file.FileType">
-                            File Type
-                            <br>
-                            @foreach (var item in Enum.GetValues(typeof(UploadedFileType)))
-                            {
-                                int fileType = (int)Enum.Parse(typeof(UploadedFileType), item.ToString());
-                                <div class="icheck-primary d-inline">
-                                    <InputRadio Value="fileType" id="radio@(fileType)" />
-                                    <label for="radio@(fileType)">@item</label>
-                                </div>   
-                            }
-                        </InputRadioGroup> *@
                         <div class="input-group">
                             <div class="icheck-primary d-inline">
                                 <input type="radio" name="file.FileType" id="type1" value="1" checked="@(file.FileType == (int)UploadedFileType.LoadData)" />
@@ -78,9 +62,7 @@
                         <label for="exampleInputFile">File input</label>
                         <div class="input-group">
                             <div class="custom-file">
-                                @* <InputFile class="form-control mb-4" placeholder="Attachment" name="Ticket.Attachments" multiple /> *@
                                 <InputFile class="custom-file-input" placeholder="Attachment" name="file.Attachments" accept=".csv" />
-                                @* <input type="file" class="custom-file-input" id="exampleInputFile"> *@
                                 <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                             </div>
                         </div>
@@ -97,10 +79,10 @@
     [SupplyParameterFromForm(FormName = "formFileUpload")]
     private FileUploadModel file { get; set; } = new FileUploadModel() { Date = DateTime.Today.AddDays(-1) };
     private IEnumerable<Station> stations { get; set; }
-    private string Message { get; set; } = String.Empty;
     private long maxFileSize = 5120000;
     private EditContext? editContext;
     private bool isFileSelected { get; set; } = true;
+    private Notification notification { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,11 +98,19 @@
     }
     private async Task HandleValidSubmit()
     {
+        if (await fileService.FileExists(file))
+        {
+            this.notification.Type = Notification.NotificationType.Warning;
+            this.notification.Message = "File already uploaded";
+            StateHasChanged();
+            return;
+        }
+
         try
         {
             foreach (var uploadfile in file.Attachments)
             {
-                string safeFileName = WebUtility.HtmlEncode(file.FileName);
+                //string safeFileName = WebUtility.HtmlEncode(file.FileName);
 
                 // Save file locally
                 // var path = Path.Combine(env.ContentRootPath, "images", safeFileName);
@@ -140,12 +130,15 @@
                 await fileService.Upload(fileBytes, fileInfo);
             }
 
-            Message = "File uploaded!";
+            this.notification.Type = Notification.NotificationType.Success;
+            this.notification.Message = "File uploaded!";
             StateHasChanged();
         }
         catch (Exception e)
         {
-            Message = "Error: " + e.Message;
+            this.notification.Type = Notification.NotificationType.Failure;
+            this.notification.Message = "Error: " + e.Message;
+            StateHasChanged();
         }
     }
 }
