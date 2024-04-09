@@ -3,6 +3,7 @@
 @inject IWebHostEnvironment env
 @inject IFileService fileService
 @inject IStationService stationService
+@using BOL
 
 <PageTitle>Manual File Upload</PageTitle>
 
@@ -48,27 +49,28 @@
                 <div class="col-6">
                     <div class="form-group">
                         @* <label>File Type</label> *@
-                        <InputRadioGroup @bind-Value="@file.FileType">
+                        @* <InputRadioGroup @bind-Value="@file.FileType">
                             File Type
                             <br>
                             @foreach (var item in Enum.GetValues(typeof(UploadedFileType)))
                             {
                                 int fileType = (int)Enum.Parse(typeof(UploadedFileType), item.ToString());
-                                <span class="col-12">
-                                    <InputRadio class="btn btn-check" Value="fileType"/> @item
-                                </span>   
+                                <div class="icheck-primary d-inline">
+                                    <InputRadio Value="fileType" id="radio@(fileType)" />
+                                    <label for="radio@(fileType)">@item</label>
+                                </div>   
                             }
-                        </InputRadioGroup>
-                        @* <div class="input-group">
+                        </InputRadioGroup> *@
+                        <div class="input-group">
                             <div class="icheck-primary d-inline">
-                                <input type="radio" @onchange="@(() => file.FileType = (int)UploadedFileType.LoadData)" name="fileType" id="type1" />
+                                <input type="radio" name="file.FileType" id="type1" value="1" checked="@(file.FileType == (int)UploadedFileType.LoadData)" />
                                 <label for="type1">Load Data </label>
                             </div>
                             <div class="icheck-primary d-inline">
-                                <input type="radio" @onchange="@(() => file.FileType = (int)UploadedFileType.FineData)" name="fileType" id="type2" />
+                                <input type="radio" name="file.FileType" id="type2" value="2" checked="@(file.FileType == (int)UploadedFileType.LoadData)" />
                                 <label for="type2">Fine/Reinforcement Data</label>
                             </div>
-                        </div> *@
+                        </div>
                     </div>
                 </div>
                 <div class="col-6">

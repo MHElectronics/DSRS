@@ -49,6 +49,8 @@ public class FileService : IFileService
 
     public async Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file)
     {
+        //Check file format
+
         //Generate file name
         file.FileName = this.GetFileName(file);
         //Set upload date time
