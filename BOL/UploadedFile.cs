@@ -9,4 +9,5 @@ public class UploadedFile
     public bool ManualUpload { get; set; }
     public DateTime UploadDate { get; set; }
     public bool IsProcessed { get; set; }
+    public string Summary { get; set; }
 }

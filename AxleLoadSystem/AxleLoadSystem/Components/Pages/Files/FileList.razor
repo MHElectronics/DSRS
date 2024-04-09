@@ -5,53 +5,92 @@
 @rendermode InteractiveServer
 
 <PageTitle>List of Uploaded Files</PageTitle>
-<h1>List of Uploaded Files</h1>
 
-@if (uploadedFiles is null)
-{
-    <Loader />
-}
-else
-{
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Station</th>
-                <th>Date</th>
-                <th>File Name</th>
-                <th>File Type</th>
-                <th>Uploaded From</th>
-                <th>Upload Date</th>
-                <th>Processed</th>
-  @*               <th>Summaryt</th> *@
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var uploadedFile in uploadedFiles.OrderBy(c => c.Id))
-            {
-                string stationName = stations.Where(d => d.StationId == uploadedFile.StationId).FirstOrDefault()?.StationName;
-                <tr>                    
-                    <td>
-                        @stationName
-                    </td>
-                    <td>@uploadedFile.Date.ToString("dd-MM-yyyy")</td>
-                    <td><b>@uploadedFile.FileName</b></td>
-                    <td>@Enum.GetName(typeof(UploadedFileType),uploadedFile.FileType)</td>
-                    <td>@(uploadedFile.ManualUpload ? "Manual" : "API")</td>
-                    <td>@uploadedFile.UploadDate</td>
-                    <td>@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
-                </tr>
-            }
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">List of Uploaded Files</h3>
+    </div>
+    <div class="card-body">
+        @if (stations is not null)
+        {
+            <select class="form-control" @onchange="Search">
+                <option value="0">-Select Station-</option>
+                @foreach (Station item in stations)
+                {
+                    <option value="@item.StationId">@item.StationName</option>
+                }
+            </select>
+        }
+        else
+        {
+            <Loader />
+        }
 
-        </tbody>
-    </table>
-}
+        @if (stationId == 0)
+        {
+            <p>No station is selected</p>
+        }
+        else if (uploadedFiles is null)
+        {
+            <Loader />
+        }
+        else if (uploadedFiles.Count() == 0)
+        {
+            <p>No File Found</p>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>File Name</th>
+                        <th>File Type</th>
+                        <th>Uploaded From</th>
+                        <th>Upload Date</th>
+                        <th>Processed</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var uploadedFile in uploadedFiles.OrderByDescending(f => f.Date))
+                    {
+                        <tr>
+                            <td>@uploadedFile.Date.ToString("dd-MM-yyyy")</td>
+                            <td><b>@uploadedFile.FileName</b></td>
+                            <td>@Enum.GetName(typeof(UploadedFileType), uploadedFile.FileType)</td>
+                            <td>@(uploadedFile.ManualUpload ? "Manual" : "API")</td>
+                            <td>@uploadedFile.UploadDate</td>
+                            <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
+                            <td>@uploadedFile.Summary</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+
 @code {
     private IEnumerable<UploadedFile> uploadedFiles;
     private IEnumerable<Station> stations;
+    private int stationId { get; set; } = 0;
+
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
-        uploadedFiles = await fileService.GetUploadedFiles();
+    }
+
+    private async Task Search(ChangeEventArgs e)
+    {
+        stationId = Convert.ToInt32(e.Value);
+        if (stationId == 0)
+        {
+            uploadedFiles = null;
+        }
+
+        uploadedFiles = await fileService.GetUploadedFiles(new UploadedFile() { StationId = stationId });
     }
 }

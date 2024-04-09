@@ -8,7 +8,7 @@ public interface IFileService
     Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null);
     Task<UploadedFile> GetById(UploadedFile file);
     Task<bool> FileExists(UploadedFile file);
-    Task<IEnumerable<UploadedFile>> GetUploadedFiles();
+    Task<IEnumerable<UploadedFile>> GetUploadedFiles(UploadedFile file);
     Task<bool> Add(UploadedFile obj);
     Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file);
     Task<bool> Update(UploadedFile obj);
@@ -134,7 +134,7 @@ public class FileService : IFileService
         return obj.Id > 0;
     }
 
-    public async Task<IEnumerable<UploadedFile>> GetUploadedFiles() =>
-        await _db.LoadData<UploadedFile, dynamic>("SELECT * FROM UploadedFiles", new { });
+    public async Task<IEnumerable<UploadedFile>> GetUploadedFiles(UploadedFile file) =>
+        await _db.LoadData<UploadedFile, dynamic>("SELECT * FROM UploadedFiles WHERE StationId=@StationId", new { file.StationId });
 
 }
