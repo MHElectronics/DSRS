@@ -90,7 +90,7 @@ public class FileService : IFileService
                         await _db.InsertDataTable(csvData, destinationTableName);
                         
                         //Process inserted data
-                        //await this.RunProcess(file);
+                        await this.RunProcess(file);
                         file.IsProcessed = true;
                         bool isUpdated = await this.Update(file);
                     }

@@ -74,7 +74,7 @@ namespace AxleLoadSystem.Api.Controllers
                 return BadRequest("Only CSV files are allowed.");
             }
             //Check station code
-            string stationId = this.HttpContext.Request.Headers["Station"].ToString();
+            string stationId = this.HttpContext.Request.Headers["StationId"].ToString();
             //string apiKey = this.HttpContext.Response.Headers["ApiKey"].ToString();
             //string key = this.HttpContext.Response.Headers.Authorization[0].ToString();
 
