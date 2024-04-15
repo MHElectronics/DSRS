@@ -28,4 +28,14 @@ public class LoadData
     public int IsOverloaded { get; set; }
     public int OverSizedModified { get; set; }
     public int Wheelbase { get; set; }
+
+    //Slow Moving
+    public decimal VehicleSpeed { get; set; }
+    public DateTime Axle1stTime { get; set; }
+    public DateTime Axle2ndTime { get; set; }
+    public DateTime Axle3rdTime { get; set; }
+    public DateTime Axle4thTime { get; set; }
+    public DateTime Axle5thTime { get; set; }
+    public DateTime Axle6thTime { get; set; }
+    public DateTime Axle7thTime { get; set; }
 }

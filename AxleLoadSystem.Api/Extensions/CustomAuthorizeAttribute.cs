@@ -15,14 +15,12 @@ namespace AxleLoadSystem.Api.Extensions
             if (allowAnonymous)
                 return;
 
-            //----------
-            //KeyValuePair<string, string> webAuthenticationValue = new KeyValuePair<string, string>("1", "authKey");
             bool isAuthorized = false;
+            string message = "Unauthorized";
 
-            if (context.HttpContext.Request.Headers.Keys.Contains("Station")
-                && context.HttpContext.Request.Headers.Keys.Contains("ApiKey"))
+            if (context.HttpContext.Request.Headers.ContainsKey("StationId") && context.HttpContext.Request.Headers.Keys.Contains("ApiKey"))
             {
-                string strStationId = context.HttpContext.Request.Headers["Station"];
+                string strStationId = context.HttpContext.Request.Headers["StationId"];
                 string apiKey = context.HttpContext.Request.Headers["ApiKey"];
                 int stationId;
                 if (int.TryParse(strStationId, out stationId))
@@ -33,6 +31,10 @@ namespace AxleLoadSystem.Api.Extensions
                     {
                         isAuthorized = true;
                     }
+                    else
+                    {
+                        message = "Station Id and Api Key doesn't match";
+                    }
                 }
             }
 
@@ -40,7 +42,7 @@ namespace AxleLoadSystem.Api.Extensions
             if (!isAuthorized)
             {
                 // not logged in or role not authorized
-                context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                context.Result = new JsonResult(new { message }) { StatusCode = StatusCodes.Status401Unauthorized };
             }
         }
     }

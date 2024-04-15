@@ -4,25 +4,34 @@
 @inject IJSRuntime JS
 @rendermode InteractiveServer
 
-<h3>CSV Generator</h3>
-<div class="row">
-    <div class="col">
-        <div class="form-group">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" @bind="date" required class="form-control" placeholder="Date" id="date" />
+<PageTitle>CSV Gnerator</PageTitle>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">CSV Generator</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" @bind="date" required class="form-control" placeholder="Date" id="date" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="date" class="form-label">Iteration</label>
+                    <input type="number" @bind="iteration" required class="form-control" placeholder="Iteration" id="iteration" />
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col">
-        <div class="form-group">
-            <label for="date" class="form-label">Iteration</label>
-            <input type="number" @bind="iteration" required class="form-control" placeholder="Iteration" id="iteration" />
+    <div class="card-footer">
+        <div class="row">
+            <div class="col">
+                <button type="button" @onclick="GenerateAxleLoad">Generate Axle Load CSV</button>
+                <button type="button" @onclick="GenerateFine">Generate Fine CSV</button>
+            </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <button type="button" @onclick="GenerateAxleLoad">Generate Axle Load CSV</button>
-        <button type="button" @onclick="GenerateFine">Generate Fine CSV</button>
     </div>
 </div>
 

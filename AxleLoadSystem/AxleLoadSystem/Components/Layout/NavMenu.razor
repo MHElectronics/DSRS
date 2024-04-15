@@ -70,6 +70,17 @@
         </NavLink>
     </li>
     <li class="nav-item">
+        <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-list"></i>
+            <p>
+                @localizer["Menu.Station"]
+                @* <span class="right badge badge-danger">New</span> *@
+            </p>
+        </NavLink>
+    </li>
+
+    <li class="nav-header">Pages</li>
+    <li class="nav-item">
         <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-upload"></i>
             <p>
@@ -80,7 +91,7 @@
     </li>
     <li class="nav-item">
         <NavLink class="nav-link" href="filelist" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-list"></i>
+            <i class="nav-icon fas fa-file"></i>
             <p>
                 @* @localizer["Menu.Station"] *@
                 Uploaded Files
@@ -88,17 +99,8 @@
         </NavLink>
     </li>
     <li class="nav-item">
-        <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-list"></i>
-            <p>
-                @localizer["Menu.Station"]
-                @* <span class="right badge badge-danger">New</span> *@
-            </p>
-        </NavLink>
-    </li>
-    <li class="nav-item">
         <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-list"></i>
+            <i class="nav-icon fas fa-map"></i>
             <p>
                 @localizer["Menu.Map"]
                 @* <span class="right badge badge-danger">New</span> *@

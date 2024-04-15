@@ -1,9 +1,9 @@
 ﻿@page "/fileupload"
 @using AxleLoadSystem.Models
+@using BOL
 @inject IWebHostEnvironment env
 @inject IFileService fileService
 @inject IStationService stationService
-@using BOL
 
 <PageTitle>Manual File Upload</PageTitle>
 
@@ -45,6 +45,7 @@
                 </div>
                 <div class="col-6">
                     <div class="form-group">
+                        <label for="type1">File Type</label>
                         <div class="input-group">
                             <div class="icheck-primary d-inline">
                                 <input type="radio" name="file.FileType" id="type1" value="1" checked="@(file.FileType == (int)UploadedFileType.LoadData)" />
@@ -128,7 +129,7 @@
             }
 
             this.notification.Type = Notification.NotificationType.Success;
-            this.notification.Message = "File uploaded!";
+            this.notification.Message = "File uploaded";
             StateHasChanged();
         }
         catch (Exception e)

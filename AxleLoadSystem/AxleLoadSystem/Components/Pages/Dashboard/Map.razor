@@ -13,8 +13,8 @@
                     foreach (Station item in stations.Where(s => !string.IsNullOrEmpty(s.MapX)))
                     {
                         <g class="alcs" transform="matrix(1 0 0 1 @item.MapX @item.MapY)" 
-                            data-id="@item.StationId" data-name="@item.StationName" 
-                            @onclick="(() => MapClicked(item))">
+                            data-id="@item.StationId" data-name="@item.StationName"
+                           @onclick="(() => MapClicked(item))">
                             <rect width="150" height="50" style="fill:rgba(0,0,255,0.5);stroke-width:0;stroke:rgb(0,0,0)" rx="10" ry="10" />
                             <text class="bay-of-bengal" x="7" y="15" style="font-size:12pt;fill:white;">@item.StationName</text>
                         </g>

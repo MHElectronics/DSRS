@@ -6,6 +6,7 @@ using Services;
 
 namespace AxleLoadSystem.Api.Controllers
 {
+	[CustomAuthorize]
     [ApiController]
     [Route("[controller]")]
     public class ALCSController : ControllerBase
@@ -16,7 +17,7 @@ namespace AxleLoadSystem.Api.Controllers
             _fileService = fileService;
         }
 
-	    [CustomAuthorize]
+        #region CSV File Upload
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]
         [HttpPost("[action]")]
@@ -31,7 +32,7 @@ namespace AxleLoadSystem.Api.Controllers
                 return BadRequest("Only CSV files are allowed.");
             }
             //Check station code
-            string stationId = this.HttpContext.Request.Headers["Station"].ToString();
+            string stationId = this.HttpContext.Request.Headers["StationId"].ToString();
             //string apiKey = this.HttpContext.Response.Headers["ApiKey"].ToString();
             //string key = this.HttpContext.Response.Headers.Authorization[0].ToString();
 
@@ -39,7 +40,11 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return BadRequest("Station Id doesn't match");
             }
-            
+            if (station.Date >= DateTime.Today)
+            {
+                return BadRequest("Only date before today is allowed");
+            }
+
             station.StationId = Convert.ToInt16(stationId);
             UploadedFile file = station.ToUploadedFile();
             file.FileType = (int)UploadedFileType.LoadData;
@@ -48,11 +53,7 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return BadRequest("File already uploaded");
             }
-            if (station.Date >= DateTime.Today)
-            {
-                return BadRequest("Only date before today is allowed");
-            }
-
+            
             file = await this.UploadFile(file, uploadFile);
 
             return Ok(file.Id > 0);
@@ -112,9 +113,10 @@ namespace AxleLoadSystem.Api.Controllers
 
             return await _fileService.Upload(byteFile, file);
         }
+        #endregion
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> SlowMoving(LoadDataSlowMoving obj)
+        public async Task<IActionResult> LoadData(LoadData obj)
         {
             if (obj == null)
             {
@@ -126,7 +128,7 @@ namespace AxleLoadSystem.Api.Controllers
             return Ok(true);
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> SlowMovingMultiple(List<LoadDataSlowMoving> obj)
+        public async Task<IActionResult> LoadDataMultiple(List<LoadData> obj)
         {
             if (obj == null)
             {
@@ -139,7 +141,7 @@ namespace AxleLoadSystem.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> FastMoving(LoadDataFastMoving obj)
+        public async Task<IActionResult> FinePayment(FinePayment obj)
         {
             if (obj == null)
             {
@@ -151,7 +153,7 @@ namespace AxleLoadSystem.Api.Controllers
             return Ok(true);
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> FastMovingMultiple(List<LoadDataFastMoving> obj)
+        public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
         {
             if (obj == null)
             {
