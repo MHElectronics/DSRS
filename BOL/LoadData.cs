@@ -9,7 +9,9 @@ public class LoadData
     public int StationCode { get; set; }
     public int LaneNumber { get; set; }
     public int DateTime { get; set; }
-    public int PlateNumber { get; set; }
+    public string PlateZone { get; set; }
+    public string PlateSeries { get; set; }
+    public string PlateNumber { get; set; }
     public int VehicleId { get; set; }
     public int NumberOfAxle { get; set; }
     public int Axle1st { get; set; }

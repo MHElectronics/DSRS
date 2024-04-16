@@ -48,14 +48,16 @@
 
         Random rnd = new Random(1);
 
-        sb.Add("TransactionNumber,LaneNumber,DateTime,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time");
+        sb.Add("TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time");
 
         for (int i = 1; i <= (iteration + 1); i++)
         {
             string line = "TN" + i;
             line += "," + rnd.Next(1, 5);
             line += "," + date.AddSeconds(i * 7).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += ",Plate" + rnd.Next(1000, 5000);
+            line += ",PZ" + rnd.Next(1000, 5000);
+            line += ",PS" + rnd.Next(1000, 5000);
+            line += ",PN" + rnd.Next(1000, 5000);
             line += ",VI" + rnd.Next(100, 500);
             line += "," + rnd.Next(0, 20);
             line += "," + (rnd.Next(30, 120) + Math.Round(rnd.NextDouble(), 2));
