@@ -95,7 +95,10 @@ namespace Services.Helpers
 
                 responseStream.Close();
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                return false;
+            }
 
 
             return true;

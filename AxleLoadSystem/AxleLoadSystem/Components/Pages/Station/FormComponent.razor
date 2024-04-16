@@ -80,6 +80,36 @@ else
                     }
                 </div>
             </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="MapX" class="form-label">@localizer["MapX"]</label>
+                        <label class="form-control">@station.MapX</label>
+                    }
+                    else
+                    {
+                        <label for="MapX" class="form-label">@localizer["MapX"]</label>
+                        <input type="text" @bind-value="station.MapX" class="form-control" placeholder="@localizer["MapX"]" id="MapX" />
+                        <ValidationMessage For="() => station.MapX" />
+                    }
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="MapY" class="form-label">@localizer["MapY"]</label>
+                        <label class="form-control">@station.MapY</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">@localizer["MapY"]</label>
+                        <input type="text" @bind-value="station.MapY" class="form-control" placeholder="@localizer["MapY"]" aria-label="API Key" id="MapY"/>
+                        <ValidationMessage For="() => station.MapY" />
+                    }
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-12 col-sm-12">
                     <div class="btn-group">
