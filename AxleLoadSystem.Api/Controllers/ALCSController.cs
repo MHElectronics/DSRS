@@ -12,9 +12,14 @@ namespace AxleLoadSystem.Api.Controllers
     public class ALCSController : ControllerBase
     {
         private readonly IFileService _fileService;
-        public ALCSController(IFileService fileService)
+        private readonly IAxleLoadService _axleLoadService;
+        private readonly IFinePaymentService _finePaymentService;
+
+        public ALCSController(IFileService fileService, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService)
         {
             _fileService = fileService;
+            _axleLoadService = axleLoadService;
+            _finePaymentService = finePaymentService;
         }
 
         #region CSV File Upload
@@ -122,10 +127,13 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return new BadRequestResult();
             }
-            
-            //await _fileService.Add(obj);
 
-            return Ok(true);
+            //Check station code
+            obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
+
+            bool isSuccess = await _axleLoadService.Add(obj);
+
+            return Ok(isSuccess);
         }
         [HttpPost("[action]")]
         public async Task<IActionResult> LoadDataMultiple(List<LoadData> obj)
@@ -135,9 +143,17 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
 
-            //await _fileService.Add(obj);
+            //Check station code
+            int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-            return Ok(true);
+            foreach(var item in obj)
+            {
+                item.StationId = stationId;
+            }
+
+            bool isSuccess = await _axleLoadService.Add(obj);
+
+            return Ok(isSuccess);
         }
 
         [HttpPost("[action]")]
@@ -148,9 +164,12 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
 
-            //await _fileService.Add(obj);
+            //Check station code
+            obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-            return Ok(true);
+            bool isSuccess = await _finePaymentService.Add(obj);
+
+            return Ok(isSuccess);
         }
         [HttpPost("[action]")]
         public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
@@ -160,9 +179,17 @@ namespace AxleLoadSystem.Api.Controllers
                 return new BadRequestResult();
             }
 
-            //await _fileService.Add(obj);
+            //Check station code
+            int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-            return Ok(true);
+            foreach(var item in obj)
+            {
+                item.StationId = stationId;
+            }
+
+            bool isSuccess = await _finePaymentService.Add(obj);
+
+            return Ok(isSuccess);
         }
     }
 }
