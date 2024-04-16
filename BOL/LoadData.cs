@@ -38,4 +38,6 @@ public class LoadData
     public DateTime Axle5thTime { get; set; }
     public DateTime Axle6thTime { get; set; }
     public DateTime Axle7thTime { get; set; }
+
+    public DateTime EntryTime { get; set; }
 }

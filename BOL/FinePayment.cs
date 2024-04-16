@@ -12,4 +12,5 @@ public class FinePayment
     public string BillNumber { get; set; }
     public decimal WarehouseCharge { get; set; }
     public string DriversLicenseNumber { get; set; }
+    public DateTime EntryTime { get; set; }
 }
