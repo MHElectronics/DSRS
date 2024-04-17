@@ -110,6 +110,7 @@
     }
     private async Task DeleteConfirmed()
     {
+        await fileService.Delete(selectedFile);
         await GetFileList();
     }
 }
