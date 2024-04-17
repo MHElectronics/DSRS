@@ -43,7 +43,7 @@ public class CsvHelper : ICsvHelper
                 List<int> boolenIndexes = [3];
                 if(file.FileType == (int)UploadedFileType.LoadData)
                 {
-                    boolenIndexes = [17,18,19];
+                    boolenIndexes = [19,20,21];
                 }
 
                 foreach(int i in boolenIndexes)
