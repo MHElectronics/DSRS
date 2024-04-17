@@ -2,6 +2,9 @@
     padding: 0;
     border: 0;
 }
+.dark-mode dialog{
+    color:white;
+}
     dialog::backdrop {
         background-color: black;
         opacity:.5

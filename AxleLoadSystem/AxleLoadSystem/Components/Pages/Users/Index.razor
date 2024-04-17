@@ -1,5 +1,7 @@
 ﻿@page "/user/{mode?}/{id?}"
+@inherits BasePageComponent
 @inject IUserService userService
+@rendermode InteractiveServer
 
 @if (string.IsNullOrEmpty(Mode))
 {

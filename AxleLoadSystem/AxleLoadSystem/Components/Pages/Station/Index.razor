@@ -1,5 +1,7 @@
 ﻿@page "/station/{mode?}/{id?}"
+@inherits BasePageComponent
 @inject IStationService stationService
+@rendermode InteractiveServer
 
 @if (string.IsNullOrEmpty(Mode))
 {
