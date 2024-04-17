@@ -2,8 +2,6 @@
 public class LoadData
 {
     public int StationId { get; set; }
-    public int WIMId { get; set; }
-    public int BRTAInfoId { get; set; }
 
     public string TransactionNumber { get; set; }
     public int StationCode { get; set; }
@@ -12,20 +10,20 @@ public class LoadData
     public string PlateZone { get; set; }
     public string PlateSeries { get; set; }
     public string PlateNumber { get; set; }
-    public int VehicleId { get; set; }
+    public string VehicleId { get; set; }
     public int NumberOfAxle { get; set; }
-    public decimal Axle1st { get; set; }
-    public decimal Axle2nd { get; set; }
-    public decimal Axle3rd { get; set; }
-    public decimal Axle4th { get; set; }
-    public decimal Axle5th { get; set; }
-    public decimal Axle6th { get; set; }
-    public decimal Axle7th { get; set; }
+    public decimal Axle1 { get; set; }
+    public decimal Axle2 { get; set; }
+    public decimal Axle3 { get; set; }
+    public decimal Axle4 { get; set; }
+    public decimal Axle5 { get; set; }
+    public decimal Axle6 { get; set; }
+    public decimal Axle7 { get; set; }
     public decimal AxleRemaining { get; set; }
     public decimal GrossVehicleWeight { get; set; }
     public decimal FinePayment { get; set; }
-    public string ReceiptNumber { get; set; }
-    public string BillNumber { get; set; }
+    //public string ReceiptNumber { get; set; }
+    //public string BillNumber { get; set; }
     public bool IsUnloaded { get; set; }
     public bool IsOverloaded { get; set; }
     public bool OverSizedModified { get; set; }
@@ -33,13 +31,13 @@ public class LoadData
 
     //Slow Moving
     public decimal VehicleSpeed { get; set; }
-    public DateTime Axle1stTime { get; set; }
-    public DateTime Axle2ndTime { get; set; }
-    public DateTime Axle3rdTime { get; set; }
-    public DateTime Axle4thTime { get; set; }
-    public DateTime Axle5thTime { get; set; }
-    public DateTime Axle6thTime { get; set; }
-    public DateTime Axle7thTime { get; set; }
+    public DateTime? Axle1Time { get; set; }
+    public DateTime? Axle2Time { get; set; }
+    public DateTime? Axle3Time { get; set; }
+    public DateTime? Axle4Time { get; set; }
+    public DateTime? Axle5Time { get; set; }
+    public DateTime? Axle6Time { get; set; }
+    public DateTime? Axle7Time { get; set; }
 
     public DateTime EntryTime { get; set; }
 }
