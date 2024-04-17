@@ -7,6 +7,7 @@ public interface IFinePaymentService
 {
     Task<bool> Add(FinePayment obj);
     Task<bool> Add(List<FinePayment> obj);
+    Task<bool> Delete(DateTime date);
 }
 
 public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
@@ -24,5 +25,12 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
                         VALUES(@StationId,@TransactionNumber,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber)";
 
         return await _db.SaveData(query, obj);
+    }
+
+    public async Task<bool> Delete(DateTime date)
+    {
+        string query = "DELETE FROM FinePayment WHERE DATEDIFF(DAY,DateTime,@Date)=0";
+
+        return await _db.SaveData(query, new { Date = date });
     }
 }

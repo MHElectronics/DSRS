@@ -1,0 +1,76 @@
+﻿@using Microsoft.JSInterop
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+<dialog @ref="_element">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-primary">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="()=>OnConfirmationChange(false)"></button>
+            </div>
+            <div class="modal-body">
+                @ConfirmationMessage
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal" @onclick="()=>OnConfirmationChange(false)"><i class="fa fa-times"></i> Close</button>
+                <button type="button" class="btn btn-primary" @onclick="()=>OnConfirmationChange(true)">@ConfirmationButtonText</button>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+@code {
+    private DotNetObjectReference<ConfirmDialog> _this;
+    private ElementReference _element;
+
+    [Parameter]
+    public string ConfirmationMessage { get; set; } = "Are you sure you want to execute this action?";
+    [Parameter]
+    public string ConfirmationButtonText { get; set; } = "Execute";
+    [Parameter]
+    public EventCallback ConfirmationChanged { get; set; }
+    private bool Open { get; set; } = false;
+
+    private IJSObjectReference module;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _this = DotNetObjectReference.Create(this);
+
+            await JSRuntime.InvokeVoidAsync("blazorInitializeModal", _element, _this);
+        }
+
+        if (Open)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorOpenModal", _element);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+    public async Task Show()
+    {
+        Open = true;
+        await JSRuntime.InvokeVoidAsync("blazorOpenModal", _element);
+    }
+    [JSInvokable]
+    public async Task Hide()
+    {
+        Open = false;
+        await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
+    }
+
+    protected async Task OnConfirmationChange(bool value)
+    {
+        Open = false;
+        await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
+        if (value == true)
+        {
+            await ConfirmationChanged.InvokeAsync();
+        }
+    }
+}

@@ -15,6 +15,8 @@ public static class DependencyInjection
         services.AddScoped<IStationService, StationService>();
         services.AddScoped<IWIMScaleService, WIMScaleService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IAxleLoadService, AxleLoadService>();
+        services.AddScoped<IFinePaymentService, FinePaymentService>();
 
         return services;
     }

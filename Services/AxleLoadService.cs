@@ -7,6 +7,7 @@ public interface IAxleLoadService
 {
     Task<bool> Add(LoadData obj);
     Task<bool> Add(List<LoadData> obj);
+    Task<bool> Delete(DateTime date);
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -40,4 +41,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         return await _db.SaveData(query, obj);
     }
 
+    public async Task<bool> Delete(DateTime date)
+    {
+        string query = "DELETE FROM AxleLoad WHERE DATEDIFF(DAY,DateTime,@Date)=0";
+
+        return await _db.SaveData(query, new { Date = date });
+    }
 }
