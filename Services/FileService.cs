@@ -12,17 +12,22 @@ public interface IFileService
     Task<bool> Add(UploadedFile obj);
     Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file);
     Task<bool> Update(UploadedFile obj);
+    Task<bool> Delete(UploadedFile file);
 }
 public class FileService : IFileService
 {
     private readonly ISqlDataAccess _db;
     private readonly IFtpHelper _ftpHelper;
     private readonly ICsvHelper _csvHelper;
-    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper, ICsvHelper csvHelper)
+    private readonly IAxleLoadService _axleLoadService;
+    private readonly IFinePaymentService _finePaymentService;
+    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper, ICsvHelper csvHelper, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService)
     {
         _db = db;
         _ftpHelper = ftpHelper;
         _csvHelper = csvHelper;
+        _axleLoadService = axleLoadService;
+        _finePaymentService = finePaymentService;
     }
 
     public async Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null)
@@ -115,7 +120,7 @@ public class FileService : IFileService
     }
     private static string GetFiledName(UploadedFile file) => "S" + file.StationId + "_" + file.Date.ToString("yyyyMMdd") + "_" + Enum.GetName(typeof(UploadedFileType), file.FileType) + ".csv";
     
-    public Task<bool> Update(UploadedFile obj)
+    public async Task<bool> Update(UploadedFile obj)
     {
         string query = @"UPDATE UploadedFiles
             SET StationId=@StationId
@@ -126,7 +131,7 @@ public class FileService : IFileService
             ,UploadDate=@UploadDate
             ,IsProcessed=@IsProcessed
             WHERE Id=@Id";
-        return _db.SaveData(query, obj);
+        return await _db.SaveData(query, obj);
     }
 
     public async Task<bool> Add(UploadedFile obj)
@@ -138,4 +143,19 @@ public class FileService : IFileService
     public async Task<IEnumerable<UploadedFile>> GetUploadedFiles(UploadedFile file) =>
         await _db.LoadData<UploadedFile, dynamic>("SELECT * FROM UploadedFiles WHERE StationId=@StationId", new { file.StationId });
 
+    public async Task<bool> Delete(UploadedFile file)
+    {
+        //Delete Data
+        await _axleLoadService.Delete(file.Date);
+        await _finePaymentService.Delete(file.Date);
+        string path = GetFiledName(file);
+        string folderName = file.Date.ToString("yyyyMM");
+
+        //Delete file from ftp
+        await _ftpHelper.DeleteFile(Path.Combine(folderName, path));
+        
+        //Delete uploaded file
+        string query = @"DELETE FROM UploadedFiles WHERE Id=@Id";
+        return await _db.SaveData(query, new { file.Id});
+    }
 }

@@ -55,7 +55,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var uploadedFile in uploadedFiles.OrderByDescending(f => f.Date))
+                    @foreach (UploadedFile uploadedFile in uploadedFiles.OrderByDescending(f => f.Date))
                     {
                         <tr>
                             <td>@uploadedFile.Date.ToString("dd MMM yyyy")</td>
@@ -65,6 +65,7 @@
                             <td>@uploadedFile.UploadDate.ToString("dd MMM yyyy hh:mm:ss tt")</td>
                             <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
                             <td>@uploadedFile.Summary</td>
+                            <td @onclick="@(() => Delete(uploadedFile))">Delete</td>
                         </tr>
                     }
 
@@ -73,12 +74,15 @@
         }
     </div>
 </div>
-
+<ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" ConfirmationMessage="Sure to Delete with data?" />
 
 @code {
     private IEnumerable<UploadedFile> uploadedFiles;
     private IEnumerable<Station> stations;
     private int stationId { get; set; } = 0;
+
+    protected ConfirmDialog deleteConfirmationRef { get; set; }
+    private UploadedFile selectedFile { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,11 +92,24 @@
     private async Task Search(ChangeEventArgs e)
     {
         stationId = Convert.ToInt32(e.Value);
+        await GetFileList();
+    }
+    private async Task GetFileList()
+    {
         if (stationId == 0)
         {
             uploadedFiles = null;
         }
 
         uploadedFiles = await fileService.GetUploadedFiles(new UploadedFile() { StationId = stationId });
+    }
+    private async Task Delete(UploadedFile file)
+    {
+        selectedFile = file;
+        await deleteConfirmationRef.Show();
+    }
+    private async Task DeleteConfirmed()
+    {
+        await GetFileList();
     }
 }
