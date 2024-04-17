@@ -50,7 +50,7 @@
 
         sb.Add("TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time");
 
-        for (int i = 1; i <= (iteration + 1); i++)
+        for (int i = 1; i <= iteration; i++)
         {
             string line = "TN" + i;
             line += "," + rnd.Next(1, 5);
