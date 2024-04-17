@@ -7,7 +7,7 @@
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" @onclick="MenuClicked"><i class="fas fa-bars"></i></a>
+            <a class="nav-link menu-opener"><i class="fas fa-bars"></i></a>
         </li>
         @* <li class="nav-item d-none d-sm-inline-block">
             <a href="index3.html" class="nav-link">Home</a>
@@ -60,10 +60,6 @@
             currentUser = await customStateProvider.GetAuthorizedUser();
             await this.InvokeAsync(StateHasChanged);
         }
-    }
-    private async Task MenuClicked()
-    {
-        await JS.InvokeVoidAsync("MenuOpenerClicked");
     }
     private void Login()
     {

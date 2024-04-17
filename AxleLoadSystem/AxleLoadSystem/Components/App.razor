@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
 
-
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
@@ -34,10 +33,11 @@
     <HeadOutlet />
 </head>
 
-<body class="sidebar-mini layout-fixed dark-mode">
+<body class="sidebar-mini layout-fixed">
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script src="js/anime.min.js"></script>
+    <script src="js/modalJsInterop.js"></script>
 
     <!-- jQuery -->
     <script src="plugins/jquery/jquery.min.js"></script>
@@ -70,18 +70,22 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     @* <script src="dist/js/pages/dashboard.js"></script> *@
 
-    <script src="js/modalJsInterop.js"></script>
-
     <script>
         $(document).ready(function () {
-            ThemeToggleClicked();
+            SetThemeModes();
         });
 
+        function SetThemeModes() {
+            MenuOpenerClicked();
+            ThemeToggleClicked();
+        }
+
         function MenuOpenerClicked(){
-            if ($('body').hasClass('sidebar-collapse')) {
+            var mode = window.localStorage.getItem('menu-mode');
+            if (mode === 'open') {
                 $('body').removeClass('sidebar-collapse');
             }
-            else{
+            else {
                 $('body').addClass('sidebar-collapse');
             }
         }
@@ -95,6 +99,17 @@
                 $('body').removeClass('dark-mode');
             }
         }
+
+        $(document).on('click', '.menu-opener', function () {
+            if ($('body').hasClass('sidebar-collapse')) {
+                $('body').removeClass('sidebar-collapse');
+                window.localStorage.setItem('menu-mode', 'open');
+            }
+            else {
+                $('body').addClass('sidebar-collapse');
+                window.localStorage.setItem('menu-mode', 'collapsed');
+            }
+        });
     </script>
     <script>
         window.downloadFileFromStream = async (fileName, contentStreamReference) => {
