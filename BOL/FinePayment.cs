@@ -1,9 +1,12 @@
-﻿namespace BOL;
+﻿using BOL.Helpers;
+
+namespace BOL;
 public class FinePayment
 {
     public int Id { get; set; }
     public int StationId { get; set; }
     public string TransactionNumber { get; set; }
+    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
     public DateTime DateTime { get; set; }
     public bool IsPaid { get; set; }
     public decimal FineAmount { get; set; }
