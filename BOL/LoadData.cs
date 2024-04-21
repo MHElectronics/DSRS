@@ -25,12 +25,12 @@ public class LoadData
     public decimal AxleRemaining { get; set; }
     public decimal GrossVehicleWeight { get; set; }
     public decimal FinePayment { get; set; }
-    //public string ReceiptNumber { get; set; }
-    //public string BillNumber { get; set; }
     public bool IsUnloaded { get; set; }
     public bool IsOverloaded { get; set; }
     public bool OverSizedModified { get; set; }
     public decimal Wheelbase { get; set; }
+    public string ReceiptNumber { get; set; }
+    public string BillNumber { get; set; }
 
     //Slow Moving
     public decimal VehicleSpeed { get; set; }
