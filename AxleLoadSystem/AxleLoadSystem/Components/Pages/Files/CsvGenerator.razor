@@ -1,6 +1,7 @@
 ﻿@page "/csvgenerator"
 @using System.Text
 @using System.IO
+@using BOL.Helpers
 @inject IJSRuntime JS
 @rendermode InteractiveServer
 
@@ -54,7 +55,7 @@
         {
             string line = "TN" + i;
             line += "," + rnd.Next(1, 5);
-            line += "," + date.AddSeconds(i * 7).ToString("dd MMM yyyy hh:mm:ss tt");
+            line += "," + date.AddSeconds(i * 7).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
             line += ",PZ" + rnd.Next(1000, 5000);
             line += ",PS" + rnd.Next(1000, 5000);
             line += ",PN" + rnd.Next(1000, 5000);
@@ -108,13 +109,13 @@
             //BillNumber
             line += ",BN" + rnd.Next(2, 20);
 
-            line += "," + date.AddSeconds((i * 7) + 3).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += "," + date.AddSeconds((i * 7) + 4).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += "," + date.AddSeconds((i * 7) + 5).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += "," + date.AddSeconds((i * 7) + 6).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += "," + date.AddSeconds((i * 7) + 7).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += "," + date.AddSeconds((i * 7) + 8).ToString("dd MMM yyyy hh:mm:ss tt");
-            line += "," + date.AddSeconds((i * 7) + 9).ToString("dd MMM yyyy hh:mm:ss tt");
+            line += "," + date.AddSeconds((i * 7) + 3).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            line += "," + date.AddSeconds((i * 7) + 4).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            line += "," + date.AddSeconds((i * 7) + 5).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            line += "," + date.AddSeconds((i * 7) + 6).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            line += "," + date.AddSeconds((i * 7) + 7).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            line += "," + date.AddSeconds((i * 7) + 8).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            line += "," + date.AddSeconds((i * 7) + 9).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
 
             sb.Add(line);
         }
@@ -135,7 +136,7 @@
             //TransactionNumber
             string line = "TN" + i;
             //DateTime
-            line += "," + date.AddSeconds(i * 7).ToString("dd MMM yyyy hh:mm:ss tt");
+            line += "," + date.AddSeconds(i * 7).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
             //IsPaid
             line += "," + rnd.Next(0, 1);
             //FineAmount

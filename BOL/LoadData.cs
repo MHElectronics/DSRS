@@ -8,7 +8,7 @@ public class LoadData
     public string TransactionNumber { get; set; }
     public int StationCode { get; set; }
     public int LaneNumber { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime DateTime { get; set; }
     public string PlateZone { get; set; }
     public string PlateSeries { get; set; }
@@ -34,19 +34,19 @@ public class LoadData
 
     //Slow Moving
     public decimal VehicleSpeed { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle1Time { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle2Time { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle3Time { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle4Time { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle5Time { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle6Time { get; set; }
-    [JsonDateTimeFormat("dd/MM/yyyy HH:mm:ss")]
+    [JsonDateTimeFormat]
     public DateTime? Axle7Time { get; set; }
 
     public DateTime EntryTime { get; set; }

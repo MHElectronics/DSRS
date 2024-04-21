@@ -78,12 +78,13 @@ public class FileService : IFileService
 
         if (FileUploaded)
         {
+            //Add Uploaded Files to get file id
             if (await this.Add(file))
             {
                 try
                 {
-                    //DataTable csvData = await _ftpHelper.GetDataTableFromCSV(file.FileName);
                     DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes, file);
+
                     if (csvData is not null)
                     {
                         string destinationTableName = "AxleLoadProcess";

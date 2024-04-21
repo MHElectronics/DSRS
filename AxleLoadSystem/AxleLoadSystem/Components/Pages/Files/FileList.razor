@@ -63,7 +63,7 @@
                             <td><b>@uploadedFile.FileName</b></td>
                             <td>@Enum.GetName(typeof(UploadedFileType), uploadedFile.FileType)</td>
                             <td>@(uploadedFile.ManualUpload ? "Manual" : "API")</td>
-                            <td>@uploadedFile.UploadDate.ToString("dd MMM yyyy hh:mm:ss tt")</td>
+                            <td>@uploadedFile.UploadDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
                             <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
                             <td>@uploadedFile.Summary</td>
                             <td @onclick="@(() => Delete(uploadedFile))">Delete</td>

@@ -89,6 +89,8 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("IsOverloaded", typeof(bool)));
         dt.Columns.Add(NewDataColumn("OverSizedModified", typeof(bool)));
         dt.Columns.Add(NewDataColumn("Wheelbase", typeof(int)));
+        dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("BillNumber", typeof(string)));
         dt.Columns.Add(NewDataColumn("Axle1Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle2Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle3Time", typeof(DateTime)));
@@ -119,11 +121,13 @@ public class CsvHelper : ICsvHelper
     }
     private DataColumn NewDataColumn(string columnName, Type type)
     {
-        return new()
+        DataColumn dc = new()
         {
             ColumnName = columnName,
             DataType = type,
             DefaultValue = null
         };
+        
+        return dc;
     }
 }
