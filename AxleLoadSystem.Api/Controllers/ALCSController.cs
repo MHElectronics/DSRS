@@ -1,6 +1,7 @@
 ﻿using AxleLoadSystem.Api.Extensions;
 using AxleLoadSystem.Api.Models;
 using BOL;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -127,6 +128,10 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return new BadRequestResult();
             }
+            if(obj.DateTime.Date != DateTime.Today)
+            {
+                return BadRequest("Only today's data is allowed");
+            }
 
             //Check station code
             obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
@@ -141,6 +146,10 @@ namespace AxleLoadSystem.Api.Controllers
             if (obj == null)
             {
                 return new BadRequestResult();
+            }
+            if (obj.Any(l => l.DateTime.Date != DateTime.Today))
+            {
+                return BadRequest("Only today's data is allowed");
             }
 
             //Check station code
@@ -163,6 +172,10 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return new BadRequestResult();
             }
+            if (obj.DateTime.Date != DateTime.Today)
+            {
+                return BadRequest("Only today's data is allowed");
+            }
 
             //Check station code
             obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
@@ -177,6 +190,10 @@ namespace AxleLoadSystem.Api.Controllers
             if (obj == null)
             {
                 return new BadRequestResult();
+            }
+            if (obj.Any(l => l.DateTime.Date != DateTime.Today))
+            {
+                return BadRequest("Only today's data is allowed");
             }
 
             //Check station code

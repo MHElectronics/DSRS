@@ -1,0 +1,14 @@
+﻿@page "/BRTA"
+@using AxleLoadSystem.Helpers
+@inject IRHDApiHelper apiHelper
+@rendermode InteractiveServer
+
+<h3>BRTA API Test</h3>
+<button type="button" @onclick="Clicked">Click me!!!</button>
+
+@code {
+    private async Task Clicked()
+    {
+        await apiHelper.GetBRTAInformation();
+    }
+}

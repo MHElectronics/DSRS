@@ -1,6 +1,7 @@
 using AxleLoadSystem.Authentication;
 using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
+using AxleLoadSystem.Helpers;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Services.Helpers;
@@ -14,6 +15,7 @@ builder.Services.AddRazorComponents()
 
 //Add local dependencies
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
 //Add service dependencies
 builder.Services.AddServiceLayer();
 
@@ -21,6 +23,10 @@ builder.Services.AddServiceLayer();
 builder.Services.AddLocalization();
 builder.Services.AddControllers();
 
+//HTTP Client
+builder.Services.AddHttpClient("BRTA_API", client => client.BaseAddress = new Uri(builder.Configuration["BRTA_API"]));
+
+//Local storage
 builder.Services.AddBlazoredLocalStorage();
 
 
