@@ -3,6 +3,8 @@ using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
 using AxleLoadSystem.Helpers;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Services.Helpers;
 
@@ -15,6 +17,7 @@ builder.Services.AddRazorComponents()
 
 //Add local dependencies
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandler>();
 builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
 //Add service dependencies
 builder.Services.AddServiceLayer();
@@ -29,6 +32,9 @@ builder.Services.AddHttpClient("BRTA_API", client => client.BaseAddress = new Ur
 //Local storage
 builder.Services.AddBlazoredLocalStorage();
 
+//builder.Services.AddAuthorizationCore();
+builder.Services.AddAuthentication(BearerTokenDefaults.AuthenticationScheme).AddBearerToken();
+builder.Services.AddCascadingAuthenticationState();
 
 var app = builder.Build();
 
