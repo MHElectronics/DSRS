@@ -4,11 +4,71 @@
 @rendermode InteractiveServer
 
 <h3>BRTA API Test</h3>
-<button type="button" @onclick="Clicked">Click me!!!</button>
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="name" class="form-label">User Name</label>
+            <input type="text" @bind-value="payloadBRTA.userName" required class="form-control" placeholder="User Name" id="name" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="name" class="form-label">Password</label>
+            <input type="text" @bind-value="payloadBRTA.password" required class="form-control" placeholder="Password" id="name" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="name" class="form-label">Bridge Oid</label>
+            <input type="text" @bind-value="payloadBRTA.bridgeOid" required class="form-control" placeholder="Bridge Oid" id="name" />
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="form-group">
+            <label for="name" class="form-label">RFID</label>
+            <input type="text" @bind-value="payloadBRTA.rfid" class="form-control" placeholder="RFID" id="name" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="name" class="form-label">Zone</label>
+            <input type="text" @bind-value="payloadBRTA.zone" class="form-control" placeholder="zone" id="name" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="name" class="form-label">Series</label>
+            <input type="text" @bind-value="payloadBRTA.series" class="form-control" placeholder="Series" id="name" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="name" class="form-label">Vehicle Number</label>
+            <input type="text" @bind-value="payloadBRTA.Number" class="form-control" placeholder="Vehicle Number" id="name" />
+        </div>
+    </div>
+
+   
+</div>
+
+<button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">Show By RFID</button>
+<button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">Show by Registration Number</button>
+
+<div class="row">
+    <label class="form-label">@view</label>
+</div>
 
 @code {
-    private async Task Clicked()
+    public PayloadBRTA payloadBRTA { get; set; } = new();
+    public string view { get; set; } = null;
+
+    private async Task ShowBrtaInfoByRfid()
     {
-        await apiHelper.GetBRTAInformation();
+        view = await apiHelper.GetBRTAInformationByRFID(payloadBRTA);
+        
+    }
+    private async Task ShowBrtaInfoByRegistrationNumber()
+    {
+        await apiHelper.GetBRTAInformationByRegistrationNumber(payloadBRTA);
     }
 }
