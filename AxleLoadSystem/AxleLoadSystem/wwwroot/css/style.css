@@ -1,0 +1,23 @@
+﻿.layout-fixed .main-sidebar {
+    background-image: url("../images/parretn_spiral.png");
+    background-size: 400px 400px;
+}
+.content-wrapper {
+    /*background-image: url("../images/parretn_spiral.png");
+    background-size: 400px 400px;*/
+}
+.main-header {
+    /*background-image: url("../images/pattern_circle.png");
+    background-size: 200px 200px;*/
+}
+.brand-link:hover {
+    color: #FF5800 !important;
+}
+.dark-mode .nav-item.dropdown .dropdown-menu {
+    background-image: url("../images/parretn_spiral.png");
+    background-size: 400px 400px;
+}
+
+.dark-mode ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
