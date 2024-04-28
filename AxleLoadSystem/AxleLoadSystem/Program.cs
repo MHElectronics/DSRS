@@ -25,6 +25,9 @@ builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
 //Add service dependencies
 builder.Services.AddServiceLayer();
 
+//Caching
+builder.Services.AddMemoryCache();
+
 //Localization
 builder.Services.AddLocalization();
 builder.Services.AddControllers();

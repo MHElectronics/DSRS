@@ -1,4 +1,5 @@
 ﻿using BOL;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Services.Helpers;
 
@@ -17,37 +18,89 @@ public class StationService : IStationService
     private static Random random = new Random();
     private ISqlDataAccess _db { get; set; }
     private IConfiguration _configuration { get; set; }
-    public StationService(ISqlDataAccess db, IConfiguration configuration)
+    private IMemoryCache _cacheProvider { get; set; }
+    public StationService(ISqlDataAccess db, IConfiguration configuration, IMemoryCache cacheProvider)
     {
         _db = db;
         _configuration = configuration;
+        _cacheProvider = cacheProvider;
     }
 
     public async Task<IEnumerable<Station>> Get()
     {
-        string query = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations";
-        return await _db.LoadData<Station, dynamic>(query, null);
+        if (!_cacheProvider.TryGetValue(CacheKeys.Stations, out IEnumerable<Station> stations))
+        {
+            // Get the data from database
+            string query = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations";
+            stations = await _db.LoadData<Station, dynamic>(query, null);
+            
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddMinutes(2),
+                SlidingExpiration = TimeSpan.FromMinutes(1),
+                Size = 1024,
+            };
+            _cacheProvider.Set(CacheKeys.Stations, stations, cacheEntryOptions);
+        }
+
+        return stations;
     }
     public async Task<Station> GetById(Station obj)
     {
+        if (_cacheProvider.TryGetValue(CacheKeys.Stations, out IEnumerable<Station> stations))
+        {
+            return stations.FirstOrDefault(s => s.StationId == obj.StationId);
+        }
+
         string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations WHERE StationId=@StationId";
-        return await _db.LoadSingleAsync<Station, dynamic>(sql, new { obj.StationId });
+        Station station = await _db.LoadSingleAsync<Station, dynamic>(sql, new { obj.StationId });
+
+        //Reset cache without waiting
+        if (station is not null)
+        {
+            this.Get();
+        }
+
+        return station;
     }
 
     public async Task<bool> Add(Station obj)
     {
         string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey,MapX,MapY) VALUES(@StationCode,@StationName,@Address,@AuthKey,@MapX,@MapY)";
-        return await _db.SaveData<Station>(query, obj);
+        bool isSuccess = await _db.SaveData<Station>(query, obj);
+
+        //Reset cache without waiting
+        if (isSuccess)
+        {
+            this.Get();
+        }
+
+        return isSuccess;
     }
     public async Task<bool> Update(Station obj)
     {
         string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
-        return await _db.SaveData<Station>(query, obj);
+        bool isSuccess = await _db.SaveData<Station>(query, obj);
+        
+        //Reset cache without waiting
+        if (isSuccess)
+        {
+            this.Get();
+        }
+
+        return isSuccess;
     }
     public async Task<bool> Delete(Station obj)
     {
         string query = "DELETE FROM Stations WHERE StationId=@StationId";
         int count = await _db.DeleteData<Station, object>(query, new { obj.StationId });
+
+        //Reset cache without waiting
+        if (count > 0)
+        {
+            this.Get();
+        }
+
         return count > 0;
     }
     

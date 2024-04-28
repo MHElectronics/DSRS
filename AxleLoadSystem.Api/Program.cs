@@ -1,3 +1,4 @@
+using AxleLoadSystem.Api.Extensions;
 using Microsoft.OpenApi.Models;
 using Services.Helpers;
 
@@ -31,6 +32,11 @@ builder.Services.AddSwaggerGen(c =>
 
 //Add service dependencies
 builder.Services.AddServiceLayer();
+
+//Caching
+builder.Services.AddMemoryCache();
+//builder.Services.AddHostedService<BackgroudCacheRefresh>();
+
 
 var app = builder.Build();
 

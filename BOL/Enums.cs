@@ -28,3 +28,9 @@
         FineData = 2
     }
 }
+
+public static class CacheKeys
+{
+    public static string Stations { get; set; } = "Stations";
+
+}
