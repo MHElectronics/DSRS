@@ -3,8 +3,7 @@ using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
 using AxleLoadSystem.Helpers;
 using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Services.Helpers;
 
@@ -15,9 +14,13 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+//Local storage
+builder.Services.AddBlazoredLocalStorage();
+
 //Add local dependencies
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthorizationMiddlewareResultHandler>();
+builder.Services.AddAuthentication()
+    .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomSchemeName", options => { });
 builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
 //Add service dependencies
 builder.Services.AddServiceLayer();
@@ -29,11 +32,6 @@ builder.Services.AddControllers();
 //HTTP Client
 builder.Services.AddHttpClient("BRTA_API", client => client.BaseAddress = new Uri(builder.Configuration["BRTA_API"]));
 
-//Local storage
-builder.Services.AddBlazoredLocalStorage();
-
-//builder.Services.AddAuthorizationCore();
-builder.Services.AddAuthentication(BearerTokenDefaults.AuthenticationScheme).AddBearerToken();
 builder.Services.AddCascadingAuthenticationState();
 
 var app = builder.Build();
@@ -41,6 +39,7 @@ var app = builder.Build();
 //Localization
 var cultures = builder.Configuration.GetSection("Cultures")
     .GetChildren().ToDictionary(x => x.Key, x => x.Value);
+
 string[] supportedCultures = cultures.Keys.ToArray();
 var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture("en-US")
