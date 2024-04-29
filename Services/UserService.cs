@@ -10,6 +10,7 @@ public interface IUserService
     Task<User?> GetUserById(int id);
     Task<User> InsertUser(User user);
     Task<User> UpdateUser(User user);
+    Task<bool> ChangePassword(User user);
     Task<bool> Delete(User user);
     Task<IEnumerable<User>> GetUsers();
 }
@@ -55,7 +56,6 @@ public class UserService : IUserService
 
     public async Task<User> UpdateUser(User user)
     {
-
         string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, Password=@Password WHERE Id=@Id";
         await _db.SaveData(sql, user);
         return user;
@@ -67,4 +67,9 @@ public class UserService : IUserService
         return count > 0;
     }
 
+    public async Task<bool> ChangePassword(User user)
+    {
+        string sql = @"UPDATE Users SET Password=@Password WHERE Id=@Id AND Email=@Email";
+        return await _db.SaveData(sql, user);
+    }
 }
