@@ -147,14 +147,14 @@ public class FileService : IFileService
     public async Task<bool> Delete(UploadedFile file)
     {
         //Delete Data
-        await _axleLoadService.Delete(file.Date);
-        await _finePaymentService.Delete(file.Date);
+        await _axleLoadService.Delete(file);
+        await _finePaymentService.Delete(file);
         string path = GetFiledName(file);
         string folderName = file.Date.ToString("yyyyMM");
 
         //Delete file from ftp
         await _ftpHelper.DeleteFile(Path.Combine(folderName, path));
-        
+
         //Delete uploaded file
         string query = @"DELETE FROM UploadedFiles WHERE Id=@Id";
         return await _db.SaveData(query, new { file.Id});

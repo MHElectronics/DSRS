@@ -7,7 +7,7 @@ public interface IFinePaymentService
 {
     Task<bool> Add(FinePayment obj);
     Task<bool> Add(List<FinePayment> obj);
-    Task<bool> Delete(DateTime date);
+    Task<bool> Delete(UploadedFile file);
 }
 
 public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
@@ -27,10 +27,11 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
         return await _db.SaveData(query, obj);
     }
 
-    public async Task<bool> Delete(DateTime date)
+    public async Task<bool> Delete(UploadedFile file)
     {
-        string query = "DELETE FROM FinePayment WHERE DATEDIFF(DAY,DateTime,@Date)=0";
+        string query = @"DELETE FROM FinePaymentProcess WHERE FileId=@FileId
+            DELETE FROM FinePayment WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@Date)=0";
 
-        return await _db.SaveData(query, new { Date = date });
+        return await _db.SaveData(query, new { FileId=file.Id, file.StationId, file.Date });
     }
 }
