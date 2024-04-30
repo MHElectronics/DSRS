@@ -49,7 +49,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["WimLaneNumber"]</label>
-                        <input type="number" @bind-value="wimScale.LaneNumber" required class="form-control" id="wimLaneNumber" />
+                        <input type="number" @bind-value="wimScale.LaneNumber" required class="form-control" id="wimLaneNumber" min="1" max="99" />
                         <ValidationMessage For="() => wimScale.LaneNumber" />
                     }
                 </div>
@@ -64,7 +64,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["WimEquipmentCode"]</label>
-                        <input type="text" @bind-value="wimScale.EquipmentCode" required class="form-control" placeholder="@localizer["WimEquipmentCode"]" id="address" />
+                        <input type="text" @bind-value="wimScale.EquipmentCode" required class="form-control" placeholder="@localizer["WimEquipmentCode"]" id="address" maxlength="1" />
                         <ValidationMessage For="() => wimScale.EquipmentCode" />
                     }
                 </div>
@@ -79,7 +79,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["WimLaneDirection"]</label>
-                        <input type="text" @bind-value="wimScale.LaneDirection" required class="form-control" placeholder="@localizer["WimLaneDirection"]" id="wimLaneDirection" />
+                        <input type="text" @bind-value="wimScale.LaneDirection" required class="form-control" placeholder="@localizer["WimLaneDirection"]" id="wimLaneDirection" maxlength="50" />
                         <ValidationMessage For="() => wimScale.LaneDirection" />
                     }
                 </div>

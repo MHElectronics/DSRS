@@ -26,7 +26,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["Name"]</label>
-                        <input type="text" @bind-value="station.StationName" required class="form-control" placeholder="@localizer["Name"]" id="name" />
+                        <input type="text" @bind-value="station.StationName" required class="form-control" placeholder="@localizer["Name"]" id="name" maxlength="50" />
                         <ValidationMessage For="() => station.StationName" />
                     }
                 </div>
@@ -41,7 +41,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["Code"]</label>
-                        <input type="text" @bind-value="station.StationCode" required class="form-control" placeholder="@localizer["Code"]" id="code" />
+                        <input type="text" @bind-value="station.StationCode" required class="form-control" placeholder="@localizer["Code"]" id="code" maxlength="8" />
                         <ValidationMessage For="() => station.StationCode" />
                     }
                 </div>
@@ -56,7 +56,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["Address"]</label>
-                        <input type="text" @bind-value="station.Address" required class="form-control" placeholder="@localizer["Address"]" id="address" />
+                        <input type="text" @bind-value="station.Address" required class="form-control" placeholder="@localizer["Address"]" id="address" maxlength="300" />
                         <ValidationMessage For="() => station.Address" />
                     }
                 </div>
@@ -72,7 +72,7 @@ else
                     {
                         <label for="name" class="form-label">@localizer["AuthKey"]</label>
                         <div class="input-group mb-3">
-                            <input type="text" @bind-value="station.AuthKey" required class="form-control" placeholder="@localizer["AuthKey"]" aria-label="API Key" id="authkey" aria-describedby="basic-addon2" />
+                            <input type="text" @bind-value="station.AuthKey" required class="form-control" placeholder="@localizer["AuthKey"]" aria-label="API Key" id="authkey" aria-describedby="basic-addon2" maxlength="20" />
                             <span class="input-group-text" id="basic-addon2" @onclick="GenerateKey">@localizer["GenerateKey"]</span>
                         </div>
 

@@ -26,7 +26,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["Email"]</label>
-                        <input type="text" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
+                        <input type="email" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
                         <ValidationMessage For="() => user.Email" />
                     }
                 </div>
@@ -41,7 +41,7 @@ else
                     else
                     {
                         <label for="name" class="form-label">@localizer["Name of User"]</label>
-                        <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" />
+                        <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" maxlength="50" />
                         <ValidationMessage For="() => user.Name" />
                     }
                 </div>
@@ -78,14 +78,14 @@ else
                 <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="name" class="form-label">@localizer["Password"]</label>
-                        <input type="password" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" />
+                        <input type="password" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" maxlength="50" />
                         <ValidationMessage For="() => user.Password" />
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <div class="form-group">
                         <label for="name" class="form-label">@localizer["ConfirmPassword"]</label>
-                        <input type="password" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" />
+                        <input type="password" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" maxlength="50" />
                         <ValidationMessage For="() => confirmPassword" />
                     </div>
                 </div>
