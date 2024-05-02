@@ -58,6 +58,7 @@
                 <tbody>
                     @foreach (UploadedFile uploadedFile in uploadedFiles.OrderByDescending(f => f.Date))
                     {
+                        string displayLink = "/DailyData/" + uploadedFile.Id;
                         <tr>
                             <td>@uploadedFile.Date.ToString("dd MMM yyyy")</td>
                             <td><b>@uploadedFile.FileName</b></td>
@@ -66,7 +67,10 @@
                             <td>@uploadedFile.UploadDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
                             <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
                             <td>@uploadedFile.Summary</td>
-                            <td @onclick="@(() => Delete(uploadedFile))">Delete</td>
+                            <td @onclick="@(() => Delete(uploadedFile))"><i class="fa fa-trash"></i></td>
+                            <td>
+                                <NavLink href="@displayLink"><i class="fa fa-eye"></i></NavLink>
+                            </td>
                         </tr>
                     }
 

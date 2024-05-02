@@ -5,6 +5,7 @@ namespace Services;
 
 public interface IAxleLoadService
 {
+    Task<IEnumerable<LoadData>> Get(LoadData obj);
     Task<bool> Add(LoadData obj);
     Task<bool> Add(List<LoadData> obj);
     Task<bool> Delete(UploadedFile file);
@@ -12,6 +13,12 @@ public interface IAxleLoadService
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 {
+    public async Task<IEnumerable<LoadData>> Get(LoadData obj)
+    {
+        string query = @"SELECT * FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
+
+        return await _db.LoadData<LoadData, object>(query, obj);
+    }
     public async Task<bool> Add(LoadData obj)
     {
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed

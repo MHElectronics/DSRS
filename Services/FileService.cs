@@ -48,8 +48,8 @@ public class FileService : IFileService
     }
     public async Task<UploadedFile> GetById(UploadedFile file)
     {
-        string sql = "SELECT Id,StationId,Date,FileType,FileName,ManualUpload,UploadDate,IsProcessed FROM UploadedFiles WHERE Id=@Id";
-        return await _db.LoadSingleAsync<UploadedFile, dynamic>(sql, file.Id);
+        string sql = "SELECT * FROM UploadedFiles WHERE Id=@Id";
+        return await _db.LoadSingleAsync<UploadedFile, object>(sql, new { Id = file.Id });
     }
     public async Task<bool> FileExists(UploadedFile file)
     {
