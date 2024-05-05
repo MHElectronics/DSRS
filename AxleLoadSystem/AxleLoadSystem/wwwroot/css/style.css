@@ -20,11 +20,14 @@
 }
 
 /*Side bad hover color*/
-.brand-link:hover {
+.nav-item:hover .nav-icon {
     color: #FF5800 !important;
 }
-.nav-item:hover .nav-icon {
-    color: #FF5800;
+.brand-link:hover > img {
+    border: 1px solid #FF5800;
+}
+.brand-link:hover > span {
+    color: whitesmoke;
 }
 
 /*Chrome calendar color*/
@@ -32,7 +35,7 @@
     filter: invert(1);
 }
 
-
+/*Chrome input backgroud color for auto fill*/
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
