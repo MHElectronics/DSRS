@@ -6,6 +6,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Services.Helpers;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,8 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient("BRTA_API", client => client.BaseAddress = new Uri(builder.Configuration["BRTA_API"]));
 
 builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddSyncfusionBlazor();
 
 var app = builder.Build();
 
