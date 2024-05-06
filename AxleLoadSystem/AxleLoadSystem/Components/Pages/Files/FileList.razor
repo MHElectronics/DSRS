@@ -67,19 +67,23 @@
                             <td>@uploadedFile.UploadDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
                             <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
                             <td>@uploadedFile.Summary</td>
-                            <td @onclick="@(() => Delete(uploadedFile))"><i class="fa fa-trash"></i></td>
+                            <td>
+                                @if (!deleteClicked)
+                                {
+                                    <i class="fa fa-trash" @onclick="@(() => Delete(uploadedFile))"></i>
+                                }
+                            </td>
                             <td>
                                 <NavLink href="@displayLink"><i class="fa fa-eye"></i></NavLink>
                             </td>
                         </tr>
                     }
-
                 </tbody>
             </table>
         }
     </div>
 </div>
-<ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" ConfirmationMessage="Sure to Delete with data?" />
+<ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete with data?" />
 
 @code {
     private IEnumerable<UploadedFile> uploadedFiles;
@@ -88,6 +92,7 @@
 
     protected ConfirmDialog deleteConfirmationRef { get; set; }
     private UploadedFile selectedFile { get; set; }
+    private bool deleteClicked { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,6 +115,7 @@
     }
     private async Task Delete(UploadedFile file)
     {
+        deleteClicked = true;
         selectedFile = file;
         await deleteConfirmationRef.Show();
     }
@@ -117,5 +123,9 @@
     {
         await fileService.Delete(selectedFile);
         await GetFileList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
     }
 }

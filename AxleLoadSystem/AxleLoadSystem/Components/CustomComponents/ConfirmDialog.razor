@@ -49,6 +49,8 @@
     public string ConfirmationButtonText { get; set; } = "Execute";
     [Parameter]
     public EventCallback ConfirmationChanged { get; set; }
+    [Parameter]
+    public EventCallback OnClose { get; set; }
     private bool Open { get; set; } = false;
 
     private IJSObjectReference module;
@@ -81,6 +83,7 @@
     public async Task Hide()
     {
         Open = false;
+        await OnClose.InvokeAsync();
         await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
     }
 

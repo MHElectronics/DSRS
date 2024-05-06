@@ -1,0 +1,58 @@
+﻿@inject IStationService stationService
+@inject IFileService fileService
+
+<h3>ALCS Information</h3>
+
+@if(Station is null)
+{
+    <Loader/>
+}
+else
+{
+    <table>
+        <tr>
+            <td>ALCS</td>
+            <td>@Station.StationName</td>
+        </tr>
+        <tr>
+            <td>Address</td>
+            <td>@Station.Address</td>
+        </tr>
+        @if (files is not null && files.Any())
+        {
+            <tr>
+                <td>Last file uploaded</td>
+                <td>@files.Max(f => f.Date).ToString("dd MMM yy")</td>
+            </tr>
+            <tr>
+                <td>Total Files uploaded</td>
+                <td>@files.Count().ToString("N0")</td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>Last file uploaded</td>
+                <td>NA</td>
+            </tr>
+            <tr>
+                <td>Total Files uploaded</td>
+                <td>0</td>
+            </tr>
+        }
+    </table>
+}
+
+@code {
+    [Parameter]
+    public Station Station { get; set; }
+
+    private IEnumerable<UploadedFile> files{ get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Station = await stationService.GetById(Station);
+        files = await fileService.Get(Station.StationId);
+        
+    }
+}

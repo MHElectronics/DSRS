@@ -27,12 +27,13 @@
     <div class="col">
         @if(station is not null)
         {
-            <dl>
+            @* <dl>
                 <dt>Id</dt>
                 <dd>@station.StationId</dd>
                 <dt>Station</dt>
                 <dd>@station.StationName</dd>
-            </dl>
+            </dl> *@
+            <ALCSInformation Station="@station"></ALCSInformation>
         }
         else
         {

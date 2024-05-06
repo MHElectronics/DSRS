@@ -37,10 +37,12 @@ public class FileService : IFileService
 
         if (stationId > 0)
         {
+            sql += " AND StationId=@StationId";
             param.Add("@StationId", stationId);
         }
         if (date != null)
         {
+            sql += " AND DATEDIFF(Day,Date,@Date)=0";
             param.Add("@Date", date);
         }
 
