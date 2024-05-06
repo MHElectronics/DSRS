@@ -65,8 +65,13 @@ else
                             <td>Eq. Code: @wim.EquipmentCode</td>
                             <td>Direction: @wim.LaneDirection</td>
                             <td>
-                                <a class="waves-effect" href="@("/wimscale/" + wim.Id)" title="Details Information">
+                                <a class="waves-effect" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
                                     <i class="fa fa-info"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="waves-effect" href="@("/wimscale/edit/" + wim.Id)" title="Edit Information">
+                                    <i class="fa fa-edit"></i>
                                 </a>
                             </td>
                         </tr>
