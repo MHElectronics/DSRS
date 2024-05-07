@@ -1,0 +1,69 @@
+﻿@page "/DailyData/{fileId:int}"
+@using BOL.Helpers
+@inject IFileService fileService
+@inject IStationService stationService
+@inject IAxleLoadService loadService
+@inject IFinePaymentService fineRepaymentService
+
+<h3>Daily Data</h3>
+
+
+@if (File is null || station is null)
+{
+    <Loader />
+    return;
+}
+else
+{
+    <span>Station: @station.StationName</span>
+    <br />
+    <span>File Type: @(Enum.Parse(typeof(UploadedFileType), File.FileType.ToString()))</span>
+    <br />
+    <span>Date: @File.Date.ToString("dd MMM yyyy")</span>
+    <br />
+    @if (!string.IsNullOrEmpty(File.Summary))
+    {
+        <span>Summary:</span>
+        <br/>
+        @foreach(string item in File.Summary.Split('|'))
+        {
+            <span>@item</span>
+            <br/>
+        }
+    }
+
+    <DailyDataTableComponent FIle="@File" AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" @rendermode="InteractiveAuto" />
+}
+
+@code {
+    [Parameter]
+    public int FileId { get; set; }
+
+    private UploadedFile File { get; set; }
+    private Station station { get; set; }
+    private IQueryable<LoadData> axleLoadData { get; set; }
+    private IQueryable<FinePayment> fineRepaymentData { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        File = new() { Id = FileId };
+        File = await fileService.GetById(File);
+        station = new() { StationId = File.StationId };
+        station = await stationService.GetById(station);
+
+        if (File.FileType == 1)
+        {
+            LoadData loadData = new() { StationId = File.StationId, DateTime = File.Date };
+            IEnumerable<LoadData> items = await loadService.Get(loadData);
+
+            axleLoadData = items.AsQueryable();
+        }
+        else
+        {
+            FinePayment finePayment = new() { StationId = File.StationId, DateTime = File.Date };
+            IEnumerable<FinePayment> items = await fineRepaymentService.Get(finePayment);
+
+            fineRepaymentData = items.AsQueryable();
+        }
+    }
+}

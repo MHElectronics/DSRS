@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNetCore.Components.QuickGrid
+
+@if (File.FileType == 1)
+{
+    <QuickGrid Items="@AxleLoadData">
+        <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+        <PropertyColumn Property="@(l => l.PlateZone)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.PlateSeries)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.PlateNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.NumberOfAxle)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.VehicleSpeed)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle1)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle2)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle3)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle4)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle5)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle6)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle7)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.AxleRemaining)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.GrossVehicleWeight)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.IsUnloaded)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.IsOverloaded)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.OverSizedModified)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Wheelbase)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle1Time)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle2Time)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle3Time)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle4Time)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle5Time)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle6Time)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.Axle7Time)" Sortable="true" />
+    </QuickGrid>
+}
+else
+{
+    <QuickGrid Items="@FineRepaymentData">
+        <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+        <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.FineAmount)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.PaymentMethod)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
+        <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
+    </QuickGrid>
+}
+
+@code {
+    [Parameter]
+    public UploadedFile File { get; set; }
+    [Parameter]
+    public Station Station { get; set; }
+    [Parameter]
+    public IQueryable<LoadData> AxleLoadData { get; set; }
+    [Parameter]
+    public IQueryable<FinePayment> FineRepaymentData { get; set; }
+
+}
