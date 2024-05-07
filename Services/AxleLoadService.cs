@@ -61,17 +61,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
     public async Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate)
     {
-        string query = @"DECLARE @Dates TABLE([Date] DATE)
-
-            WHILE @StartDate<=@EndDate
-            BEGIN
-	            INSERT INTO @Dates([Date]) VALUES(@StartDate)
-	            SET @StartDate=DATEADD(DAY,1,@StartDate)
-            END
-
-            SELECT CONVERT(DATE,DateTime) Date,SUM(CONVERT(INT, IsOverloaded)) Overloaded,COUNT(1) TotalVehicle
-            FROM AxleLoad AL INNER JOIN @Dates D ON DATEDIFF(Day,AL.DateTime,D.[Date])=0
+        string query = @"SELECT CONVERT(DATE,DateTime) Date,SUM(CONVERT(INT, IsOverloaded))*1000 Overloaded,COUNT(1) TotalVehicle
+            FROM AxleLoad
             WHERE StationId=@StationId
+            AND DATEDIFF(Day,DateTime,@StartDate)<=0
+            AND DATEDIFF(Day,DateTime,@EndDate)>=0
             GROUP BY CONVERT(DATE,DateTime)
             ORDER BY CONVERT(DATE,DateTime)";
 

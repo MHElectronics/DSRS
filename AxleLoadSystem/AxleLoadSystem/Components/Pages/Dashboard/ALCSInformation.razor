@@ -55,14 +55,21 @@ else
             else
             {
                 <SfChart>
-                    <ChartPrimaryXAxis IntervalType="IntervalType.Years" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
+                    <ChartPrimaryXAxis IntervalType="IntervalType.Auto" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
                     <ChartSeriesCollection>
-                        <ChartSeries DataSource="@loadCounts" XName="Date" YName="TotalVehicle" Type="ChartSeriesType.Column"></ChartSeries>
-                        <ChartSeries DataSource="@loadCounts" XName="Date" YName="Overloaded" Type="ChartSeriesType.Column"></ChartSeries>
+                        <ChartSeries DataSource="@loadCounts" XName="Date" YName="TotalVehicle" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="green">
+                            <ChartMarker>
+                                <ChartDataLabel Visible="true"></ChartDataLabel>
+                            </ChartMarker>
+                        </ChartSeries>
+                        <ChartSeries DataSource="@loadCounts" XName="Date" YName="Overloaded" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="red">
+                            <ChartMarker>
+                                <ChartDataLabel Visible="true"></ChartDataLabel>
+                            </ChartMarker>
+                        </ChartSeries>
                     </ChartSeriesCollection>
                 </SfChart>
             }
-            
         </div>
     </div>
 }
@@ -78,6 +85,6 @@ else
     {
         // Station = await stationService.GetById(Station);
         files = await fileService.Get(Station.StationId);
-        loadCounts = await axleLoadService.GetDateWiseCount(Station, DateTime.Today.AddDays(-8), DateTime.Today.AddDays(-1));
+        loadCounts = await axleLoadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
     }
 }
