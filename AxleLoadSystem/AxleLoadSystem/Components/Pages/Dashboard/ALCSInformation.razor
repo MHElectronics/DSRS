@@ -2,6 +2,7 @@
 @using Syncfusion.Blazor.Charts
 @inject IStationService stationService
 @inject IFileService fileService
+@inject IAxleLoadService axleLoadService
 
 <h3>ALCS Information</h3>
 
@@ -47,9 +48,21 @@ else
             </table>
         </div>
         <div class="col-12">
-            <SfChart>
-
-            </SfChart>
+            @if(loadCounts is null)
+            {
+                <Loader/>
+            }
+            else
+            {
+                <SfChart>
+                    <ChartPrimaryXAxis IntervalType="IntervalType.Years" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
+                    <ChartSeriesCollection>
+                        <ChartSeries DataSource="@loadCounts" XName="Date" YName="TotalVehicle" Type="ChartSeriesType.Column"></ChartSeries>
+                        <ChartSeries DataSource="@loadCounts" XName="Date" YName="Overloaded" Type="ChartSeriesType.Column"></ChartSeries>
+                    </ChartSeriesCollection>
+                </SfChart>
+            }
+            
         </div>
     </div>
 }
@@ -59,11 +72,12 @@ else
     public Station Station { get; set; }
 
     private IEnumerable<UploadedFile> files{ get; set; }
+    private IEnumerable<AxleLoadCount> loadCounts { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
         // Station = await stationService.GetById(Station);
         files = await fileService.Get(Station.StationId);
-        
+        loadCounts = await axleLoadService.GetDateWiseCount(Station, DateTime.Today.AddDays(-8), DateTime.Today.AddDays(-1));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BOL;
+using BOL.CustomModels;
 using Services.Helpers;
 
 namespace Services;
@@ -9,6 +10,8 @@ public interface IAxleLoadService
     Task<bool> Add(LoadData obj);
     Task<bool> Add(List<LoadData> obj);
     Task<bool> Delete(UploadedFile file);
+
+    Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate);
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -54,5 +57,24 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             DELETE FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@Date)=0";
 
         return await _db.SaveData(query, new { FileId=file.Id, file.StationId, file.Date });
+    }
+
+    public async Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate)
+    {
+        string query = @"DECLARE @Dates TABLE([Date] DATE)
+
+            WHILE @StartDate<=@EndDate
+            BEGIN
+	            INSERT INTO @Dates([Date]) VALUES(@StartDate)
+	            SET @StartDate=DATEADD(DAY,1,@StartDate)
+            END
+
+            SELECT CONVERT(DATE,DateTime) Date,SUM(CONVERT(INT, IsOverloaded)) Overloaded,COUNT(1) TotalVehicle
+            FROM AxleLoad AL INNER JOIN @Dates D ON DATEDIFF(Day,AL.DateTime,D.[Date])=0
+            WHERE StationId=@StationId
+            GROUP BY CONVERT(DATE,DateTime)
+            ORDER BY CONVERT(DATE,DateTime)";
+
+        return await _db.LoadData<AxleLoadCount, object>(query, new { station.StationId, startDate, endDate });
     }
 }
