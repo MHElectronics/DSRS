@@ -39,6 +39,8 @@ builder.Services.AddHttpClient("BRTA_API", client => client.BaseAddress = new Ur
 builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddSyncfusionBlazor();
+//Register Syncfusion license
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzI2MTE0MUAzMjM1MmUzMDJlMzBLbk9lRUwyYjhIVUxBUUdNOFp6eDU4ckZ0Vk53Vkpyc1pmRThZbkZHSEhjPQ==");
 
 var app = builder.Build();
 
