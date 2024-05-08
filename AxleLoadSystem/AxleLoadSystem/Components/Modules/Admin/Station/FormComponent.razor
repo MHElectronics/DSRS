@@ -123,10 +123,11 @@ else
                             <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                         }
                         <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
-                        <CustomNotification Notification="notification"/>
                     </div>
                 </div>
-
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <CustomNotification Notification="notification" />
             </div>
         </div>
     </EditForm>

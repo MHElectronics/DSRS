@@ -31,6 +31,7 @@ else
                 <th>@localizer["Address"]</th>
                 <th>@localizer["AuthKey"]</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -50,6 +51,11 @@ else
                     <td>
                         <a class="waves-effect" href="@("/station/edit/" + item.StationId)" title="Edit Information">
                             <i class="fa fa-edit"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a class="waves-effect" @onclick="(() => DeleteStation(item))">
+                            <i class="fa fa-trash"></i>
                         </a>
                     </td>
                 </tr>
@@ -74,19 +80,84 @@ else
                                     <i class="fa fa-edit"></i>
                                 </a>
                             </td>
+                            <td>
+                                <a class="waves-effect" @onclick="(() => DeleteWim(wim))">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+
                         </tr>
                     }
                 }
             }
         </tbody>
     </table>
+    <CustomNotification Notification="notification" />
+    <ConfirmDialog @ref="deleteConfirmationStationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStation" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station?" />
+    <ConfirmDialog @ref="deleteConfirmationWimRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedWim" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Wim Scale?" />
 }
 @code {
     private IEnumerable<Station> stations;
     private IEnumerable<WIMScale> wims;
+    protected ConfirmDialog deleteConfirmationStationRef { get; set; }
+    protected ConfirmDialog deleteConfirmationWimRef { get; set; }
+    private Station SelectedStation { get; set; }
+    private WIMScale SelectedWim { get; set; }
+    private Notification notification { get; set; } = new();
+    private bool deleteClicked { get; set; } = false;
+
     protected override async Task OnInitializedAsync()
+    {
+        await GetStationandWimList();
+    }
+    private async Task GetStationandWimList()
     {
         stations = await stationService.Get();
         wims = await wimService.Get(new WIMScale());
+    }
+    private async Task DeleteStation(Station station)
+    {
+        deleteClicked = true;
+        SelectedStation = station;
+        await deleteConfirmationStationRef.Show();
+    }
+    private async Task DeleteWim(WIMScale wim)
+    {
+        deleteClicked = true;
+        SelectedWim = wim;
+        await deleteConfirmationWimRef.Show();
+    }
+    private async Task DeleteConfirmedStation()
+    {
+        if (await stationService.Delete(SelectedStation))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Station Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Station Deletion";
+        }
+        await GetStationandWimList();
+    }
+    private async Task DeleteConfirmedWim()
+    {
+        if (await wimService.Delete(SelectedWim))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Wim Scale Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Wim Scale Deletion";
+        }
+        await GetStationandWimList();
+    }
+
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
     }
 }
