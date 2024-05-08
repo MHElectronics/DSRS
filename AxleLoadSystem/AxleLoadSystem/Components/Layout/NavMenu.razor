@@ -59,61 +59,73 @@
             </p>
         </NavLink>
     </li> *@
-    <li class="nav-header">Administration</li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-users"></i>
-            <p>
-                @localizer["Menu.User"]
-                @* <span class="right badge badge-danger">New</span> *@
-            </p>
-        </NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="changepassword" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-key"></i>
-            <p>
-                @localizer["Change Password"]
-                @* <span class="right badge badge-danger">New</span> *@
-            </p>
-        </NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-list"></i>
-            <p>
-                @localizer["Menu.Station"]
-                @* <span class="right badge badge-danger">New</span> *@
-            </p>
-        </NavLink>
-    </li>
+    <AuthorizeView>
+        <NotAuthorized>Login to view menu</NotAuthorized>
+    </AuthorizeView>
 
-    <li class="nav-header">Pages</li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-upload"></i>
-            <p>
-                File Upload
-                @* <span class="right badge badge-danger">New</span> *@
-            </p>
-        </NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="filelist" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-file"></i>
-            <p>
-                @* @localizer["Menu.Station"] *@
-                Uploaded Files
-            </p>
-        </NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-map"></i>
-            <p>
-                @localizer["Menu.Map"]
-                @* <span class="right badge badge-danger">New</span> *@
-            </p>
-        </NavLink>
-    </li>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <li class="nav-header">Administration</li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-users"></i>
+                    <p>
+                        @localizer["Menu.User"]
+                        @* <span class="right badge badge-danger">New</span> *@
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-list"></i>
+                    <p>
+                        @localizer["Menu.Station"]
+                        @* <span class="right badge badge-danger">New</span> *@
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="filelist" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-file"></i>
+                    <p>
+                        @* @localizer["Menu.Station"] *@
+                        Uploaded Files
+                    </p>
+                </NavLink>
+            </li>
+        </Authorized>
+    </AuthorizeView>
+    
+    <AuthorizeView Roles="User">
+        <Authorized>
+            <li class="nav-header">Pages</li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="changepassword" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-key"></i>
+                    <p>
+                        @localizer["Change Password"]
+                        @* <span class="right badge badge-danger">New</span> *@
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-upload"></i>
+                    <p>
+                        File Upload
+                        @* <span class="right badge badge-danger">New</span> *@
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-map"></i>
+                    <p>
+                        @localizer["Menu.Map"]
+                        @* <span class="right badge badge-danger">New</span> *@
+                    </p>
+                </NavLink>
+            </li>
+        </Authorized>
+    </AuthorizeView>
 </ul>

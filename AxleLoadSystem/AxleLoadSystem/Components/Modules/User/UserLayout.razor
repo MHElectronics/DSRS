@@ -1,0 +1,7 @@
+﻿@layout AxleLoadSystem.Components.Layout.MainLayout
+@inherits LayoutComponentBase
+
+<AuthorizeView Roles="User">
+    <Authorized>@Body</Authorized>
+    <NotAuthorized>Not Authorized to view this page</NotAuthorized>
+</AuthorizeView>

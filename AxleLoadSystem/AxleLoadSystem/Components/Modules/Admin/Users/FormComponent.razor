@@ -147,13 +147,6 @@ else
             return;
         }
 
-        if(user.Password != confirmPassword)
-        {
-            notification.Type = Notification.NotificationType.Warning;
-            notification.Message = "Password and Confirm Password doesn't match";
-            return;
-        }
-
         string role = "";
         foreach (string r in selectedRoles)
         {
