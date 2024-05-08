@@ -37,9 +37,16 @@ public class SqlDataAccess : ISqlDataAccess
     }
     public async Task<int> DeleteData<T, U>(string query, U parameters)
     {
-        using IDbConnection connection = new SqlConnection(_connectionString);
-
-        return await connection.ExecuteAsync(query, parameters);
+        try
+        {
+            using IDbConnection connection = new SqlConnection(_connectionString);
+            int count = await connection.ExecuteAsync(query, parameters);
+            return count > 0 ? count : 0;
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        
     }
 
     public async Task<bool> SaveData<T>(string query, T parameters)

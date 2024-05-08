@@ -24,6 +24,7 @@ else
                 <th>Role(s)</th>
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -43,17 +44,48 @@ else
                             <i class="fa fa-edit"></i>
                         </a>
                     </td>
+                    <td>
+                        <a class="waves-effect" @onclick="(() => DeleteUser(user))">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
                 </tr>
             }
 
         </tbody>
     </table>
+
+    <ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete User?" />
+
 }
 @code {
     private IEnumerable<User> users;
+    protected ConfirmDialog deleteConfirmationRef { get; set; }
+    private User SelectedUser { get; set; }
+    private bool deleteClicked { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
+        await GetUserList();
+    }
+    private async Task GetUserList()
+    {
         users = await userService.GetUsers();
+    }
+
+    private async Task DeleteUser(User user)
+    {
+        deleteClicked = true;
+        SelectedUser = user;
+        await deleteConfirmationRef.Show();
+    }
+    private async Task DeleteConfirmed()
+    {
+        await userService.Delete(SelectedUser);
+        await GetUserList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
     }
 }

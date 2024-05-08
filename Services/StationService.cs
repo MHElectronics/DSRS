@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Services.Helpers;
 
+
 namespace Services;
 public interface IStationService
 {
@@ -92,7 +93,8 @@ public class StationService : IStationService
     }
     public async Task<bool> Delete(Station obj)
     {
-        string query = "DELETE FROM Stations WHERE StationId=@StationId";
+        string query = "DELETE FROM WIMScale WHERE StationId=@StationId " + 
+                       "DELETE FROM Stations WHERE StationId=@StationId";
         int count = await _db.DeleteData<Station, object>(query, new { obj.StationId });
 
         //Reset cache without waiting
