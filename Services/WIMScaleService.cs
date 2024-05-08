@@ -1,4 +1,5 @@
 ﻿using BOL;
+using Microsoft.Extensions.Caching.Memory;
 using Services.Helpers;
 
 namespace Services;
@@ -12,22 +13,53 @@ public interface IWIMScaleService
 }
 public class WIMScaleService : IWIMScaleService
 {
+    private IMemoryCache _cacheProvider { get; set; }
     private ISqlDataAccess _db { get; set; }
-    public WIMScaleService(ISqlDataAccess db)
+    public WIMScaleService(ISqlDataAccess db, IMemoryCache cacheProvider)
     {
         _db = db;
+        _cacheProvider = cacheProvider;
     }
 
     public async Task<IEnumerable<WIMScale>> Get(WIMScale obj)
     {
-        string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE 1=1";
-        Dictionary<string, object> param = new Dictionary<string, object>();
+        string cacheKey = "WIMS";
         if(obj.StationId > 0)
         {
-            query += " AND StationId=@StationId";
-            param.Add("@StationId", obj.StationId);
+            cacheKey = "WIMS_S_" + obj.StationId;
         }
-        return await _db.LoadData<WIMScale, dynamic>(query, param);
+        
+        if (!_cacheProvider.TryGetValue(cacheKey, out IEnumerable<WIMScale> wims))
+        {
+            // Get the data from database
+            string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE 1=1";
+            Dictionary<string, object> param = new Dictionary<string, object>();
+            if (obj.StationId > 0)
+            {
+                query += " AND StationId=@StationId";
+                param.Add("@StationId", obj.StationId);
+            }
+            wims = await _db.LoadData<WIMScale, dynamic>(query, param);
+            
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddMinutes(2),
+                SlidingExpiration = TimeSpan.FromMinutes(1),
+                Size = 1024,
+            };
+            _cacheProvider.Set(cacheKey, wims, cacheEntryOptions);
+        }
+
+        return wims;
+
+        //string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE 1=1";
+        //Dictionary<string, object> param = new Dictionary<string, object>();
+        //if(obj.StationId > 0)
+        //{
+        //    query += " AND StationId=@StationId";
+        //    param.Add("@StationId", obj.StationId);
+        //}
+        //return await _db.LoadData<WIMScale, dynamic>(query, param);
     }
 
     public async Task<WIMScale> GetById(WIMScale obj)

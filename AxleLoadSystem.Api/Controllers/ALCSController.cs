@@ -15,12 +15,14 @@ namespace AxleLoadSystem.Api.Controllers
         private readonly IFileService _fileService;
         private readonly IAxleLoadService _axleLoadService;
         private readonly IFinePaymentService _finePaymentService;
+        private readonly IWIMScaleService _wimScaleService;
 
-        public ALCSController(IFileService fileService, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService)
+        public ALCSController(IFileService fileService, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService, IWIMScaleService wimScaleService)
         {
             _fileService = fileService;
             _axleLoadService = axleLoadService;
             _finePaymentService = finePaymentService;
+            _wimScaleService = wimScaleService;
         }
 
         #region CSV File Upload
@@ -136,9 +138,14 @@ namespace AxleLoadSystem.Api.Controllers
             //Check station code
             obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-            bool isSuccess = await _axleLoadService.Add(obj);
+            List<LoadData> validData = await this.CheckValidData(obj.StationId, new List<LoadData> { obj });
+            if (validData.Count > 0)
+            {
+                bool isSuccess = await _axleLoadService.Add(validData);
+                return Ok(isSuccess);
+            }
 
-            return Ok(isSuccess);
+            return BadRequest();
         }
         [HttpPost("[action]")]
         public async Task<IActionResult> LoadDataMultiple(List<LoadData> obj)
@@ -147,22 +154,39 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return new BadRequestResult();
             }
-            if (obj.Any(l => l.DateTime.Date != DateTime.Today))
-            {
-                return BadRequest("Only today's data is allowed");
-            }
+            //if (obj.Any(l => l.DateTime.Date != DateTime.Today))
+            //{
+            //    return BadRequest("Only today's data is allowed");
+            //}
 
             //Check station code
             int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-            foreach(var item in obj)
+            List<LoadData> validData = await this.CheckValidData(stationId, obj);
+            
+            if (validData.Count > 0)
             {
-                item.StationId = stationId;
+                foreach (var item in validData)
+                {
+                    item.StationId = stationId;
+                }
+
+                bool isSuccess = await _axleLoadService.Add(validData);
+                return Ok(isSuccess);
             }
 
-            bool isSuccess = await _axleLoadService.Add(obj);
+            return BadRequest();
+        }
+        private async Task<List<LoadData>> CheckValidData(int stationId, List<LoadData> data)
+        {
+            //Data check
+            data.RemoveAll(d => d.DateTime.Date != DateTime.Today);
+            
+            //Check lane number
+            IEnumerable<WIMScale> wims = await _wimScaleService.Get(new WIMScale(){ StationId = stationId });
+            data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
 
-            return Ok(isSuccess);
+            return data;
         }
 
         [HttpPost("[action]")]
