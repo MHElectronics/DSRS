@@ -132,4 +132,13 @@
 	<data name="Menu.User" xml:space="preserve">
     <value>Users</value>
   </data>
+	<data name="Menu.UploadedFiles" xml:space="preserve">
+		<value>Uploaded Files</value>
+	</data>
+	<data name="Menu.ChangePassword" xml:space="preserve">
+		<value>Change Password</value>
+	</data>
+	<data name="Menu.FileUpload" xml:space="preserve">
+		<value>File Upload</value>
+	</data>
 </root>
