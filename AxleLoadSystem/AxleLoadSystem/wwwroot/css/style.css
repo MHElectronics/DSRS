@@ -4,7 +4,7 @@
     background-size: 400px 400px;
 }
 .layout-fixed.dark-mode .main-sidebar {
-    background-color: rgba(69, 77, 85, 0.4) !important;
+    background-color: rgba(69, 77, 85, 1) !important;
 }
 .layout-fixed .main-sidebar {
     background-color: rgba(69, 77, 85, 1) !important;
