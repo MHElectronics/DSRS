@@ -8,7 +8,7 @@
 @inject IWIMScaleService wimService
 
 <PageTitle>@localizer["StationList"]</PageTitle>
-<h1>@localizer["StationList"]</h1>
+    <h1>@localizer["StationList"]</h1>
 
 <NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New Station">
     <i class="fa fa-plus"></i> @localizer["Button.AddStation"]
@@ -31,7 +31,6 @@ else
                 <th>@localizer["Address"]</th>
                 <th>@localizer["AuthKey"]</th>
                 <th></th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -44,23 +43,28 @@ else
                     <td>@item.Address</td>
                     <td>@item.AuthKey</td>
                     <td>
-                        <a class="waves-effect" href="@("/station/details/" + item.StationId)" title="Details Information">
-                            <i class="fa fa-info"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="waves-effect" href="@("/station/edit/" + item.StationId)" title="Edit Information">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="waves-effect" @onclick="(() => DeleteStation(item))">
-                            <i class="fa fa-trash"></i>
-                        </a>
+                        <div class="btn-group float-right">
+                            <a class="btn btn-primary" href="@("/station/details/" + item.StationId)" title="Details Information">
+                                <i class="fa fa-info"></i>
+                            </a>
+                            <a class="btn btn-primary" href="@("/station/edit/" + item.StationId)" title="Edit Information">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <span class="btn btn-primary">
+                                @if (wims is not null && !wims.Any(w => w.StationId == item.StationId))
+                                {
+                                    <i class="fa fa-trash" @onclick="(() => DeleteStation(item))" title="Delete Station"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-ban" title="Can't delete station with WIMs"></i>
+                                }
+                            </span>
+                        </div>
                     </td>
                 </tr>
 
-                @if(wims is not null && wims.Any(w => w.StationId == item.StationId))
+                @if (wims is not null && wims.Any(w => w.StationId == item.StationId))
                 {
                     foreach (WIMScale wim in wims.Where(w => w.StationId == item.StationId))
                     {
@@ -71,21 +75,18 @@ else
                             <td>Eq. Code: @wim.EquipmentCode</td>
                             <td>Direction: @wim.LaneDirection</td>
                             <td>
-                                <a class="waves-effect" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
-                                    <i class="fa fa-info"></i>
-                                </a>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
+                                        <i class="fa fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/wimscale/edit/" + wim.Id)" title="Edit Information">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteWim(wim))" title="Delete WIM Scale">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
                             </td>
-                            <td>
-                                <a class="waves-effect" href="@("/wimscale/edit/" + wim.Id)" title="Edit Information">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                            </td>
-                            <td>
-                                <a class="waves-effect" @onclick="(() => DeleteWim(wim))">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </td>
-
                         </tr>
                     }
                 }

@@ -22,8 +22,7 @@ else
                 <th>Email</th>
                 <th>Name</th>
                 <th>Role(s)</th>
-                <th></th>
-                <th></th>
+                <th>Active?</th>
                 <th></th>
             </tr>
         </thead>
@@ -31,32 +30,29 @@ else
             @foreach (var user in users.OrderBy(c => c.Id))
             {
                 <tr>
-                    <td><b>@user.Email</b></td>
-                    <td><b>@user.Name</b></td>
-                    <td><b>@user.Role</b></td>
+                    <td>@user.Email</td>
+                    <td>@user.Name</td>
+                    <td>@user.Role</td>
+                    <td>@(user.IsActive ? "Active" : "Inactive")</td>
                     <td>
-                        <a class="waves-effect" href="@("/user/details/" + user.Id)" title="Details Information">
-                            <i class="fa fa-info"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="waves-effect" href="@("/user/edit/" + user.Id)" title="Edit Information">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a class="waves-effect" @onclick="(() => DeleteUser(user))">
-                            <i class="fa fa-trash"></i>
-                        </a>
+                        <div class="btn-group float-right">
+                            <a class="btn btn-primary" href="@("/user/details/" + user.Id)" title="Details Information">
+                                <i class="fa fa-info"></i>
+                            </a>
+                            <a class="btn btn-primary" href="@("/user/edit/" + user.Id)" title="Edit Information">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <span class="btn btn-primary" @onclick="(() => DeleteUser(user))" title="Delete User">
+                                <i class="fa fa-trash"></i>
+                            </span>
+                        </div>
                     </td>
                 </tr>
             }
-
         </tbody>
     </table>
 
     <ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete User?" />
-
 }
 @code {
     private IEnumerable<User> users;

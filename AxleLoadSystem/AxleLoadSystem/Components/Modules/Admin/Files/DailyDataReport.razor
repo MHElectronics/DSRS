@@ -5,35 +5,38 @@
 @inject IAxleLoadService loadService
 @inject IFinePaymentService fineRepaymentService
 
-<h3>Daily Data</h3>
-
-
-@if (File is null || station is null)
-{
-    <Loader />
-    return;
-}
-else
-{
-    <span>Station: @station.StationName</span>
-    <br />
-    <span>File Type: @(Enum.Parse(typeof(UploadedFileType), File.FileType.ToString()))</span>
-    <br />
-    <span>Date: @File.Date.ToString("dd MMM yyyy")</span>
-    <br />
-    @if (!string.IsNullOrEmpty(File.Summary))
-    {
-        <span>Summary:</span>
-        <br/>
-        @foreach(string item in File.Summary.Split('|'))
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Daily Data</h3>
+    </div>
+    <div class="card-body">
+        @if (File is null || station is null)
         {
-            <span>@item</span>
-            <br/>
+            <Loader />
         }
-    }
+        else
+        {
+            <span>Station: @station.StationName</span>
+            <br />
+            <span>File Type: @(Enum.Parse(typeof(UploadedFileType), File.FileType.ToString()))</span>
+            <br />
+            <span>Date: @File.Date.ToString("dd MMM yyyy")</span>
+            <br />
+            @if (!string.IsNullOrEmpty(File.Summary))
+            {
+                <span>Summary:</span>
+                <br />
+                @foreach (string item in File.Summary.Split('|'))
+                {
+                    <span>@item</span>
+                    <br />
+                }
+            }
 
-    <DailyDataTableComponent FIle="@File" AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" @rendermode="InteractiveAuto" />
-}
+            <DailyDataTableComponent FIle="@File" AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" @rendermode="InteractiveAuto" />
+        }
+    </div>
+</div>
 
 @code {
     [Parameter]

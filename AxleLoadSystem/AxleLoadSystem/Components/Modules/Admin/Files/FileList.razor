@@ -7,7 +7,7 @@
 
 <PageTitle>List of Uploaded Files</PageTitle>
 
-<div class="card">
+<div class="card card-primary">
     <div class="card-header">
         <h3 class="card-title">List of Uploaded Files</h3>
     </div>
@@ -68,13 +68,15 @@
                             <td class="@(uploadedFile.IsProcessed == false ? "text-danger" : "")">@(uploadedFile.IsProcessed ? "Processed" : "Not Processed")</td>
                             <td>@uploadedFile.Summary</td>
                             <td>
-                                @if (!deleteClicked)
-                                {
-                                    <i class="fa fa-trash" @onclick="@(() => Delete(uploadedFile))"></i>
-                                }
-                            </td>
-                            <td>
-                                <NavLink href="@displayLink"><i class="fa fa-eye"></i></NavLink>
+                                <div class="btn-group float-right">
+                                    @if (!deleteClicked)
+                                    {
+                                        <span class="btn btn-primary" title="Delete file with data">
+                                            <i class="fa fa-trash" @onclick="@(() => Delete(uploadedFile))"></i>
+                                        </span>
+                                    }
+                                    <NavLink class="btn btn-primary" href="@displayLink" title="View data"><i class="fa fa-eye"></i></NavLink>
+                                </div>
                             </td>
                         </tr>
                     }
