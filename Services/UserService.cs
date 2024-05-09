@@ -56,7 +56,7 @@ public class UserService : IUserService
 
     public async Task<User> UpdateUser(User user)
     {
-        string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, Password=@Password WHERE Id=@Id";
+        string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, Password=@Password, IsActive=@IsActive WHERE Id=@Id";
         await _db.SaveData(sql, user);
         return user;
     }
@@ -69,7 +69,7 @@ public class UserService : IUserService
 
     public async Task<bool> ChangePassword(User user)
     {
-        string sql = @"UPDATE Users SET Password=@Password WHERE Id=@Id AND Email=@Email";
+        string sql = @"UPDATE Users SET Password=@Password WHERE Id=@Id";
         return await _db.SaveData(sql, user);
     }
 }

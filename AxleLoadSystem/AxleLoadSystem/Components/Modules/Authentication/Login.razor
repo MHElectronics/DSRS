@@ -62,20 +62,28 @@
             if (await userService.AuthenticateUser(user))
             {
                 user = await userService.GetUser(user);
-                CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
-                await stateProvide.UpdateAuthenticationState(user);
+                if (user.IsActive)
+                {
+                    CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
+                    await stateProvide.UpdateAuthenticationState(user);
 
-                if (user.HasRole("Admin"))
-                {
-                    navigationManager.NavigateTo("/fileupload", true);
-                }
-                else if (user.HasRole("User"))
-                {
-                    navigationManager.NavigateTo("/fileupload", true);
+                    if (user.HasRole("Admin"))
+                    {
+                        navigationManager.NavigateTo("/fileupload", true);
+                    }
+                    else if (user.HasRole("User"))
+                    {
+                        navigationManager.NavigateTo("/fileupload", true);
+                    }
+                    else
+                    {
+                        navigationManager.NavigateTo("/", true);
+                    }
                 }
                 else
                 {
-                    navigationManager.NavigateTo("/", true);
+                    loggingin = false;
+                    ValidationSummary = "Authorization failed. This account is deactivated.";
                 }
             }
             else

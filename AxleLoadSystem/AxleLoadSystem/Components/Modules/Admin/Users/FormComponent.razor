@@ -73,6 +73,27 @@ else
                     }
                 </div>
             </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="isActive" class="form-label">@localizer["IsActive"]</label>
+                        <label class="form-control">@user.Role</label>
+                    }
+                    else
+                    {
+                        <label for="isActive" class="form-label">@localizer["IsActive"]</label>
+                        <div class="form-control">
+                            <div class="col-12">
+                                <div class="icheck-primary d-inline">
+                                    <input type="checkbox" id="isActive" @bind="@user.IsActive" />
+                                    <label for="isActive">Is Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
             @if (Mode == FormMode.Add)
             {
                 <div class="col-md-6 col-sm-12">

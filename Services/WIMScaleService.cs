@@ -29,7 +29,7 @@ public class WIMScaleService : IWIMScaleService
             cacheKey = "WIMS_S_" + obj.StationId;
         }
         
-        if (!_cacheProvider.TryGetValue(cacheKey, out IEnumerable<WIMScale> wims))
+        if (!_cacheProvider.TryGetValue(cacheKey, out IEnumerable<WIMScale>? wims))
         {
             // Get the data from database
             string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE 1=1";

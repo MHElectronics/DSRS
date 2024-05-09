@@ -8,7 +8,7 @@ public class User
     public string Role { get; set; }
     public string Password { get; set; }
     public string PasswordSalt { get; set; }
-
+    public bool IsActive { get; set; }
     public bool HasRole(string role)
     {
         if (string.IsNullOrEmpty(Role))
