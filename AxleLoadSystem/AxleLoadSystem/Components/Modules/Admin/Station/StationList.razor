@@ -113,7 +113,7 @@ else
     private async Task GetStationandWimList()
     {
         stations = await stationService.Get();
-        wims = await wimService.Get(new WIMScale());
+        wims = await wimService.GetAll();
     }
     private async Task DeleteStation(Station station)
     {

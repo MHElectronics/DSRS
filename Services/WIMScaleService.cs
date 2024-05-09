@@ -5,7 +5,8 @@ using Services.Helpers;
 namespace Services;
 public interface IWIMScaleService
 {
-    Task<IEnumerable<WIMScale>> Get(WIMScale obj);
+    Task<IEnumerable<WIMScale>> GetAll();
+    Task<IEnumerable<WIMScale>> GetByStation(WIMScale obj);
     Task<WIMScale> GetById(WIMScale obj);
     Task<bool> Add(WIMScale obj);
     Task<bool> Update(WIMScale obj);
@@ -21,13 +22,16 @@ public class WIMScaleService : IWIMScaleService
         _cacheProvider = cacheProvider;
     }
 
-    public async Task<IEnumerable<WIMScale>> Get(WIMScale obj)
+    public async Task<IEnumerable<WIMScale>> GetAll()
     {
-        string cacheKey = "WIMS";
-        if(obj.StationId > 0)
-        {
-            cacheKey = "WIMS_S_" + obj.StationId;
-        }
+        // Get the data from database
+        string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale";
+        return await _db.LoadData<WIMScale, dynamic>(query, null);
+    }
+
+    public async Task<IEnumerable<WIMScale>> GetByStation(WIMScale obj)
+    {
+        string cacheKey = "WIMS_S_" + obj.StationId;
         
         if (!_cacheProvider.TryGetValue(cacheKey, out IEnumerable<WIMScale>? wims))
         {
@@ -51,15 +55,6 @@ public class WIMScaleService : IWIMScaleService
         }
 
         return wims;
-
-        //string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE 1=1";
-        //Dictionary<string, object> param = new Dictionary<string, object>();
-        //if(obj.StationId > 0)
-        //{
-        //    query += " AND StationId=@StationId";
-        //    param.Add("@StationId", obj.StationId);
-        //}
-        //return await _db.LoadData<WIMScale, dynamic>(query, param);
     }
 
     public async Task<WIMScale> GetById(WIMScale obj)

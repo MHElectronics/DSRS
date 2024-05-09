@@ -126,6 +126,9 @@
   <data name="Button.Cancel" xml:space="preserve">
     <value>Cancle</value>
   </data>
+  <data name="Button.ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
   <data name="Button.Edit" xml:space="preserve">
     <value>Edit</value>
   </data>

@@ -183,7 +183,7 @@ namespace AxleLoadSystem.Api.Controllers
             data.RemoveAll(d => d.DateTime.Date != DateTime.Today);
             
             //Check lane number
-            IEnumerable<WIMScale> wims = await _wimScaleService.Get(new WIMScale(){ StationId = stationId });
+            IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale(){ StationId = stationId });
             data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
 
             return data;

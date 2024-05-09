@@ -12,107 +12,112 @@
 }
 else
 {
-    <EditForm Model="@user" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit" FormName="Users" method="post">
+    <EditForm Model="@user" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit" FormName="Users" method="post">
         <DataAnnotationsValidator />
-
-        <div class="row">
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                        <label for="name" class="form-label">@localizer["Email"]</label>
-                        <label class="form-control">@user.Email</label>
-                    }
-                    else
-                    {
-                        <label for="name" class="form-label">@localizer["Email"]</label>
-                        <input type="email" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
-                        <ValidationMessage For="() => user.Email" />
-                    }
-                </div>
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">User Management</h3>
             </div>
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                        <label for="name" class="form-label">@localizer["Name of User"]</label>
-                        <label class="form-control">@user.Name</label>
-                    }
-                    else
-                    {
-                        <label for="name" class="form-label">@localizer["Name of User"]</label>
-                        <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" maxlength="50" />
-                        <ValidationMessage For="() => user.Name" />
-                    }
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                        <label for="name" class="form-label">@localizer["Role"]</label>
-                        <label class="form-control">@user.Role</label>
-                    }
-                    else
-                    {
-                        <label for="Role" class="form-label">@localizer["Role"]</label>
-                        <div class="form-control">
-                            <div class="col-12">
-                                @foreach (var item in Enum.GetValues(typeof(UserRole)))
-                                {
-                                    string value = item.ToString() ?? "";
-                                    bool check = selectedRoles.Contains(value);
-                                    <div class="icheck-primary d-inline">
-                                        @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
-                                        <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
-                                        <label for="checkId@(value)">@value</label>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="name" class="form-label">@localizer["Email"]</label>
+                                <label class="form-control">@user.Email</label>
+                            }
+                            else
+                            {
+                                <label for="name" class="form-label">@localizer["Email"]</label>
+                                <input type="email" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
+                                <ValidationMessage For="() => user.Email" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="name" class="form-label">@localizer["Name of User"]</label>
+                                <label class="form-control">@user.Name</label>
+                            }
+                            else
+                            {
+                                <label for="name" class="form-label">@localizer["Name of User"]</label>
+                                <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" maxlength="50" />
+                                <ValidationMessage For="() => user.Name" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="name" class="form-label">@localizer["Role"]</label>
+                                <label class="form-control">@user.Role</label>
+                            }
+                            else
+                            {
+                                <label for="Role" class="form-label">@localizer["Role"]</label>
+                                <div class="form-control">
+                                    <div class="col-12">
+                                        @foreach (var item in Enum.GetValues(typeof(UserRole)))
+                                        {
+                                            string value = item.ToString() ?? "";
+                                            bool check = selectedRoles.Contains(value);
+                                            <div class="icheck-primary d-inline">
+                                                @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
+                                                <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
+                                                <label for="checkId@(value)">@value</label>
+                                            </div>
+                                        }
                                     </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-12">
-                <div class="form-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                        <label for="isActive" class="form-label">@localizer["IsActive"]</label>
-                        <label class="form-control">@user.Role</label>
-                    }
-                    else
-                    {
-                        <label for="isActive" class="form-label">@localizer["IsActive"]</label>
-                        <div class="form-control">
-                            <div class="col-12">
-                                <div class="icheck-primary d-inline">
-                                    <input type="checkbox" id="isActive" @bind="@user.IsActive" />
-                                    <label for="isActive">Is Active</label>
                                 </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="isActive" class="form-label">@localizer["IsActive"]</label>
+                                <label class="form-control">@user.Role</label>
+                            }
+                            else
+                            {
+                                <label for="isActive" class="form-label">@localizer["IsActive"]</label>
+                                <div class="form-control">
+                                    <div class="col-12">
+                                        <div class="icheck-primary d-inline">
+                                            <input type="checkbox" id="isActive" @bind="@user.IsActive" />
+                                            <label for="isActive">Is Active</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    @if (Mode == FormMode.Add)
+                    {
+                        <div class="col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="name" class="form-label">@localizer["Password"]</label>
+                                <input type="password" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" maxlength="50" />
+                                <ValidationMessage For="() => user.Password" />
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label for="name" class="form-label">@localizer["ConfirmPassword"]</label>
+                                <input type="password" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" maxlength="50" />
+                                <ValidationMessage For="() => confirmPassword" />
                             </div>
                         </div>
                     }
                 </div>
             </div>
-            @if (Mode == FormMode.Add)
-            {
-                <div class="col-md-6 col-sm-12">
-                    <div class="form-group">
-                        <label for="name" class="form-label">@localizer["Password"]</label>
-                        <input type="password" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" maxlength="50" />
-                        <ValidationMessage For="() => user.Password" />
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <div class="form-group">
-                        <label for="name" class="form-label">@localizer["ConfirmPassword"]</label>
-                        <input type="password" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" maxlength="50" />
-                        <ValidationMessage For="() => confirmPassword" />
-                    </div>
-                </div>
-            }
-        </div>
-            <div class="row">
+            <div class="box-footer">
                 <div class="col-md-12 col-sm-12">
                     <div class="btn-group">
                         @if (Mode == FormMode.Details)
@@ -125,14 +130,52 @@ else
                             <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                         }
                         <NavLink class="btn btn-primary" href="/user">@localizerResource["Button.Back"]</NavLink>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <CustomNotification Notification="notification" />
                     </div>
                 </div>
             </div>
-           
-            <div class="col-md-6 col-sm-12">
-                <CustomNotification Notification="notification" />
+        </EditForm>
+
+    @if (Mode == FormMode.Edit)
+    {
+        <EditForm Model="@userPassword" OnValidSubmit="@OnValidPasswordSubmit" OnInvalidSubmit="@OnInvalidPasswordSubmit" FormName="Users" method="post">
+            <DataAnnotationsValidator />
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Change Password</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="password">New Password</label>
+                                <InputText type="password" @bind-Value="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="password">Confirm New Password</label>
+                                <InputText type="password" @bind-Value="PasswordMatch" class="form-control" placeholder="Confirm New Password" id="CNewPassword" maxlength="50" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="col-md-12 col-sm-12">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" type="submit">@localizerResource["Button.ChangePassword"]</button>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <CustomNotification Notification="notificationPassword" />
+                    </div>
+                </div>
             </div>
-    </EditForm>
+        </EditForm>
+    }
 }
 
 @code {
@@ -141,10 +184,16 @@ else
     public User user { get; set; } = new();
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
+
     private List<string> selectedRoles = new();
     private Notification notification { get; set; } = new();
+    private Notification notificationPassword { get; set; } = new();
+
     [Required]
     private string confirmPassword { get; set; }
+
+    private User userPassword { get; set; } = new();
+    string PasswordMatch, NewPasswordInput;
 
     protected override void OnParametersSet()
     {
@@ -208,6 +257,37 @@ else
             {
                 selectedRoles.Remove(aSelectedId);
             }
+        }
+    }
+
+    void OnInvalidPasswordSubmit()
+    {
+        notificationPassword.Type = Notification.NotificationType.Warning;
+        notificationPassword.Message = "Please enter valid password";
+    }
+    async Task OnValidPasswordSubmit(EditContext editContext)
+    {
+        notificationPassword = new();
+        userPassword.Id = user.Id;
+
+        if (NewPasswordInput.Equals(PasswordMatch))
+        {
+            userPassword.Password = PasswordMatch;
+            if (await userService.ChangePassword(userPassword))
+            {
+                notificationPassword.Type = Notification.NotificationType.Success;
+                notificationPassword.Message = "Password Changed Successfully";
+            }
+            else
+            {
+                notificationPassword.Type = Notification.NotificationType.Failure;
+                notificationPassword.Message = "Password Changed failed";
+            }
+        }
+        else
+        {
+            notificationPassword.Type = Notification.NotificationType.Failure;
+            notificationPassword.Message = "Confirm Password Doesn't Match";
         }
     }
 }
