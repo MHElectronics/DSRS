@@ -141,4 +141,7 @@
 	<data name="Menu.FileUpload" xml:space="preserve">
 		<value>ফাইল আপলোড</value>
 	</data>
+	<data name="Menu.BRTA" xml:space="preserve">
+		<value>বিআরটিএ</value>
+	</data>
 </root>

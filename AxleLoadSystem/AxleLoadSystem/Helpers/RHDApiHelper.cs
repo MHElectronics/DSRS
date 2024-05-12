@@ -21,17 +21,25 @@ public class RHDApiHelper : IRHDApiHelper
     public async Task<string> GetBRTAInformationByRFID(PayloadBRTA payloadBRTA)
     {
         string info = "Initiated";
-        HttpResponseMessage response = await _http.PostAsJsonAsync("public/fetch-data", new { rfid = payloadBRTA.rfid, bridgeOid = payloadBRTA.bridgeOid, username = payloadBRTA.userName, password = payloadBRTA.password });
+        try
+        {
+            HttpResponseMessage response = await _http.PostAsJsonAsync("public/fetch-data", new { rfid = payloadBRTA.rfid, bridgeOid = payloadBRTA.bridgeOid, username = payloadBRTA.userName, password = payloadBRTA.password });
 
-        if (response.IsSuccessStatusCode)
-        {
-            info = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                info = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                info = "GetBRTAInformation() error: " + response.ReasonPhrase;
+                _logger.LogError("GetBRTAInformation() error: " + response.ReasonPhrase);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            info = "GetBRTAInformation() error: " + response.ReasonPhrase;
-            _logger.LogError("GetBRTAInformation() error: " + response.ReasonPhrase);
+            throw;
         }
+        
 
         return info;
     }

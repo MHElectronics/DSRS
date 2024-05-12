@@ -1,5 +1,6 @@
 ﻿@using Syncfusion.Blazor
 @using Syncfusion.Blazor.Charts
+@using ApexCharts
 @inject IStationService stationService
 @inject IFileService fileService
 @inject IAxleLoadService axleLoadService
@@ -50,6 +51,30 @@
                         }
                     </table>
                 </div>
+                @* <div class="col-12">
+            @if (loadCounts is null)
+            {
+            <Loader />
+            }
+            else
+            {
+            <SfChart>
+            <ChartPrimaryXAxis IntervalType="IntervalType.Auto" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
+            <ChartSeriesCollection>
+            <ChartSeries DataSource="@loadCounts" XName="Date" YName="TotalVehicle" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="green">
+            <ChartMarker>
+            <ChartDataLabel Visible="true"></ChartDataLabel>
+            </ChartMarker>
+            </ChartSeries>
+            <ChartSeries DataSource="@loadCounts" XName="Date" YName="Overloaded" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="red">
+            <ChartMarker>
+            <ChartDataLabel Visible="true"></ChartDataLabel>
+            </ChartMarker>
+            </ChartSeries>
+            </ChartSeriesCollection>
+            </SfChart>
+            }
+            </div> *@
                 <div class="col-12">
                     @if (loadCounts is null)
                     {
@@ -57,21 +82,39 @@
                     }
                     else
                     {
-                        <SfChart>
-                            <ChartPrimaryXAxis IntervalType="IntervalType.Auto" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
-                            <ChartSeriesCollection>
-                                <ChartSeries DataSource="@loadCounts" XName="Date" YName="TotalVehicle" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="green">
-                                    <ChartMarker>
-                                        <ChartDataLabel Visible="true"></ChartDataLabel>
-                                    </ChartMarker>
-                                </ChartSeries>
-                                <ChartSeries DataSource="@loadCounts" XName="Date" YName="Overloaded" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="red">
-                                    <ChartMarker>
-                                        <ChartDataLabel Visible="true"></ChartDataLabel>
-                                    </ChartMarker>
-                                </ChartSeries>
-                            </ChartSeriesCollection>
-                        </SfChart>
+                        <div class="apexchart">
+
+                            <ApexChart TItem="AxleLoadCount"
+                                       Title="Sample Data"
+                                       OnClick="OnClick"
+                                       @ref="chart">
+
+                                <ApexPointSeries TItem="AxleLoadCount"
+                                                 Items="loadCounts"
+                                                 Name="Total Vehicle"
+                                                 SeriesType="SeriesType.Bar"
+                                                 XValue="e => e.Date"
+                                                 YValue="e=> e.TotalVehicle" />
+
+                                <ApexPointSeries TItem="AxleLoadCount"
+                                                 Items="loadCounts"
+                                                 Name="Overload"
+                                                 SeriesType="SeriesType.Bar"
+                                                 XValue="e => e.Date"
+                                                 YValue="e=> e.Overload" />
+                            </ApexChart>
+                        </div>
+                    }
+                </div>
+                <div class="col-12">
+                    @if (selectedData != null && selectedData.DataPoint != null)
+                    {
+                        <h3>You clicked  @selectedData.DataPoint.X  @selectedData.DataPoint.Items.Sum(e => e.TotalVehicle) (@selectedData.DataPoint.Items.Sum(e => e.Overload))  </h3>
+                        <h3>@selectedData.DataPoint.</h3>
+                    }
+                    else if (selectedData != null)
+                    {
+                        <h3>You clicked the chart but not a data point</h3>
                     }
                 </div>
             </div>
@@ -83,13 +126,41 @@
     [Parameter]
     public Station Station { get; set; }
 
-    private IEnumerable<UploadedFile> files{ get; set; }
-    private IEnumerable<AxleLoadCount> loadCounts { get; set; }
+    private IEnumerable<UploadedFile> files { get; set; }
+    private IEnumerable<AxleLoadCount> loadCounts { get; set; } = null;
+
+    private ApexChart<AxleLoadCount> chart;
+    private ApexChartOptions<AxleLoadCount> options;
+    private SelectedData<AxleLoadCount> selectedData;
+
+    private bool redrawPaths = true;
+    private bool animate = false;
 
     protected override async Task OnParametersSetAsync()
     {
+        options = new ApexChartOptions<AxleLoadCount>
+            {
+                Theme = new ApexCharts.Theme
+                {
+                    Mode = Mode.Dark,
+                    Palette = PaletteType.Palette1
+                }
+            };
+
         // Station = await stationService.GetById(Station);
         files = await fileService.Get(Station.StationId);
         loadCounts = await axleLoadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
+        await chart.ResetSeriesAsync(true, true);
+    // await InvokeAsync(StateHasChanged);
+        // if(chart is not null)
+        // {
+        //     await chart.RenderAsync();
+        //     //await chart.UpdateOptionsAsync(redrawPaths, animate, false);
+        // }
+    }
+
+    private void OnClick(SelectedData<AxleLoadCount> data)
+    {
+        selectedData = data;
     }
 }

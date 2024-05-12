@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\BOL\BOL.csproj" />
     <ProjectReference Include="..\..\Services\Services.csproj" />
     <ProjectReference Include="..\AxleLoadSystem.Client\AxleLoadSystem.Client.csproj" />
+    <PackageReference Include="Blazor-ApexCharts" Version="3.3.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />

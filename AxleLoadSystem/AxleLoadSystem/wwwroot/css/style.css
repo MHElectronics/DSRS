@@ -45,3 +45,56 @@ input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
     box-shadow: inset 0 0 20px 20px #23232329;
 }
+
+/*Apex Chart*/
+.dark-mode .apexchart .apexcharts-legend-text, .dark-mode .apexchart .apexcharts-title-text {
+    color: white !important;
+    fill: white !important;
+}
+.dark-mode .apexchart .apexcharts-text * {
+    color: white !important;
+    fill: white !important;
+}
+.dark-mode .apexcharts-menu.apexcharts-menu-open {
+    background-color: rgba(0,0,0,0.2) !important;
+    border: 1px solid black;
+}
+    .dark-mode .apexcharts-menu.apexcharts-menu-open .apexcharts-menu-item:hover{
+        background-color:rgba(0,0,0,0.2);
+    }
+
+.dark-mode > .apexcharts-legend-series{
+    color:white;
+}
+
+.dark-mode > .apexcharts-text {
+    color: white;
+}
+
+.dark-mode .apexcharts-tooltip, .dark-mode .apexcharts-tooltip-series-group.apexcharts-active {
+    background-color: rgba(0,0,0,0.2) !important;
+    border: 1px solid black;
+}
+.dark-mode .apexcharts-tooltip .apexcharts-tooltip-title {
+    color: black;
+}
+
+
+
+/*Apex chart dark theme issue code from net*/
+/*.dark-mode .apexcharts-text {
+    fill: #fff;
+}
+
+.dark-mode .apexcharts-tooltip,
+.dark-mode .apexcharts-tooltip-title {
+    background-color: #333 !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+}
+
+.dark-mode .apexcharts-legend-text {
+    color: #fff !important;
+    border: 1px solid #555 !important;
+}*/
+/*Apex chart dark theme issue code from net*/

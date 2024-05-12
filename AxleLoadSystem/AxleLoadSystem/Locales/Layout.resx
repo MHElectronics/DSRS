@@ -141,4 +141,7 @@
 	<data name="Menu.FileUpload" xml:space="preserve">
 		<value>File Upload</value>
 	</data>
+	<data name="Menu.BRTA" xml:space="preserve">
+		<value>BRTA</value>
+	</data>
 </root>

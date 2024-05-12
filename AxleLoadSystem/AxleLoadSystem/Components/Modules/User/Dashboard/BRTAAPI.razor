@@ -48,11 +48,15 @@
         </div>
     </div>
 
-   
+    <div class="col-12">
+        <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">Show By RFID</button>
+        <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">Show by Registration Number</button>
+    </div>
+    <div class="col-12">
+        @validateionMessage
+    </div>
 </div>
 
-<button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">Show By RFID</button>
-<button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">Show by Registration Number</button>
 
 <div class="row">
     <label class="form-label">@view</label>
@@ -61,14 +65,28 @@
 @code {
     public PayloadBRTA payloadBRTA { get; set; } = new();
     public string view { get; set; } = null;
+    private string validateionMessage { get; set; }
 
     private async Task ShowBrtaInfoByRfid()
     {
-        view = await apiHelper.GetBRTAInformationByRFID(payloadBRTA);
-        
+        try
+        {
+            view = await apiHelper.GetBRTAInformationByRFID(payloadBRTA);
+        }
+        catch (Exception ex)
+        {
+            validateionMessage = ex.Message;
+        }
     }
     private async Task ShowBrtaInfoByRegistrationNumber()
     {
-        await apiHelper.GetBRTAInformationByRegistrationNumber(payloadBRTA);
+        try
+        {
+            await apiHelper.GetBRTAInformationByRegistrationNumber(payloadBRTA);
+        }
+        catch (Exception ex)
+        {
+            validateionMessage = ex.Message;
+        }
     }
 }
