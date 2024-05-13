@@ -80,6 +80,10 @@
                     {
                         <Loader />
                     }
+                    else if (loadCounts.Count() == 0)
+                    {
+                        <p>No Data Found</p>
+                    }
                     else
                     {
                         <div class="apexchart">
@@ -88,20 +92,22 @@
                                        Title="Sample Data"
                                        OnClick="OnClick"
                                        @ref="chart">
+                                <ChildContent>
 
-                                <ApexPointSeries TItem="AxleLoadCount"
-                                                 Items="loadCounts"
-                                                 Name="Total Vehicle"
-                                                 SeriesType="SeriesType.Bar"
-                                                 XValue="e => e.Date"
-                                                 YValue="e=> e.TotalVehicle" />
+                                    <ApexPointSeries TItem="AxleLoadCount"
+                                                     Items="loadCounts"
+                                                     Name="Total Vehicle"
+                                                     SeriesType="SeriesType.Bar"
+                                                     XValue="e => e.Date"
+                                                     YValue="e=> e.TotalVehicle" />
 
-                                <ApexPointSeries TItem="AxleLoadCount"
-                                                 Items="loadCounts"
-                                                 Name="Overload"
-                                                 SeriesType="SeriesType.Bar"
-                                                 XValue="e => e.Date"
-                                                 YValue="e=> e.Overload" />
+                                    <ApexPointSeries TItem="AxleLoadCount"
+                                                     Items="loadCounts"
+                                                     Name="Overload"
+                                                     SeriesType="SeriesType.Bar"
+                                                     XValue="e => e.Date"
+                                                     YValue="e=> e.Overload" />
+                                </ChildContent>
                             </ApexChart>
                         </div>
                     }
@@ -147,16 +153,16 @@
                 }
             };
 
-        // Station = await stationService.GetById(Station);
         files = await fileService.Get(Station.StationId);
         loadCounts = await axleLoadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
-        await chart.ResetSeriesAsync(true, true);
-    // await InvokeAsync(StateHasChanged);
-        // if(chart is not null)
-        // {
-        //     await chart.RenderAsync();
-        //     //await chart.UpdateOptionsAsync(redrawPaths, animate, false);
-        // }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //Update chart in after render
+        if(chart is not null)
+        {
+            await chart.UpdateOptionsAsync(redrawPaths, animate, false);
+        }
     }
 
     private void OnClick(SelectedData<AxleLoadCount> data)
