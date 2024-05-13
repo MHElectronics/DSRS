@@ -2,6 +2,12 @@
 
 public class Notification
 {
+    public Notification() { }
+    public Notification(string message, NotificationType? type)
+    {
+        Type = type;
+        Message = message;
+    }
     public NotificationType? Type { get; set; } = null;
     public string Message { get; set; } = string.Empty;
 

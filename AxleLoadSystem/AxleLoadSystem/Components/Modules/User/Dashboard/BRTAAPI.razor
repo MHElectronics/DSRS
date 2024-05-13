@@ -1,6 +1,7 @@
 ﻿@page "/BRTA"
 @using AxleLoadSystem.Helpers
 @inject IRHDApiHelper apiHelper
+@inject IAppState appState
 @rendermode InteractiveServer
 
 <h3>BRTA API Test</h3>
@@ -52,9 +53,6 @@
         <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">Show By RFID</button>
         <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">Show by Registration Number</button>
     </div>
-    <div class="col-12">
-        @validateionMessage
-    </div>
 </div>
 
 
@@ -65,7 +63,6 @@
 @code {
     public PayloadBRTA payloadBRTA { get; set; } = new() { userName = "AxleLoad", password = "Ax$@23L", bridgeOid = "3", rfid = "42525441FF021A151D6A0001", zone = "KHULNA METRO", series = "LA", Number = "12-9358" };
     public string view { get; set; } = null;
-    private string validateionMessage { get; set; }
 
     private async Task ShowBrtaInfoByRfid()
     {
@@ -75,7 +72,8 @@
         }
         catch (Exception ex)
         {
-            validateionMessage = ex.Message;
+            Notification notification = new(ex.Message, Notification.NotificationType.Failure);
+            appState.SetNotification(this, notification);
         }
     }
     private async Task ShowBrtaInfoByRegistrationNumber()
@@ -86,7 +84,8 @@
         }
         catch (Exception ex)
         {
-            validateionMessage = ex.Message;
+            Notification notification = new(ex.Message, Notification.NotificationType.Failure);
+            appState.SetNotification(this, notification);
         }
     }
 }

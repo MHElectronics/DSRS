@@ -1,4 +1,4 @@
-﻿@page "/station/{mode?}/{id?}"
+﻿@page "/station/{mode?}/{id:int?}"
 @inherits BasePageComponent
 @inject IStationService stationService
 @rendermode InteractiveServer
@@ -16,7 +16,7 @@ else
     [Parameter]
     public string Mode { get; set; }
     [Parameter]
-    public string Id { get; set; }
+    public int Id { get; set; }
     private Station station { get; set; } = null;
     private FormMode SelectedFormMode { get; set; }
 
@@ -32,9 +32,9 @@ else
             SelectedFormMode = FormMode.Add;
             station = new();
         }
-        else if (!string.IsNullOrEmpty(Id))
+        else if (Id > 0)
         {
-            station = new() { StationId = Convert.ToInt32(Id) };
+            station = new() { StationId = Id };
             station = await stationService.GetById(station);
 
             if (Mode.ToLower() == "details")

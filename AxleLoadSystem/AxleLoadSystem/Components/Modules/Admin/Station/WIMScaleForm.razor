@@ -8,6 +8,8 @@
 @inject IWIMScaleService wimService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Station> localizer
+@inject IAppState appState
+@inject NavigationManager navigation
 
 @if (wimScale is null || stations is null)
 {
@@ -123,9 +125,6 @@ else
                         <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-12">
-                    <CustomNotification Notification="notification" />
-                </div>
             </div>
         </div>
     </EditForm>
@@ -140,7 +139,6 @@ else
     private FormMode formMode = FormMode.Details;
     private WIMScale wimScale { get; set; } = null;
     private IEnumerable<Station> stations;
-    private Notification notification { get; set; } = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -167,12 +165,13 @@ else
 
     void OnInvalidSubmit()
     {
-        notification.Type = Notification.NotificationType.Warning;
-        notification.Message = "Please enter valid data";
+        Notification notification = new("Please enter valid data", Notification.NotificationType.Warning);
+        appState.SetNotification(this, notification);
     }
     async Task OnValidSubmit(EditContext editContext)
     {
-        notification = new();
+        Notification notification = new();
+        bool isSuccess = false;
 
         if (formMode == FormMode.Edit)
         {
@@ -180,6 +179,7 @@ else
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "WIM Updated Successfully";
+                isSuccess = true;
             }
             else
             {
@@ -193,6 +193,7 @@ else
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "WIM Added Successfully";
+                isSuccess = true;
             }
             else
             {
@@ -200,6 +201,9 @@ else
                 notification.Message = "WIM Add Failed";
             }
         }
+        
+        appState.SetNotification(this, notification);
+        navigation.NavigateTo("station");
     }
     private void Edit()
     {

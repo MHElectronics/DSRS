@@ -6,6 +6,7 @@
 @inject IStringLocalizer<Locales.Station> localizer
 @inject IStationService stationService
 @inject IWIMScaleService wimService
+@inject IAppState appState
 
 <PageTitle>@localizer["StationList"]</PageTitle>
     <h1>@localizer["StationList"]</h1>
@@ -93,7 +94,6 @@ else
             }
         </tbody>
     </table>
-    <CustomNotification Notification="notification" />
     <ConfirmDialog @ref="deleteConfirmationStationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStation" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station?" />
     <ConfirmDialog @ref="deleteConfirmationWimRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedWim" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Wim Scale?" />
 }
@@ -104,7 +104,6 @@ else
     protected ConfirmDialog deleteConfirmationWimRef { get; set; }
     private Station SelectedStation { get; set; }
     private WIMScale SelectedWim { get; set; }
-    private Notification notification { get; set; } = new();
     private bool deleteClicked { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
@@ -130,6 +129,7 @@ else
     }
     private async Task DeleteConfirmedStation()
     {
+        Notification notification = new();
         if (await stationService.Delete(SelectedStation))
         {
             notification.Type = Notification.NotificationType.Success;
@@ -140,10 +140,13 @@ else
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Error Station Deletion";
         }
+        
+        appState.SetNotification(this, notification);
         await GetStationandWimList();
     }
     private async Task DeleteConfirmedWim()
     {
+        Notification notification = new();
         if (await wimService.Delete(SelectedWim))
         {
             notification.Type = Notification.NotificationType.Success;
@@ -154,6 +157,8 @@ else
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Error Wim Scale Deletion";
         }
+        
+        appState.SetNotification(this, notification);
         await GetStationandWimList();
     }
 

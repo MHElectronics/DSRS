@@ -3,6 +3,7 @@
 @using AxleLoadSystem.Models
 @inject IFileService fileService
 @inject IStationService stationService
+@inject IAppState appState
 @rendermode InteractiveServer
 
 <PageTitle>List of Uploaded Files</PageTitle>
@@ -124,7 +125,15 @@
     }
     private async Task DeleteConfirmed()
     {
-        await fileService.Delete(selectedFile);
+        if(await fileService.Delete(selectedFile))
+        {
+            appState.SetNotification(this, new Notification("File Deleted", Notification.NotificationType.Info));
+        }
+        else
+        {
+            appState.SetNotification(this, new Notification("Error: File Deleted Failed", Notification.NotificationType.Failure));
+        }
+
         await GetFileList();
     }
     private void DeleteDeclined()

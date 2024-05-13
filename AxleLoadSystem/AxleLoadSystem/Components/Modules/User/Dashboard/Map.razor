@@ -27,17 +27,11 @@
     <div class="col">
         @if(station is not null)
         {
-            @* <dl>
-                <dt>Id</dt>
-                <dd>@station.StationId</dd>
-                <dt>Station</dt>
-                <dd>@station.StationName</dd>
-            </dl> *@
             <ALCSInformation Station="@station" @rendermode="InteractiveServer"></ALCSInformation>
         }
         else
         {
-            <p class="info" >Click on Station to view information</p>
+            <CustomNotification Notification="@(new("Click on Station to view information", Notification.NotificationType.Info ))"/>
         }
     </div>
 </div>

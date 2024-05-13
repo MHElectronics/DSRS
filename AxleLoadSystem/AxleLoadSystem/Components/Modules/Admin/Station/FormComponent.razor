@@ -5,6 +5,8 @@
 @inject IStationService stationService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Station> localizer
+@inject IAppState appState
+@inject NavigationManager navigation
 
 @if (station is null)
 {
@@ -131,9 +133,6 @@ else
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-12">
-                        <CustomNotification Notification="notification" />
-                    </div>
                 </div>
             </div>
         </EditForm>
@@ -145,16 +144,16 @@ else
     public Station station { get; set; } = new();
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
-    private Notification notification { get; set; } = new();
 
     void OnInvalidSubmit()
     {
-        notification.Type = Notification.NotificationType.Warning;
-        notification.Message = "Please enter valid data";
+        Notification notification = new("Please enter valid data", Notification.NotificationType.Warning);
+        appState.SetNotification(this, notification);
     }
     async Task OnValidSubmit(EditContext editContext)
     {
-        notification = new();
+        Notification notification = new();
+        bool isSuccess = false;
 
         if (Mode == FormMode.Edit)
         {
@@ -162,6 +161,7 @@ else
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Updated Successfully";
+                isSuccess = true;
             }
             else
             {
@@ -175,14 +175,17 @@ else
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Added Successfully";
+                isSuccess = true;
             }
             else
             {
                 notification.Type = Notification.NotificationType.Failure;
                 notification.Message = "Station Add Failed";
             }
-
         }
+
+        appState.SetNotification(this, notification);
+        navigation.NavigateTo("station");
     }
 
     private void GenerateKey()
