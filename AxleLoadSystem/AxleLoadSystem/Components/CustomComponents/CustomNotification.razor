@@ -1,6 +1,6 @@
 ﻿@if (this.Notification is not null && this.Notification.Type is not null)
 {
-    <div class="alert @alertClass alert-dismissible" role="alert">
+    <div class="alert @this.Notification.AlertClass alert-dismissible" role="alert">
         <div>@Notification.Message</div>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -11,34 +11,4 @@
 @code {
     [Parameter]
     public Notification Notification { get; set; } = null;
-
-    private string alertClass { get; set; } = "alert-primary";
-
-    protected override void OnParametersSet()
-    {
-        if (this.Notification is not null)
-        {
-            if(this.Notification.Type == Notification.NotificationType.Info)
-            {
-                alertClass = "alert-info";
-            }
-            else if (this.Notification.Type == Notification.NotificationType.Success)
-            {
-                alertClass = "alert-success";
-            }
-            else if (this.Notification.Type == Notification.NotificationType.Warning)
-            {
-                alertClass = "alert-warning";
-            }
-            else if (this.Notification.Type == Notification.NotificationType.Failure)
-            {
-                alertClass = "alert-danger";
-            }
-
-        }
-    }
-    private void Close()
-    {
-        
-    }
 }

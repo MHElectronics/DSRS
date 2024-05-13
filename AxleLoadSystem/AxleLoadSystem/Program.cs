@@ -2,6 +2,7 @@ using AxleLoadSystem.Authentication;
 using AxleLoadSystem.Client.Pages;
 using AxleLoadSystem.Components;
 using AxleLoadSystem.Helpers;
+using AxleLoadSystem.Store;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -22,6 +23,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomSchemeName", options => { });
+builder.Services.AddScoped<IAppState, AppState>();
 builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
 //Add service dependencies
 builder.Services.AddServiceLayer();

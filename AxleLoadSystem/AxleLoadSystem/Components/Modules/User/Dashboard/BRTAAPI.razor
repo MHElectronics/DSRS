@@ -8,43 +8,43 @@
     <div class="col-md-4">
         <div class="form-group">
             <label for="name" class="form-label">User Name</label>
-            <input type="text" @bind-value="payloadBRTA.userName" required class="form-control" placeholder="User Name" id="name" />
+            <input type="text" @bind-value="payloadBRTA.userName" required class="form-control" placeholder="User Name" id="name" disabled />
         </div>
     </div>
     <div class="col-md-4">
         <div class="form-group">
             <label for="name" class="form-label">Password</label>
-            <input type="text" @bind-value="payloadBRTA.password" required class="form-control" placeholder="Password" id="name" />
+            <input type="password" @bind-value="payloadBRTA.password" required class="form-control" placeholder="Password" id="name" disabled />
         </div>
     </div>
     <div class="col-md-4">
         <div class="form-group">
             <label for="name" class="form-label">Bridge Oid</label>
-            <input type="text" @bind-value="payloadBRTA.bridgeOid" required class="form-control" placeholder="Bridge Oid" id="name" />
+            <input type="text" @bind-value="payloadBRTA.bridgeOid" required class="form-control" placeholder="Bridge Oid" id="name" disabled />
         </div>
     </div>
     <div class="col-md-12">
         <div class="form-group">
-            <label for="name" class="form-label">RFID</label>
-            <input type="text" @bind-value="payloadBRTA.rfid" class="form-control" placeholder="RFID" id="name" />
+            <label for="rfid" class="form-label">RFID</label>
+            <input type="text" @bind-value="payloadBRTA.rfid" class="form-control" placeholder="RFID" id="rfid" />
         </div>
     </div>
     <div class="col-md-4">
         <div class="form-group">
-            <label for="name" class="form-label">Zone</label>
-            <input type="text" @bind-value="payloadBRTA.zone" class="form-control" placeholder="zone" id="name" />
+            <label for="zone" class="form-label">Zone</label>
+            <input type="text" @bind-value="payloadBRTA.zone" class="form-control" placeholder="zone" id="zone" />
         </div>
     </div>
     <div class="col-md-4">
         <div class="form-group">
-            <label for="name" class="form-label">Series</label>
-            <input type="text" @bind-value="payloadBRTA.series" class="form-control" placeholder="Series" id="name" />
+            <label for="series" class="form-label">Series</label>
+            <input type="text" @bind-value="payloadBRTA.series" class="form-control" placeholder="Series" id="series" />
         </div>
     </div>
     <div class="col-md-4">
         <div class="form-group">
-            <label for="name" class="form-label">Vehicle Number</label>
-            <input type="text" @bind-value="payloadBRTA.Number" class="form-control" placeholder="Vehicle Number" id="name" />
+            <label for="number" class="form-label">Vehicle Number</label>
+            <input type="text" @bind-value="payloadBRTA.Number" class="form-control" placeholder="Vehicle Number" id="number" />
         </div>
     </div>
 
@@ -63,7 +63,7 @@
 </div>
 
 @code {
-    public PayloadBRTA payloadBRTA { get; set; } = new();
+    public PayloadBRTA payloadBRTA { get; set; } = new() { userName = "AxleLoad", password = "Ax$@23L", bridgeOid = "3", rfid = "42525441FF021A151D6A0001", zone = "KHULNA METRO", series = "LA", Number = "12-9358" };
     public string view { get; set; } = null;
     private string validateionMessage { get; set; }
 

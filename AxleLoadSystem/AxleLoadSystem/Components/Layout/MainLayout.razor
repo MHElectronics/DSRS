@@ -3,11 +3,11 @@
 <div class="wrapper">
     <!-- Preloader -->
     @* <div class="preloader flex-column justify-content-center align-items-center">
-        <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+    <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
     </div> *@
 
     <!-- Navbar -->
-    <Header/>
+    <Header />
     <!-- /.navbar -->
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -20,7 +20,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Sidebar user panel (optional) -->
-            <UserMenu/>
+            <UserMenu />
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <NavMenu />
@@ -34,6 +34,7 @@
     <div class="content-wrapper">
         <section class="content">
             <div class="container-fluid">
+                <GlobalNotification/>
                 @Body
             </div>
         </section>
