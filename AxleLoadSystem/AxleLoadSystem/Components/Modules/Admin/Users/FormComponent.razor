@@ -228,19 +228,42 @@ else
 
         if (Mode == FormMode.Edit)
         {
-            await userService.UpdateUser(user);
-            notification.Type = Notification.NotificationType.Success;
-            notification.Message = "User Updated Successfully";
-            appState.SetNotification(this, notification);
-            navigation.NavigateTo("user");
+            User currentUser = await userService.UpdateUser(user);
+            if (currentUser is not null)
+            {
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "User Updated Successfully";
+                appState.SetNotification(this, notification);
+                navigation.NavigateTo("user");
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "Error: User Update Failed";
+                appState.SetNotification(this, notification);
+                navigation.NavigateTo("user");
+
+            }
+
         }
         else
         {
-            await userService.InsertUser(user);
-            notification.Type = Notification.NotificationType.Success;
-            notification.Message = "User Added Successfully";
-            appState.SetNotification(this, notification);
-            navigation.NavigateTo("user");
+            User currentUser = await userService.InsertUser(user);
+            if (currentUser is not null)
+            {
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "User Added Successfully";
+                appState.SetNotification(this, notification);
+                navigation.NavigateTo("user");
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "Error: User Added Failed";
+                appState.SetNotification(this, notification);
+                navigation.NavigateTo("user");
+            }
+
         }
 
         saveDisabled = false;

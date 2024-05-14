@@ -43,22 +43,31 @@ public class UserService : IUserService
 
     public async Task<User> InsertUser(User user)
     {
-        int id = await _db.Insert<User>(user);
-
-        if (id != 0)
+        bool hasDuplicate = await this.CheckDuplicateEntry(user);
+        if (!hasDuplicate) 
         {
-            user.Id = id;
-            return user;
-        }
+            int id = await _db.Insert<User>(user);
 
+            if (id != 0)
+            {
+                user.Id = id;
+                return user;
+            }
+        }
         return null;
     }
 
     public async Task<User> UpdateUser(User user)
     {
-        string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, Password=@Password, IsActive=@IsActive WHERE Id=@Id";
-        await _db.SaveData(sql, user);
-        return user;
+        bool hasDuplicate = await this.CheckDuplicateEntry(user);
+        if (!hasDuplicate) 
+        {
+            string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, IsActive=@IsActive WHERE Id=@Id";
+            await _db.SaveData(sql, user);
+            return user;
+        }
+        return null;
+        
     }
     public async Task<bool> Delete(User obj)
     {
@@ -71,5 +80,10 @@ public class UserService : IUserService
     {
         string sql = @"UPDATE Users SET Password=@Password WHERE Id=@Id";
         return await _db.SaveData(sql, user);
+    }
+    public async Task<bool> CheckDuplicateEntry(User user)
+    {
+        string query = "SELECT COUNT(1) Count FROM Users WHERE LOWER(Email)=LOWER(@Email)";
+        return await _db.LoadSingleAsync<bool,object>(query, user);
     }
 }
