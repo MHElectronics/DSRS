@@ -104,14 +104,14 @@ else
                     {
                         <div class="col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="name" class="form-label">@localizer["Password"]</label>
-                                <input type="password" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" maxlength="50" />
+                                <label for="pass" class="form-label">@localizer["Password"] <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
+                                <input type="@(showPassword ? "text" : "password")" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" maxlength="50" />
                                 <ValidationMessage For="() => user.Password" />
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12">
                             <div class="form-group">
-                                <label for="name" class="form-label">@localizer["ConfirmPassword"]</label>
+                                <label for="cpass" class="form-label">@localizer["ConfirmPassword"]</label>
                                 <input type="password" @bind-value="confirmPassword" required class="form-control" placeholder="Confirm Password" id="cpass" maxlength="50" />
                                 <ValidationMessage For="() => confirmPassword" />
                             </div>
@@ -150,8 +150,8 @@ else
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label for="password">New Password</label>
-                                <InputText type="password" @bind-Value="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" />
+                                <label for="password">New Password <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
+                                <InputText type="@(showPassword ? "text" : "password")" @bind-Value="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" />
                             </div>
                         </div>
                         <div class="col-6">
@@ -188,6 +188,7 @@ else
 
     private bool saveDisabled { get; set; } = false;
     private User userPassword { get; set; } = new();
+    private bool showPassword { get; set; } = false;
     string PasswordMatch, NewPasswordInput;
 
     protected override void OnParametersSet()
@@ -214,6 +215,7 @@ else
         {
             notification.Type = Notification.NotificationType.Warning;
             notification.Message = "Select atleast one role";
+            appState.SetNotification(this, notification);
             return;
         }
 
@@ -225,47 +227,48 @@ else
 
         role = role.TrimEnd(',');
         user.Role = role;
-
-        if (Mode == FormMode.Edit)
+        if (await ValidatePassword())
         {
-            User currentUser = await userService.UpdateUser(user);
-            if (currentUser is not null)
+            if (Mode == FormMode.Edit)
             {
-                notification.Type = Notification.NotificationType.Success;
-                notification.Message = "User Updated Successfully";
-                appState.SetNotification(this, notification);
-                navigation.NavigateTo("user");
+                User currentUser = await userService.UpdateUser(user);
+                if (currentUser is not null)
+                {
+                    notification.Type = Notification.NotificationType.Success;
+                    notification.Message = "User Updated Successfully";
+                    appState.SetNotification(this, notification);
+                    navigation.NavigateTo("user");
+                }
+                else
+                {
+                    notification.Type = Notification.NotificationType.Failure;
+                    notification.Message = "Error: User Update Failed";
+                    appState.SetNotification(this, notification);
+                    navigation.NavigateTo("user");
+
+                }
+
             }
             else
             {
-                notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "Error: User Update Failed";
-                appState.SetNotification(this, notification);
-                navigation.NavigateTo("user");
+                User currentUser = await userService.InsertUser(user);
+                if (currentUser is not null)
+                {
+                    notification.Type = Notification.NotificationType.Success;
+                    notification.Message = "User Added Successfully";
+                    appState.SetNotification(this, notification);
+                    navigation.NavigateTo("user");
+                }
+                else
+                {
+                    notification.Type = Notification.NotificationType.Failure;
+                    notification.Message = "Error: User Added Failed";
+                    appState.SetNotification(this, notification);
+                    navigation.NavigateTo("user");
+                }
 
-            }
-
+            }  
         }
-        else
-        {
-            User currentUser = await userService.InsertUser(user);
-            if (currentUser is not null)
-            {
-                notification.Type = Notification.NotificationType.Success;
-                notification.Message = "User Added Successfully";
-                appState.SetNotification(this, notification);
-                navigation.NavigateTo("user");
-            }
-            else
-            {
-                notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "Error: User Added Failed";
-                appState.SetNotification(this, notification);
-                navigation.NavigateTo("user");
-            }
-
-        }
-
         saveDisabled = false;
     }
     public void CheckboxClicked(string aSelectedId, object aChecked)
@@ -294,28 +297,71 @@ else
     async Task OnValidPasswordSubmit(EditContext editContext)
     {
         Notification notification = new();
-
-        if (NewPasswordInput.Equals(PasswordMatch))
+        if (await ValidatePassword())
         {
-            userPassword.Id = user.Id;
-            userPassword.Password = PasswordMatch;
-            if (await userService.ChangePassword(userPassword))
+            if (NewPasswordInput.Equals(PasswordMatch))
             {
-                notification.Type = Notification.NotificationType.Success;
-                notification.Message = "Password Changed Successfully";
+                userPassword.Id = user.Id;
+                userPassword.Password = PasswordMatch;
+                if (await userService.ChangePassword(userPassword))
+                {
+                    notification.Type = Notification.NotificationType.Success;
+                    notification.Message = "Password Changed Successfully";
+                }
+                else
+                {
+                    notification.Type = Notification.NotificationType.Failure;
+                    notification.Message = "Password Changed failed";
+                }
             }
             else
             {
                 notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "Password Changed failed";
-            }
-        }
-        else
-        {
-            notification.Type = Notification.NotificationType.Failure;
-            notification.Message = "Confirm Password Doesn't Match";
+                notification.Message = "Confirm Password Doesn't Match";
+            }        
         }
 
         appState.SetNotification(this, notification);
+    }
+    private async Task<bool> ValidatePassword()
+    {
+        Notification notification = new();
+
+        if (string.IsNullOrWhiteSpace(user.Password))
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Password is required";
+        }
+        else if (user.Password.Length < 8 || user.Password.Length > 50)
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Password must be between 8 and 50 characters";
+        }
+        else if (!user.Password.Any(char.IsLower))
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Password must contain at least one lowercase letter";
+        }
+        else if (!user.Password.Any(char.IsUpper))
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Password must contain at least one uppercase letter";
+        }
+        else if (!user.Password.Any(char.IsDigit))
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Password must contain at least one digit";
+        }
+        else if (!user.Password.Any(c => !char.IsLetterOrDigit(c)))
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Password must contain at least one special character";
+        }
+        else
+        {
+            return true;
+        }
+        appState.SetNotification(this, notification);
+        return false; 
     }
 }
