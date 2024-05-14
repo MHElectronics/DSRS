@@ -67,29 +67,39 @@ public class StationService : IStationService
 
     public async Task<bool> Add(Station obj)
     {
-        string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey,MapX,MapY) VALUES(@StationCode,@StationName,@Address,@AuthKey,@MapX,@MapY)";
-        bool isSuccess = await _db.SaveData<Station>(query, obj);
-
-        //Reset cache without waiting
-        if (isSuccess)
+        bool hasDuplicate = await this.CheckDuplicateEntry(obj);
+        if (!hasDuplicate)
         {
-            this.Get();
-        }
+            string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey,MapX,MapY) VALUES(@StationCode,@StationName,@Address,@AuthKey,@MapX,@MapY)";
+            bool isSuccess = await _db.SaveData<Station>(query, obj);
 
-        return isSuccess;
+            //Reset cache without waiting
+            if (isSuccess)
+            {
+                this.Get();
+            }
+
+            return isSuccess;
+        }
+        return false;
     }
     public async Task<bool> Update(Station obj)
     {
-        string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
-        bool isSuccess = await _db.SaveData<Station>(query, obj);
-        
-        //Reset cache without waiting
-        if (isSuccess)
+        bool hasDuplicate = await this.CheckDuplicateEntry(obj);
+        if (!hasDuplicate)
         {
-            this.Get();
-        }
+            string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
+            bool isSuccess = await _db.SaveData<Station>(query, obj);
 
-        return isSuccess;
+            //Reset cache without waiting
+            if (isSuccess)
+            {
+                this.Get();
+            }
+
+            return isSuccess;
+        }
+        return false;
     }
     public async Task<bool> Delete(Station obj)
     {
@@ -111,5 +121,10 @@ public class StationService : IStationService
         int length = Convert.ToInt16(_configuration.GetSection("Settings:ApiKeyLength").Value);
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+    public async Task<bool> CheckDuplicateEntry(Station station)
+    {
+        string query = "SELECT COUNT(1) Count FROM Stations WHERE LOWER(StationName)=LOWER(@StationName)";
+        return await _db.LoadSingleAsync<bool, object>(query, station);
     }
 }
