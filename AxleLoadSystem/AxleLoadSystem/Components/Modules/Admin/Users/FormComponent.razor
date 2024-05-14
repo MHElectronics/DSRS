@@ -108,6 +108,12 @@ else
                                 <input type="@(showPassword ? "text" : "password")" @bind-value="user.Password" required class="form-control" placeholder="Password" id="pass" maxlength="50" />
                                 <ValidationMessage For="() => user.Password" />
                             </div>
+                            @if (!string.IsNullOrWhiteSpace(user.Password))
+                            {
+                                <div class="progress">
+                                    <div class="progress-bar @(GetProgressColor())" role="progressbar" style="width: @(GetPasswordStrength() * 25)%;" aria-valuenow="@(GetPasswordStrength() * 25)" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            }
                         </div>
                         <div class="col-md-6 col-sm-12">
                             <div class="form-group">
@@ -364,4 +370,45 @@ else
         appState.SetNotification(this, notification);
         return false; 
     }
+    private int GetPasswordStrength()
+    {
+        int strength = 0;
+
+        if (user.Password.Length >= 8 && user.Password.Length <= 50)
+        {
+            strength++;
+        }
+        if (user.Password.Any(char.IsUpper) && user.Password.Any(char.IsLower))
+        {
+            strength++;
+        }            
+        if (user.Password.Any(char.IsDigit))
+        {
+            strength++;
+        }
+        if (user.Password.Any(c => !char.IsLetterOrDigit(c)))
+        {
+            strength++;
+        }
+
+        return strength;
+    }
+    private string GetProgressColor()
+    {
+        int progress = GetPasswordStrength() * 25;
+
+        if (progress < 40)
+        {
+            return "bg-danger";
+        }
+        else if (progress >= 40 && progress < 80)
+        {
+            return "bg-warning";
+        }
+        else
+        {
+            return "bg-success";
+        }
+    }
+
 }
