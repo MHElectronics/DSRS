@@ -8,6 +8,7 @@ public interface IUserService
     Task<bool> AuthenticateUser(User user);
     Task<User?> GetUser(User user);
     Task<User?> GetUserById(int id);
+    Task<User?> GetByEmail(User user);
     Task<User> InsertUser(User user);
     Task<User> UpdateUser(User user);
     Task<bool> ChangePassword(User user);
@@ -25,8 +26,14 @@ public class UserService : IUserService
 
     public async Task<bool> AuthenticateUser(User user)
     {
-        var results = await _db.LoadData<User, dynamic>("SELECT * FROM Users WHERE Email=@Email AND Password=@Password", new { Email = user.Email, Password = user.Password });
-        return results.Any();
+        User? checkUser = await GetByEmail(user);
+        if (checkUser is not null)
+        {
+            user.Password = new SecurityHelper().CreatePasswordHash(user.Password, checkUser.PasswordSalt);
+            var results = await _db.LoadData<User, dynamic>("SELECT * FROM Users WHERE Email=@Email AND Password=@Password", new { Email = user.Email, Password = user.Password });
+            return results.Any();
+        }
+        return false;
     }
     public async Task<IEnumerable<User>> GetUsers() =>
         await _db.LoadData<User, dynamic>("SELECT * FROM Users", new { });
@@ -40,12 +47,18 @@ public class UserService : IUserService
     {
         return await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Id=@Id", new { Id = id });
     }
-
+    public async Task<User?> GetByEmail(User User)
+    {
+        return await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Email=@Email", new { Email = User.Email });
+    }
     public async Task<User> InsertUser(User user)
     {
         bool hasDuplicate = await this.CheckDuplicateEntry(user);
         if (!hasDuplicate) 
         {
+            user.PasswordSalt = new SecurityHelper().CreateSalt();
+            user.Password = new SecurityHelper().CreatePasswordHash(user.Password, user.PasswordSalt);
+
             int id = await _db.Insert<User>(user);
 
             if (id != 0)
@@ -78,6 +91,9 @@ public class UserService : IUserService
 
     public async Task<bool> ChangePassword(User user)
     {
+        user.PasswordSalt = new SecurityHelper().CreateSalt();
+        user.Password = new SecurityHelper().CreatePasswordHash(user.Password, user.PasswordSalt);
+
         string sql = @"UPDATE Users SET Password=@Password WHERE Id=@Id";
         return await _db.SaveData(sql, user);
     }
