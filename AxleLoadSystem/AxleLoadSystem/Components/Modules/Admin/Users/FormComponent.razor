@@ -111,7 +111,7 @@ else
                             @if (!string.IsNullOrWhiteSpace(user.Password))
                             {
                                 <div class="progress">
-                                    <div class="progress-bar @(GetProgressColor())" role="progressbar" style="width: @(GetPasswordStrength() * 25)%;" aria-valuenow="@(GetPasswordStrength() * 25)" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar @(GetProgressColor(user.Password))" role="progressbar" style="width: @(GetPasswordStrength(user.Password) * 25)%;" aria-valuenow="@(GetPasswordStrength(user.Password) * 25)" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             }
                         </div>
@@ -159,6 +159,12 @@ else
                                 <label for="password">New Password <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
                                 <InputText type="@(showPassword ? "text" : "password")" @bind-Value="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" />
                             </div>
+                            @if (!string.IsNullOrWhiteSpace(NewPasswordInput))
+                            {
+                                <div class="progress">
+                                    <div class="progress-bar @(GetProgressColor(NewPasswordInput))" role="progressbar" style="width: @(GetPasswordStrength(NewPasswordInput) * 25)%;" aria-valuenow="@(GetPasswordStrength(NewPasswordInput) * 25)" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            }
                         </div>
                         <div class="col-6">
                             <div class="form-group">
@@ -233,7 +239,7 @@ else
 
         role = role.TrimEnd(',');
         user.Role = role;
-        if (await ValidatePassword())
+        if (await ValidatePassword(user.Password))
         {
             if (Mode == FormMode.Edit)
             {
@@ -302,9 +308,9 @@ else
     }
     async Task OnValidPasswordSubmit(EditContext editContext)
     {
-        Notification notification = new();
-        if (await ValidatePassword())
+        if (await ValidatePassword(NewPasswordInput))
         {
+            Notification notification = new();
             if (NewPasswordInput.Equals(PasswordMatch))
             {
                 userPassword.Id = user.Id;
@@ -325,40 +331,39 @@ else
                 notification.Type = Notification.NotificationType.Failure;
                 notification.Message = "Confirm Password Doesn't Match";
             }        
+            appState.SetNotification(this, notification);
         }
-
-        appState.SetNotification(this, notification);
     }
-    private async Task<bool> ValidatePassword()
+    private async Task<bool> ValidatePassword(string password)
     {
         Notification notification = new();
 
-        if (string.IsNullOrWhiteSpace(user.Password))
+        if (string.IsNullOrWhiteSpace(password))
         {
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Password is required";
         }
-        else if (user.Password.Length < 8 || user.Password.Length > 50)
+        else if (password.Length < 8 || password.Length > 50)
         {
             notification.Type = Notification.NotificationType.Failure;
-            notification.Message = "Password must be between 8 and 50 characters";
+            notification.Message = "Password must be between 8 to 50 characters";
         }
-        else if (!user.Password.Any(char.IsLower))
+        else if (!password.Any(char.IsLower))
         {
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Password must contain at least one lowercase letter";
         }
-        else if (!user.Password.Any(char.IsUpper))
+        else if (!password.Any(char.IsUpper))
         {
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Password must contain at least one uppercase letter";
         }
-        else if (!user.Password.Any(char.IsDigit))
+        else if (!password.Any(char.IsDigit))
         {
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Password must contain at least one digit";
         }
-        else if (!user.Password.Any(c => !char.IsLetterOrDigit(c)))
+        else if (!password.Any(c => !char.IsLetterOrDigit(c)))
         {
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Password must contain at least one special character";
@@ -370,40 +375,44 @@ else
         appState.SetNotification(this, notification);
         return false; 
     }
-    private int GetPasswordStrength()
+    private int GetPasswordStrength(string password)
     {
         int strength = 0;
 
-        if (user.Password.Length >= 8 && user.Password.Length <= 50)
+        if (password.Length >= 8 && password.Length <= 50)
         {
             strength++;
         }
-        if (user.Password.Any(char.IsUpper) && user.Password.Any(char.IsLower))
+        if (password.Any(char.IsUpper) && password.Any(char.IsLower))
         {
             strength++;
         }            
-        if (user.Password.Any(char.IsDigit))
+        if (password.Any(char.IsDigit))
         {
             strength++;
         }
-        if (user.Password.Any(c => !char.IsLetterOrDigit(c)))
+        if (password.Any(c => !char.IsLetterOrDigit(c)))
         {
             strength++;
         }
 
         return strength;
     }
-    private string GetProgressColor()
+    private string GetProgressColor(string password)
     {
-        int progress = GetPasswordStrength() * 25;
+        int progress = GetPasswordStrength(password) * 25;
 
         if (progress < 40)
         {
             return "bg-danger";
         }
-        else if (progress >= 40 && progress < 80)
+        else if (progress >= 40 && progress < 60)
         {
             return "bg-warning";
+        }
+        else if (progress >= 60 && progress < 80)
+        {
+            return "bg-info";
         }
         else
         {
