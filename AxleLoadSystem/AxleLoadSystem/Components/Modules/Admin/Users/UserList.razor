@@ -2,13 +2,15 @@
 @using BOL
 @using Services
 @inject IUserService userService
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Station> localizer
 @rendermode InteractiveServer
 
-<PageTitle>List of User</PageTitle>
-<h1>List of User</h1>
+<PageTitle>@localizer["UserList"]</PageTitle>
+    <h1>@localizer["UserList"]</h1>
 
 <NavLink class="btn btn-primary pull-right" href="/user/new" title="Add New">
-    <i class="fa fa-plus"></i> Add New
+    <i class="fa fa-plus"></i>@localizer["Button.AddUser"]
 </NavLink>
 @if (users is null)
 {
@@ -19,10 +21,10 @@ else
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Role(s)</th>
-                <th>Active?</th>
+                <th>@localizer["Email"]</th>
+                <th>@localizer["Name"]</th>
+                <th>@localizer["Roles"]</th>
+                <th>@localizer["Active"]</th>
                 <th></th>
             </tr>
         </thead>

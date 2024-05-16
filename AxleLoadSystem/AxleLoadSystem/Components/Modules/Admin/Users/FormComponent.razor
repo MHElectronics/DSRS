@@ -32,7 +32,7 @@ else
                             else
                             {
                                 <label for="name" class="form-label">@localizer["Email"]</label>
-                                <input type="email" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" />
+                                <input type="email" @bind-value="user.Email" required class="form-control" placeholder="Email" id="name" maxlength="50"/>
                                 <ValidationMessage For="() => user.Email" />
                             }
                         </div>
