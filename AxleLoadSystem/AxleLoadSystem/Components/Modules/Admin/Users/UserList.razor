@@ -3,14 +3,14 @@
 @using Services
 @inject IUserService userService
 @inject IStringLocalizer<Locales.Resource> localizerResource
-@inject IStringLocalizer<Locales.Station> localizer
+@inject IStringLocalizer<Locales.User> localizer
 @rendermode InteractiveServer
 
 <PageTitle>@localizer["UserList"]</PageTitle>
     <h1>@localizer["UserList"]</h1>
 
 <NavLink class="btn btn-primary pull-right" href="/user/new" title="Add New">
-    <i class="fa fa-plus"></i>@localizer["Button.AddUser"]
+    <i class="fa fa-plus"></i> @localizerResource["Button.AddUser"]
 </NavLink>
 @if (users is null)
 {
@@ -35,7 +35,7 @@ else
                     <td>@user.Email</td>
                     <td>@user.Name</td>
                     <td>@user.Role</td>
-                    <td>@(user.IsActive ? "Active" : "Inactive")</td>
+                    <td>@(user.IsActive ? @localizer["Active"] : @localizer["Inactive"])</td>
                     <td>
                         <div class="btn-group float-right">
                             <a class="btn btn-primary" href="@("/user/details/" + user.Id)" title="Details Information">

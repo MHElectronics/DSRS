@@ -18,7 +18,7 @@ else
         <DataAnnotationsValidator />
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title">User Management</h3>
+                <h3 class="card-title">@localizer["UserManagement"]</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -41,12 +41,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="name" class="form-label">@localizer["Name of User"]</label>
+                                <label for="name" class="form-label">@localizer["NameofUser"]</label>
                                 <label class="form-control">@user.Name</label>
                             }
                             else
                             {
-                                <label for="name" class="form-label">@localizer["Name of User"]</label>
+                                <label for="name" class="form-label">@localizer["NameofUser"]</label>
                                 <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" maxlength="50" />
                                 <ValidationMessage For="() => user.Name" />
                             }
@@ -150,13 +150,13 @@ else
             <DataAnnotationsValidator />
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Change Password</h3>
+                    <h3 class="card-title">@localizer["ChangePassword"]</h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
-                                <label for="password">New Password <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
+                                <label for="password">@localizer["NewPassword"] <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
                                 <InputText type="@(showPassword ? "text" : "password")" @bind-Value="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" />
                             </div>
                             @if (!string.IsNullOrWhiteSpace(NewPasswordInput))
@@ -168,7 +168,7 @@ else
                         </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <label for="password">Confirm New Password</label>
+                                <label for="password">@localizer["ConfirmNewPassword"]</label>
                                 <InputText type="password" @bind-Value="PasswordMatch" class="form-control" placeholder="Confirm New Password" id="CNewPassword" maxlength="50" />
                             </div>
                         </div>
