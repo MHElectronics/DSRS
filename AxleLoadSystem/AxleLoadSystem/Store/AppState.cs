@@ -13,14 +13,11 @@ public class AppState : IAppState
 {
     public event Action OnChange;
     private Notification _notification { get; set; }
-    public event Action<ComponentBase, string> StateChanged;
-    private void NotifyStateChanged(ComponentBase source, string property) { StateChanged?.Invoke(source, property); }
 
     public void SetNotification(ComponentBase source, Notification notification)
     {
         _notification = notification;
         OnChange?.Invoke();
-        //NotifyStateChanged(source, "Notification");
     }
     public Notification GetNotification()
     {

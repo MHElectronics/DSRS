@@ -1,24 +1,35 @@
 ﻿@implements IDisposable
 @inject IAppState appState
+@rendermode InteractiveServer
 
-@if (appState is not null && appState.GetNotification() is not null)
+@if (show)
 {
     <div class="alert @appState.GetNotification().AlertClass alert-dismissible" role="alert">
         <div>@appState.GetNotification().Message</div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="close" @onclick="Hide">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
 }
 
 @code {
-    protected override async Task OnInitializedAsync()
+    private bool show { get; set; } = false;
+
+    protected override void OnInitialized()
     {
-        appState.OnChange += StateHasChanged;
+        appState.OnChange += ShowError;
     }
-    
+    private void ShowError()
+    {
+        show = true;
+        this.StateHasChanged();
+    }
+    private void Hide()
+    {
+        show = false;
+    }
     public void Dispose()
     {
-        appState.OnChange -= StateHasChanged;
+        appState.OnChange -= ShowError;
     }
 }
