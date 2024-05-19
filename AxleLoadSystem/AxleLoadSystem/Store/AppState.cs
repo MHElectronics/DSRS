@@ -20,7 +20,7 @@ public class AppState : IAppState
     {
         _notification = notification;
         OnChange?.Invoke();
-        NotifyStateChanged(source, "Notification");
+        //NotifyStateChanged(source, "Notification");
     }
     public Notification GetNotification()
     {
