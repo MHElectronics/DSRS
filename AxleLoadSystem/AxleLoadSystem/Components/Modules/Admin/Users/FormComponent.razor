@@ -161,7 +161,7 @@ else
                             </div>
                             @if (!string.IsNullOrWhiteSpace(NewPasswordInput))
                             {
-                                <div class="progress">
+                                <div class="progress" title="lenghth >= 8, Upper and Lower case, special character">
                                     <div class="progress-bar @(GetProgressColor(NewPasswordInput))" role="progressbar" style="width: @(GetPasswordStrength(NewPasswordInput) * 25)%;" aria-valuenow="@(GetPasswordStrength(NewPasswordInput) * 25)" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             }

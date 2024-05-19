@@ -41,7 +41,9 @@ public class UserService : IUserService
 
     public async Task<User?> GetUser(User user)
     {
-        return await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Id=@Id OR Email=@Email", new { Id = user.Id, Email = user.Email });
+        user = await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Id=@Id OR Email=@Email", new { Id = user.Id, Email = user.Email });
+        user.Password = "";
+        return user;
     }
     public async Task<User?> GetUserById(int id)
     {
@@ -94,7 +96,7 @@ public class UserService : IUserService
         user.PasswordSalt = new SecurityHelper().CreateSalt();
         user.Password = new SecurityHelper().CreatePasswordHash(user.Password, user.PasswordSalt);
 
-        string sql = @"UPDATE Users SET Password=@Password WHERE Id=@Id";
+        string sql = @"UPDATE Users SET Password=@Password,PasswordSalt=@PasswordSalt WHERE Id=@Id";
         return await _db.SaveData(sql, user);
     }
     public async Task<bool> CheckDuplicateEntry(User user)

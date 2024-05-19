@@ -70,11 +70,11 @@
 
                     if (user.HasRole("Admin"))
                     {
-                        navigationManager.NavigateTo("/fileupload", true);
+                        navigationManager.NavigateTo("", true);
                     }
                     else if (user.HasRole("User"))
                     {
-                        navigationManager.NavigateTo("/fileupload", true);
+                        navigationManager.NavigateTo("/map", true);
                     }
                     else
                     {
