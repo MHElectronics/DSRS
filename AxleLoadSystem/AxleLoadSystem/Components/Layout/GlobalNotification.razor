@@ -23,6 +23,15 @@
     {
         show = true;
         this.StateHasChanged();
+
+        var timer = new Timer(new TimerCallback(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                Hide();
+                StateHasChanged();
+            });
+        }), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
     }
     private void Hide()
     {
