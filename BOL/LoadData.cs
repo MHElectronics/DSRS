@@ -15,25 +15,24 @@ public class LoadData
     public string PlateNumber { get; set; }
     public string VehicleId { get; set; }
     public int NumberOfAxle { get; set; }
-    public decimal Axle1 { get; set; }
-    public decimal Axle2 { get; set; }
-    public decimal Axle3 { get; set; }
-    public decimal Axle4 { get; set; }
-    public decimal Axle5 { get; set; }
-    public decimal Axle6 { get; set; }
-    public decimal Axle7 { get; set; }
-    public decimal AxleRemaining { get; set; }
-    public decimal GrossVehicleWeight { get; set; }
-    public decimal FinePayment { get; set; }
+    public int Axle1 { get; set; }
+    public int Axle2 { get; set; }
+    public int Axle3 { get; set; }
+    public int Axle4 { get; set; }
+    public int Axle5 { get; set; }
+    public int Axle6 { get; set; }
+    public int Axle7 { get; set; }
+    public int AxleRemaining { get; set; }
+    public int GrossVehicleWeight { get; set; }
     public bool IsUnloaded { get; set; }
     public bool IsOverloaded { get; set; }
     public bool OverSizedModified { get; set; }
-    public decimal Wheelbase { get; set; }
+    public int Wheelbase { get; set; }
     public string ReceiptNumber { get; set; }
     public string BillNumber { get; set; }
 
     //Slow Moving
-    public decimal VehicleSpeed { get; set; }
+    public int VehicleSpeed { get; set; }
     [JsonDateTimeFormat]
     public DateTime? Axle1Time { get; set; }
     [JsonDateTimeFormat]

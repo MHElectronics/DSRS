@@ -114,6 +114,7 @@ else
     {
         stations = await stationService.Get();
         wims = await wimService.GetAll();
+        StateHasChanged();
     }
     private async Task DeleteStation(Station station)
     {

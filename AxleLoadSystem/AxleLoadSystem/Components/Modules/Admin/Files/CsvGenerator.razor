@@ -61,42 +61,42 @@
             line += ",PN" + rnd.Next(1000, 5000);
             line += ",VI" + rnd.Next(100, 500);
             line += "," + rnd.Next(0, 20);
-            line += "," + (rnd.Next(30, 120) + Math.Round(rnd.NextDouble(), 2));
+            line += "," + rnd.Next(30, 120);
 
-            double axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
-            double gross = axle;
+            int axle = rnd.Next(0, 100);
+            int gross = axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
-            axle = Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
+            axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
 
             //Gross
-            line += "," + Math.Round(gross, 2);
+            line += "," + gross;
 
             //Booleans
             line += "," + rnd.Next(0, 1);
