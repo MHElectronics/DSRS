@@ -18,7 +18,7 @@ else
         <DataAnnotationsValidator />
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title">Station</h3>
+                <h3 class="card-title">@localizer["Station"]</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -32,7 +32,7 @@ else
                             else
                             {
                                 <label for="name" class="form-label">@localizer["Name"]</label>
-                                <input type="text" @bind-value="station.StationName" required class="form-control" placeholder="@localizer["Name"]" id="name" maxlength="50" />
+                                <input type="text" @bind-value="station.StationName" required class="form-control" placeholder="@localizer["Name"]" id="name" min="5" maxlength="50" />
                                 <ValidationMessage For="() => station.StationName" />
                             }
                         </div>

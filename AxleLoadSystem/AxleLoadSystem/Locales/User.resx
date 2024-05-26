@@ -120,6 +120,9 @@
   <data name="Active" xml:space="preserve">
     <value>Active</value>
   </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>Change Password</value>
   </data>
@@ -133,7 +136,7 @@
     <value>Email</value>
   </data>
   <data name="Inactive" xml:space="preserve">
-    <value>Inactive</value>
+    <value>In Active</value>
   </data>
   <data name="IsActive" xml:space="preserve">
     <value>Is Active</value>
@@ -155,6 +158,9 @@
   </data>
   <data name="Roles" xml:space="preserve">
     <value>Roles</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
   </data>
   <data name="UserList" xml:space="preserve">
     <value>List of User</value>

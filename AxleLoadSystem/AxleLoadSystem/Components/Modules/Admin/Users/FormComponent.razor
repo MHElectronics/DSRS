@@ -47,7 +47,7 @@ else
                             else
                             {
                                 <label for="name" class="form-label">@localizer["NameofUser"]</label>
-                                <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" maxlength="50" />
+                                <input type="text" @bind-value="user.Name" required class="form-control" placeholder="Name of user" id="name" min="5" maxlength="50" />
                                 <ValidationMessage For="() => user.Name" />
                             }
                         </div>
@@ -71,7 +71,7 @@ else
                                             <div class="icheck-primary d-inline">
                                                 @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
                                                 <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
-                                                <label for="checkId@(value)">@value</label>
+                                                <label for="checkId@(value)">@localizer[@value]</label>
                                             </div>
                                         }
                                     </div>
@@ -93,7 +93,7 @@ else
                                     <div class="col-12">
                                         <div class="icheck-primary d-inline">
                                             <input type="checkbox" id="isActive" @bind="@user.IsActive" />
-                                            <label for="isActive">Is Active</label>
+                                            <label for="isActive">@localizer["IsActive"]</label>
                                         </div>
                                     </div>
                                 </div>

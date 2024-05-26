@@ -120,6 +120,9 @@
   <data name="Active" xml:space="preserve">
     <value>সক্রিয়</value>
   </data>
+  <data name="Admin" xml:space="preserve">
+    <value>অ্যাডমিন</value>
+  </data>
   <data name="ChangePassword" xml:space="preserve">
     <value>পাসওয়ার্ড পরিবর্তন করুন</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="Roles" xml:space="preserve">
     <value>ভূমিকা</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>ব্যবহারকারী</value>
   </data>
   <data name="UserList" xml:space="preserve">
     <value>ব্যবহারকারীর তালিকা</value>
