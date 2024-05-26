@@ -56,7 +56,7 @@ public class UserService : IUserService
     public async Task<User> InsertUser(User user)
     {
         bool hasDuplicate = await this.CheckDuplicateEntry(user);
-        if (!hasDuplicate) 
+        if (!hasDuplicate)
         {
             user.PasswordSalt = new SecurityHelper().CreateSalt();
             user.Password = new SecurityHelper().CreatePasswordHash(user.Password, user.PasswordSalt);
@@ -74,15 +74,9 @@ public class UserService : IUserService
 
     public async Task<User> UpdateUser(User user)
     {
-        bool hasDuplicate = await this.CheckDuplicateEntry(user);
-        if (!hasDuplicate) 
-        {
-            string sql = @"UPDATE Users SET Name=@Name, Email=@Email, Role=@Role, IsActive=@IsActive WHERE Id=@Id";
-            await _db.SaveData(sql, user);
-            return user;
-        }
-        return null;
-        
+        string sql = @"UPDATE Users SET Name=@Name, Role=@Role, IsActive=@IsActive WHERE Id=@Id";
+        await _db.SaveData(sql, user);
+        return user;
     }
     public async Task<bool> Delete(User obj)
     {
@@ -102,6 +96,6 @@ public class UserService : IUserService
     public async Task<bool> CheckDuplicateEntry(User user)
     {
         string query = "SELECT COUNT(1) Count FROM Users WHERE LOWER(Email)=LOWER(@Email)";
-        return await _db.LoadSingleAsync<bool,object>(query, user);
+        return await _db.LoadSingleAsync<bool, object>(query, user);
     }
 }

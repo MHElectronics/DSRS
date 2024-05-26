@@ -34,7 +34,7 @@ public class StationService : IStationService
             // Get the data from database
             string query = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations";
             stations = await _db.LoadData<Station, dynamic>(query, null);
-            
+
             var cacheEntryOptions = new MemoryCacheEntryOptions
             {
                 AbsoluteExpiration = DateTime.Now.AddMinutes(2),
@@ -85,25 +85,20 @@ public class StationService : IStationService
     }
     public async Task<bool> Update(Station obj)
     {
-        bool hasDuplicate = await this.CheckDuplicateEntry(obj);
-        if (!hasDuplicate)
+        string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
+        bool isSuccess = await _db.SaveData<Station>(query, obj);
+
+        //Reset cache without waiting
+        if (isSuccess)
         {
-            string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
-            bool isSuccess = await _db.SaveData<Station>(query, obj);
-
-            //Reset cache without waiting
-            if (isSuccess)
-            {
-                this.Get();
-            }
-
-            return isSuccess;
+            this.Get();
         }
-        return false;
+
+        return isSuccess;
     }
     public async Task<bool> Delete(Station obj)
     {
-        string query = "DELETE FROM WIMScale WHERE StationId=@StationId " + 
+        string query = "DELETE FROM WIMScale WHERE StationId=@StationId " +
                        "DELETE FROM Stations WHERE StationId=@StationId";
         int count = await _db.DeleteData<Station, object>(query, new { obj.StationId });
 
@@ -115,7 +110,7 @@ public class StationService : IStationService
 
         return count > 0;
     }
-    
+
     public string GenerateKey()
     {
         int length = Convert.ToInt16(_configuration.GetSection("Settings:ApiKeyLength").Value);

@@ -34,8 +34,21 @@
     <div class="content-wrapper">
         <section class="content">
             <div class="container-fluid">
-                <GlobalNotification/>
-                @Body
+                <GlobalNotification />
+                <ErrorBoundary @ref="errorBoundary">
+                    <ChildContent>
+                        @Body
+                    </ChildContent>
+                    <ErrorContent Context="ex">
+                        @if (HandleError(@ex) == true)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <h5>An Unhandled error occured. Exception: @ex.Message</h5>
+                                Stack Trace: @ex.StackTrace
+                            </div>
+                        }
+                    </ErrorContent>
+                </ErrorBoundary>
             </div>
         </section>
     </div>
@@ -54,3 +67,20 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    ErrorBoundary errorBoundary;
+    protected override void OnParametersSet()
+    {
+        // On each page navigation, reset any error state
+        errorBoundary?.Recover();
+    }
+
+    private bool HandleError(Exception ex)
+    {
+        var msg = ex.Message;
+        var trace = ex.StackTrace;
+        // examine error here
+        return true;
+    }
+}
