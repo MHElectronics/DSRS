@@ -63,8 +63,11 @@ namespace AxleLoadSystem.Api.Controllers
             }
             
             file = await this.UploadFile(file, uploadFile);
-
-            return Ok(file.Id > 0);
+            if (file.Id > 0)
+            {
+                return Ok("Axle load file uploaded successfully");
+            }
+            return BadRequest("Error: Axle load file upload unsuccessful");  
         }
         
         [CustomAuthorize]
@@ -105,8 +108,11 @@ namespace AxleLoadSystem.Api.Controllers
             }
 
             file = await this.UploadFile(file, uploadFile);
-
-            return Ok(file.Id > 0);
+            if (file.Id > 0)
+            {
+                return Ok("Fine payment file uploaded successfully");
+            }
+            return BadRequest("Error: Fine payment file upload unsuccessful");
         }
         private async Task<UploadedFile> UploadFile(UploadedFile file, IFormFile uploadFile)
         {
@@ -142,10 +148,14 @@ namespace AxleLoadSystem.Api.Controllers
             if (validData.Count > 0)
             {
                 bool isSuccess = await _axleLoadService.Add(validData);
-                return Ok(isSuccess);
+                if(isSuccess)
+                {
+                    return Ok("Axle load data insert successful");
+                }
+                return BadRequest("Error: Axle load data insert failed");
             }
 
-            return BadRequest();
+            return BadRequest("Error: Axle load data validation failed");
         }
         [HttpPost("[action]")]
         public async Task<IActionResult> LoadDataMultiple(List<LoadData> obj)
@@ -172,10 +182,14 @@ namespace AxleLoadSystem.Api.Controllers
                 }
 
                 bool isSuccess = await _axleLoadService.Add(validData);
-                return Ok(isSuccess);
+                if (isSuccess)
+                {
+                    return Ok("Axle load multiple data insert successful");
+                }
+                return BadRequest("Error: Axle load multiple data insert failed");
             }
 
-            return BadRequest();
+            return BadRequest("Error: Axle load multiple data validation failed");
         }
         private async Task<List<LoadData>> CheckValidData(int stationId, List<LoadData> data)
         {
@@ -205,8 +219,11 @@ namespace AxleLoadSystem.Api.Controllers
             obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
             bool isSuccess = await _finePaymentService.Add(obj);
-
-            return Ok(isSuccess);
+            if (isSuccess)
+            {
+                return Ok("Fine payment data insert successful");
+            }
+            return BadRequest("Error: Fine payment data insert failed");
         }
         [HttpPost("[action]")]
         public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
@@ -229,8 +246,11 @@ namespace AxleLoadSystem.Api.Controllers
             }
 
             bool isSuccess = await _finePaymentService.Add(obj);
-
-            return Ok(isSuccess);
+            if (isSuccess)
+            {
+                return Ok("Fine payment multiple data insert successful");
+            }
+            return BadRequest("Error: Fine payment multiple data insert failed");
         }
     }
 }
