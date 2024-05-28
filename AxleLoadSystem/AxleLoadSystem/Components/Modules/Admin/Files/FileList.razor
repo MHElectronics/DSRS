@@ -4,13 +4,14 @@
 @inject IFileService fileService
 @inject IStationService stationService
 @inject IAppState appState
+@inject IStringLocalizer<Locales.File> localizer
 @rendermode InteractiveServer
 
 <PageTitle>List of Uploaded Files</PageTitle>
 
 <div class="card card-primary">
     <div class="card-header">
-        <h3 class="card-title">List of Uploaded Files</h3>
+        <h3 class="card-title">@localizer["ListofUploadedFiles"] </h3>
     </div>
     <div class="card-body">
         @if (stations is not null)

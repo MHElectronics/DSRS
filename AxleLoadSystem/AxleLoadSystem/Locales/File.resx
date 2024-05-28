@@ -117,40 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Menu.Counter" xml:space="preserve">
-    <value>Counter</value>
-  </data>
-  <data name="Menu.Counter2" xml:space="preserve">
-    <value>Counter 2</value>
-  </data>
-  <data name="Menu.Map" xml:space="preserve">
-    <value>Bangladesh</value>
-  </data>
-  <data name="Menu.Station" xml:space="preserve">
-    <value>Stations</value>
-  </data>
-  <data name="Menu.User" xml:space="preserve">
-    <value>Users</value>
-  </data>
-  <data name="Menu.UploadedFiles" xml:space="preserve">
-    <value>Uploaded Files</value>
-  </data>
-  <data name="Menu.ChangePassword" xml:space="preserve">
-    <value>Change Password</value>
-  </data>
-  <data name="Menu.FileUpload" xml:space="preserve">
-    <value>File Upload</value>
-  </data>
-  <data name="Menu.BRTA" xml:space="preserve">
-    <value>BRTA</value>
-  </data>
-  <data name="Menu.Copyright" xml:space="preserve">
-    <value>Copyright</value>
-  </data>
-  <data name="Menu.Rights" xml:space="preserve">
-    <value>All rights reserved.</value>
-  </data>
-  <data name="Menu.Versions" xml:space="preserve">
-    <value>Versions</value>
+  <data name="ListofUploadedFiles" xml:space="preserve">
+    <value>List of Uploaded Files</value>
   </data>
 </root>

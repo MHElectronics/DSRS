@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-
+@inject IStringLocalizer<Locales.Layout> localizer
 <div class="wrapper">
     <!-- Preloader -->
     @* <div class="preloader flex-column justify-content-center align-items-center">
@@ -54,10 +54,10 @@
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-        <strong>Copyright &copy; @DateTime.Today.Year RHD.</strong>
-        All rights reserved.
+        <strong>@localizer["Menu.Copyright"] &copy; @DateTime.Today.Year RHD.</strong>
+        @localizer["Menu.Rights"]
         <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 1.0
+            <b>@localizer["Menu.Versions"]</b> 1.0
         </div>
     </footer>
 </div>

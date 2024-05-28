@@ -162,4 +162,10 @@
   <data name="WIMScale" xml:space="preserve">
     <value>WIM স্কেল</value>
   </data>
+  <data name="MapX" xml:space="preserve">
+    <value>মানচিত্র X অক্ষ</value>
+  </data>
+  <data name="MapY" xml:space="preserve">
+    <value>মানচিত্র Y অক্ষ</value>
+  </data>
 </root>
