@@ -41,7 +41,7 @@ builder.Services.AddMemoryCache();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
@@ -49,7 +49,15 @@ var app = builder.Build();
         options.DefaultModelsExpandDepth(-1);
     });
 }
-
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.DefaultModelsExpandDepth(-1);
+        options.SupportedSubmitMethods(new Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod[] { });
+    });
+}
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
