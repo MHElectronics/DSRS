@@ -65,8 +65,13 @@ public class WIMScaleService : IWIMScaleService
 
     public async Task<bool> Add(WIMScale obj)
     {
-        string query = "INSERT INTO WIMScale(StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection) VALUES(@StationId,@LaneNumber,@IsHighSpeed,@EquipmentCode,@LaneDirection)";
-        return await _db.SaveData<WIMScale>(query, obj);
+        bool hasDuplicate = await this.CheckDuplicateEntry(obj);
+        if (!hasDuplicate)
+        {
+            string query = "INSERT INTO WIMScale(StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection) VALUES(@StationId,@LaneNumber,@IsHighSpeed,@EquipmentCode,@LaneDirection)";
+            return await _db.SaveData<WIMScale>(query, obj);
+        }
+        return false;
     }
     public async Task<bool> Update(WIMScale obj)
     {
@@ -78,5 +83,10 @@ public class WIMScaleService : IWIMScaleService
         string query = "DELETE FROM WIMScale WHERE Id=@Id";
         int count = await _db.DeleteData<WIMScale, object>(query, new { obj.Id });
         return count > 0;
+    }
+    public async Task<bool> CheckDuplicateEntry(WIMScale wimScale)
+    {
+        string query = "SELECT COUNT(1) Count FROM WIMScale WHERE LaneNumber=@LaneNumber";
+        return await _db.LoadSingleAsync<bool, object>(query, wimScale);
     }
 }
