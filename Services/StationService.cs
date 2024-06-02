@@ -76,7 +76,7 @@ public class StationService : IStationService
             //Reset cache without waiting
             if (isSuccess)
             {
-                this.Get();
+                _cacheProvider.Remove(CacheKeys.Stations);
             }
 
             return isSuccess;
