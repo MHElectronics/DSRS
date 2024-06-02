@@ -117,7 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Date" xml:space="preserve">
+    <value>তারিখ</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>ফাইলের নাম</value>
+  </data>
+  <data name="FileType" xml:space="preserve">
+    <value>ফাইলের ধরন</value>
+  </data>
   <data name="ListofUploadedFiles" xml:space="preserve">
     <value>আপলোড করা ফাইলের তালিকা</value>
+  </data>
+  <data name="Processed" xml:space="preserve">
+    <value>প্রক্রিয়াকৃত</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>সারসংক্ষেপ</value>
+  </data>
+  <data name="UploadDate" xml:space="preserve">
+    <value>তারিখ আপলোড</value>
+  </data>
+  <data name="UploadedFrom" xml:space="preserve">
+    <value>কোথা থেকে আপলোড</value>
   </data>
 </root>

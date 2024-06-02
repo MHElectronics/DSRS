@@ -117,7 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="FileType" xml:space="preserve">
+    <value>File Type</value>
+  </data>
   <data name="ListofUploadedFiles" xml:space="preserve">
     <value>List of Uploaded Files</value>
+  </data>
+  <data name="Processed" xml:space="preserve">
+    <value>Processed</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="UploadDate" xml:space="preserve">
+    <value>Upload Date</value>
+  </data>
+  <data name="UploadedFrom" xml:space="preserve">
+    <value>Uploaded From</value>
   </data>
 </root>
