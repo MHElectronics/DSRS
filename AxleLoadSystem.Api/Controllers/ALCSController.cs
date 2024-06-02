@@ -72,7 +72,7 @@ namespace AxleLoadSystem.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             
             return BadRequest("Error: Axle load file upload failed");  
@@ -125,7 +125,7 @@ namespace AxleLoadSystem.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             
             return BadRequest("Error: Fine payment file upload failed");
