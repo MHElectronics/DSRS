@@ -61,13 +61,21 @@ namespace AxleLoadSystem.Api.Controllers
             {
                 return BadRequest("File already uploaded");
             }
-            
-            file = await this.UploadFile(file, uploadFile);
-            if (file.Id > 0)
+
+            try
             {
-                return Ok("Axle load file uploaded successfully");
+                file = await this.UploadFile(file, uploadFile);
+                if (file.Id > 0)
+                {
+                    return Ok("Axle load file uploaded successfully");
+                }
             }
-            return BadRequest("Error: Axle load file upload unsuccessful");  
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            
+            return BadRequest("Error: Axle load file upload failed");  
         }
         
         [CustomAuthorize]
@@ -107,12 +115,20 @@ namespace AxleLoadSystem.Api.Controllers
                 return BadRequest("File already uploaded");
             }
 
-            file = await this.UploadFile(file, uploadFile);
-            if (file.Id > 0)
+            try
             {
-                return Ok("Fine payment file uploaded successfully");
+                file = await this.UploadFile(file, uploadFile);
+                if (file.Id > 0)
+                {
+                    return Ok("Fine payment file uploaded successfully");
+                }
             }
-            return BadRequest("Error: Fine payment file upload unsuccessful");
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            
+            return BadRequest("Error: Fine payment file upload failed");
         }
         private async Task<UploadedFile> UploadFile(UploadedFile file, IFormFile uploadFile)
         {
