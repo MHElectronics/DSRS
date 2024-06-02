@@ -1,0 +1,92 @@
+﻿@inject IStationService stationService
+@inject IWIMScaleService wimService
+@rendermode InteractiveServer
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                @if (stations is not null)
+                {
+                    <select class="form-control" @onchange="StationChanged">
+                        <option value="0">-Select Station-</option>
+                        @foreach (Station item in stations)
+                        {
+                            <option value="@item.StationId">@item.StationName</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <Loader />
+                }
+            </div>
+            <div class="col-md-6">
+                @if (stationId == 0)
+                {
+                    <p>Select Station to view WIMs</p>
+                }
+                else if(wims is null || wims.Count() == 0)
+                {
+                    <p>No WIM found</p>
+                }
+                else if(wims.Count() > 0)
+                {
+                    <select class="form-control" @bind="@wimId">
+                        <option value="0">-Select WIM-</option>
+                        @foreach (WIMScale item in wims)
+                        {
+                            <option value="@item.Id">@item.LaneNumber - @item.LaneDirection</option>
+                        }
+                    </select>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <input type="date" class="form-control" @bind="@startDate" max="@DateTime.Today" placeholder="Start Date" />
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" @bind="@endDate" max="@DateTime.Today" placeholder="End Date" />
+            </div>
+            <div class="col-md-6 btn-group">
+                <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
+                <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
+                <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
+                <span class="btn @(selectedType == "Quarterly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Quarterly"))">Quarterly</span>
+                <span class="btn @(selectedType == "SemiAnnual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("SemiAnnual"))">Semi Annual</span>
+                <span class="btn @(selectedType == "Annual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Annual"))">Annual</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<Station>? stations;
+    private IEnumerable<WIMScale>? wims;
+
+    private int stationId { get; set; } = 0;
+    private int wimId { get; set; } = 0;
+    private DateTime startDate { get; set; } = DateTime.Today;
+    private DateTime endDate { get; set; } = DateTime.Today;
+    private string selectedType { get; set; } = "Daily";
+
+    protected override async Task OnInitializedAsync()
+    {
+        stations = await stationService.Get();
+    }
+    private async Task StationChanged(ChangeEventArgs e)
+    {
+        wims = null;
+        stationId = Convert.ToInt32(e.Value);
+        wims = await wimService.GetByStation(new WIMScale() { StationId = stationId });
+        if(wims is not null && wims.Count() == 1)
+        {
+            wimId = wims.FirstOrDefault().Id;
+        }
+    }
+    private void TypeChanged(string type)
+    {
+        selectedType = type;
+    }
+}

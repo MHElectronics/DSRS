@@ -4,10 +4,14 @@
     background-size: 400px 400px;
 }
 .layout-fixed.dark-mode .main-sidebar {
-    background-color: rgba(69, 77, 85, 1) !important;
+    background-color: rgba(34, 39, 43, 1) !important;
+    /*background-color: rgba(23, 26, 28, 1) !important;*/
+    /*background-color: rgba(69, 77, 85, 1) !important;*/
 }
 .layout-fixed .main-sidebar {
-    background-color: rgba(69, 77, 85, 1) !important;
+    background-color: rgba(34, 39, 43, 1) !important;
+    /*background-color: rgba(23, 26, 28, 1) !important;*/
+    /*background-color: rgba(69, 77, 85, 1) !important;*/
 }
 
 .content-wrapper {

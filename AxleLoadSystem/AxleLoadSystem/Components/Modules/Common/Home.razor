@@ -7,14 +7,12 @@
 <h1>@localizer["HomeText"]</h1>
 
 Welcome to your new app.
-
-@Thread.CurrentThread.CurrentCulture;
-@Thread.CurrentThread.CurrentUICulture;
+<br/>
+Current Culture: @Thread.CurrentThread.CurrentCulture
+<br/>
+Current UI Culture: @Thread.CurrentThread.CurrentUICulture
 
 <br />
 <br />
 
-<AuthorizeView>
-    <Authorized>Authorized view</Authorized>
-    <NotAuthorized>Not Authorized view</NotAuthorized>
-</AuthorizeView>
+<AxleLoadSystem.Components.Modules.User.ReportSelection/>

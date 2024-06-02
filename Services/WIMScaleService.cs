@@ -36,14 +36,8 @@ public class WIMScaleService : IWIMScaleService
         if (!_cacheProvider.TryGetValue(cacheKey, out IEnumerable<WIMScale>? wims))
         {
             // Get the data from database
-            string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE 1=1";
-            Dictionary<string, object> param = new Dictionary<string, object>();
-            if (obj.StationId > 0)
-            {
-                query += " AND StationId=@StationId";
-                param.Add("@StationId", obj.StationId);
-            }
-            wims = await _db.LoadData<WIMScale, dynamic>(query, param);
+            string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE StationId=@StationId";
+            wims = await _db.LoadData<WIMScale, dynamic>(query, new { obj.StationId });
             
             var cacheEntryOptions = new MemoryCacheEntryOptions
             {
