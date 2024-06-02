@@ -63,20 +63,39 @@ public class WIMScaleService : IWIMScaleService
         if (!hasDuplicate)
         {
             string query = "INSERT INTO WIMScale(StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection) VALUES(@StationId,@LaneNumber,@IsHighSpeed,@EquipmentCode,@LaneDirection)";
-            return await _db.SaveData<WIMScale>(query, obj);
+            bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
+            if(isSuccess)
+            {
+                string cacheKey = "WIMS_S_" + obj.StationId;
+                _cacheProvider.Remove(cacheKey);
+            }
+            return isSuccess;
         }
         return false;
     }
     public async Task<bool> Update(WIMScale obj)
     {
         string query = "UPDATE WIMScale SET StationId=@StationId,LaneNumber=@LaneNumber,IsHighSpeed=@IsHighSpeed,EquipmentCode=@EquipmentCode,LaneDirection=@LaneDirection WHERE Id=@Id";
-        return await _db.SaveData<WIMScale>(query, obj);
+        bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
+        if (isSuccess)
+        {
+            string cacheKey = "WIMS_S_" + obj.StationId;
+            _cacheProvider.Remove(cacheKey);
+        }
+        return isSuccess;
     }
     public async Task<bool> Delete(WIMScale obj)
     {
         string query = "DELETE FROM WIMScale WHERE Id=@Id";
         int count = await _db.DeleteData<WIMScale, object>(query, new { obj.Id });
-        return count > 0;
+        if(count > 0)
+        {
+            string cacheKey = "WIMS_S_" + obj.StationId;
+            _cacheProvider.Remove(cacheKey);
+            return true;
+        }
+
+        return false;
     }
     public async Task<bool> CheckDuplicateEntry(WIMScale wimScale)
     {

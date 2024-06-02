@@ -56,12 +56,6 @@ public class StationService : IStationService
         string sql = "SELECT StationId,StationCode,StationName,Address,AuthKey,MapX,MapY FROM Stations WHERE StationId=@StationId";
         Station station = await _db.LoadSingleAsync<Station, dynamic>(sql, new { obj.StationId });
 
-        //Reset cache without waiting
-        if (station is not null)
-        {
-            this.Get();
-        }
-
         return station;
     }
 
@@ -91,7 +85,8 @@ public class StationService : IStationService
         //Reset cache without waiting
         if (isSuccess)
         {
-            this.Get();
+            _cacheProvider.Remove(CacheKeys.Stations);
+            _cacheProvider.Remove(CacheKeys.Stations);
         }
 
         return isSuccess;
@@ -105,7 +100,7 @@ public class StationService : IStationService
         //Reset cache without waiting
         if (count > 0)
         {
-            this.Get();
+            _cacheProvider.Remove(CacheKeys.Stations);
         }
 
         return count > 0;
