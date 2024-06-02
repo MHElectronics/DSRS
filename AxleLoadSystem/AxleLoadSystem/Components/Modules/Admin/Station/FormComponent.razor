@@ -79,7 +79,9 @@ else
                                 <label for="authkey" class="form-label">@localizer["AuthKey"]</label>
                                 <div class="input-group mb-3">
                                     <input type="text" @bind-value="station.AuthKey" required class="form-control" placeholder="@localizer["AuthKey"]" aria-label="API Key" id="authkey" aria-describedby="button-addon2" maxlength="20" />
-                                    <button class="btn btn-primary" type="button" id="button-addon2" @onclick="GenerateKey">@localizer["GenerateKey"]</button>
+                                    <span class="input-group-append">
+                                        <button class="btn btn-primary" type="button" id="button-addon2" @onclick="GenerateKey">@localizer["GenerateKey"]</button>
+                                    </span>
                                 </div>
                                 <ValidationMessage For="() => station.AuthKey" />
                             }
