@@ -2,17 +2,16 @@
 @using AxleLoadSystem.Locales
 @inject IStringLocalizer<Resource> localizer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Axle Load System</PageTitle>
 
 <h1>@localizer["HomeText"]</h1>
 
+<img src="dist/img/RHDLogo.png" alt="RHD Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+
+@* Axle
 Welcome to your new app.
 <br/>
 Current Culture: @Thread.CurrentThread.CurrentCulture
 <br/>
 Current UI Culture: @Thread.CurrentThread.CurrentUICulture
-
-<br />
-<br />
-
-<AxleLoadSystem.Components.Modules.User.ReportSelection/>
+ *@
