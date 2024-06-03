@@ -25,6 +25,12 @@ namespace AxleLoadSystem.Api.Controllers
             _wimScaleService = wimScaleService;
         }
 
+        [HttpGet("[action]")]
+        public IActionResult Check()
+        {
+            return Ok("Connected");
+        }
+
         #region CSV File Upload
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]

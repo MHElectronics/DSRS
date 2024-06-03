@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Services.Helpers;
 
-
 namespace Services;
 public interface IStationService
 {
@@ -67,7 +66,6 @@ public class StationService : IStationService
             string query = "INSERT INTO Stations(StationCode,StationName,Address,AuthKey,MapX,MapY) VALUES(@StationCode,@StationName,@Address,@AuthKey,@MapX,@MapY)";
             bool isSuccess = await _db.SaveData<Station>(query, obj);
 
-            //Reset cache without waiting
             if (isSuccess)
             {
                 _cacheProvider.Remove(CacheKeys.Stations);
@@ -82,10 +80,8 @@ public class StationService : IStationService
         string query = "UPDATE Stations SET StationCode=@StationCode,StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
         bool isSuccess = await _db.SaveData<Station>(query, obj);
 
-        //Reset cache without waiting
         if (isSuccess)
         {
-            _cacheProvider.Remove(CacheKeys.Stations);
             _cacheProvider.Remove(CacheKeys.Stations);
         }
 
