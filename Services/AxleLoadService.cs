@@ -18,7 +18,12 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 {
     public async Task<IEnumerable<LoadData>> Get(LoadData obj)
     {
-        string query = @"SELECT * FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
+        string query = @"SELECT TransactionNumber,LaneNumber,DateTime 
+      ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
+      ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
+      ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
+      ,OverSizedModified,Wheelbase,ReceiptNumber,BillNumber
+       FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
 
         return await _db.LoadData<LoadData, object>(query, obj);
     }

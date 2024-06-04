@@ -2,7 +2,7 @@
 
 @if (File.FileType == 1)
 {
-    <QuickGrid Items="@AxleLoadData">
+    <QuickGrid Items="@AxleLoadData" Virtualize="true" >
         <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
         <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
         <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
@@ -26,18 +26,11 @@
         <PropertyColumn Property="@(l => l.Wheelbase)" Sortable="true" />
         <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
         <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle1Time)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle2Time)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle3Time)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle4Time)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle5Time)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle6Time)" Sortable="true" />
-        <PropertyColumn Property="@(l => l.Axle7Time)" Sortable="true" />
     </QuickGrid>
 }
 else
 {
-    <QuickGrid Items="@FineRepaymentData">
+    <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
         <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
         <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
         <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />

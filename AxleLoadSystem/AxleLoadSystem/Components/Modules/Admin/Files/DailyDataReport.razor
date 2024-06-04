@@ -32,11 +32,24 @@
                     <br />
                 }
             }
-
-            <DailyDataTableComponent FIle="@File" AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" @rendermode="InteractiveAuto" />
+            <div class="data-table-container">
+                <DailyDataTableComponent FIle="@File" AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" @rendermode="InteractiveAuto" />
+            </div>
+            
         }
     </div>
 </div>
+
+<style>
+    .card-body {
+        overflow-y: auto;
+    }
+
+    .data-table-container {
+        display: inline-block; 
+        min-width: 100%; 
+    }
+</style>
 
 @code {
     [Parameter]
