@@ -8,13 +8,18 @@
             <div class="col-md-6">
                 @if (stations is not null)
                 {
-                    <select class="form-control" @onchange="StationChanged">
+                    <span class="btn btn-primary" @onclick="@SelectStationClicked">Select Stations</span>
+                    <_StationSelector Stations="@stations" SelectionChanged="@StationSelected"></_StationSelector>
+                    @* <select class="form-control" @onchange="StationChanged">
                         <option value="0">-Select Station-</option>
                         @foreach (Station item in stations)
                         {
                             <option value="@item.StationId">@item.StationName</option>
                         }
-                    </select>
+                    </select> *@
+
+                    
+                    
                 }
                 else
                 {
@@ -84,6 +89,14 @@
         {
             wimId = wims.FirstOrDefault().Id;
         }
+    }
+    private void SelectStationClicked()
+    {
+
+    }
+    private void StationSelected(List<Station> selectedStations)
+    {
+        
     }
     private void TypeChanged(string type)
     {
