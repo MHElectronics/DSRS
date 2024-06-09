@@ -4,73 +4,90 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                @if (stations is not null)
-                {
-                    <span class="btn btn-primary" @onclick="@SelectStationClicked">Select Stations</span>
-                    <_StationSelector Stations="@stations" SelectionChanged="@StationSelected"></_StationSelector>
-                    @* <select class="form-control" @onchange="StationChanged">
-                        <option value="0">-Select Station-</option>
-                        @foreach (Station item in stations)
-                        {
-                            <option value="@item.StationId">@item.StationName</option>
-                        }
-                    </select> *@
+        @if (selectionEnabled)
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    @if (stations is not null)
+                    {
+                        <div class="btn-group">
+                            @foreach (Station item in stations.OrderBy(s=>s.StationName))
+                            {
+                                @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
+                                {
+                                    <span class="btn btn-primary" @onclick="@(() => StationClicked(item))">@item.StationName</span>
+                                }
+                                else
+                                {
+                                    <span class="btn btn-outline-primary" @onclick="@(() => StationClicked(item))">@item.StationName</span>
+                                }
+                            }
+                        </div>
 
-                    
-                    
-                }
-                else
-                {
-                    <Loader />
-                }
+                    }
+                    else
+                    {
+                        <Loader />
+                    }
+                </div>
+                <div class="col-md-6">
+                    @if (wims is null || wims.Count() == 0)
+                    {
+                        <p>No WIM found</p>
+                    }
+                    else if (wims.Count() > 0)
+                    {
+                        <select class="form-control" @bind="@wimId">
+                            <option value="0">-Select WIM-</option>
+                            @foreach (WIMScale item in wims)
+                            {
+                                <option value="@item.Id">@item.LaneNumber - @item.LaneDirection</option>
+                            }
+                        </select>
+                    }
+                </div>
             </div>
-            <div class="col-md-6">
-                @if (stationId == 0)
-                {
-                    <p>Select Station to view WIMs</p>
-                }
-                else if(wims is null || wims.Count() == 0)
-                {
-                    <p>No WIM found</p>
-                }
-                else if(wims.Count() > 0)
-                {
-                    <select class="form-control" @bind="@wimId">
-                        <option value="0">-Select WIM-</option>
-                        @foreach (WIMScale item in wims)
-                        {
-                            <option value="@item.Id">@item.LaneNumber - @item.LaneDirection</option>
-                        }
-                    </select>
-                }
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="date" class="form-control" @bind="@startDate" max="@DateTime.Today" placeholder="Start Date" />
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" @bind="@endDate" max="@DateTime.Today" placeholder="End Date" />
+                </div>
+                <div class="col-md-6 btn-group">
+                    <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
+                    <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
+                    <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
+                    <span class="btn @(selectedType == "Quarterly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Quarterly"))">Quarterly</span>
+                    <span class="btn @(selectedType == "SemiAnnual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("SemiAnnual"))">Semi Annual</span>
+                    <span class="btn @(selectedType == "Annual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Annual"))">Annual</span>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3">
-                <input type="date" class="form-control" @bind="@startDate" max="@DateTime.Today" placeholder="Start Date" />
+        }
+        else
+        {
+            <div class="row">
+                <div class="col">
+                    <label>@selectedStations?.Count() station(s) selected</label>
+                    @foreach (Station item in selectedStations ?? new())
+                    {
+                        <span class="badge badge-primary">@item.StationName</span>
+                    }
+                </div>
             </div>
-            <div class="col-md-3">
-                <input type="date" class="form-control" @bind="@endDate" max="@DateTime.Today" placeholder="End Date" />
-            </div>
-            <div class="col-md-6 btn-group">
-                <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
-                <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
-                <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
-                <span class="btn @(selectedType == "Quarterly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Quarterly"))">Quarterly</span>
-                <span class="btn @(selectedType == "SemiAnnual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("SemiAnnual"))">Semi Annual</span>
-                <span class="btn @(selectedType == "Annual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Annual"))">Annual</span>
-            </div>
-        </div>
+        }
+    </div>
+    <div class="card-footer">
+        <span class="btn btn-primary" @onclick="SelectionComplete">Change</span>
     </div>
 </div>
 
 @code {
     private IEnumerable<Station>? stations;
+    private List<Station>? selectedStations;
     private IEnumerable<WIMScale>? wims;
 
-    private int stationId { get; set; } = 0;
+    private bool selectionEnabled { get; set; } = false;
     private int wimId { get; set; } = 0;
     private DateTime startDate { get; set; } = DateTime.Today;
     private DateTime endDate { get; set; } = DateTime.Today;
@@ -80,19 +97,36 @@
     {
         stations = await stationService.Get();
     }
-    private async Task StationChanged(ChangeEventArgs e)
+    private async Task StationClicked(Station item)
     {
-        wims = null;
-        stationId = Convert.ToInt32(e.Value);
-        wims = await wimService.GetByStation(new WIMScale() { StationId = stationId });
-        if(wims is not null && wims.Count() == 1)
+        if(selectedStations is null)
         {
-            wimId = wims.FirstOrDefault().Id;
+            selectedStations = new();
+        }
+        if (selectedStations.Any(s => s.StationId == item.StationId))
+        {
+            selectedStations.Remove(item);
+        }
+        else{
+            selectedStations.Add(item);
+        }
+
+        if(selectedStations.Count() == 1)
+        {
+            wims = await wimService.GetByStation(new WIMScale() { StationId = item.StationId });
+            if (wims is not null && wims.Count() == 1)
+            {
+                wimId = wims.FirstOrDefault().Id;
+            }
+        }
+        else
+        {
+            wims = null;
         }
     }
-    private void SelectStationClicked()
+    private void SelectionComplete()
     {
-
+        selectionEnabled = !selectionEnabled;
     }
     private void StationSelected(List<Station> selectedStations)
     {
