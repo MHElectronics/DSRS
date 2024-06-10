@@ -7,12 +7,12 @@ namespace Services.Helpers;
 
 public interface ICsvHelper
 {
-    DataTable GetDataTableFromByte(byte[] bytes, UploadedFile file);
+    (bool isSuccess, DataTable csvData, string summary) GetDataTableFromByte(byte[] bytes, UploadedFile file);
 }
 
 public class CsvHelper : ICsvHelper
 {
-    public DataTable GetDataTableFromByte(byte[] bytes, UploadedFile file)
+    public (bool isSuccess, DataTable csvData,string summary) GetDataTableFromByte(byte[] bytes, UploadedFile file)
     {
         using TextFieldParser csvReader = new(new MemoryStream(bytes), Encoding.Default);
 
@@ -20,6 +20,8 @@ public class CsvHelper : ICsvHelper
         csvReader.HasFieldsEnclosedInQuotes = true;
 
         DataTable csvData = new();
+        string summary = String.Empty;
+        bool isSuccess = true;
         try
         {
             string[] colFields = csvReader.ReadFields() ?? [];
@@ -32,7 +34,8 @@ public class CsvHelper : ICsvHelper
             {
                 csvData = this.GetNewDataTableAxleLoad();
             }
-            
+
+            int row = 1;
             while (!csvReader.EndOfData)
             {
                 string[] fieldData = [file.Id.ToString()];
@@ -51,15 +54,25 @@ public class CsvHelper : ICsvHelper
                     fieldData[i] = fieldData[i] == "1" ? "true" : "false";
                 }
 
-                csvData.Rows.Add(fieldData);
+                try
+                {
+                    csvData.Rows.Add(fieldData);
+                }
+                catch (Exception ex)
+                {
+                    summary += "Error in line " + row;
+                }
+
+                row++;
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw;
+            isSuccess = false;
+            summary += ex.Message;
         }
-
-        return csvData;
+        
+        return (isSuccess, csvData, summary);
     }
     private DataTable GetNewDataTableAxleLoad()
     {

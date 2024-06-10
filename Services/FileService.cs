@@ -85,9 +85,9 @@ public class FileService : IFileService
             {
                 try
                 {
-                    DataTable csvData = _csvHelper.GetDataTableFromByte(fileBytes, file);
+                    (bool isSuccess, DataTable csvData, string summary) result = _csvHelper.GetDataTableFromByte(fileBytes, file);
 
-                    if (csvData is not null)
+                    if (result.isSuccess && result.csvData is not null)
                     {
                         string destinationTableName = "AxleLoadProcess";
                         if (file.FileType == (int)UploadedFileType.FineData)
@@ -95,7 +95,7 @@ public class FileService : IFileService
                             destinationTableName = "FinePaymentProcess";
                         }
 
-                        await _db.InsertDataTable(csvData, destinationTableName);
+                        await _db.InsertDataTable(result.csvData, destinationTableName);
                         
                         //Process inserted data
                         await this.RunProcess(file);
