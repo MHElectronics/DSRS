@@ -6,7 +6,7 @@
 
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Default Modal</h4>
+                <h4 class="modal-title">@ModalName</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="()=>OnConfirmationChange(false)">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -43,6 +43,8 @@
     private DotNetObjectReference<ConfirmDialog> _this;
     private ElementReference _element;
 
+    [Parameter]
+    public string ModalName { get; set; } = "Default Modal";
     [Parameter]
     public string ConfirmationMessage { get; set; } = "Are you sure you want to execute this action?";
     [Parameter]

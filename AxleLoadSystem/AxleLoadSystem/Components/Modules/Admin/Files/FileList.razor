@@ -88,7 +88,7 @@
         }
     </div>
 </div>
-<ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete with data?" />
+<ConfirmDialog @ref="deleteConfirmationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete this Data?" />
 
 @code {
     private IEnumerable<UploadedFile> uploadedFiles;
