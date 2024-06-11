@@ -31,6 +31,35 @@ namespace AxleLoadSystem.Api.Controllers
             return Ok("Connected");
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> LoadDataFileExists(int stationId, DateTime date)
+        {
+            UploadedFile file = new()
+            {
+                StationId = stationId,
+                Date = date,
+                FileType = (int)UploadedFileType.LoadData
+            };
+
+            bool exists = await _fileService.FileExists(file);
+            
+            return Ok(exists);
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> FineDataFileExists(int stationId, DateTime date)
+        {
+            UploadedFile file = new()
+            {
+                StationId = stationId,
+                Date = date,
+                FileType = (int)UploadedFileType.FineData
+            };
+
+            bool exists = await _fileService.FileExists(file);
+
+            return Ok(exists);
+        }
+
         #region CSV File Upload
         [DisableRequestSizeLimit]
         //[ServiceFilter(typeof(ModelValidationAttribute))]
