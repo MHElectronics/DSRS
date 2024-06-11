@@ -5,7 +5,7 @@ namespace AxleLoadSystem.Helpers;
 public interface IRHDApiHelper
 {
     Task<string> GetBRTAInformationByRFID(PayloadBRTA payloadBRTA);
-    Task<Brta> GetBRTAInformationByRegistrationNumber(PayloadBRTA payloadBRTA);
+    Task<string> GetBRTAInformationByRegistrationNumber(PayloadBRTA payloadBRTA);
 }
 
 public class RHDApiHelper : IRHDApiHelper
@@ -43,19 +43,19 @@ public class RHDApiHelper : IRHDApiHelper
 
         return info;
     }
-    public async Task<Brta> GetBRTAInformationByRegistrationNumber(PayloadBRTA payloadBRTA)
+    public async Task<string> GetBRTAInformationByRegistrationNumber(PayloadBRTA payloadBRTA)
     {
-        Brta info = new Brta();
+        string info = "Initiated";
         HttpResponseMessage response = await _http.PostAsJsonAsync("public/fetch-data", new { zone = payloadBRTA.zone,
             series=payloadBRTA.series, number=payloadBRTA.Number, bridgeOid = payloadBRTA.bridgeOid, username = payloadBRTA.userName, password = payloadBRTA.password });
 
         if (response.IsSuccessStatusCode)
         {
-            info = await response.Content.ReadFromJsonAsync<Brta>();
+            info = await response.Content.ReadAsStringAsync();
         }
         else
         {
-            info.message = "GetBRTAInformation() error: " + response.ReasonPhrase;
+            info = "GetBRTAInformation() error: " + response.ReasonPhrase;
             _logger.LogError("GetBRTAInformation() error: " + response.ReasonPhrase);
         }
 
