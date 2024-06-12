@@ -7,11 +7,11 @@
         @if (selectionEnabled)
         {
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     @if (stations is not null)
                     {
                         <div class="btn-group">
-                            @foreach (Station item in stations.OrderBy(s=>s.StationName))
+                            @foreach (Station item in stations.OrderBy(s => s.StationName))
                             {
                                 @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
                                 {
@@ -30,13 +30,14 @@
                         <Loader />
                     }
                 </div>
-                <div class="col-md-6">
-                    @if (wims is null || wims.Count() == 0)
-                    {
-                        <p>No WIM found</p>
-                    }
-                    else if (wims.Count() > 0)
-                    {
+                @if (wims is null || wims.Count() == 0)
+                {
+                    <p>No WIM found</p>
+                }
+                else if (wims.Count() > 0)
+                {
+                    <div class="col-md-6">
+
                         <select class="form-control" @bind="@wimId">
                             <option value="0">-Select WIM-</option>
                             @foreach (WIMScale item in wims)
@@ -44,10 +45,9 @@
                                 <option value="@item.Id">@item.LaneNumber - @item.LaneDirection</option>
                             }
                         </select>
-                    }
-                </div>
-            </div>
-            <div class="row">
+                    </div>
+                }
+
                 <div class="col-md-3">
                     <input type="date" class="form-control" @bind="@startDate" max="@DateTime.Today" placeholder="Start Date" />
                 </div>
@@ -99,7 +99,7 @@
     }
     private async Task StationClicked(Station item)
     {
-        if(selectedStations is null)
+        if (selectedStations is null)
         {
             selectedStations = new();
         }
@@ -107,11 +107,12 @@
         {
             selectedStations.Remove(item);
         }
-        else{
+        else
+        {
             selectedStations.Add(item);
         }
 
-        if(selectedStations.Count() == 1)
+        if (selectedStations.Count() == 1)
         {
             wims = await wimService.GetByStation(new WIMScale() { StationId = item.StationId });
             if (wims is not null && wims.Count() == 1)
@@ -130,7 +131,7 @@
     }
     private void StationSelected(List<Station> selectedStations)
     {
-        
+
     }
     private void TypeChanged(string type)
     {
