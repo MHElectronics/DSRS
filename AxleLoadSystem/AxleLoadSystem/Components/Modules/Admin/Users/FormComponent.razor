@@ -113,6 +113,10 @@ else
                                 <div class="progress">
                                     <div class="progress-bar @(GetProgressColor(user.Password))" role="progressbar" style="width: @(GetPasswordStrength(user.Password) * 25)%;" aria-valuenow="@(GetPasswordStrength(user.Password) * 25)" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
+                                @if (!string.IsNullOrEmpty(validationSummary))
+                                {
+                                    <label class="text-danger">@validationSummary</label>
+                                }
                             }
                         </div>
                         <div class="col-md-6 col-sm-12">
@@ -164,10 +168,10 @@ else
                                 <div class="progress" title="lenghth >= 8, Upper and Lower case, Special character">
                                     <div class="progress-bar @(GetProgressColor(NewPasswordInput))" role="progressbar" style="width: @(GetPasswordStrength(NewPasswordInput) * 25)%;" aria-valuenow="@(GetPasswordStrength(NewPasswordInput) * 25)" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
-                            }
-                            @if (!string.IsNullOrEmpty(validationSummary))
-                            {
-                                <label class="error">@validationSummary</label>
+                                @if (!string.IsNullOrEmpty(validationSummary))
+                                {
+                                    <label class="text-danger">@validationSummary</label>
+                                }
                             }
                         </div>
                         <div class="col-6">
@@ -232,6 +236,7 @@ else
             notification.Type = Notification.NotificationType.Warning;
             notification.Message = "Select atleast one role";
             appState.SetNotification(this, notification);
+            saveDisabled = false;
             return;
         }
 
