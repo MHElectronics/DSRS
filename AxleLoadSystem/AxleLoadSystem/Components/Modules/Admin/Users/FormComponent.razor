@@ -317,6 +317,7 @@ else
     }
     async Task OnValidPasswordSubmit(EditContext editContext)
     {
+        validationSummary = "";
         if (await ValidatePassword(NewPasswordInput))
         {
             Notification notification = new();
@@ -326,19 +327,16 @@ else
                 userPassword.Password = PasswordMatch;
                 if (await userService.ChangePassword(userPassword))
                 {
-                    notification.Type = Notification.NotificationType.Success;
-                    notification.Message = "Password Changed Successfully";
+                    validationSummary = "Password Changed Successfully";
                 }
                 else
                 {
-                    notification.Type = Notification.NotificationType.Failure;
-                    notification.Message = "Password Changed failed";
+                    validationSummary = "Password Changed failed";
                 }
             }
             else
             {
-                notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "Confirm Password Doesn't Match";
+                validationSummary = "Confirm Password Doesn't Match";
             }        
             appState.SetNotification(this, notification);
         }
