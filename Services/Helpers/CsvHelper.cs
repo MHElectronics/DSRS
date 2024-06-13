@@ -60,16 +60,21 @@ public class CsvHelper : ICsvHelper
                 }
                 catch (Exception ex)
                 {
-                    summary += "Error in line " + row;
+                    summary += row + ",";
                 }
 
                 row++;
+            }
+
+            if(!string.IsNullOrEmpty(summary))
+            {
+                summary = "Error in line: " + summary.TrimEnd(',');
             }
         }
         catch (Exception ex)
         {
             isSuccess = false;
-            summary += ex.Message;
+            summary += "Exception: " + ex.Message;
         }
         
         return (isSuccess, csvData, summary);

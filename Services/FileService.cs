@@ -87,6 +87,13 @@ public class FileService : IFileService
                 {
                     (bool isSuccess, DataTable csvData, string summary) result = _csvHelper.GetDataTableFromByte(fileBytes, file);
 
+                    //Set summary in table before running process
+                    if (!string.IsNullOrEmpty(result.summary))
+                    {
+                        file.Summary = result.summary;
+                        await this.Update(file);
+                    }
+
                     if (result.isSuccess && result.csvData is not null)
                     {
                         string destinationTableName = "AxleLoadProcess";
