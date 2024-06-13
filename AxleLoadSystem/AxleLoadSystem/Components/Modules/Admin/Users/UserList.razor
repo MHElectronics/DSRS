@@ -53,10 +53,8 @@ else
             }
         </tbody>
     </table>
-    if (deleteClicked)
-    {
-        <ConfirmDialog @ref="deleteConfirmationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete User?" />
-    }
+ <ConfirmDialog @ref="deleteConfirmationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete User?" />
+
 }
 @code {
     private IEnumerable<User> users;

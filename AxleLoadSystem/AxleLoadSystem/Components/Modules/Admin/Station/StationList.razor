@@ -94,11 +94,10 @@ else
             }
         </tbody>
     </table>
-    if (deleteClicked)
-    {
+
         <ConfirmDialog @ref="deleteConfirmationStationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStation" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station?" />
         <ConfirmDialog @ref="deleteConfirmationWimRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedWim" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Wim Scale?" />
-    }
+
 }
 @code {
     private IEnumerable<Station> stations;
