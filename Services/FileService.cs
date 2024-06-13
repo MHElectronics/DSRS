@@ -140,6 +140,7 @@ public class FileService : IFileService
             ,ManualUpload=@ManualUpload
             ,UploadDate=@UploadDate
             ,IsProcessed=@IsProcessed
+            ,Summary=@Summary
             WHERE Id=@Id";
         return await _db.SaveData(query, obj);
     }

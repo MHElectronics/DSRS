@@ -85,13 +85,13 @@ public class CsvHelper : ICsvHelper
         //Default FileId column
         dt.Columns.Add("FileId", typeof(int));
 
-        dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("LaneNumber", typeof(int)));
         dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
-        dt.Columns.Add(NewDataColumn("PlateZone", typeof(string)));
-        dt.Columns.Add(NewDataColumn("PlateSeries", typeof(string)));
-        dt.Columns.Add(NewDataColumn("PlateNumber", typeof(string)));
-        dt.Columns.Add(NewDataColumn("VehicleId", typeof(string)));
+        dt.Columns.Add(NewDataColumn("PlateZone", typeof(string), 50));
+        dt.Columns.Add(NewDataColumn("PlateSeries", typeof(string), 10));
+        dt.Columns.Add(NewDataColumn("PlateNumber", typeof(string), 10));
+        dt.Columns.Add(NewDataColumn("VehicleId", typeof(string), 50));
         dt.Columns.Add(NewDataColumn("NumberOfAxle", typeof(int)));
         dt.Columns.Add(NewDataColumn("VehicleSpeed", typeof(decimal)));
         dt.Columns.Add(NewDataColumn("Axle1", typeof(decimal)));
@@ -107,8 +107,8 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("IsOverloaded", typeof(bool)));
         dt.Columns.Add(NewDataColumn("OverSizedModified", typeof(bool)));
         dt.Columns.Add(NewDataColumn("Wheelbase", typeof(int)));
-        dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string)));
-        dt.Columns.Add(NewDataColumn("BillNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string), 10));
+        dt.Columns.Add(NewDataColumn("BillNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("Axle1Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle2Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle3Time", typeof(DateTime)));
@@ -125,19 +125,19 @@ public class CsvHelper : ICsvHelper
         //Default FileId column
         dt.Columns.Add("FileId", typeof(int));
 
-        dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("IsPaid", typeof(bool)));
         dt.Columns.Add(NewDataColumn("FineAmount", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("PaymentMethod", typeof(string)));
-        dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string)));
-        dt.Columns.Add(NewDataColumn("BillNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("PaymentMethod", typeof(string), 10));
+        dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string), 10));
+        dt.Columns.Add(NewDataColumn("BillNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("WarehouseCharge", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("DriversLicenseNumber", typeof(string)));
+        dt.Columns.Add(NewDataColumn("DriversLicenseNumber", typeof(string), 15));
 
         return dt;
     }
-    private DataColumn NewDataColumn(string columnName, Type type)
+    private DataColumn NewDataColumn(string columnName, Type type, int maxStringLength = 0)
     {
         DataColumn dc = new()
         {
@@ -146,6 +146,11 @@ public class CsvHelper : ICsvHelper
             DefaultValue = null
         };
         
+        if(type == typeof(string))
+        {
+            dc.MaxLength = maxStringLength;
+        }
+
         return dc;
     }
 }
