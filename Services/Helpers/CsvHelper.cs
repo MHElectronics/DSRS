@@ -60,7 +60,7 @@ public class CsvHelper : ICsvHelper
                 }
                 catch (Exception ex)
                 {
-                    summary += row + ",";
+                    summary += row + "-" + ex.Message + ",";
                 }
 
                 row++;
