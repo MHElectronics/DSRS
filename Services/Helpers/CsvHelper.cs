@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.FileIO;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Services.Helpers;
 
@@ -40,28 +41,35 @@ public class CsvHelper : ICsvHelper
             {
                 string[] fieldData = [file.Id.ToString()];
                 string[] csvFieldData = csvReader.ReadFields() ?? [];
-                fieldData = fieldData.Concat(csvFieldData).ToArray();
-                
-                //Check booleans
-                List<int> boolenIndexes = [3];
-                if(file.FileType == (int)UploadedFileType.LoadData)
-                {
-                    boolenIndexes = [19,20,21];
-                }
+                //if(this.CheckLine(string.Join(",", csvFieldData)))
+                //{
+                //    summary += row + " Regex error,";
+                //}
+                //else
+                //{
+                    fieldData = fieldData.Concat(csvFieldData).ToArray();
 
-                foreach(int i in boolenIndexes)
-                {
-                    fieldData[i] = fieldData[i] == "1" ? "true" : "false";
-                }
+                    //Check booleans
+                    List<int> boolenIndexes = [3];
+                    if (file.FileType == (int)UploadedFileType.LoadData)
+                    {
+                        boolenIndexes = [19, 20, 21];
+                    }
 
-                try
-                {
-                    csvData.Rows.Add(fieldData);
-                }
-                catch (Exception ex)
-                {
-                    summary += row + "-" + ex.Message + ",";
-                }
+                    foreach (int i in boolenIndexes)
+                    {
+                        fieldData[i] = fieldData[i] == "1" ? "true" : "false";
+                    }
+
+                    try
+                    {
+                        csvData.Rows.Add(fieldData);
+                    }
+                    catch (Exception ex)
+                    {
+                        summary += row + "-" + ex.Message + ",";
+                    }
+                //}
 
                 row++;
             }
@@ -152,5 +160,11 @@ public class CsvHelper : ICsvHelper
         }
 
         return dc;
+    }
+    private bool CheckLine(string line)
+    {
+        var regexItem = new Regex("^[a-zA-Z0-9 ]*$");
+
+        return regexItem.IsMatch(line);
     }
 }
