@@ -94,7 +94,7 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add("FileId", typeof(int));
 
         dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
-        dt.Columns.Add(NewDataColumn("LaneNumber", typeof(int)));
+        dt.Columns.Add(NewDataColumn("LaneNumber", typeof(string),2));
         dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("PlateZone", typeof(string), 50));
         dt.Columns.Add(NewDataColumn("PlateSeries", typeof(string), 10));
