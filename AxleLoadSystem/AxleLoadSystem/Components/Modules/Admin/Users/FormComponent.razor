@@ -260,7 +260,7 @@ else
         user.Role = role;
         if (await ValidatePassword(user.Password))
         {
-            if (confirmPassword.Equals(user.Password))
+            if (confirmPassword.Contains(user.Password))
             {
                 if (Mode == FormMode.Edit)
                 {
@@ -339,7 +339,7 @@ else
         if (await ValidatePassword(NewPasswordInput))
         {
             Notification notification = new();
-            if (NewPasswordInput.Equals(PasswordMatch))
+            if (NewPasswordInput.Contains(PasswordMatch))
             {
                 userPassword.Id = user.Id;
                 userPassword.Password = PasswordMatch;
