@@ -243,9 +243,7 @@ else
         int count = selectedRoles.Count();
         if (count == 0)
         {
-            notification.Type = Notification.NotificationType.Warning;
-            notification.Message = "Select atleast one role";
-            appState.SetNotification(this, notification);
+            validationSummary = "Select atleast one role";
             saveDisabled = false;
             return;
         }
