@@ -41,23 +41,23 @@
     </p>
     </NavLink>
     </li> *@
-@*     <li class="nav-item">
-        <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-th"></i>
-            <p>
-                @localizer["Menu.Counter"]
-                 <span class="right badge badge-danger">New</span> 
-            </p>
-        </NavLink>
+    @*     <li class="nav-item">
+    <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
+    <i class="nav-icon fas fa-th"></i>
+    <p>
+    @localizer["Menu.Counter"]
+    <span class="right badge badge-danger">New</span>
+    </p>
+    </NavLink>
     </li>
     <li class="nav-item">
-        <NavLink class="nav-link" href="counter2" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-th"></i>
-            <p>
-                @localizer["Menu.Counter2"]
-                 <span class="right badge badge-danger">New</span> 
-            </p>
-        </NavLink>
+    <NavLink class="nav-link" href="counter2" Match="NavLinkMatch.All">
+    <i class="nav-icon fas fa-th"></i>
+    <p>
+    @localizer["Menu.Counter2"]
+    <span class="right badge badge-danger">New</span>
+    </p>
+    </NavLink>
     </li> *@
     <AuthorizeView>
         <NotAuthorized>Login to view menu</NotAuthorized>
@@ -94,25 +94,25 @@
             </li>
         </Authorized>
     </AuthorizeView>
-    
+
     <AuthorizeView Roles="User">
         <Authorized>
             <li class="nav-header">Pages</li>
             @* <li class="nav-item">
-                <NavLink class="nav-link" href="changepassword" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-key"></i>
-                    <p>
-                        @localizer["Menu.ChangePassword"]
-                    </p>
-                </NavLink>
+            <NavLink class="nav-link" href="changepassword" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-key"></i>
+            <p>
+            @localizer["Menu.ChangePassword"]
+            </p>
+            </NavLink>
             </li>
             <li class="nav-item">
-                <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-upload"></i>
-                    <p>
-                        @localizer["Menu.FileUpload"]
-                    </p>
-                </NavLink>
+            <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-upload"></i>
+            <p>
+            @localizer["Menu.FileUpload"]
+            </p>
+            </NavLink>
             </li> *@
             <li class="nav-item">
                 <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
@@ -123,7 +123,15 @@
                     </p>
                 </NavLink>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
+                <NavLink class="nav-link" href="databydate" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-file"></i>
+                    <p>
+                        Data by Date
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
                 <NavLink class="nav-link" href="brta" Match="NavLinkMatch.All">
                     <i class="nav-icon fas fa-file"></i>
                     <p>
