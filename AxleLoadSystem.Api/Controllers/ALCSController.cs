@@ -30,7 +30,7 @@ public class ALCSController : ControllerBase
         return Ok("Connected");
     }
 
-    [HttpGet("[action]")]
+    [HttpGet("[action]/{date}")]
     public async Task<IActionResult> LoadDataFileExists(DateTime date)
     {
         UploadedFile file = new()
@@ -44,7 +44,7 @@ public class ALCSController : ControllerBase
         
         return Ok(exists);
     }
-    [HttpGet("[action]")]
+    [HttpGet("[action]/{date}")]
     public async Task<IActionResult> FineDataFileExists(DateTime date)
     {
         UploadedFile file = new()
