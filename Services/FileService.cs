@@ -107,7 +107,7 @@ public class FileService : IFileService
                         //Process inserted data
                         await this.RunProcess(file);
                         file.IsProcessed = true;
-                        bool isUpdated = await this.Update(file);
+                        bool isUpdated = await this.UpdateProcessStatus(file);
                     }
                 }
                 catch (Exception)
@@ -141,6 +141,13 @@ public class FileService : IFileService
             ,UploadDate=@UploadDate
             ,IsProcessed=@IsProcessed
             ,Summary=@Summary
+            WHERE Id=@Id";
+        return await _db.SaveData(query, obj);
+    }
+    public async Task<bool> UpdateProcessStatus(UploadedFile obj)
+    {
+        string query = @"UPDATE UploadedFiles
+            SET IsProcessed=@IsProcessed
             WHERE Id=@Id";
         return await _db.SaveData(query, obj);
     }
