@@ -162,45 +162,45 @@ public class CsvHelper : ICsvHelper
         return dc;
     }
 
-    private string CheckRegexForAxleLoad(string line)
+    public string CheckRegexForAxleLoad()
     {
-        string strRegex = "^$";
+        string strRegex = "^";
         
         //Transaction Number, alphanumaric, length 1 to 2
-        strRegex += "[a-zA-Z0-9]+{1,2}";
+        strRegex += "\\b[a-zA-Z0-9]{2,10}\\b+";
         //Lane number
-        strRegex += ",[0-9]+{2}";
+        strRegex += "[,][0-9]";
         //Date
         //strRegex += ",[0-9]+{2}";
-        //PlateZone
-        strRegex += ",[a-zA-Z0-9]+{50}";
-        //PlaceSeries
-        strRegex += ",[a-zA-Z0-9]+{10}";
-        //PlaceNumber
-        strRegex += ",[a-zA-Z0-9]+{10}";
-        //VehicleId", typeof(string), 50));
-        strRegex += ",[a-zA-Z0-9]+{50}";
-        //NumberOfAxle", typeof(int)));
-        strRegex += ",[0-9]+{2}";
-        //VehicleSpeed", typeof(decimal)));
-        strRegex += ",[0-9]+{3}";
-        //Axle 1 to 7, Remaining, gross wieght typeof(decimal)));
-        for(int i = 1; i <= 9; i++)
-        {
-            strRegex += ",[0-9]+{3}";
-        }
-        //IsUnloaded", typeof(bool)));
-        strRegex += ",[0-1]+{1}";
-        //IsOverloaded", typeof(bool)));
-        strRegex += ",[0-1]+{1}";
-        //OverSizedModified", typeof(bool)));
-        strRegex += ",[0-1]+{1}";
-        //Wheelbase", typeof(int)));
-        strRegex += ",[0-9]+{2}";
-        //ReceiptNumber", typeof(string), 10));
-        strRegex += "[a-zA-Z0-9]+{10}";
-        //BillNumber", typeof(string), 10));
-        strRegex += "[a-zA-Z0-9]+{10}";
+        ////PlateZone
+        //strRegex += "[,][a-zA-Z0-9]+{50}";
+        ////PlaceSeries
+        //strRegex += "[,][a-zA-Z0-9]+{10}";
+        ////PlaceNumber
+        //strRegex += "[,][a-zA-Z0-9]+{10}";
+        ////VehicleId", typeof(string), 50));
+        //strRegex += "[,][a-zA-Z0-9]+{50}";
+        ////NumberOfAxle", typeof(int)));
+        //strRegex += "[,][0-9]+{2}";
+        ////VehicleSpeed", typeof(decimal)));
+        //strRegex += "[,][0-9]+{3}";
+        ////Axle 1 to 7, Remaining, gross wieght typeof(decimal)));
+        //for(int i = 1; i <= 9; i++)
+        //{
+        //    strRegex += "[,][0-9]+{3}";
+        //}
+        ////IsUnloaded", typeof(bool)));
+        //strRegex += "[,][0-1]+{1}";
+        ////IsOverloaded", typeof(bool)));
+        //strRegex += "[,][0-1]+{1}";
+        ////OverSizedModified", typeof(bool)));
+        //strRegex += "[,][0-1]+{1}";
+        ////Wheelbase", typeof(int)));
+        //strRegex += "[,][0-9]+{2}";
+        ////ReceiptNumber", typeof(string), 10));
+        //strRegex += "[,][a-zA-Z0-9]+{10}";
+        ////BillNumber", typeof(string), 10));
+        //strRegex += "[,][a-zA-Z0-9]+{10}";
         //Axle1Time", typeof(DateTime)));
         //Axle2Time", typeof(DateTime)));
         //Axle3Time", typeof(DateTime)));
@@ -210,7 +210,7 @@ public class CsvHelper : ICsvHelper
         //Axle7Time", typeof(DateTime)));
 
         //End of line
-        strRegex += "$";
+        //strRegex += "$";
         return strRegex;
         //return new Regex(strRegex).IsMatch(line);
     }
