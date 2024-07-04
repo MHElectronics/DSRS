@@ -115,6 +115,11 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("IsOverloaded", typeof(bool)));
         dt.Columns.Add(NewDataColumn("OverSizedModified", typeof(bool)));
         dt.Columns.Add(NewDataColumn("Wheelbase", typeof(int)));
+        dt.Columns.Add(NewDataColumn("ClassStatus", typeof(int)));
+        dt.Columns.Add(NewDataColumn("RecognizedBy", typeof(int)));
+        dt.Columns.Add(NewDataColumn("IsBRTAInclude", typeof(bool)));
+        dt.Columns.Add(NewDataColumn("LadenWeight", typeof(int)));
+        dt.Columns.Add(NewDataColumn("UnladenWeight", typeof(int)));
         dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("BillNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("Axle1Time", typeof(DateTime)));
@@ -134,6 +139,7 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add("FileId", typeof(int));
 
         dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
+        dt.Columns.Add(NewDataColumn("PaymentTransactionId", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("IsPaid", typeof(bool)));
         dt.Columns.Add(NewDataColumn("FineAmount", typeof(decimal)));
@@ -142,6 +148,7 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("BillNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("WarehouseCharge", typeof(decimal)));
         dt.Columns.Add(NewDataColumn("DriversLicenseNumber", typeof(string), 15));
+        dt.Columns.Add(NewDataColumn("TransportAgencyInformation", typeof(string), 50));
 
         return dt;
     }

@@ -22,7 +22,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
       ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
       ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
       ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
-      ,OverSizedModified,Wheelbase,ReceiptNumber,BillNumber
+      ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
        FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
 
         return await _db.LoadData<LoadData, object>(query, obj);
@@ -31,12 +31,12 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     {
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed
             ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7
-            ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ReceiptNumber,BillNumber
+            ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
             ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time)
 
             VALUES(@StationId,@TransactionNumber,@LaneNumber,@DateTime,@PlateZone,@PlateSeries,@PlateNumber,@VehicleId,@NumberOfAxle,@VehicleSpeed
             ,@Axle1,@Axle2,@Axle3,@Axle4,@Axle5,@Axle6,@Axle7
-            ,@AxleRemaining,@GrossVehicleWeight,@IsUnloaded,@IsOverloaded,@OverSizedModified,@Wheelbase,@ReceiptNumber,@BillNumber
+            ,@AxleRemaining,@GrossVehicleWeight,@IsUnloaded,@IsOverloaded,@OverSizedModified,@Wheelbase,@ClassStatus,@RecognizedBy,@IsBRTAInclude,@LadenWeight,@UnladenWeight,@ReceiptNumber,@BillNumber
             ,@Axle1Time,@Axle2Time,@Axle3Time,@Axle4Time,@Axle5Time,@Axle6Time,@Axle7Time)";
 
         return await _db.SaveData(query, obj);
@@ -45,12 +45,12 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     {
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed
             ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7
-            ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ReceiptNumber,BillNumber
+            ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
             ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time)
 
             VALUES(@StationId,@TransactionNumber,@LaneNumber,@DateTime,@PlateZone,@PlateSeries,@PlateNumber,@VehicleId,@NumberOfAxle,@VehicleSpeed
             ,@Axle1,@Axle2,@Axle3,@Axle4,@Axle5,@Axle6,@Axle7
-            ,@AxleRemaining,@GrossVehicleWeight,@IsUnloaded,@IsOverloaded,@OverSizedModified,@Wheelbase,@ReceiptNumber,@BillNumber
+            ,@AxleRemaining,@GrossVehicleWeight,@IsUnloaded,@IsOverloaded,@OverSizedModified,@Wheelbase,@ClassStatus,@RecognizedBy,@IsBRTAInclude,@LadenWeight,@UnladenWeight,@ReceiptNumber,@BillNumber
             ,@Axle1Time,@Axle2Time,@Axle3Time,@Axle4Time,@Axle5Time,@Axle6Time,@Axle7Time)";
 
         return await _db.SaveData(query, obj);

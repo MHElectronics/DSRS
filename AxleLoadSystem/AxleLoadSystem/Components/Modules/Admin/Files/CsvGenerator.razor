@@ -49,7 +49,7 @@
 
         Random rnd = new Random(1);
 
-        sb.Add("TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ReceiptNumber,BillNumber,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time");
+        sb.Add("TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time");
 
         for (int i = 1; i <= iteration; i++)
         {
@@ -104,6 +104,16 @@
             line += "," + rnd.Next(0, 1);
             //Wheelbase
             line += "," + rnd.Next(2, 20);
+            //ClassStatus
+            line += "," + rnd.Next(2, 20);
+            //RecognizedBy
+            line += "," + rnd.Next(2, 20);
+            //IsBRTAInclude
+            line += "," + rnd.Next(0, 1);
+            //LadenWeight
+            line += "," + rnd.Next(2, 1000);
+            //UnladenWeight
+            line += "," + rnd.Next(2, 1000);
             //ReceiptNumber
             line += ",RN" + rnd.Next(2, 20);
             //BillNumber
@@ -129,12 +139,14 @@
         List<string> paymentMethods = ["Cash", "Bkash", "OnlineBanking"];
         Random rnd = new Random(1);
 
-        sb.Add("TransactionNumber,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber");
+        sb.Add("TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber");
 
         for (int i = 1; i <= iteration; i++)
         {
             //TransactionNumber
             string line = "TN" + i;
+            //PaymentTransactionId
+            line += ",PT" + i; 
             //DateTime
             line += "," + date.AddSeconds(i * 7).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
             //IsPaid
@@ -151,6 +163,8 @@
             line += "," + Math.Round(rnd.Next(0, 100) + rnd.NextDouble(), 2);
             //DriversLicenseNumber
             line += ",DL" + rnd.Next(0, 10000);
+            //TransportAgencyInformation
+            line += ",TA" + rnd.Next(0, 10000);
 
             sb.Add(line);
         }
