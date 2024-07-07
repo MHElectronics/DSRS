@@ -25,6 +25,11 @@
             <PropertyColumn Property="@(l => l.IsOverloaded)" Sortable="true" />
             <PropertyColumn Property="@(l => l.OverSizedModified)" Sortable="true" />
             <PropertyColumn Property="@(l => l.Wheelbase)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.ClassStatus)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.RecognizedBy)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.IsBRTAInclude)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.LadenWeight)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.UnladenWeight)" Sortable="true" />
             <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
         </QuickGrid>
@@ -33,6 +38,7 @@
     {
         <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
             <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.PaymentTransactionId)" Sortable="true" />
             <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
             <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />
             <PropertyColumn Property="@(l => l.FineAmount)" Sortable="true" />
@@ -41,6 +47,7 @@
             <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
             <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Sortable="true" />
         </QuickGrid>
     }
 </div>

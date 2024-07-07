@@ -267,9 +267,15 @@ else
         //check name
         Regex regexNameSpecialCharacter = new Regex(@"\W|_");
         Regex regexNameNumber = new Regex(@"[0-9]");
-        if (regexNameSpecialCharacter.IsMatch(user.Name) || regexNameNumber.IsMatch(user.Name))
+        /*if (regexNameSpecialCharacter.IsMatch(user.Name) || regexNameNumber.IsMatch(user.Name))
+            {
+            validationSummary = "Name can only contain alphabets";
+            return;
+        }*/
+        if (user.Name.Any(c => !char.IsLetter(c)))
         {
             validationSummary = "Name can only contain alphabets";
+            return;
         }
 
         if (await ValidatePassword(user.Password))
@@ -357,7 +363,10 @@ else
                 userPassword.Password = PasswordMatch;
                 if (await userService.ChangePassword(userPassword))
                 {
-                    validationSummary = "Password Changed Successfully";
+                    notification.Type = Notification.NotificationType.Success;
+                    notification.Message = "Password Changed Successfully";
+                    appState.SetNotification(this, notification);
+                    navigation.NavigateTo("user");
                 }
                 else
                 {

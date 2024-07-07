@@ -53,7 +53,7 @@ public class CsvHelper : ICsvHelper
                     List<int> boolenIndexes = [3];
                     if (file.FileType == (int)UploadedFileType.LoadData)
                     {
-                        boolenIndexes = [19, 20, 21];
+                        boolenIndexes = [19, 20, 21, 25];
                     }
 
                     foreach (int i in boolenIndexes)
@@ -91,7 +91,7 @@ public class CsvHelper : ICsvHelper
     {
         DataTable dt = new();
         //Default FileId column
-        dt.Columns.Add("FileId", typeof(int));
+        dt.Columns.Add("FileId", typeof(uint));
 
         dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("LaneNumber", typeof(string),2));
@@ -100,26 +100,26 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("PlateSeries", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("PlateNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("VehicleId", typeof(string), 50));
-        dt.Columns.Add(NewDataColumn("NumberOfAxle", typeof(int)));
-        dt.Columns.Add(NewDataColumn("VehicleSpeed", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle1", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle2", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle3", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle4", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle5", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle6", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("Axle7", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("AxleRemaining", typeof(decimal)));
-        dt.Columns.Add(NewDataColumn("GrossVehicleWeight", typeof(decimal)));
+        dt.Columns.Add(NewDataColumn("NumberOfAxle", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("VehicleSpeed", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle1", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle2", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle3", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle4", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle5", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle6", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("Axle7", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("AxleRemaining", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("GrossVehicleWeight", typeof(uint)));
         dt.Columns.Add(NewDataColumn("IsUnloaded", typeof(bool)));
         dt.Columns.Add(NewDataColumn("IsOverloaded", typeof(bool)));
         dt.Columns.Add(NewDataColumn("OverSizedModified", typeof(bool)));
-        dt.Columns.Add(NewDataColumn("Wheelbase", typeof(int)));
-        dt.Columns.Add(NewDataColumn("ClassStatus", typeof(int)));
-        dt.Columns.Add(NewDataColumn("RecognizedBy", typeof(int)));
+        dt.Columns.Add(NewDataColumn("Wheelbase", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("ClassStatus", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("RecognizedBy", typeof(uint)));
         dt.Columns.Add(NewDataColumn("IsBRTAInclude", typeof(bool)));
-        dt.Columns.Add(NewDataColumn("LadenWeight", typeof(int)));
-        dt.Columns.Add(NewDataColumn("UnladenWeight", typeof(int)));
+        dt.Columns.Add(NewDataColumn("LadenWeight", typeof(uint)));
+        dt.Columns.Add(NewDataColumn("UnladenWeight", typeof(uint)));
         dt.Columns.Add(NewDataColumn("ReceiptNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("BillNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("Axle1Time", typeof(DateTime)));
