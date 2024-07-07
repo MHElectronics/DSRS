@@ -144,8 +144,8 @@
   <data name="StationList" xml:space="preserve">
     <value>স্টেশনের তালিকা</value>
   </data>
-  <data name="Station" xml:space="preserve">
-    <value>স্টেশন</value>
+  <data name="StationManagement" xml:space="preserve">
+    <value>স্টেশন ম্যানেজমেন্ট</value>
   </data>
   <data name="WimLaneNumber" xml:space="preserve">
     <value>লেন নম্বর</value>
@@ -160,7 +160,7 @@
     <value>উচ্চ গতি?</value>
   </data>
   <data name="WIMScale" xml:space="preserve">
-    <value>WIM স্কেল</value>
+    <value>WIM স্কেল ম্যানেজমেন্ট</value>
   </data>
   <data name="MapX" xml:space="preserve">
     <value>মানচিত্র X অক্ষ</value>

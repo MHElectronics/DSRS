@@ -144,8 +144,8 @@
   <data name="StationList" xml:space="preserve">
     <value>List of Stations</value>
   </data>
-  <data name="Station" xml:space="preserve">
-    <value>Station</value>
+  <data name="StationManagement" xml:space="preserve">
+    <value>Station Management</value>
   </data>
   <data name="WimLaneNumber" xml:space="preserve">
     <value>Lane Number</value>

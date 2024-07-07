@@ -50,10 +50,14 @@ public class CsvHelper : ICsvHelper
                     fieldData = fieldData.Concat(csvFieldData).ToArray();
 
                     //Check booleans
-                    List<int> boolenIndexes = [3];
+                    List<int> boolenIndexes = [4];
                     if (file.FileType == (int)UploadedFileType.LoadData)
                     {
                         boolenIndexes = [19, 20, 21, 25];
+                    }
+                    else if (file.FileType == (int)UploadedFileType.FineData)
+                    {
+                        boolenIndexes = [4];
                     }
 
                     foreach (int i in boolenIndexes)

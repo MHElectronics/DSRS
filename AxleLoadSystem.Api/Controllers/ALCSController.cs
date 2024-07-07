@@ -214,10 +214,10 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        //if (obj.Any(l => l.DateTime.Date != DateTime.Today))
-        //{
-        //    return BadRequest("Only today's data is allowed");
-        //}
+        if (obj.Any(l => l.DateTime.Date != DateTime.Today))
+        {
+            return BadRequest("Only today's data is allowed");
+        }
 
         //Check station code
         int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
