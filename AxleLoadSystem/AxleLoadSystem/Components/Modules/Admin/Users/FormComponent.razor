@@ -278,29 +278,30 @@ else
             return;
         }
 
-        if (await ValidatePassword(user.Password))
+
+        if (Mode == FormMode.Edit)
         {
-            if (confirmPassword.Contains(user.Password))
+            User currentUser = await userService.UpdateUser(user);
+            if (currentUser is not null)
             {
-                if (Mode == FormMode.Edit)
-                {
-                    User currentUser = await userService.UpdateUser(user);
-                    if (currentUser is not null)
-                    {
-                        notification.Type = Notification.NotificationType.Success;
-                        notification.Message = "User Updated Successfully";
-                        appState.SetNotification(this, notification);
-                        navigation.NavigateTo("user");
-                    }
-                    else
-                    {
-                        notification.Type = Notification.NotificationType.Failure;
-                        notification.Message = "Error: User Update Failed";
-                        appState.SetNotification(this, notification);
-                        navigation.NavigateTo("user");
-                    }
-                }
-                else
+                notification.Type = Notification.NotificationType.Success;
+                notification.Message = "User Updated Successfully";
+                appState.SetNotification(this, notification);
+                navigation.NavigateTo("user");
+            }
+            else
+            {
+                notification.Type = Notification.NotificationType.Failure;
+                notification.Message = "Error: User Update Failed";
+                appState.SetNotification(this, notification);
+                navigation.NavigateTo("user");
+            }
+        }
+        else
+        {
+            if (await ValidatePassword(user.Password))
+            {
+                if (confirmPassword.Contains(user.Password))
                 {
                     User currentUser = await userService.InsertUser(user);
                     if (currentUser is not null)
