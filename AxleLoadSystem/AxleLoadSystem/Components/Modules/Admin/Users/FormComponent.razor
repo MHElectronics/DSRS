@@ -137,6 +137,10 @@ else
                             </div>
                         </div>
                     }
+                    @if (!string.IsNullOrEmpty(RolevalidationSummary))
+                    {
+                        <label class="text-danger">@RolevalidationSummary</label>
+                    }
                 </div>
             </div>
             <div class="card-footer">
@@ -227,6 +231,7 @@ else
     private bool showPassword { get; set; } = false;
     string PasswordMatch, NewPasswordInput;
     string validationSummary { get; set; }
+    string RolevalidationSummary { get; set; }
     protected override void OnParametersSet()
     {
         if (user is not null && !string.IsNullOrEmpty(user.Role))
@@ -250,7 +255,7 @@ else
         int count = selectedRoles.Count();
         if (count == 0)
         {
-            validationSummary = "Select atleast one role";
+            RolevalidationSummary = "Select atleast one role";
             saveDisabled = false;
             return;
         }

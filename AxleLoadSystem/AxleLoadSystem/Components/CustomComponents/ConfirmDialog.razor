@@ -64,14 +64,17 @@
 
             await JSRuntime.InvokeVoidAsync("blazorInitializeModal", _element, _this);
         }
+        if (JSRuntime is not null)
+        {
+            if (Open)
+            {
+                await JSRuntime.InvokeVoidAsync("blazorOpenModal", _element);
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
+            }
 
-        if (Open)
-        {
-            await JSRuntime.InvokeVoidAsync("blazorOpenModal", _element);
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
         }
 
         await base.OnAfterRenderAsync(firstRender);
