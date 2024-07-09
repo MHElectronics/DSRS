@@ -27,7 +27,7 @@ else
                             @if (Mode == FormMode.Details)
                             {
                                 <label for="name" class="form-label">@localizer["Name"]</label>
-                                <label class="form-control">@station.StationName</label>
+                                <label class="form-control" style="max-width:auto; height:fit-content">@station.StationName</label>
                             }
                             else
                             {
@@ -57,7 +57,7 @@ else
                             @if (Mode == FormMode.Details)
                             {
                                 <label for="address" class="form-label">@localizer["Address"]</label>
-                                <label class="form-control">@station.Address</label>
+                                <label class="form-control" style="max-width:auto; height:fit-content">@station.Address</label>
                             }
                             else
                             {

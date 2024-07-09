@@ -99,6 +99,16 @@ else
         <ConfirmDialog @ref="deleteConfirmationWimRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedWim" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Wim Scale?" />
 
 }
+<style>
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px; /* Adjust as necessary */
+    }
+</style>
 @code {
     private IEnumerable<Station> stations;
     private IEnumerable<WIMScale> wims;

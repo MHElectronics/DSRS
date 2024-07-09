@@ -99,7 +99,7 @@ public class WIMScaleService : IWIMScaleService
     }
     public async Task<bool> CheckDuplicateEntry(WIMScale wimScale)
     {
-        string query = "SELECT COUNT(1) Count FROM WIMScale WHERE LaneNumber=@LaneNumber";
+        string query = "SELECT COUNT(1) Count FROM WIMScale WHERE LaneNumber=@LaneNumber AND StationId=@StationId";
         return await _db.LoadSingleAsync<bool, object>(query, wimScale);
     }
 }
