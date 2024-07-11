@@ -13,7 +13,7 @@ public interface ICsvHelper
 
 public class CsvHelper : ICsvHelper
 {
-    public (bool isSuccess, DataTable csvData,string summary) GetDataTableFromByte(byte[] bytes, UploadedFile file)
+    public (bool isSuccess, DataTable csvData, string summary) GetDataTableFromByte(byte[] bytes, UploadedFile file)
     {
         using TextFieldParser csvReader = new(new MemoryStream(bytes), Encoding.Default);
 
@@ -26,8 +26,8 @@ public class CsvHelper : ICsvHelper
         try
         {
             string[] colFields = csvReader.ReadFields() ?? [];
-            
-            if(file.FileType == (int)UploadedFileType.FineData)
+
+            if (file.FileType == (int)UploadedFileType.FineData)
             {
                 csvData = this.GetNewDataTableFinePayment();
             }
@@ -39,25 +39,36 @@ public class CsvHelper : ICsvHelper
             int row = 1;
             while (!csvReader.EndOfData)
             {
-                string[] fieldData = [file.Id.ToString()];
                 string[] csvFieldData = csvReader.ReadFields() ?? [];
-                //if(this.CheckLine(string.Join(",", csvFieldData)))
+                bool requiredFieldsValid = true;
+                if (string.IsNullOrEmpty(csvFieldData[0]))
+                {
+                    requiredFieldsValid = false;
+                    summary += row + "-Missing Transaction Number,";
+                }
+                
+                //Check required
+                //List<int> requiredIndexes = [1];
+                //foreach (int i in requiredIndexes)
                 //{
-                //    summary += row + " Regex error,";
+                //    if (string.IsNullOrEmpty(fieldData[i]))
+                //    {
+                //        summary += row + "-Required (" + row + "," + (i - 1) + ")";
+                //        requiredFieldsValid = false;
+                //        break;
+                //    }
                 //}
-                //else
-                //{
+
+                //Adjust boolean fields if required fields are valid
+                if (requiredFieldsValid)
+                {
+                    string[] fieldData = [file.Id.ToString()];
                     fieldData = fieldData.Concat(csvFieldData).ToArray();
 
-                    //Check booleans
                     List<int> boolenIndexes = [4];
                     if (file.FileType == (int)UploadedFileType.LoadData)
                     {
                         boolenIndexes = [19, 20, 21, 25];
-                    }
-                    else if (file.FileType == (int)UploadedFileType.FineData)
-                    {
-                        boolenIndexes = [4];
                     }
 
                     foreach (int i in boolenIndexes)
@@ -71,14 +82,15 @@ public class CsvHelper : ICsvHelper
                     }
                     catch (Exception ex)
                     {
-                        summary += row + "-" + ex.Message + ",";
+                        summary += row + "-Parse error,";
+                        //summary += row + "-" + ex.Message + ",";
                     }
-                //}
-
+                }
+                
                 row++;
             }
 
-            if(!string.IsNullOrEmpty(summary))
+            if (!string.IsNullOrEmpty(summary))
             {
                 summary = "Error in line: " + summary.TrimEnd(',');
             }
@@ -88,7 +100,7 @@ public class CsvHelper : ICsvHelper
             isSuccess = false;
             summary += "Exception: " + ex.Message;
         }
-        
+
         return (isSuccess, csvData, summary);
     }
     private DataTable GetNewDataTableAxleLoad()
@@ -98,7 +110,7 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add("FileId", typeof(uint));
 
         dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
-        dt.Columns.Add(NewDataColumn("LaneNumber", typeof(string),2));
+        dt.Columns.Add(NewDataColumn("LaneNumber", typeof(string), 2));
         dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("PlateZone", typeof(string), 50));
         dt.Columns.Add(NewDataColumn("PlateSeries", typeof(string), 10));
@@ -133,7 +145,7 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("Axle5Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle6Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle7Time", typeof(DateTime)));
-        
+
         return dt;
     }
     private DataTable GetNewDataTableFinePayment()
@@ -164,8 +176,8 @@ public class CsvHelper : ICsvHelper
             DataType = type,
             DefaultValue = null
         };
-        
-        if(type == typeof(string))
+
+        if (type == typeof(string))
         {
             dc.MaxLength = maxStringLength;
         }
@@ -176,7 +188,7 @@ public class CsvHelper : ICsvHelper
     public string CheckRegexForAxleLoad()
     {
         string strRegex = "^";
-        
+
         //Transaction Number, alphanumaric, length 1 to 2
         strRegex += "\\b[a-zA-Z0-9]{2,10}\\b+";
         //Lane number
