@@ -41,10 +41,10 @@ public class CsvHelper : ICsvHelper
             {
                 string[] csvFieldData = csvReader.ReadFields() ?? [];
                 bool requiredFieldsValid = true;
-                if (string.IsNullOrEmpty(csvFieldData[0]))
+                if (string.IsNullOrEmpty(csvFieldData[0]) || string.IsNullOrEmpty(csvFieldData[2]))
                 {
                     requiredFieldsValid = false;
-                    summary += row + "-Missing Transaction Number,";
+                    summary += row + "-Missing Required field,";
                 }
                 
                 //Check required
