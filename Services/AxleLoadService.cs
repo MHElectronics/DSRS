@@ -56,7 +56,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         {
             isSuccess = false;
         }
-        return isSuccess
+        return isSuccess;
     }
     public async Task<bool> Add(List<LoadData> obj)
     {
