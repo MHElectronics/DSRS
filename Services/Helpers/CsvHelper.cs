@@ -82,7 +82,14 @@ public class CsvHelper : ICsvHelper
                     }
                     catch (Exception ex)
                     {
-                        summary += row + "-Parse error,";
+                        if (ex.Message.Contains("unique"))
+                        {
+                            summary += row + "-Duplicate";
+                        }
+                        else
+                        {
+                            summary += row + "-Parse error,";
+                        }
                         //summary += row + "-" + ex.Message + ",";
                     }
                 }
