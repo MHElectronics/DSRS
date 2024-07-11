@@ -147,9 +147,11 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("Axle7Time", typeof(DateTime)));
 
         // unique contrain
-        UniqueConstraint custUnique = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"], dt.Columns["LaneNumber"], dt.Columns["DateTime"] });
+        UniqueConstraint uniqueTransaction = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"] });
+        UniqueConstraint uniqueComposit = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"], dt.Columns["LaneNumber"], dt.Columns["DateTime"] });
         // add unique constraint to the list of constraints for your DataTable
-        dt.Constraints.Add(custUnique);
+        dt.Constraints.Add(uniqueTransaction);
+        dt.Constraints.Add(uniqueComposit);
 
         return dt;
     }
@@ -172,9 +174,9 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("TransportAgencyInformation", typeof(string), 50));
 
         // unique contrain
-        UniqueConstraint custUnique = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"], dt.Columns["DateTime"] });
+        UniqueConstraint uniqueTransaction = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"] });
         // add unique constraint to the list of constraints for your DataTable
-        dt.Constraints.Add(custUnique);
+        dt.Constraints.Add(uniqueTransaction);
 
         return dt;
     }
