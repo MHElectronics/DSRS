@@ -6,13 +6,13 @@ function blazorInitializeModal(dialog, reference) {
 }
 
 function blazorOpenModal(dialog) {
-    if (!dialog.open) {
+    if (dialog !== null && !dialog.open) {
         dialog.showModal();
     }
 }
 
 function blazorCloseModal(dialog) {
-    if (dialog.open) {
+    if (dialog !== null && dialog.open) {
         dialog.close();
     }
 }

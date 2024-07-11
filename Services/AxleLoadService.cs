@@ -1,6 +1,7 @@
 ﻿using BOL;
 using BOL.CustomModels;
 using Services.Helpers;
+using System.Data.SqlClient;
 
 namespace Services;
 
@@ -29,6 +30,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     }
     public async Task<bool> Add(LoadData obj)
     {
+        bool isSuccess = false;
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed
             ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7
             ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
@@ -38,8 +40,23 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             ,@Axle1,@Axle2,@Axle3,@Axle4,@Axle5,@Axle6,@Axle7
             ,@AxleRemaining,@GrossVehicleWeight,@IsUnloaded,@IsOverloaded,@OverSizedModified,@Wheelbase,@ClassStatus,@RecognizedBy,@IsBRTAInclude,@LadenWeight,@UnladenWeight,@ReceiptNumber,@BillNumber
             ,@Axle1Time,@Axle2Time,@Axle3Time,@Axle4Time,@Axle5Time,@Axle6Time,@Axle7Time)";
-
-        return await _db.SaveData(query, obj);
+        try
+        {
+            isSuccess = await _db.SaveData(query, obj);
+        }
+        catch(SqlException ex)
+        {
+            //Duplicate error
+            if(ex.Number == 2601)
+            {
+                isSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+        }
+        return isSuccess
     }
     public async Task<bool> Add(List<LoadData> obj)
     {
