@@ -91,6 +91,16 @@
 
 <ConfirmDialog @ref="deleteConfirmationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete this Data?" />
 
+<style>
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px; /* Adjust as necessary */
+    }
+</style>
 @code {
     private IEnumerable<UploadedFile> uploadedFiles;
     private IEnumerable<Station> stations;
