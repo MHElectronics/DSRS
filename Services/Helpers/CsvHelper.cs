@@ -46,7 +46,7 @@ public class CsvHelper : ICsvHelper
                     requiredFieldsValid = false;
                     summary += row + "-Missing Required field,";
                 }
-                
+
                 //Check required
                 //List<int> requiredIndexes = [1];
                 //foreach (int i in requiredIndexes)
@@ -86,7 +86,7 @@ public class CsvHelper : ICsvHelper
                         //summary += row + "-" + ex.Message + ",";
                     }
                 }
-                
+
                 row++;
             }
 
@@ -146,6 +146,11 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("Axle6Time", typeof(DateTime)));
         dt.Columns.Add(NewDataColumn("Axle7Time", typeof(DateTime)));
 
+        // unique contrain
+        UniqueConstraint custUnique = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"], dt.Columns["LaneNumber"], dt.Columns["DateTime"] });
+        // add unique constraint to the list of constraints for your DataTable
+        dt.Constraints.Add(custUnique);
+
         return dt;
     }
     private DataTable GetNewDataTableFinePayment()
@@ -165,6 +170,11 @@ public class CsvHelper : ICsvHelper
         dt.Columns.Add(NewDataColumn("WarehouseCharge", typeof(decimal)));
         dt.Columns.Add(NewDataColumn("DriversLicenseNumber", typeof(string), 15));
         dt.Columns.Add(NewDataColumn("TransportAgencyInformation", typeof(string), 50));
+
+        // unique contrain
+        UniqueConstraint custUnique = new UniqueConstraint(new DataColumn[] { dt.Columns["TransactionNumber"], dt.Columns["DateTime"] });
+        // add unique constraint to the list of constraints for your DataTable
+        dt.Constraints.Add(custUnique);
 
         return dt;
     }
