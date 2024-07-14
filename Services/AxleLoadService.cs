@@ -24,6 +24,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
       ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
       ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
       ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
+      ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
        FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
 
         return await _db.LoadData<LoadData, object>(query, obj);
