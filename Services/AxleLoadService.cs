@@ -8,7 +8,7 @@ namespace Services;
 public interface IAxleLoadService
 {
     Task<IEnumerable<LoadData>> Get(LoadData obj);
-    Task<bool> Add(LoadData obj);
+    Task<(bool, string)> Add(LoadData obj);
     Task<bool> Add(List<LoadData> obj);
     Task<bool> Delete(UploadedFile file);
 
@@ -29,9 +29,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<LoadData, object>(query, obj);
     }
-    public async Task<bool> Add(LoadData obj)
+    public async Task<(bool,string)> Add(LoadData obj)
     {
         bool isSuccess = false;
+        string message = "";
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed
             ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7
             ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
@@ -51,13 +52,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             if(ex.Number == 2601)
             {
                 isSuccess = false;
+                message = "Duplicate data";
             }
         }
         catch (Exception ex)
         {
             isSuccess = false;
+            message = "Error: " + ex.Message;
         }
-        return isSuccess;
+        return (isSuccess, message);
     }
     public async Task<bool> Add(List<LoadData> obj)
     {
