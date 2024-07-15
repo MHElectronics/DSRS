@@ -136,7 +136,7 @@
     <value>Email</value>
   </data>
   <data name="Inactive" xml:space="preserve">
-    <value>In Active</value>
+    <value>Inactive</value>
   </data>
   <data name="IsActive" xml:space="preserve">
     <value>Is Active</value>
