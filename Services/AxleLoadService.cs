@@ -8,7 +8,7 @@ namespace Services;
 public interface IAxleLoadService
 {
     Task<IEnumerable<LoadData>> Get(LoadData obj);
-    Task<bool> Add(LoadData obj);
+    Task<(bool, string)> Add(LoadData obj);
     Task<bool> Add(List<LoadData> obj);
     Task<bool> Delete(UploadedFile file);
 
