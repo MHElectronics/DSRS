@@ -15,6 +15,7 @@ public class ALCSController : ControllerBase
     private readonly IAxleLoadService _axleLoadService;
     private readonly IFinePaymentService _finePaymentService;
     private readonly IWIMScaleService _wimScaleService;
+    private (bool, string) isSuccess;
 
     public ALCSController(IFileService fileService, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService, IWIMScaleService wimScaleService)
     {
@@ -197,12 +198,12 @@ public class ALCSController : ControllerBase
         List<LoadData> validData = await this.CheckValidData(obj.StationId, new List<LoadData> { obj });
         if (validData.Count > 0)
         {
-            bool isSuccess = await _axleLoadService.Add(validData);
-            if(isSuccess)
+            isSuccess = await _axleLoadService.Add(validData);
+            if(isSuccess.Item1)
             {
                 return Ok("Axle load data insert successful");
             }
-            return BadRequest("Error: Axle load data insert failed");
+            return BadRequest(isSuccess.Item2);
         }
 
         return BadRequest("Error: Axle load data validation failed");
@@ -231,12 +232,12 @@ public class ALCSController : ControllerBase
                 item.StationId = stationId;
             }
 
-            bool isSuccess = await _axleLoadService.Add(validData);
-            if (isSuccess)
+            isSuccess = await _axleLoadService.Add(validData);
+            if (isSuccess.Item1)
             {
                 return Ok("Axle load multiple data insert successful");
             }
-            return BadRequest("Error: Axle load multiple data insert failed");
+            return BadRequest(isSuccess.Item2);
         }
 
         return BadRequest("Error: Axle load multiple data validation failed");
@@ -268,12 +269,12 @@ public class ALCSController : ControllerBase
         //Check station code
         obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-        bool isSuccess = await _finePaymentService.Add(obj);
-        if (isSuccess)
+        isSuccess = await _finePaymentService.Add(obj);
+        if (isSuccess.Item1)
         {
             return Ok("Fine payment data insert successful");
         }
-        return BadRequest("Error: Fine payment data insert failed");
+        return BadRequest(isSuccess.Item2);
     }
     [HttpPost("[action]")]
     public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
@@ -295,11 +296,11 @@ public class ALCSController : ControllerBase
             item.StationId = stationId;
         }
 
-        bool isSuccess = await _finePaymentService.Add(obj);
-        if (isSuccess)
+        isSuccess = await _finePaymentService.Add(obj);
+        if (isSuccess.Item1)
         {
             return Ok("Fine payment multiple data insert successful");
         }
-        return BadRequest("Error: Fine payment multiple data insert failed");
+        return BadRequest(isSuccess.Item2);
     }
 }

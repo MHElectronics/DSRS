@@ -1,13 +1,14 @@
 ﻿using BOL;
 using Services.Helpers;
+using System.Data.SqlClient;
 
 namespace Services;
 
 public interface IFinePaymentService
 {
     Task<IEnumerable<FinePayment>> Get(FinePayment obj);
-    Task<bool> Add(FinePayment obj);
-    Task<bool> Add(List<FinePayment> obj);
+    Task<(bool,string)> Add(FinePayment obj);
+    Task<(bool,string)> Add(List<FinePayment> obj);
     Task<bool> Delete(UploadedFile file);
 }
 
@@ -19,19 +20,57 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 
         return await _db.LoadData<FinePayment, object>(query, obj);
     }
-    public async Task<bool> Add(FinePayment obj)
+    public async Task<(bool,string)> Add(FinePayment obj)
     {
+        bool isSuccess = false;
+        string message = "";
         string query = @"INSERT INTO FinePayment(StationId,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
                         VALUES(@StationId,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
-
-        return await _db.SaveData(query, obj);
+        try
+        { 
+            isSuccess = await _db.SaveData(query, obj);
+        }
+        catch (SqlException ex)
+        {
+            //Duplicate error
+            if (ex.Number == 2627)
+            {
+                isSuccess = false;
+                message = "Duplicate data";
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (isSuccess, message);
     }
-    public async Task<bool> Add(List<FinePayment> obj)
+    public async Task<(bool,string)> Add(List<FinePayment> obj)
     {
+        bool isSuccess = false;
+        string message = "";
         string query = @"INSERT INTO FinePayment(StationId,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
                         VALUES(@StationId,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
-
-        return await _db.SaveData(query, obj);
+        try
+        {
+            isSuccess = await _db.SaveData(query, obj);
+        }
+        catch (SqlException ex)
+        {
+            //Duplicate error
+            if (ex.Number == 2627)
+            {
+                isSuccess = false;
+                message = "Duplicate data";
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (isSuccess, message);  
     }
 
     public async Task<bool> Delete(UploadedFile file)
