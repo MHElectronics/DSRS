@@ -8,8 +8,8 @@ namespace Services;
 public interface IAxleLoadService
 {
     Task<IEnumerable<LoadData>> Get(LoadData obj);
-    Task<bool> Add(LoadData obj);
-    Task<bool> Add(List<LoadData> obj);
+    Task<(bool, string)> Add(LoadData obj);
+    Task<(bool,string)> Add(List<LoadData> obj);
     Task<bool> Delete(UploadedFile file);
 
     Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate);
@@ -24,13 +24,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
       ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
       ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
       ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
+      ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
        FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
 
         return await _db.LoadData<LoadData, object>(query, obj);
     }
-    public async Task<bool> Add(LoadData obj)
+    public async Task<(bool, string)> Add(LoadData obj)
     {
         bool isSuccess = false;
+        string message = "";
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed
             ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7
             ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
@@ -44,22 +46,26 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         {
             isSuccess = await _db.SaveData(query, obj);
         }
-        catch(SqlException ex)
+        catch (SqlException ex)
         {
             //Duplicate error
-            if(ex.Number == 2601)
+            if (ex.Number == 2601)
             {
                 isSuccess = false;
+                message = "Duplicate data";
             }
         }
         catch (Exception ex)
         {
             isSuccess = false;
+            message = "Error: " + ex.Message;
         }
-        return isSuccess;
+        return (isSuccess, message);
     }
-    public async Task<bool> Add(List<LoadData> obj)
+    public async Task<(bool, string)> Add(List<LoadData> obj)
     {
+        bool isSuccess = false;
+        string message = "";
         string query = @"INSERT INTO AxleLoad(StationId,TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed
             ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7
             ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
@@ -70,7 +76,25 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             ,@AxleRemaining,@GrossVehicleWeight,@IsUnloaded,@IsOverloaded,@OverSizedModified,@Wheelbase,@ClassStatus,@RecognizedBy,@IsBRTAInclude,@LadenWeight,@UnladenWeight,@ReceiptNumber,@BillNumber
             ,@Axle1Time,@Axle2Time,@Axle3Time,@Axle4Time,@Axle5Time,@Axle6Time,@Axle7Time)";
 
-        return await _db.SaveData(query, obj);
+        try
+        {
+            isSuccess = await _db.SaveData(query, obj);
+        }
+        catch (SqlException ex)
+        {
+            //Duplicate error
+            if (ex.Number == 2601)
+            {
+                isSuccess = false;
+                message = "Duplicate data";
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (isSuccess, message);
     }
 
     public async Task<bool> Delete(UploadedFile file)
@@ -78,7 +102,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string query = @"DELETE FROM AxleLoadProcess WHERE FileId=@FileId 
             DELETE FROM AxleLoad WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@Date)=0";
 
-        return await _db.SaveData(query, new { FileId=file.Id, file.StationId, file.Date });
+        return await _db.SaveData(query, new { FileId = file.Id, file.StationId, file.Date });
     }
 
     public async Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate)

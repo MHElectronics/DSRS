@@ -6,7 +6,7 @@
         <QuickGrid Items="@AxleLoadData" Virtualize="true">
             <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+            <PropertyColumn Property="@(l => l.DateTime)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
             <PropertyColumn Property="@(l => l.PlateZone)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PlateSeries)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PlateNumber)" Sortable="true" />
@@ -32,6 +32,13 @@
             <PropertyColumn Property="@(l => l.UnladenWeight)" Sortable="true" />
             <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Axle1Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" style="overflow:initial" />
+            <PropertyColumn Property="@(l => l.Axle2Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Axle3Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Axle4Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Axle5Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Axle6Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Axle7Time)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
         </QuickGrid>
     }
     else
@@ -39,7 +46,7 @@
         <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
             <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PaymentTransactionId)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+            <PropertyColumn Property="@(l => l.DateTime)" Format="MM-dd-yyyy h:mm:ss tt" Sortable="true" />
             <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />
             <PropertyColumn Property="@(l => l.FineAmount)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PaymentMethod)" Sortable="true" />
