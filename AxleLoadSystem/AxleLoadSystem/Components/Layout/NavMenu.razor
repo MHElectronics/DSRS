@@ -63,7 +63,15 @@
     <AuthorizeView>
         <NotAuthorized>Login to view menu</NotAuthorized>
     </AuthorizeView>
-
+    <li class="nav-item">
+        <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">
+            <i class="nav-icon fa fa-question-circle"></i>
+            <p>
+                FAQ
+                @* @localizer["Menu.FAQ"] *@
+            </p>
+        </NavLink>
+    </li>
     <AuthorizeView Roles="Admin">
         <Authorized>
             <li class="nav-header">Administration</li>
@@ -174,15 +182,6 @@
                     <i class="nav-icon fas fa-filter"></i>
                     <p>
                         SQL Direct Search
-                        @* @localizer["Menu.BRTA"] *@
-                    </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-question-circle"></i>
-                    <p>
-                        FAQ
                         @* @localizer["Menu.BRTA"] *@
                     </p>
                 </NavLink>

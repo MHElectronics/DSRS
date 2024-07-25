@@ -3,25 +3,36 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">FAQ</h3>
+        <h3 class="card-title">FAQ - Frequently Asked Question</h3>
     </div>
     <div class="card-body" id="accordion">
-        @foreach(FAQ faq in faqs)
+        @if(faqs == null)
         {
-            <div class="card card-primary card-outline">
-            <a class="d-block w-100 collapsed" data-toggle="collapse" href="@("#collapse" + @faq.Id)" aria-expanded="true">
-                <div class="card-header">
-                    <h4 class="card-title w-100">
-                        @((MarkupString)faq.Question)
-                    </h4>
-                </div>
-            </a>
-                <div id="@("collapse" + @faq.Id)" class="collapse" data-parent="#accordion" style="">
-                    <div class="card-body">
-                        @((MarkupString)faq.Answer)
+            <Loader/>
+        }
+        else if(faqs.Count() == 0)
+        {
+            <p>No Data Found</p>
+        }
+        else
+        {
+            @foreach (FAQ faq in faqs.Where(f => f.IsPublished).OrderBy(f => f.DisplayOrder))
+            {
+                <div class="card card-primary card-outline">
+                    <a class="d-block w-100 collapsed" data-toggle="collapse" href="@("#collapse" + @faq.Id)" aria-expanded="true">
+                        <div class="card-header">
+                            <h4 class="card-title w-100">
+                                @((MarkupString)faq.Question)
+                            </h4>
+                        </div>
+                    </a>
+                    <div id="@("collapse" + @faq.Id)" class="collapse" data-parent="#accordion" style="">
+                        <div class="card-body">
+                            @((MarkupString)faq.Answer)
+                        </div>
                     </div>
                 </div>
-        </div>
+            }
         }
         
         @* <div class="card card-danger card-outline">
@@ -42,7 +53,7 @@
 </div>
 
 @code {
-    private IEnumerable<FAQ> faqs{get;set;}
+    private IEnumerable<FAQ>? faqs { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
