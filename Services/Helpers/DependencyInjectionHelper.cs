@@ -18,6 +18,8 @@ public static class DependencyInjection
         services.AddScoped<IAxleLoadService, AxleLoadService>();
         services.AddScoped<IFinePaymentService, FinePaymentService>();
 
+        services.AddScoped<IFAQService, FAQService>();
+
         return services;
     }
 }
