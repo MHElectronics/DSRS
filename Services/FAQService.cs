@@ -1,12 +1,13 @@
 ﻿using BOL;
 using Services.Helpers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services;
 
 public interface IFAQService
 {
     Task<IEnumerable<FAQ>> GetFAQs(bool onlyPublished = false);
+    Task<IEnumerable<FAQ>> GetByUser(User user);
+    Task<bool> AddQuestion(FAQ faq);
 }
 
 public class FAQService : IFAQService
@@ -20,9 +21,6 @@ public class FAQService : IFAQService
 
     public async Task<IEnumerable<FAQ>> GetFAQs(bool onlyPublished = false)
     {
-        //return [new FAQ() { Id = 1, Question = "Question 1", Answer = "Answer 1" }
-        //        ,new FAQ() { Id = 2, Question = "Question 2", Answer = "Answer 2" }];
-
         string sql = "SELECT * FROM FAQ";
         Dictionary<string, object> param = new Dictionary<string, object>();
 
@@ -31,7 +29,24 @@ public class FAQService : IFAQService
             sql += " WHERE IsPublished=@IsPublished";
             param.Add("@IsPublished", true);
         }
-        
+
         return await _db.LoadData<FAQ, dynamic>(sql, param);
+    }
+    public async Task<IEnumerable<FAQ>> GetByUser(User user)
+    {
+        string sql = "SELECT * FROM FAQ WHERE QuestionUserId=@UserId";
+        Dictionary<string, object> param = new Dictionary<string, object>
+        {
+            { "@UserId", user.Id }
+        };
+
+        return await _db.LoadData<FAQ, dynamic>(sql, param);
+    }
+
+    public async Task<bool> AddQuestion(FAQ faq)
+    {
+        string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,IsPublished,DisplayOrder)
+            VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder)";
+        return await _db.SaveData<FAQ>(sql, faq);
     }
 }

@@ -139,11 +139,11 @@
     {
         if(await fileService.Delete(selectedFile))
         {
-            appState.SetNotification(this, new Notification("File Deleted", Notification.NotificationType.Info));
+            appState.SetNotification(this, "File Deleted", Notification.NotificationType.Info);
         }
         else
         {
-            appState.SetNotification(this, new Notification("Error: File Deleted Failed", Notification.NotificationType.Failure));
+            appState.SetNotification(this, "Error: File Deleted Failed", Notification.NotificationType.Failure);
         }
 
         await GetFileList();

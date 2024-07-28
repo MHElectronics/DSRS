@@ -1,0 +1,157 @@
+﻿@page "/MyFAQ"
+@using Syncfusion.Blazor.RichTextEditor
+@inject AuthenticationStateProvider authStateProvider
+@inject IFAQService faqService
+@inject IAppState appState
+
+<h3>User FAQ Panel</h3>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">FAQ - Frequently Asked Question</h3>
+    </div>
+    @if (newQuestion is not null)
+    {
+        <div class="card-body">
+            <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="col-12">
+                    <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here...">
+                        <RichTextEditorToolbarSettings Items="@Tools" />
+                    </SfRichTextEditor>
+                    <ValidationMessage For="() => newQuestion.Question" />
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary">Submit Question</button>
+                </div>
+            </EditForm>
+        </div>
+    }
+    <div class="card-body" id="accordion">
+        @if (faqs == null)
+        {
+            <Loader />
+        }
+        else if (faqs.Count() == 0)
+        {
+            <p>No Data Found</p>
+        }
+        else
+        {
+            @foreach (FAQ faq in faqs.OrderBy(f => f.AnswerUserId > 0).OrderByDescending(f => f.Id))
+            {
+                <div class="card @(!string.IsNullOrEmpty(faq.Answer) ? "card-primary" : "card-danger")  card-outline">
+                    <a class="d-block w-100 collapsed" data-toggle="collapse" href="@("#collapse" + @faq.Id)" aria-expanded="true">
+                        <div class="card-header">
+                            <h4 class="card-title w-100">
+                                @((MarkupString)faq.Question)
+                            </h4>
+                        </div>
+                    </a>
+                    <div id="@("collapse" + @faq.Id)" class="collapse" data-parent="#accordion" style="">
+                        <div class="card-body">
+                            @if (string.IsNullOrEmpty(faq.Answer))
+                            {
+                                <p class="info info-danger">No Answer</p>
+                            }
+                            else
+                            {
+                                @((MarkupString)faq.Answer)
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <span>Submitted on: @faq.EntryTime.ToString("dd MMM yy")</span>
+                            @if (!string.IsNullOrEmpty(faq.Answer))
+                            {
+                                <span class="float-right">Answered by:</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        @* <div class="card card-danger card-outline">
+        <a class="d-block w-100" data-toggle="collapse" href="#collapseNine" aria-expanded="true">
+        <div class="card-header">
+        <h4 class="card-title w-100">
+        9.  Quisque rutrum
+        </h4>
+        </div>
+        </a>
+        <div id="collapseNine" class="collapse show" data-parent="#accordion" style="">
+        <div class="card-body">
+        Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.
+        </div>
+        </div>
+        </div> *@
+    </div>
+</div>
+@code {
+    private List<FAQ>? faqs { get; set; } = null;
+    private User? currentUser { get; set; }
+
+    private EditContext editContext = default!;
+    private FAQ newQuestion { get; set; } = new();
+
+    private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
+    {
+        new ToolbarItemModel() { Command = ToolbarCommand.Bold },
+        new ToolbarItemModel() { Command = ToolbarCommand.Italic },
+        new ToolbarItemModel() { Command = ToolbarCommand.Underline },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontName },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontSize },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.FontColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.BackgroundColor },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Formats },
+        new ToolbarItemModel() { Command = ToolbarCommand.Alignments },
+        new ToolbarItemModel() { Command = ToolbarCommand.OrderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.UnorderedList },
+        new ToolbarItemModel() { Command = ToolbarCommand.Outdent },
+        new ToolbarItemModel() { Command = ToolbarCommand.Indent },
+        new ToolbarItemModel() { Command = ToolbarCommand.CreateTable },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.ClearFormat },
+        new ToolbarItemModel() { Command = ToolbarCommand.Print },
+        new ToolbarItemModel() { Command = ToolbarCommand.FullScreen },
+        new ToolbarItemModel() { Command = ToolbarCommand.Separator },
+        new ToolbarItemModel() { Command = ToolbarCommand.Undo },
+        new ToolbarItemModel() { Command = ToolbarCommand.Redo }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(newQuestion);
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+
+        await this.LoadQuestions();
+    }
+    protected async Task LoadQuestions()
+    {
+        IEnumerable<FAQ> faqList = await faqService.GetByUser(currentUser);
+        faqs = faqList.ToList();
+    }
+    private async Task OnValidSubmit(EditContext editContext)
+    {
+        newQuestion.QuestionUserId = currentUser.Id;
+
+        if (await faqService.AddQuestion(newQuestion))
+        {
+            await this.LoadQuestions();
+
+            appState.SetNotification(this, "Question submitted", Notification.NotificationType.Success);
+        }
+        else
+        {
+            appState.SetNotification(this, "Question submission failed", Notification.NotificationType.Failure);
+        }
+    }
+    private void OnInvalidSubmit()
+    {
+        appState.SetNotification(this, "Please enter valid values", Notification.NotificationType.Failure);
+    }
+}
