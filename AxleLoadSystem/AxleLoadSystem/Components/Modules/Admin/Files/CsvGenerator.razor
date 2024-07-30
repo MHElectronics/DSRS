@@ -53,44 +53,53 @@
 
         for (int i = 1; i <= iteration; i++)
         {
+            //TransactionNumber
             string line = "TN" + i;
+            //LaneNumber
             line += "," + rnd.Next(1, 5);
+            //DateTime
             line += "," + date.AddSeconds(i * 7).ToString(JsonDateTimeFormatAttribute.GlobalDateFormat);
+            //PlateZone
             line += ",PZ" + rnd.Next(1000, 5000);
+            //PlateSeries
             line += ",PS" + rnd.Next(1000, 5000);
+            //PlateNumber
             line += ",PN" + rnd.Next(1000, 5000);
+            //VehicleId
             line += ",VI" + rnd.Next(100, 500);
-            line += "," + rnd.Next(0, 20);
+            //NumberOfAxle
+            line += "," + rnd.Next(2, 8);
+            //VehicleSpeed
             line += "," + rnd.Next(30, 120);
-
+            //Axle1
             int axle = rnd.Next(0, 100);
             int gross = axle;
             line += "," + axle;
-
+            //Axle2
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
-
+            //Axle3
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
-
+            //Axle4
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
-
+            //Axle5
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
-
+            //Axle6
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
-
+            //Axle7
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
-
+            //AxleRemaining
             axle = rnd.Next(0, 100);
             gross += axle;
             line += "," + axle;
@@ -99,9 +108,9 @@
             line += "," + gross;
 
             //Booleans
-            line += "," + rnd.Next(0, 1);
-            line += "," + rnd.Next(0, 1);
-            line += "," + rnd.Next(0, 1);
+            line += "," + rnd.Next(0, 2);
+            line += "," + rnd.Next(0, 2);
+            line += "," + rnd.Next(0, 2);
             //Wheelbase
             line += "," + rnd.Next(2, 20);
             //ClassStatus
@@ -109,7 +118,7 @@
             //RecognizedBy
             line += "," + rnd.Next(2, 20);
             //IsBRTAInclude
-            line += "," + rnd.Next(0, 1);
+            line += "," + rnd.Next(0, 2);
             //LadenWeight
             line += "," + rnd.Next(2, 1000);
             //UnladenWeight

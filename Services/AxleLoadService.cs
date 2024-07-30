@@ -117,4 +117,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<AxleLoadCount, object>(query, new { station.StationId, startDate, endDate });
     }
+    public async Task<IEnumerable<LoadData>> GetDateWise(Station station, DateTime startDate, DateTime endDate)
+    {
+        string query = @"SELECT NumberOfAxle, SUM(CASE WHEN IsOverloaded = 1 THEN 1 ELSE 0 END) AS OverloadedCount
+                        FROM AxleLoad
+                        WHERE StationId = @StationId AND DateTime BETWEEN @StartDate AND @EndDate
+                        Group By 
+                            NumberOfAxle
+                        ORDER BY 
+                            NumberOfAxle";
+        return await _db.LoadData<LoadData, object>(query, new { station.StationId, startDate, endDate });
+    }
 }
