@@ -5,6 +5,8 @@
 @using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.PdfExport;
 @* @using ThemeHelper *@
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
@@ -19,9 +21,8 @@
 
 <ReportSelection />
 
-
 <div class="control-section" align='center'>
-    <SfChart Title="Number of overweight vehicles -" Width="@Width" Theme="@Theme">
+    <SfChart @ref="@chartInstance" Title="Number of overweight vehicles -" Width="@Width" Theme="@Theme">
         <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
         <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
         <ChartPrimaryXAxis Title="Number of Axle (Allowable Weight)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
@@ -54,10 +55,15 @@
         <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
         <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
     </SfChart>
+    <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat"></SfButton>
 </div>
 @code {
     private Theme Theme { get; set; }
     public string Width { get; set; } = "90%";
+    private SfChart chartInstance;
+    public string FileName { get; set; } = "Charts";
+    public string Format { get; set; } = "{value} GW";
+    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
     public List<StackedColumnChartData> ChartPoints { get; set; } = new List<StackedColumnChartData>
     {
         new StackedColumnChartData { Year = "2013", General = 9628912, Honda = 4298390, Suzuki = 2842133, BMW = 2006366 },
@@ -95,5 +101,14 @@
         public double Honda { get; set; }
         public double Suzuki { get; set; }
         public double BMW { get; set; }
+    }
+    private async Task Export(MouseEventArgs args)
+    {
+        await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+    }
+
+    public void ExportComplete(ExportEventArgs exportEventArgs)
+    {
+        string base64 = exportEventArgs.Base64;
     }
 }
