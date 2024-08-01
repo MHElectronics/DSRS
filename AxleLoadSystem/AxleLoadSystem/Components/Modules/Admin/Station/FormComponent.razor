@@ -37,21 +37,7 @@ else
                             }
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-12">
-                        <div class="form-group">
-                            @if (Mode == FormMode.Details)
-                            {
-                                <label for="code" class="form-label">@localizer["Code"]</label>
-                                <label class="form-control">@station.StationCode</label>
-                            }
-                            else
-                            {
-                                <label for="code" class="form-label">@localizer["Code"]</label>
-                                <input type="text" @bind-value="station.StationCode" required class="form-control" placeholder="@localizer["Code"]" id="code" maxlength="8" />
-                                <ValidationMessage For="() => station.StationCode" />
-                            }
-                        </div>
-                    </div>
+                    
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             @if (Mode == FormMode.Details)

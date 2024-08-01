@@ -6,6 +6,8 @@ public class FinePayment
 {
     public int Id { get; set; }
     public int StationId { get; set; }
+    [Required]
+    public int LaneNumber { get; set; }
     [NoSpecialCharacters]
     public string TransactionNumber { get; set; }
     [NoSpecialCharacters]

@@ -65,7 +65,7 @@ public class CsvHelper : ICsvHelper
                     string[] fieldData = [file.Id.ToString()];
                     fieldData = fieldData.Concat(csvFieldData).ToArray();
 
-                    List<int> boolenIndexes = [4];
+                    List<int> boolenIndexes = [5];
                     if (file.FileType == (int)UploadedFileType.LoadData)
                     {
                         boolenIndexes = [19, 20, 21, 25];
@@ -167,7 +167,7 @@ public class CsvHelper : ICsvHelper
         DataTable dt = new();
         //Default FileId column
         dt.Columns.Add("FileId", typeof(int));
-
+        dt.Columns.Add(NewDataColumn("LaneNumber", typeof(string), 2));
         dt.Columns.Add(NewDataColumn("TransactionNumber", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("PaymentTransactionId", typeof(string), 10));
         dt.Columns.Add(NewDataColumn("DateTime", typeof(DateTime)));

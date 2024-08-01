@@ -8,8 +8,6 @@ public class LoadData
     [NoSpecialCharacters]
     [Required]
     public string TransactionNumber { get; set; }
-    [MinValue(0)]
-    public int StationCode { get; set; }
     [Required]
     public int LaneNumber { get; set; }
     

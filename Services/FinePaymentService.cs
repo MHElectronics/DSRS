@@ -24,8 +24,8 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
     {
         bool isSuccess = false;
         string message = "";
-        string query = @"INSERT INTO FinePayment(StationId,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
-                        VALUES(@StationId,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
+        string query = @"INSERT INTO FinePayment(StationId,LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
+                        VALUES(@StationId,@LaneNumber,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
         try
         { 
             isSuccess = await _db.SaveData(query, obj);
@@ -50,8 +50,8 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
     {
         bool isSuccess = false;
         string message = "";
-        string query = @"INSERT INTO FinePayment(StationId,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
-                        VALUES(@StationId,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
+        string query = @"INSERT INTO FinePayment(StationId,LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
+                        VALUES(@StationId,@LaneNumber,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
         try
         {
             isSuccess = await _db.SaveData(query, obj);
