@@ -1,4 +1,4 @@
-﻿@page "/MyFAQ"
+﻿@page "/FAQAdmin"
 @using Syncfusion.Blazor.RichTextEditor
 @inject AuthenticationStateProvider authStateProvider
 @inject IFAQService faqService
@@ -16,14 +16,44 @@
             <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <div class="col-12">
-                    <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here...">
-                        <RichTextEditorToolbarSettings Items="@Tools" />
-                    </SfRichTextEditor>
-                    <ValidationMessage For="() => newQuestion.Question" />
-                </div>
-                <div class="col-4">
-                    <button type="submit" class="btn btn-primary">Submit Question</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Question</label>
+                            <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here...">
+                                <RichTextEditorToolbarSettings Items="@Tools" />
+                            </SfRichTextEditor>
+                            <ValidationMessage For="() => newQuestion.Question" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Answer</label>
+                            <SfRichTextEditor @bind-Value="@newQuestion.Answer" placeholder="Type your answer here...">
+                                <RichTextEditorToolbarSettings Items="@Tools" />
+                            </SfRichTextEditor>
+                            <ValidationMessage For="() => newQuestion.Answer" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="inputDisplayOrder">Display Order</label>
+                            <input type="number" class="form-control" min="0" @bind="@newQuestion.DisplayOrder" id="inputDisplayOrder" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" @bind="@newQuestion.IsPublished" id="chkIsPublished" />
+                                <label for="chkIsPublished">Publish?</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
                 </div>
             </EditForm>
         </div>
@@ -46,6 +76,7 @@
                         <div class="card-header">
                             <h4 class="card-title w-100">
                                 @((MarkupString)faq.Question)
+                                <i class="fa fa-edit float-right" @onclick="@(() => Edit(faq))"></i>
                             </h4>
                         </div>
                     </a>
@@ -65,10 +96,6 @@
                             @if (!string.IsNullOrEmpty(faq.Answer))
                             {
                                 <span class="float-right">Answered by:</span>
-                            }
-                            else
-                            {
-                                <span class="btn btn-primary" @onclick="@(() => Edit(faq))">Edit</span>
                             }
                         </div>
                     </div>
@@ -142,7 +169,7 @@
     {
         newQuestion.QuestionUserId = currentUser.Id;
 
-        if(newQuestion.Id > 0)
+        if (newQuestion.Id > 0)
         {
             if (await faqService.UpdateQuestion(newQuestion))
             {

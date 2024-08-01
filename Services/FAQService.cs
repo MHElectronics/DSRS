@@ -7,7 +7,8 @@ public interface IFAQService
 {
     Task<IEnumerable<FAQ>> GetFAQs(bool onlyPublished = false);
     Task<IEnumerable<FAQ>> GetByUser(User user);
-    Task<bool> AddQuestion(FAQ faq);
+    Task<bool> InsertFAQ(FAQ faq);
+    Task<bool> UpdateQuestion(FAQ faq);
 }
 
 public class FAQService : IFAQService
@@ -43,10 +44,15 @@ public class FAQService : IFAQService
         return await _db.LoadData<FAQ, dynamic>(sql, param);
     }
 
-    public async Task<bool> AddQuestion(FAQ faq)
+    public async Task<bool> InsertFAQ(FAQ faq)
     {
         string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,IsPublished,DisplayOrder)
             VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder)";
+        return await _db.SaveData<FAQ>(sql, faq);
+    }
+    public async Task<bool> UpdateQuestion(FAQ faq)
+    {
+        string sql = @"UPDATE FAQ SET Question=@Question WHERE Id=@Id AND (AnswerUserId=0 OR AnswerUserId IS NULL)";
         return await _db.SaveData<FAQ>(sql, faq);
     }
 }
