@@ -44,6 +44,7 @@
     else
     {
         <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
+            <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PaymentTransactionId)" Sortable="true" />
             <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />

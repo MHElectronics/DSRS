@@ -148,12 +148,14 @@
         List<string> paymentMethods = ["Cash", "Bkash", "OnlineBanking"];
         Random rnd = new Random(1);
 
-        sb.Add("TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber");
+        sb.Add("LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber");
 
         for (int i = 1; i <= iteration; i++)
         {
+            //LaneNumber
+            string line = rnd.Next(1, 5).ToString();
             //TransactionNumber
-            string line = "TN" + i;
+            line += ",TN" + i;
             //PaymentTransactionId
             line += ",PT" + i; 
             //DateTime
