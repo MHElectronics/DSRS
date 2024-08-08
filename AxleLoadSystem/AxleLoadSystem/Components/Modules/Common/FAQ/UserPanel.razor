@@ -2,7 +2,9 @@
 @using Syncfusion.Blazor.RichTextEditor
 @inject AuthenticationStateProvider authStateProvider
 @inject IFAQService faqService
+@inject IUserService userService
 @inject IAppState appState
+@inject IStringLocalizer<Locales.Resource> localizerResource
 
 <h3>User FAQ Panel</h3>
 
@@ -17,15 +19,20 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="col-12">
-                    <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here...">
+                    <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here..." MaxLength="499">
                         <RichTextEditorToolbarSettings Items="@Tools" />
                     </SfRichTextEditor>
                     <ValidationMessage For="() => newQuestion.Question" />
                 </div>
                 <div class="col-4">
                     <button type="submit" class="btn btn-primary">Submit Question</button>
+                    <NavLink class="btn btn-primary" href="/faq">@localizerResource["Button.Back"]</NavLink>
                 </div>
             </EditForm>
+            @if (!string.IsNullOrEmpty(validationSummary))
+            {
+                <label class="text-danger">@validationSummary</label>
+            }
         </div>
     }
     <div class="card-body" id="accordion">
@@ -46,6 +53,11 @@
                         <div class="card-header">
                             <h4 class="card-title w-100">
                                 @((MarkupString)faq.Question)
+                                @if (string.IsNullOrEmpty(faq.Answer))
+                                {
+                                    <i class="fa fa-trash float-right" title="Delete FAQ Information" @onclick="@(() => Delete(faq))"></i>
+                                    <i class="fa fa-edit float-right" title="Edit FAQ Information" style="margin-right: 10px;" @onclick="@(() => Edit(faq))"></i>
+                                }
                             </h4>
                         </div>
                     </a>
@@ -61,44 +73,35 @@
                             }
                         </div>
                         <div class="card-footer">
-                            <span>Submitted on: @faq.EntryTime.ToString("dd MMM yy")</span>
-                            @if (!string.IsNullOrEmpty(faq.Answer))
+                            <span style="margin-right: 10px;">Submitted on: @faq.EntryTime.ToString("dd MMM yy") </span>
+                            @if (!string.IsNullOrEmpty(faq.Answer) && UserList is not null)
                             {
+                                string userName = UserList.Where(u => u.Id == faq.AnswerUserId).FirstOrDefault()?.Name ?? "";
                                 <span class="float-right">Answered by:</span>
-                            }
-                            else
-                            {
-                                <span class="btn btn-primary" @onclick="@(() => Edit(faq))">Edit</span>
                             }
                         </div>
                     </div>
                 </div>
             }
         }
-
-        @* <div class="card card-danger card-outline">
-        <a class="d-block w-100" data-toggle="collapse" href="#collapseNine" aria-expanded="true">
-        <div class="card-header">
-        <h4 class="card-title w-100">
-        9.  Quisque rutrum
-        </h4>
-        </div>
-        </a>
-        <div id="collapseNine" class="collapse show" data-parent="#accordion" style="">
-        <div class="card-body">
-        Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.
-        </div>
-        </div>
-        </div> *@
     </div>
 </div>
+
+<ConfirmDialog @ref="submitConfirmationQuestionRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedQuestion" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Question?" />
+<ConfirmDialog @ref="deleteConfirmationQuestionRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedQuestion" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Question?" />
+
 @code {
     private List<FAQ>? faqs { get; set; } = null;
     private User? currentUser { get; set; }
-
+    private IEnumerable<User?> UserList { get; set; }
     private EditContext editContext = default!;
     private FAQ newQuestion { get; set; } = new();
 
+    protected ConfirmDialog submitConfirmationQuestionRef { get; set; }
+    protected ConfirmDialog deleteConfirmationQuestionRef { get; set; }
+    private bool submitClicked { get; set; } = false;
+    private bool deleteClicked { get; set; } = false;
+    private string validationSummary { get; set; }
     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
     {
         new ToolbarItemModel() { Command = ToolbarCommand.Bold },
@@ -130,7 +133,7 @@
         editContext = new EditContext(newQuestion);
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
-
+        UserList = await userService.GetUsers();
         await this.LoadQuestions();
     }
     protected async Task LoadQuestions()
@@ -141,33 +144,14 @@
     private async Task OnValidSubmit(EditContext editContext)
     {
         newQuestion.QuestionUserId = currentUser.Id;
-
-        if(newQuestion.Id > 0)
+        if (string.IsNullOrEmpty(newQuestion.Question) || newQuestion.Question.Length < 10)
         {
-            if (await faqService.UpdateQuestion(newQuestion))
-            {
-                await this.LoadQuestions();
-
-                appState.SetNotification(this, "Question submitted", Notification.NotificationType.Success);
-            }
-            else
-            {
-                appState.SetNotification(this, "Question submission failed", Notification.NotificationType.Failure);
-            }
+            validationSummary = "Question is mandatory with minimum 10 characters.";
+            return;
         }
-        else
-        {
-            if (await faqService.InsertFAQ(newQuestion))
-            {
-                await this.LoadQuestions();
+        submitClicked = true;
+        await submitConfirmationQuestionRef.Show();
 
-                appState.SetNotification(this, "Question submitted", Notification.NotificationType.Success);
-            }
-            else
-            {
-                appState.SetNotification(this, "Question submission failed", Notification.NotificationType.Failure);
-            }
-        }
     }
     private void OnInvalidSubmit()
     {
@@ -176,5 +160,68 @@
     private void Edit(FAQ faq)
     {
         newQuestion = faq;
+    }
+    private async Task SubmitConfirmedQuestion()
+    {
+        if (newQuestion.Id > 0)
+        {
+            if (await faqService.UpdateQuestion(newQuestion))
+            {
+                newQuestion.Question = string.Empty;
+                await this.LoadQuestions();
+
+                appState.SetNotification(this, "Question updated", Notification.NotificationType.Success);
+            }
+            else
+            {
+                appState.SetNotification(this, "Question update failed", Notification.NotificationType.Failure);
+            }
+        }
+        else
+        {
+            if (await faqService.InsertFAQ(newQuestion))
+            {
+                newQuestion.Question = string.Empty;
+                await this.LoadQuestions();
+
+                appState.SetNotification(this, "Question submitted", Notification.NotificationType.Success);
+            }
+            else
+            {
+                appState.SetNotification(this, "Question submission failed", Notification.NotificationType.Failure);
+            }
+        }
+    }
+    private void SubmitDeclined()
+    {
+        submitClicked = false;
+    }
+    private async Task Delete(FAQ faq)
+    {
+        newQuestion = faq;
+        if (newQuestion.Answer is not null || newQuestion.AnswerUserId > 0)
+        {
+            validationSummary = "Question can not be deleted";
+            return;
+        }
+        deleteClicked = true;
+        await deleteConfirmationQuestionRef.Show();
+
+    }
+    private async Task DeleteConfirmedQuestion()
+    {
+        if (await faqService.DeleteFAQ(newQuestion))
+        {
+            await this.LoadQuestions();
+            appState.SetNotification(this, "Question deleted", Notification.NotificationType.Success);
+        }
+        else
+        {
+            appState.SetNotification(this, "Question delete failed", Notification.NotificationType.Failure);
+        }
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
     }
 }

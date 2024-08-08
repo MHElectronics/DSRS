@@ -8,6 +8,8 @@ public interface IFAQService
     Task<IEnumerable<FAQ>> GetFAQs(bool onlyPublished = false);
     Task<IEnumerable<FAQ>> GetByUser(User user);
     Task<bool> InsertFAQ(FAQ faq);
+    Task<bool> UpdateFAQ(FAQ faq);
+    Task<bool> DeleteFAQ(FAQ faq);
     Task<bool> UpdateQuestion(FAQ faq);
 }
 
@@ -50,9 +52,22 @@ public class FAQService : IFAQService
             VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder)";
         return await _db.SaveData<FAQ>(sql, faq);
     }
-    public async Task<bool> UpdateQuestion(FAQ faq)
+    public async Task<bool> UpdateFAQ(FAQ faq)
     {
-        string sql = @"UPDATE FAQ SET Question=@Question WHERE Id=@Id AND (AnswerUserId=0 OR AnswerUserId IS NULL)";
+        string sql = @"UPDATE FAQ SET Question=@Question, Answer=@Answer, QuestionUserId=@QuestionUserId, AnswerUserId=@AnswerUserId, IsPublished=@IsPublished, DisplayOrder=@DisplayOrder
+                       WHERE Id=@Id";
         return await _db.SaveData<FAQ>(sql, faq);
     }
+    public async Task<bool> DeleteFAQ(FAQ faq)
+    {
+        string sql = "DELETE FROM FAQ WHERE Id=@Id";
+        int count = await _db.DeleteData<User, object>(sql, new { faq.Id });
+        return count > 0;
+    }
+    public async Task<bool> UpdateQuestion(FAQ faq)
+    {
+        string sql = @"UPDATE FAQ SET Question=@Question, QuestionUserId=@QuestionUserId WHERE Id=@Id AND (AnswerUserId=0 OR AnswerUserId IS NULL)";
+        return await _db.SaveData<FAQ>(sql, faq);
+    }
+    
 }

@@ -42,7 +42,7 @@ builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddSyncfusionBlazor();
 //Register Syncfusion license
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzI2MTE0MUAzMjM1MmUzMDJlMzBLbk9lRUwyYjhIVUxBUUdNOFp6eDU4ckZ0Vk53Vkpyc1pmRThZbkZHSEhjPQ==");
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXdecXRTQ2JcVEd2Wkc=");
 
 var app = builder.Build();
 

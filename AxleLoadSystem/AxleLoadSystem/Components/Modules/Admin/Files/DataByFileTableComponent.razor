@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.QuickGrid
+@using Syncfusion.Blazor.Grids
+@using BOL
 
 <div class="grid">
     @if (File.FileType == 1)
@@ -43,7 +45,7 @@
     }
     else
     {
-        <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
+@*         <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
             <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PaymentTransactionId)" Sortable="true" />
@@ -56,7 +58,23 @@
             <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
             <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Sortable="true" />
-        </QuickGrid>
+        </QuickGrid> *@
+
+        <SfGrid ID="Grid" @ref="FinePaymentGrid" DataSource="@FineRepaymentData" AllowSorting="true" Toolbar="@(new List<string>() { "ExcelExport" })" AllowExcelExport="true" AllowPaging="true" >
+            <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="@FinePayment"></GridEvents>
+                <GridColumn Field="@nameof(FinePayment.LaneNumber)" HeaderText="Lane Number"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.TransactionNumber)" HeaderText="Transaction Number"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.PaymentTransactionId)" HeaderText="Payment Transaction Id"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.DateTime)" HeaderText="Date Time" Format="yyyy-MM-dd" Width="100"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.IsPaid)" HeaderText="IsPaid"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.FineAmount)" HeaderText="Fine Amount"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.PaymentMethod)" HeaderText="Payment Method" ></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.ReceiptNumber)" HeaderText="Receipt Number" ></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.BillNumber)" HeaderText="Bill Number"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.WarehouseCharge)" HeaderText="Warehouse Charge"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.DriversLicenseNumber)" HeaderText="Drivers License Number" Width="150"></GridColumn>
+                <GridColumn Field="@nameof(FinePayment.TransportAgencyInformation)" HeaderText="Transport Agency Information" Width="150"></GridColumn>
+        </SfGrid>
     }
 </div>
 
@@ -69,4 +87,19 @@
     public IQueryable<LoadData> AxleLoadData { get; set; }
     [Parameter]
     public IQueryable<FinePayment> FineRepaymentData { get; set; }
+
+    private SfGrid<FinePayment> FinePaymentGrid;
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Id == "Grid_excelexport") //Id is combination of Grid's ID and itemname
+        {
+            ExcelExportProperties ExportProperties = new ExcelExportProperties();
+            ExportProperties.IncludeHiddenColumn = true;
+            await this.FinePaymentGrid.ExcelExport(ExportProperties);
+            // PdfExportProperties pdfExportProperties = new PdfExportProperties();
+            // pdfExportProperties.AllowHorizontalOverflow = true;
+            // await this.FinePaymentGrid.ExportToPdfAsync(pdfExportProperties);
+        }
+    }
 }
