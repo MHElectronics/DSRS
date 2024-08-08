@@ -53,7 +53,7 @@
                         <div class="card-header">
                             <h4 class="card-title w-100">
                                 @((MarkupString)faq.Question)
-                                @if (string.IsNullOrEmpty(faq.Answer))
+                                @if (string.IsNullOrEmpty(faq.Answer) && faq.QuestionUserId == currentUser.Id)
                                 {
                                     <i class="fa fa-trash float-right" title="Delete FAQ Information" @onclick="@(() => Delete(faq))"></i>
                                     <i class="fa fa-edit float-right" title="Edit FAQ Information" style="margin-right: 10px;" @onclick="@(() => Edit(faq))"></i>
@@ -77,7 +77,7 @@
                             @if (!string.IsNullOrEmpty(faq.Answer) && UserList is not null)
                             {
                                 string userName = UserList.Where(u => u.Id == faq.AnswerUserId).FirstOrDefault()?.Name ?? "";
-                                <span class="float-right">Answered by:</span>
+                                <span class="float-right">Answered by: @userName</span>
                             }
                         </div>
                     </div>
