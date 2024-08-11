@@ -76,15 +76,16 @@
         }
         else
         {
-            @foreach (FAQ faq in faqs.OrderBy(f => f.AnswerUserId > 0).OrderByDescending(f => f.Id))
+            @foreach (FAQ faq in faqs.OrderBy(f => Convert.ToInt16(f.IsPublished)).ThenBy(f => f.DisplayOrder))
             {
-                <div class="card @(!string.IsNullOrEmpty(faq.Answer) ? "card-primary" : "card-danger")  card-outline">
+                <div class="card @((string.IsNullOrEmpty(faq.Answer) || !faq.IsPublished) ? "card-danger" : "card-primary")  card-outline">
                     <a class="d-block w-100 collapsed" data-toggle="collapse" href="@("#collapse" + @faq.Id)" aria-expanded="true">
                         <div class="card-header">
                             <h4 class="card-title w-100">
                                 @((MarkupString)faq.Question)
                                 <i class="fa fa-trash float-right" title="Delete FAQ Information" @onclick="@(() => Delete(faq))"></i>
                                 <i class="fa fa-edit float-right" title="Edit FAQ Information" style="margin-right: 10px;" @onclick="@(() => Edit(faq))"></i>
+                                <span class="badge badge-primary float-right" style="margin-right: 10px;" title="Display Order">@faq.DisplayOrder </span>
                             </h4>
                         </div>
                     </a>
@@ -100,7 +101,16 @@
                             }
                         </div>
                         <div class="card-footer">
-                            <span>Submitted on: @faq.EntryTime.ToString("dd MMM yy")</span>
+                            <span>Submitted on: @faq.EntryTime.ToString("dd MMM yy"), </span>
+                            @if (faq.IsPublished)
+                            {
+                                <span>Published</span>
+                            }
+                            else
+                            {
+                                <span class="info info-danger">Not Published</span>
+                            }
+
                             @if (!string.IsNullOrEmpty(faq.Answer) && UserList is not null)
                             {
                                 string userName = UserList.Where(u => u.Id == faq.AnswerUserId).FirstOrDefault()?.Name ?? "";
