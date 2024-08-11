@@ -45,7 +45,7 @@
     }
     else
     {
-@*         <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
+        <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
             <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.PaymentTransactionId)" Sortable="true" />
@@ -58,10 +58,9 @@
             <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
             <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
             <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Sortable="true" />
-        </QuickGrid> *@
+        </QuickGrid>
 
-        <SfGrid ID="Grid" @ref="FinePaymentGrid" DataSource="@FineRepaymentData" AllowSorting="true" Toolbar="@(new List<string>() { "ExcelExport" })" AllowExcelExport="true" AllowPaging="true" >
-            <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="@FinePayment"></GridEvents>
+        @* <SfGrid ID="Grid" @ref="FinePaymentGrid" DataSource="@FineRepaymentData" AllowSorting="true" Toolbar="@(new List<string>() { "ExcelExport" })" AllowExcelExport="true" AllowPaging="true" >
                 <GridColumn Field="@nameof(FinePayment.LaneNumber)" HeaderText="Lane Number"></GridColumn>
                 <GridColumn Field="@nameof(FinePayment.TransactionNumber)" HeaderText="Transaction Number"></GridColumn>
                 <GridColumn Field="@nameof(FinePayment.PaymentTransactionId)" HeaderText="Payment Transaction Id"></GridColumn>
@@ -74,7 +73,7 @@
                 <GridColumn Field="@nameof(FinePayment.WarehouseCharge)" HeaderText="Warehouse Charge"></GridColumn>
                 <GridColumn Field="@nameof(FinePayment.DriversLicenseNumber)" HeaderText="Drivers License Number" Width="150"></GridColumn>
                 <GridColumn Field="@nameof(FinePayment.TransportAgencyInformation)" HeaderText="Transport Agency Information" Width="150"></GridColumn>
-        </SfGrid>
+        </SfGrid> *@
     }
 </div>
 

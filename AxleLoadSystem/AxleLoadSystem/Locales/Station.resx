@@ -168,4 +168,7 @@
   <data name="MapY" xml:space="preserve">
     <value>Map Y Axis</value>
   </data>
+  <data name="ListofStation" xml:space="preserve">
+    <value>List of Station</value>
+  </data>
 </root>

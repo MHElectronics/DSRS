@@ -1,7 +1,8 @@
 ﻿@page "/stationaccess"
 @inject IUserService userService
 @inject IStationService stationService
-
+@inject IStringLocalizer<Locales.Station> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
 
 <h3>Station Access</h3>
 <div class="box">
@@ -9,7 +10,7 @@
         <div class="row">
             @if (users is not null)
             {
-                <div class="col-md-4">
+                <div class="col-md-12">
                     <label>List of Users</label>
                     <select class="form-control" @bind="@userId">
                         <option value="0">-Select User-</option>
@@ -23,27 +24,27 @@
             }
             @if (stations is not null)
             {
-                <div class="col-md-4">
-                    <label>List of Stations</label>
-                    <select class="form-control" @bind="@stationId">
-                        <option value="0">-Select Station-</option>
+                <div class="col-md-12">
+                    <label for="stations" class="form-label">@localizer["ListofStation"]</label>
+                    <div class="form-control">
                         @foreach (Station station in stations)
                         {
-                            <option value="@station.StationId">@station.StationName</option>
+                            string value = station.StationId.ToString() ?? "";
+                            bool check = selectedStations.Contains(value);
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
+                                <label for="checkId@(station.StationId)">@station.StationName</label>
+                            </div>
                         }
-                    </select>
-                </div>
-            }
-            <div class="col-md-4">
-                <label>Station Access</label>
-                <div class="form-group">
-                    <div class="icheck-primary d-inline">
-                        <input type="checkbox" @bind="@approve" id="chkIsApproved" />
-                        <label for="chkIsApproved">Approve?</label>
                     </div>
                 </div>
-
+            }
+            
+            <div class="col-md-12">
+                <div class="form-group btn btn-group">
                     <button type="submit" class="btn btn-primary">Save</button>
+                    <NavLink class="btn btn-primary" href="/">@localizerResource["Button.Back"]</NavLink>
+                </div>
             </div>
         </div>
     </div>
@@ -57,10 +58,29 @@
     private int userId { get; set; } = 0;
     private int stationId { get; set; }
     private bool approve { get; set; }
+    private List<string> selectedStations = new();
+
     protected override async Task OnInitializedAsync()
     {
         users = await userService.GetUsers();
         stations = await stationService.Get();
     }
 
+    public void CheckboxClicked(string aSelectedId, object aChecked)
+    {
+        if ((bool)aChecked)
+        {
+            if (!selectedStations.Contains(aSelectedId))
+            {
+                selectedStations.Add(aSelectedId);
+            }
+        }
+        else
+        {
+            if (selectedStations.Contains(aSelectedId))
+            {
+                selectedStations.Remove(aSelectedId);
+            }
+        }
+    }
 }

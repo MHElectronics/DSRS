@@ -168,4 +168,7 @@
   <data name="MapY" xml:space="preserve">
     <value>মানচিত্র Y অক্ষ</value>
   </data>
+  <data name="ListofStation" xml:space="preserve">
+    <value>স্টেশনের তালিকা</value>
+  </data>
 </root>
