@@ -22,7 +22,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Question</label>
-                            <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here..." MaxLength="499">
+                            <SfRichTextEditor @bind-Value="@newQuestion.Question" @ref="@refQuestion" placeholder="Type your question here..." MaxLength="499">
                                 <RichTextEditorToolbarSettings Items="@Tools" />
                             </SfRichTextEditor>
                             <ValidationMessage For="() => newQuestion.Question" />
@@ -31,7 +31,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Answer</label>
-                            <SfRichTextEditor @bind-Value="@newQuestion.Answer" placeholder="Type your answer here...">
+                            <SfRichTextEditor @bind-Value="@newQuestion.Answer" @ref="@refAnswer" placeholder="Type your answer here...">
                                 <RichTextEditorToolbarSettings Items="@Tools" />
                             </SfRichTextEditor>
                             <ValidationMessage For="() => newQuestion.Answer" />
@@ -134,11 +134,16 @@
     private FAQ newQuestion { get; set; } = new();
     IEnumerable<FAQ> faqList { get; set; } 
 
+    private SfRichTextEditor refQuestion { get; set; }
+    private SfRichTextEditor refAnswer { get; set; }
+
     protected ConfirmDialog submitConfirmationFAQRef { get; set; }
     protected ConfirmDialog deleteConfirmationFAQRef { get; set; }
     private bool submitClicked { get; set; } = false;
     private bool deleteClicked { get; set; } = false;
     private string validationSummary { get; set; }
+    private double lengthQuestion { get; set; }
+    private double lengthAnswer { get; set; }
 
     private List<ToolbarItemModel> Tools = new List<ToolbarItemModel>()
     {
@@ -182,23 +187,26 @@
         }
         else
         {
-             faqList = await faqService.GetByUser(currentUser);
+            faqList = await faqService.GetByUser(currentUser);
         }
         faqs = faqList.ToList();
     }
     private async Task OnValidSubmit(EditContext editContext)
     {
         newQuestion.AnswerUserId = currentUser.Id;
-        if (string.IsNullOrEmpty(newQuestion.Question) ||  newQuestion.Question.Length < 10 )
+        lengthQuestion = await this.refQuestion.GetCharCountAsync();
+        lengthAnswer = await this.refAnswer.GetCharCountAsync();
+        if (string.IsNullOrEmpty(newQuestion.Question) ||  lengthQuestion < 10 )
         {
             validationSummary = "Question is mandatory with minimum 10 characters.";
             return;
         }
-        if (string.IsNullOrEmpty(newQuestion.Answer) || newQuestion.Answer.Length < 10)
+        if (string.IsNullOrEmpty(newQuestion.Answer) || lengthAnswer < 10)
         {
             validationSummary = "Answer is mandatory with minimum 10 characters.";
             return;
         }
+        validationSummary = "";
         submitClicked = true;
         await submitConfirmationFAQRef.Show();
     }

@@ -19,7 +19,7 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="col-12">
-                    <SfRichTextEditor @bind-Value="@newQuestion.Question" placeholder="Type your question here..." MaxLength="499">
+                    <SfRichTextEditor @bind-Value="@newQuestion.Question" @ref="@refQuestion" placeholder="Type your question here..." MaxLength="499">
                         <RichTextEditorToolbarSettings Items="@Tools" />
                     </SfRichTextEditor>
                     <ValidationMessage For="() => newQuestion.Question" />
@@ -97,6 +97,9 @@
     private EditContext editContext = default!;
     private FAQ newQuestion { get; set; } = new();
 
+    private SfRichTextEditor refQuestion { get; set; }
+    private double lengthQuestion { get; set; }
+
     protected ConfirmDialog submitConfirmationQuestionRef { get; set; }
     protected ConfirmDialog deleteConfirmationQuestionRef { get; set; }
     private bool submitClicked { get; set; } = false;
@@ -144,12 +147,14 @@
     private async Task OnValidSubmit(EditContext editContext)
     {
         newQuestion.QuestionUserId = currentUser.Id;
-        if (string.IsNullOrEmpty(newQuestion.Question) || newQuestion.Question.Length < 10)
+        lengthQuestion = await this.refQuestion.GetCharCountAsync();
+        if (string.IsNullOrEmpty(newQuestion.Question) || lengthQuestion < 10)
         {
             validationSummary = "Question is mandatory with minimum 10 characters.";
             return;
         }
         submitClicked = true;
+        validationSummary ="";
         await submitConfirmationQuestionRef.Show();
 
     }
