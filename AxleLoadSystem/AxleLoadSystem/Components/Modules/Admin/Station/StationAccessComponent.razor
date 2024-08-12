@@ -1,71 +1,230 @@
 ﻿@page "/stationaccess"
+@inject AuthenticationStateProvider authStateProvider
 @inject IUserService userService
 @inject IStationService stationService
+@inject IStationAccessService stationAccessService
+@inject IAppState appState
 @inject IStringLocalizer<Locales.Station> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
 <h3>Station Access</h3>
-<div class="box">
-    <div class="box-body">
-        <div class="row">
-            @if (users is not null)
-            {
-                <div class="col-md-12">
-                    <label>List of Users</label>
-                    <select class="form-control" @bind="@userId">
-                        <option value="0">-Select User-</option>
-                        @foreach (User user in users)
-                        {
-                            <option value="@user.Id">@user.Name</option>
-                        }
-                    </select>
-                </div>
 
-            }
-            @if (stations is not null)
-            {
-                <div class="col-md-12">
-                    <label for="stations" class="form-label">@localizer["ListofStation"]</label>
-                    <div class="form-control">
-                        @foreach (Station station in stations)
-                        {
-                            string value = station.StationId.ToString() ?? "";
-                            bool check = selectedStations.Contains(value);
-                            <div class="icheck-primary d-inline">
-                                <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
-                                <label for="checkId@(station.StationId)">@station.StationName</label>
-                            </div>
-                        }
+<EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    @if (users is not null)
+    {
+        <div class="col-md-12">
+            <label>List of Users</label>
+            <select class="form-control" @bind="@userId">
+                <option value="0">-Select User-</option>
+                @foreach (User user in users)
+                {
+                    <option value="@user.Id">@user.Name</option>
+                }
+            </select>
+        </div>
+
+    }
+    @if (stations is not null)
+    {
+        <div class="col-md-12">
+            <label for="stations" class="form-label">@localizer["ListofStation"]</label>
+            <div class="form-control">
+                @foreach (Station station in stations)
+                {
+                    string value = station.StationId.ToString() ?? "";
+                    bool check = selectedStations.Contains(value);
+                    <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
+                        <label for="checkId@(station.StationId)">@station.StationName</label>
                     </div>
-                </div>
-            }
-            
-            <div class="col-md-12">
-                <div class="form-group btn btn-group">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <NavLink class="btn btn-primary" href="/">@localizerResource["Button.Back"]</NavLink>
-                </div>
+                }
             </div>
         </div>
-    </div>
-</div>
+    }
 
+    <div class="col-md-12">
+        <div class="form-group btn btn-group">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <NavLink class="btn btn-primary" href="/">@localizerResource["Button.Back"]</NavLink>
+            </div>
+        </div>
+</EditForm>
+
+@if (stationAccessList is null)
+{
+    <Loader/>
+}
+else if (stationAccessList.Count() == 0)
+{
+    <p>No Station Access Found</p>
+}
+else
+{
+ <table class="table table-hover">
+     <thead>
+         <tr>
+             <th>User Name</th>
+             <th>Station List</th>
+             <th>Entry Time</th>
+             <th>Entry By</th>
+             <th></th>
+             <th></th>
+         </tr>
+     </thead>
+     <tbody>
+         @foreach(StationAccess stationAccess in stationAccessList)
+        {
+            string userName = users.Where(u => u.Id == stationAccess.UserId)?.FirstOrDefault()?.Name ?? "";
+                string entryUserName = users.Where(u => u.Id == stationAccess.EntryBy)?.FirstOrDefault()?.Name ?? "";
+            <tr> 
+                <td>@userName</td>
+                <td>@stationAccess.StationIds.Split(",").Count()</td>
+                <td>@stationAccess.EntryTime</td>
+                <td>@entryUserName</td>
+                <td><i class="fa fa-edit" title="Edit Station Access Information" @onclick="@(() => Edit(stationAccess))"></i></td>
+                <td><i class="fa fa-trash" title="Delete Station Access Information" @onclick="@(() => Delete(stationAccess))"></i></td>
+                    
+                    
+            </tr>
+        }   
+     </tbody>
+ </table>   
+}
+
+
+<ConfirmDialog @ref="submitConfirmationStationAccessRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedStationAccess" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Station Access?" />
+<ConfirmDialog @ref="deleteConfirmationStationAccessRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStationAccess" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station Access?" />
 
 @code {
     private IEnumerable<User?> users { get; set; }
     private IEnumerable<Station?> stations { get; set; }
+    private StationAccess stationAccess { get; set; } = new();
+    private IEnumerable<StationAccess> stationAccessList { get; set; }
+    private EditContext editContext = default!;
+    private User? currentUser { get; set; }
+    protected ConfirmDialog submitConfirmationStationAccessRef { get; set; }
+    protected ConfirmDialog deleteConfirmationStationAccessRef { get; set; }
 
+    private bool submitClicked { get; set; } = false;
+    private bool deleteClicked { get; set; } = false;
     private int userId { get; set; } = 0;
-    private int stationId { get; set; }
     private bool approve { get; set; }
     private List<string> selectedStations = new();
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(stationAccess);
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+
         users = await userService.GetUsers();
         stations = await stationService.Get();
-    }
 
+        await this.LoadStationAccess();
+    }
+    protected override void OnParametersSet()
+    {
+        if (stationAccess is not null && !string.IsNullOrEmpty(stationAccess.StationIds))
+        {
+            selectedStations = stationAccess.StationIds.Split(',').ToList();
+        }
+    }
+    protected async Task LoadStationAccess()
+    {
+        if (currentUser.HasRole(UserRole.Admin.ToString()))
+        {
+            stationAccessList = await stationAccessService.GetStationAccesses();
+        }
+
+    }
+    private async Task OnValidSubmit(EditContext editContext)
+    {
+        submitClicked = true;
+        await submitConfirmationStationAccessRef.Show();
+    }
+    private async Task SubmitConfirmedStationAccess()
+    {
+        stationAccess.UserId = userId;
+        stationAccess.EntryBy = currentUser.Id;
+        string stationId = "";
+        foreach (string s in selectedStations)
+        {
+            stationId += s + ",";
+        }
+
+        stationId = stationId.TrimEnd(',');
+        stationAccess.StationIds = stationId;
+
+        if (stationAccess.Id > 0)
+        {
+
+            if (await stationAccessService.UpdateStationAccess(stationAccess))
+            {
+                stationAccess = new();
+                await this.LoadStationAccess();
+
+                appState.SetNotification(this, "Station Access updated", Notification.NotificationType.Success);
+            }
+            else
+            {
+                appState.SetNotification(this, "Station Access update failed", Notification.NotificationType.Failure);
+            }
+        }
+        else
+        {
+            if (await stationAccessService.InsertStationAccess(stationAccess))
+            {
+                stationAccess = new();
+                await this.LoadStationAccess();
+
+
+                appState.SetNotification(this, "Station Access submitted", Notification.NotificationType.Success);
+            }
+            else
+            {
+                appState.SetNotification(this, "Station Access submission failed", Notification.NotificationType.Failure);
+            }
+        }
+    }
+    private void SubmitDeclined()
+    {
+        submitClicked = false;
+    }
+    private void Edit(StationAccess access)
+    {
+        stationAccess.Id = access.Id;
+        userId = access.UserId;
+        selectedStations = access.StationIds.Split(",").ToList();
+    }
+    private async Task Delete(StationAccess access)
+    {
+        stationAccess = access;
+        deleteClicked = true;
+        await submitConfirmationStationAccessRef.Show();
+
+    }
+    private async Task DeleteConfirmedStationAccess()
+    {
+        if (await stationAccessService.Delete(stationAccess))
+        {
+            await this.LoadStationAccess();
+            appState.SetNotification(this, "Station Access deleted", Notification.NotificationType.Success);
+        }
+        else
+        {
+            appState.SetNotification(this, "Station Access delete failed", Notification.NotificationType.Failure);
+        }
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
+    }
+    private void OnInvalidSubmit()
+    {
+        appState.SetNotification(this, "Please enter valid values", Notification.NotificationType.Failure);
+    }
     public void CheckboxClicked(string aSelectedId, object aChecked)
     {
         if ((bool)aChecked)
