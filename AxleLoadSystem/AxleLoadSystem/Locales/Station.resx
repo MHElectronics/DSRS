@@ -171,4 +171,7 @@
   <data name="ListofStation" xml:space="preserve">
     <value>List of Station</value>
   </data>
+  <data name="WIMScaleManagement" xml:space="preserve">
+    <value>WIM Scale Management</value>
+  </data>
 </root>

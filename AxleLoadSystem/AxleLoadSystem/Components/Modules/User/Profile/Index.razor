@@ -12,9 +12,11 @@
     <div class="col-4">
         <div class="card card-primary card-outline">
             <div class="card-body box-profile">
-                <div class="text-center">
-                    <img class="profile-user-img img-fluid img-circle" src="images/users/@(hasImage ? currentUser.Id.ToString() : "default").jpg" alt="User profile picture">
-                </div>
+                    <div class="text-center">
+                        <img class="profile-user-img img-fluid img-circle" src="images/users/@(hasImage ? currentUser.Id.ToString() : "default").jpg" alt="User profile picture">
+                        <InputFile id="imageUpload" title="Edit profile picture" accept=".png, .jpg, .jpeg" class="d-none" OnChange="UploadImage" />
+                        <label for="imageUpload" class="edit-icon fas fa-edit position-absolute"></label>
+                    </div>
 
                 @* <h3 class="profile-username text-center">@currentUser.Name</h3> *@
                 @* <p class="text-muted text-center">@currentUser.Role</p> *@
@@ -51,22 +53,100 @@
         <ChangePassword User="@currentUser"/>
     </div>
 </div>
+<style>
+    .edit-icon {
+        font-size: 12px; /* Adjust size as needed */
+        color: #fff; /* Change color as needed */
+        cursor: pointer;
+        right: auto;
+        bottom: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+        border-radius: 50%;
+    }
 
+        .edit-icon:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+</style>
 @code {
     private User? currentUser { get; set; }
     private bool hasImage { get; set; }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            currentUser = await customStateProvider.GetAuthorizedUser();
+    private long maxFileSizeMB = 3;
+    private int maxAllowedFiles = 1;
 
-            if (currentUser is not null)
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+    //         currentUser = await customStateProvider.GetAuthorizedUser();
+
+    //         if (currentUser is not null)
+    //         {
+    //             var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
+    //             hasImage = File.Exists(path);
+    //             await this.InvokeAsync(StateHasChanged);
+    //         }
+    //     }
+    // }
+    protected override async void OnParametersSet()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+
+        if (currentUser is not null)
+        {
+            var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
+            hasImage = File.Exists(path);
+            await this.InvokeAsync(StateHasChanged);
+        }
+    }
+    private async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        IReadOnlyList<IBrowserFile> selectedFiles = e.GetMultipleFiles(e.FileCount);
+        Notification notification = new();
+
+        if (selectedFiles is not null)
+        {
+            if (selectedFiles.Count > maxAllowedFiles)
             {
-                var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
-                hasImage = File.Exists(path);
-                await this.InvokeAsync(StateHasChanged);
+                notification.Type = Notification.NotificationType.Warning;
+                notification.Message = "Maximum number of files at a time is " + maxAllowedFiles;
+                return;
+            }
+            else
+            {
+                foreach (var file in selectedFiles)
+                {
+                    if (file.Size > (1024 * 1024 * maxFileSizeMB))
+                    {
+                        notification.Type = Notification.NotificationType.Warning;
+                        notification.Message = file.Name + " is too large (max limit 3 MB)";
+                        return;
+                    }
+                    else if (file.Name.Length > 300)
+                    {
+                        notification.Type = Notification.NotificationType.Warning;
+                        notification.Message = "File name too long. Allowed file name length is 300. [" + file.Name + "]";
+                        return;
+                    }
+                    else
+                    {
+                        var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
+
+                        using var readStream = file.OpenReadStream(file.Size);
+                        using var memoryStream = new MemoryStream();
+
+                        await readStream.CopyToAsync(memoryStream);
+
+                        var byteFullFile = memoryStream.ToArray();
+
+                        await System.IO.File.WriteAllBytesAsync(path, byteFullFile);
+
+                        StateHasChanged();
+                    }
+                }
             }
         }
     }

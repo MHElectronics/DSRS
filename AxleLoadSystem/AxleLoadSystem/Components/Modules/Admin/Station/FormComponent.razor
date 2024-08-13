@@ -37,22 +37,6 @@ else
                             }
                         </div>
                     </div>
-                    
-                    <div class="col-md-6 col-sm-12">
-                        <div class="form-group">
-                            @if (Mode == FormMode.Details)
-                            {
-                                <label for="address" class="form-label">@localizer["Address"]</label>
-                                <label class="form-control" style="max-width:auto; height:fit-content">@station.Address</label>
-                            }
-                            else
-                            {
-                                <label for="address" class="form-label">@localizer["Address"]</label>
-                                <input type="text" @bind-value="station.Address" required class="form-control" placeholder="@localizer["Address"]" id="address" min="5" maxlength="300" />
-                                <ValidationMessage For="() => station.Address" />
-                            }
-                        </div>
-                    </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
@@ -70,6 +54,21 @@ else
                                     </span>
                                 </div>
                                 <ValidationMessage For="() => station.AuthKey" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="address" class="form-label">@localizer["Address"]</label>
+                                <label class="form-control" style="max-width:auto; height:fit-content">@station.Address</label>
+                            }
+                            else
+                            {
+                                <label for="address" class="form-label">@localizer["Address"]</label>
+                                <input type="text" @bind-value="station.Address" required class="form-control" placeholder="@localizer["Address"]" id="address" min="5" maxlength="300" />
+                                <ValidationMessage For="() => station.Address" />
                             }
                         </div>
                     </div>

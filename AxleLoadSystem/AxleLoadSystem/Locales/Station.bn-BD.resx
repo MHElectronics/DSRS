@@ -159,7 +159,7 @@
   <data name="WimHighSpeed" xml:space="preserve">
     <value>উচ্চ গতি?</value>
   </data>
-  <data name="WIMScale" xml:space="preserve">
+  <data name="WIMScaleManagement" xml:space="preserve">
     <value>WIM স্কেল ম্যানেজমেন্ট</value>
   </data>
   <data name="MapX" xml:space="preserve">
