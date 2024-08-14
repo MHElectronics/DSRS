@@ -15,7 +15,7 @@
                     <div class="text-center">
                         <img class="profile-user-img img-fluid img-circle" src="images/users/@(hasImage ? currentUser.Id.ToString() : "default").jpg" alt="User profile picture">
                         <InputFile id="imageUpload" title="Edit profile picture" accept=".png, .jpg, .jpeg" class="d-none" OnChange="UploadImage" />
-                        <label for="imageUpload" class="edit-icon fas fa-edit position-absolute"></label>
+                        <label for="imageUpload" class="edit-icon fas fa-edit position-absolute" title="Click to change picture"></label>
                     </div>
 
                 @* <h3 class="profile-username text-center">@currentUser.Name</h3> *@
@@ -88,6 +88,7 @@
 
     private async Task LoadImage()
     {
+        hasImage = false;
         if (currentUser is not null)
         {
             var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
@@ -140,7 +141,8 @@
                 }
             }
         }
+
         await LoadImage();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }
