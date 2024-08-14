@@ -75,26 +75,19 @@
     private long maxFileSizeMB = 3;
     private int maxAllowedFiles = 1;
 
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    //     if (firstRender)
-    //     {
-    //         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-    //         currentUser = await customStateProvider.GetAuthorizedUser();
-
-    //         if (currentUser is not null)
-    //         {
-    //             var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
-    //             hasImage = File.Exists(path);
-    //             await this.InvokeAsync(StateHasChanged);
-    //         }
-    //     }
-    // }
-    protected override async void OnParametersSet()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        currentUser = await customStateProvider.GetAuthorizedUser();
+        if (firstRender)
+        {
+            var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            currentUser = await customStateProvider.GetAuthorizedUser();
 
+            await LoadImage();
+        }
+    }
+
+    private async Task LoadImage()
+    {
         if (currentUser is not null)
         {
             var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
@@ -142,12 +135,12 @@
 
                         var byteFullFile = memoryStream.ToArray();
 
-                        await System.IO.File.WriteAllBytesAsync(path, byteFullFile);
-
-                        StateHasChanged();
+                        await System.IO.File.WriteAllBytesAsync(path, byteFullFile);    
                     }
                 }
             }
         }
+        await LoadImage();
+        StateHasChanged();
     }
 }
