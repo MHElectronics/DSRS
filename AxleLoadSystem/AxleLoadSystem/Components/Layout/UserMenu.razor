@@ -1,6 +1,7 @@
 ﻿@inject AuthenticationStateProvider authStateProvider
 @inject IWebHostEnvironment environment
 @inject IAppState appState
+@implements IDisposable
 @rendermode InteractiveServer
 
 @if (currentUser is not null)
@@ -28,6 +29,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         appState.OnProfileImageChange += ProfileImageChanged;
+
         if (firstRender)
         {
             var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
@@ -44,5 +46,9 @@
     {
         imagePath = "images/users/" + currentUser.Id + ".jpg" + "?" + DateTime.Now.Ticks;
         StateHasChanged();
+    }
+    void IDisposable.Dispose()
+    {
+        appState.OnProfileImageChange -= ProfileImageChanged;
     }
 }
