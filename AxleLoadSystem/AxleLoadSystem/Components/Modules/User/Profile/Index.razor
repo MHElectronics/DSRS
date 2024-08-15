@@ -1,6 +1,7 @@
 ﻿@page "/profile"
 @inject AuthenticationStateProvider authStateProvider
 @inject IWebHostEnvironment environment
+@inject IAppState appState
 @rendermode InteractiveServer
 
 @if(currentUser is null)
@@ -13,7 +14,7 @@
         <div class="card card-primary card-outline">
             <div class="card-body box-profile">
                     <div class="text-center">
-                        <img class="profile-user-img img-fluid img-circle" src="images/users/@(hasImage ? currentUser.Id.ToString() : "default").jpg" alt="User profile picture">
+                        <img class="profile-user-img img-fluid img-circle" src="@imagePath" alt="User profile picture">
                         <InputFile id="imageUpload" title="Edit profile picture" accept=".png, .jpg, .jpeg" class="d-none" OnChange="UploadImage" />
                         <label for="imageUpload" class="edit-icon fas fa-edit position-absolute" title="Click to change picture"></label>
                     </div>
@@ -71,7 +72,7 @@
 </style>
 @code {
     private User? currentUser { get; set; }
-    private bool hasImage { get; set; }
+    private string imagePath { get; set; } = "images/users/default.jpg";
     private long maxFileSizeMB = 3;
     private int maxAllowedFiles = 1;
 
@@ -88,11 +89,9 @@
 
     private async Task LoadImage()
     {
-        hasImage = false;
         if (currentUser is not null)
         {
-            var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
-            hasImage = File.Exists(path);
+            imagePath = "images/users/" + currentUser.Id + ".jpg" + "?" + DateTime.Now.Ticks;
             await this.InvokeAsync(StateHasChanged);
         }
     }
@@ -136,7 +135,10 @@
 
                         var byteFullFile = memoryStream.ToArray();
 
-                        await System.IO.File.WriteAllBytesAsync(path, byteFullFile);    
+                        await System.IO.File.WriteAllBytesAsync(path, byteFullFile);
+
+                        imagePath = "images/users/" + currentUser.Id + ".jpg" + "?" + DateTime.Now;
+                        appState.NotifyProfileImageChange();
                     }
                 }
             }

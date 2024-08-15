@@ -7,15 +7,18 @@ namespace AxleLoadSystem.Store;
 public interface IAppState
 {
     event Action OnChange;
+    event Action OnProfileImageChange;
     void SetNotification(ComponentBase source, Notification notification);
     void SetNotification(ComponentBase source, string message, NotificationType type);
+    void NotifyProfileImageChange();
     Notification GetNotification();
 }
 public class AppState : IAppState
 {
     public event Action OnChange;
+    public event Action OnProfileImageChange;
     private Notification _notification { get; set; }
-
+    
     public void SetNotification(ComponentBase source, Notification notification)
     {
         _notification = notification;
@@ -23,11 +26,16 @@ public class AppState : IAppState
     }
     public void SetNotification(ComponentBase source, string message, NotificationType type)
     {
-        _notification = new(message , type);
+        _notification = new(message, type);
         OnChange?.Invoke();
     }
     public Notification GetNotification()
     {
         return _notification;
+    }
+
+    public void NotifyProfileImageChange()
+    {
+        OnProfileImageChange?.Invoke();
     }
 }

@@ -1,12 +1,13 @@
 ﻿@inject AuthenticationStateProvider authStateProvider
 @inject IWebHostEnvironment environment
+@inject IAppState appState
 @rendermode InteractiveServer
 
 @if (currentUser is not null)
 {
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-            <img src="images/users/@(hasImage ? currentUser.Id.ToString() : "default").jpg" class="img-circle elevation-2" alt="User Image">
+            <img src="@imagePath" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
             <a href="profile" class="d-block">@currentUser.Name</a>
@@ -22,9 +23,11 @@
 
 @code {
     private User? currentUser { get; set; }
-    private bool hasImage { get; set; }
+    private string imagePath { get; set; } = "images/users/default.jpg";
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        appState.OnProfileImageChange += ProfileImageChanged;
         if (firstRender)
         {
             var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
@@ -32,22 +35,14 @@
 
             if(currentUser is not null)
             {
-                var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
-                hasImage = File.Exists(path);
+                imagePath = "images/users/" + currentUser.Id + ".jpg" + "?" + DateTime.Now.Ticks;
                 await this.InvokeAsync(StateHasChanged);
             }
         }
     }
-    // protected override async Task OnParametersSetAsync()
-    // {
-    //     var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-    //     currentUser = await customStateProvider.GetAuthorizedUser();
-
-    //     if (currentUser is not null)
-    //     {
-    //         var path = Path.Combine(environment.WebRootPath, "images/users/", currentUser.Id + ".jpg");
-    //         hasImage = File.Exists(path);
-    //         await this.InvokeAsync(StateHasChanged);
-    //     }
-    // }
+    private void ProfileImageChanged()
+    {
+        imagePath = "images/users/" + currentUser.Id + ".jpg" + "?" + DateTime.Now.Ticks;
+        StateHasChanged();
+    }
 }
