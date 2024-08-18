@@ -164,8 +164,10 @@ else
         {
             StationAccess access = new StationAccess();
             access.UserId = userId;
+            access.EntryTime = DateTime.Now;
             access.EntryBy = currentUser.Id;
             access.StationId = stationId;
+            accessList.Add(access);
             // if (stationAccess.Id > 0)
             // {
             //     if (await stationAccessService.UpdateStationAccess(stationAccess))

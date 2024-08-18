@@ -45,8 +45,8 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
     }
     public async Task<bool> InsertStationAccess(List<StationAccess> stationAccessList)
     {
-        string sql = @"INSERT INTO StationAccess(UserId,StationId,EntryBy)
-            VALUES (@UserId,@StationId,@EntryBy)";
+        string sql = @"INSERT INTO StationAccess(UserId,StationId,EntryTime,EntryBy)
+            VALUES (@UserId,@StationId,@EntryTime,@EntryBy)";
 
         return await _db.SaveData<List<StationAccess>>(sql, stationAccessList);
 
