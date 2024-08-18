@@ -26,7 +26,7 @@
         </div>
 
     }
-    @if (stations is not null && stationAccessList is not null)
+    @if (stations is not null && selectedStations is not null)
     {
         <div class="col-md-12">
             <label for="stations" class="form-label">@localizer["ListofStation"]</label>
@@ -34,7 +34,8 @@
                 @foreach (Station station in stations)
                 {
                     int value = station.StationId;
-                    bool check = stationAccessList.Where(a => a.StationId == station.StationId).Any();
+                    //bool check = stationAccessList.Where(a => a.StationId == station.StationId).Any();
+                    bool check = selectedStations.Contains(value);
                     <div class="icheck-primary d-inline">
                         <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
                         <label for="checkId@(station.StationId)">@station.StationName</label>
@@ -66,11 +67,9 @@ else
         <thead>
             <tr>
                 <th>User Name</th>
-                <th>Station List</th>
+                <th>Station Name</th>
                 <th>Entry Time</th>
                 <th>Entry By</th>
-                <th></th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -78,15 +77,12 @@ else
             {
                 string userName = users.Where(u => u.Id == stationAccess.UserId)?.FirstOrDefault()?.Name ?? "";
                 string entryUserName = users.Where(u => u.Id == stationAccess.EntryBy)?.FirstOrDefault()?.Name ?? "";
+                string stationName = stations.Where(s => s.StationId == stationAccess.StationId)?.FirstOrDefault()?.StationName ?? "";
                 <tr>
                     <td>@userName</td>
-                    <td>@stationAccess.StationId</td>
+                    <td>@stationName</td>
                     <td>@stationAccess.EntryTime</td>
                     <td>@entryUserName</td>
-                    <td><i class="fa fa-edit" title="Edit Station Access Information" @onclick="@(() => Edit(stationAccess))"></i></td>
-                    <td><i class="fa fa-trash" title="Delete Station Access Information" @onclick="@(() => Delete(stationAccess))"></i></td>
-
-
                 </tr>
             }
         </tbody>
@@ -95,21 +91,17 @@ else
 
 
 <ConfirmDialog @ref="submitConfirmationStationAccessRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedStationAccess" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Station Access?" />
-<ConfirmDialog @ref="deleteConfirmationStationAccessRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStationAccess" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station Access?" />
 
 @code {
     private IEnumerable<User?> users { get; set; }
     private IEnumerable<Station?> stations { get; set; }
     private StationAccess stationAccess { get; set; } = new();
-    private IEnumerable<StationAccess> stationAccessList { get; set; }
     private IEnumerable<StationAccess> allStationAccessList { get; set; }
     private EditContext editContext = default!;
     private User? currentUser { get; set; }
     protected ConfirmDialog submitConfirmationStationAccessRef { get; set; }
-    protected ConfirmDialog deleteConfirmationStationAccessRef { get; set; }
 
     private bool submitClicked { get; set; } = false;
-    private bool deleteClicked { get; set; } = false;
     public int userId { get; set; } = 0;
     private int stationId { get; set; }
     private bool approve { get; set; }
@@ -140,7 +132,7 @@ else
         if (isParsed)
         {
             userId = parsedUserId;
-            stationAccessList = await stationAccessService.GetStationAccessByUserId(userId);
+            selectedStations = await stationAccessService.GetStationAccessByUserId(userId);
         }
     }
 
@@ -159,6 +151,14 @@ else
 
         List<StationAccess> accessList = new();
 
+        // foreach (var access in stationAccessList)
+        // {
+        //     if (!selectedStations.Contains(access.StationId) && access.UserId == currentUser.Id)
+        //     {
+        //         selectedStations.Add(access.StationId);
+        //     }
+        // }
+
 
         foreach (int stationId in selectedStations)
         {
@@ -168,28 +168,6 @@ else
             access.EntryBy = currentUser.Id;
             access.StationId = stationId;
             accessList.Add(access);
-            // if (stationAccess.Id > 0)
-            // {
-            //     if (await stationAccessService.UpdateStationAccess(stationAccess))
-            //     {
-            //         appState.SetNotification(this, "Station Access updated", Notification.NotificationType.Success);
-            //     }
-            //     else
-            //     {
-            //         appState.SetNotification(this, "Station Access update failed", Notification.NotificationType.Failure);
-            //     }
-            // }
-            // else
-            // {
-            //     if (await stationAccessService.InsertStationAccess(stationAccess))
-            //     {
-            //         appState.SetNotification(this, "Station Access submitted", Notification.NotificationType.Success);
-            //     }
-            //     else
-            //     {
-            //         appState.SetNotification(this, "Station Access submission failed", Notification.NotificationType.Failure);
-            //     }
-            // }
         }
 
         await stationAccessService.DeleteStationAccessByUserId(userId);
@@ -222,35 +200,6 @@ else
     private void SubmitDeclined()
     {
         submitClicked = false;
-    }
-    private void Edit(StationAccess access)
-    {
-        stationAccess.Id = access.Id;
-        userId = access.UserId;
-        selectedStations.Add(access.StationId);
-    }
-    private async Task Delete(StationAccess access)
-    {
-        stationAccess = access;
-        deleteClicked = true;
-        await submitConfirmationStationAccessRef.Show();
-
-    }
-    private async Task DeleteConfirmedStationAccess()
-    {
-        if (await stationAccessService.Delete(stationAccess))
-        {
-            appState.SetNotification(this, "Station Access deleted", Notification.NotificationType.Success);
-        }
-        else
-        {
-            appState.SetNotification(this, "Station Access delete failed", Notification.NotificationType.Failure);
-        }
-        await this.LoadStationAccess();
-    }
-    private void DeleteDeclined()
-    {
-        deleteClicked = false;
     }
     private void OnInvalidSubmit()
     {

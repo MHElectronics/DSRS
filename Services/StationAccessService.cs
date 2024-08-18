@@ -5,12 +5,14 @@ namespace Services;
 
 public interface IStationAccessService
 {
-    Task<IEnumerable<StationAccess>> GetStationAccessByUserId(int userId);
+    Task<List<int>> GetStationAccessByUserId(int userId);
+    Task<IEnumerable<StationAccess>> GetStationAccessByStationId(int stationId);
     Task<IEnumerable<StationAccess>> GetStationAccesses();
     Task<bool> InsertStationAccess(StationAccess stationAccess);
     Task<bool> InsertStationAccess(List<StationAccess> stationAccessList);
     Task<bool> Delete(StationAccess stationAccess);
     Task<bool> DeleteStationAccessByUserId(int userId);
+    Task<bool> DeleteStationAccessByStationId(int stationId);
 
 }
 public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
@@ -22,10 +24,16 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
         return count > 0;
     }
 
-    public async Task<IEnumerable<StationAccess>> GetStationAccessByUserId(int userId)
+    public async Task<List<int>> GetStationAccessByUserId(int userId)
     {
-        string sql = "SELECT * FROM StationAccess WHERE UserId=@UserId";
-        return await _db.LoadData<StationAccess, dynamic>(sql, new { UserId = userId });
+        string sql = "SELECT StationId FROM StationAccess WHERE UserId=@UserId";
+        return (List<int>)await _db.LoadData<int, dynamic>(sql, new { UserId = userId });
+    }
+
+    public async Task<IEnumerable<StationAccess>> GetStationAccessByStationId(int stationId)
+    {
+        string sql = "SELECT * FROM StationAccess WHERE StationId=@StationId";
+        return await _db.LoadData<StationAccess, dynamic>(sql, new { StationId = stationId });
     }
 
     public async Task<IEnumerable<StationAccess>> GetStationAccesses() =>
@@ -63,6 +71,13 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
     {
         string query = "DELETE FROM StationAccess WHERE UserId=@UserId";
         int count = await _db.DeleteData<StationAccess, dynamic>(query, new { UserId });
+        return count > 0;
+    }
+
+    public async Task<bool> DeleteStationAccessByStationId(int StationId)
+    {
+        string query = "DELETE FROM StationAccess WHERE StationId=@StationId";
+        int count = await _db.DeleteData<StationAccess, dynamic>(query, new { StationId });
         return count > 0;
     }
 }
