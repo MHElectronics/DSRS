@@ -5,11 +5,12 @@ namespace Services;
 
 public interface IStationAccessService
 {
-    Task<StationAccess> GetStationAccessByUserId(int userId);
+    Task<IEnumerable<StationAccess>> GetStationAccessByUserId(int userId);
     Task<IEnumerable<StationAccess>> GetStationAccesses();
     Task<bool> InsertStationAccess(StationAccess stationAccess);
     Task<bool> UpdateStationAccess(StationAccess stationAccess);
     Task<bool> Delete(StationAccess stationAccess);
+    Task<bool> DeleteStationAccessByUserId(int userId);
 
 }
 public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
@@ -21,9 +22,10 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
         return count > 0;
     }
 
-    public async Task<StationAccess> GetStationAccessByUserId(int userId)
+    public async Task <IEnumerable<StationAccess>> GetStationAccessByUserId(int userId)
     {
-        return await _db.LoadSingleAsync<StationAccess, dynamic>("SELECT * FROM StationAccess WHERE UserId=@UserId", new { UserId = userId });
+        string sql = "SELECT * FROM StationAccess WHERE UserId=@UserId";
+        return await _db.LoadData<StationAccess, dynamic>(sql, new { UserId = userId });
     }
 
     public async Task<IEnumerable<StationAccess>> GetStationAccesses() => 
@@ -35,22 +37,29 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
         bool hasDuplicate = await this.CheckDuplicateEntry(stationAccess);
         if (!hasDuplicate) 
         {
-            string sql = @"INSERT INTO StationAccess(UserId,StationIds,EntryTime,EntryBy)
-            VALUES (@UserId,@StationIds,@EntryTime,@EntryBy)";
-            return await _db.SaveData<StationAccess>(sql, stationAccess);
+            string sql = @"INSERT INTO StationAccess(UserId,StationId,EntryTime,EntryBy)
+            VALUES (@UserId,@StationId,@EntryTime,@EntryBy)";
+        return await _db.SaveData<StationAccess>(sql, stationAccess);
         }
         return false;
     }
 
     public async Task<bool> UpdateStationAccess(StationAccess stationAccess)
     {
-        string sql = @"UPDATE StationAccess SET UserId=@UserId, StationIds=@StationIds, EntryBy=@EntryBy WHERE Id=@Id";
+        string sql = @"UPDATE StationAccess SET UserId=@UserId, StationId=@StationId, EntryBy=@EntryBy WHERE Id=@Id";
         return await _db.SaveData(sql, stationAccess);
     }
 
     public async Task<bool> CheckDuplicateEntry(StationAccess stationAccess)
     {
-        string query = "SELECT COUNT(1) Count FROM StationAccess WHERE UserId=@UserId";
+        string query = "SELECT COUNT(1) Count FROM StationAccess WHERE UserId=@UserId AND StationId=@StationId";
         return await _db.LoadSingleAsync<bool, object>(query, stationAccess);
+    }
+
+    public async Task<bool> DeleteStationAccessByUserId(int UserId)
+    {
+        string query = "DELETE FROM StationAccess WHERE UserId=@UserId";
+        int count = await _db.DeleteData<StationAccess, dynamic>(query, new { UserId });
+        return count > 0;
     }
 }
