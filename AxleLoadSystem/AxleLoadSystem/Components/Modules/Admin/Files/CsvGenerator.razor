@@ -54,7 +54,7 @@
         for (int i = 1; i <= iteration; i++)
         {
             //TransactionNumber
-            string line = "TN" + i;
+            string line = "TN" + rnd.Next(0,10000000);
             //LaneNumber
             line += "," + rnd.Next(1, 5);
             //DateTime
@@ -155,7 +155,7 @@
             //LaneNumber
             string line = rnd.Next(1, 5).ToString();
             //TransactionNumber
-            line += ",TN" + i;
+            line += ",TN" + rnd.Next(0, 10000000);
             //PaymentTransactionId
             line += ",PT" + i; 
             //DateTime

@@ -37,7 +37,7 @@
                 else if (wims.Count() > 0)
                 {
                     <div class="col-md-6">
-
+                        <label>List of WIM Scale Information </label>
                         <select class="form-control" @bind="@wimId">
                             <option value="0">-Select WIM-</option>
                             @foreach (WIMScale item in wims)
@@ -49,20 +49,48 @@
                 }
 
                 <div class="col-md-3">
+                    <label>Start Date </label>
                     <input type="date" class="form-control" @bind="@startDate" max="@DateTime.Today" placeholder="Start Date" />
                 </div>
                 <div class="col-md-3">
+                    <label>End Date </label>
                     <input type="date" class="form-control" @bind="@endDate" max="@DateTime.Today" placeholder="End Date" />
                 </div>
-                <div class="col-md-6 btn-group">
-                    <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
-                    <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
-                    <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
-                    <span class="btn @(selectedType == "Quarterly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Quarterly"))">Quarterly</span>
-                    <span class="btn @(selectedType == "SemiAnnual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("SemiAnnual"))">Semi Annual</span>
-                    <span class="btn @(selectedType == "Annual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Annual"))">Annual</span>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-primary @(isAdvancedSelection ? "fas fa-minus-square"  : "fas fa-plus-square")" @onclick="ToggleDiv" title="Advanced Selection">
+                        @(isAdvancedSelection ? " Hide" : " Filter")
+                    </button>
                 </div>
             </div>
+                
+                
+            @if (isAdvancedSelection)
+            {
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="axleNumber" class="form-label">Axle Number</label>
+                        <input type="number" @bind="@axleNumber" class="form-control" placeholder="Number of Axle" id="axleNumber" min="2" max="15" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="wheelBase" class="form-label">Wheel Base</label>
+                        <input type="number" @bind="@wheelBase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="classStatus" class="form-label">Class Status</label>
+                        <input type="number" @bind="@classStatus" class="form-control" placeholder="Class Status" id="classStatus" min="0" max="100" />
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" @bind="isOverloaded" id="chkIsOverloaded" />
+                                <label for="chkIsOverloaded">IsOverloaded?</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }   
         }
         else
         {
@@ -75,6 +103,19 @@
                     }
                 </div>
             </div>
+            @if (selectedStations is not null)
+            {
+                <div class="row">
+                    <div class="col-md-6 btn-group">
+                        <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
+                        <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
+                        <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
+                        <span class="btn @(selectedType == "Quarterly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Quarterly"))">Quarterly</span>
+                        <span class="btn @(selectedType == "SemiAnnual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("SemiAnnual"))">Semi Annual</span>
+                        <span class="btn @(selectedType == "Annual" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Annual"))">Annual</span>
+                    </div>
+                </div>
+            }
         }
     </div>
     <div class="card-footer">
@@ -92,6 +133,12 @@
     private DateTime startDate { get; set; } = DateTime.Today;
     private DateTime endDate { get; set; } = DateTime.Today;
     private string selectedType { get; set; } = "Daily";
+
+    private bool isAdvancedSelection = false;
+    private int axleNumber { get; set; }
+    private int wheelBase { get; set; }
+    private int classStatus { get; set; }
+    private bool isOverloaded { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,5 +183,9 @@
     private void TypeChanged(string type)
     {
         selectedType = type;
+    }
+    private void ToggleDiv()
+    {
+        isAdvancedSelection = !isAdvancedSelection;
     }
 }
