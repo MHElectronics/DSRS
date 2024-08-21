@@ -1,5 +1,6 @@
 ﻿@inject IStationService stationService
 @inject IWIMScaleService wimService
+@using BOL.CustomModels
 @rendermode InteractiveServer
 
 <div class="card">
@@ -119,11 +120,14 @@
         }
     </div>
     <div class="card-footer">
-        <span class="btn btn-primary" @onclick="SelectionComplete">Change</span>
+        <button class="btn btn-primary" @onclick="SelectionComplete">Change</button>
     </div>
 </div>
 
 @code {
+    [Parameter]
+    public EventCallback<ReportParameters?> OnParametersChanged { get; set; }
+
     private IEnumerable<Station>? stations;
     private List<Station>? selectedStations;
     private IEnumerable<WIMScale>? wims;
@@ -172,9 +176,23 @@
             wims = null;
         }
     }
-    private void SelectionComplete()
+    private async Task SelectionComplete()
     {
         selectionEnabled = !selectionEnabled;
+        if (selectedStations is not null)
+        {
+            var parameters = new ReportParameters
+                {
+                    SelectedStation = selectedStations.FirstOrDefault(),
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    AxleNumber = axleNumber,
+                    ClassStatus = classStatus,
+                    WheelBase = wheelBase,
+                    IsOverloaded = isOverloaded
+                };
+            await OnParametersChanged.InvokeAsync(parameters);
+        }
     }
     private void StationSelected(List<Station> selectedStations)
     {

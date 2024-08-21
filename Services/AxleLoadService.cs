@@ -13,7 +13,7 @@ public interface IAxleLoadService
     Task<bool> Delete(UploadedFile file);
 
     Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate);
-    Task<IEnumerable<LoadData>> GetDateWise (Station station, DateTime startDate, DateTime endDate);
+    Task<IEnumerable<AxleLoadReport>> GetDateWise (Station station, DateTime startDate, DateTime endDate);
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -118,14 +118,48 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<AxleLoadCount, object>(query, new { station.StationId, startDate, endDate });
     }
-    public async Task<IEnumerable<LoadData>> GetDateWise(Station station, DateTime startDate, DateTime endDate)
+    public async Task<IEnumerable<AxleLoadReport>> GetDateWise(Station station, DateTime startDate, DateTime endDate)
     {
-        string query = @"SELECT *
-                        FROM AxleLoad
-                        WHERE 
-                            StationId = @StationId 
-                            AND DateTime BETWEEN @StartDate AND @EndDate";
+        string query = @"
+    SELECT 
+        COUNT(1) AS Count,
+        DATEPART(WEEKDAY, DateTime) AS Weekday,
+        NumberofAxle,
+        SUM(Axle1) AS Axle1,
+        SUM(Axle2) AS Axle2,
+        SUM(Axle3) AS Axle3,
+        SUM(Axle4) AS Axle4,
+        SUM(Axle5) AS Axle5,
+        SUM(Axle6) AS Axle6,
+        SUM(Axle7) AS Axle7,
+        SUM(AxleRemaining) AS AxleRemaining,
+        SUM(GrossVehicleWeight) AS GrossVehicleWeight
+    FROM 
+        AxleLoad AL
+    WHERE 
+        DateTime >= @DateStart 
+        AND DateTime <= @DateEnd
+        AND IsOverloaded = 1
+        AND AL.StationId = @StationId  -- Filter for specific StationId
+        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+        AND (@CheckWeightCalculation = 0 OR (Axle1 + Axle2 + Axle3 + Axle4 + Axle5 + Axle6 + Axle7 + AxleRemaining = GrossVehicleWeight))
+    GROUP BY 
+        DATEPART(WEEKDAY, DateTime),
+        NumberOfAxle";
 
-        return await _db.LoadData<LoadData, dynamic>(query, new { station.StationId, startDate, endDate });
+        return await _db.LoadData<AxleLoadReport, dynamic>(
+            query,
+            new
+            {
+                StationId = station.StationId,  // Passing StationId parameter
+                DateStart = startDate,  // Passing start date parameter
+                DateEnd = endDate,  // Passing end date parameter
+                NumberOfAxle = 0,  // Set to 0 for dynamic filtering, can be parameterized as needed
+                Wheelbase = 0,  // Set to 0 for dynamic filtering, can be parameterized as needed
+                ClassStatus = 0,  // Set to 0 for dynamic filtering, can be parameterized as needed
+                CheckWeightCalculation = 1  // Set to 1 as per your previous logic
+            });
     }
 }

@@ -19,38 +19,38 @@
     </div>
 </div>
 
-<ReportSelection />
+<ReportSelection OnParametersChanged="HandleParametersChanged" />
 
 <div class="control-section" align='center'>
     <SfChart @ref="@chartInstance" Title="Number of overweight vehicles -" Width="@Width" Theme="@Theme">
         <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
         <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
-        <ChartPrimaryXAxis Title="Number of Overloaded Vehicles (Units)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
+        <ChartPrimaryXAxis Title="Number of Axle (Allowable Weight)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
             <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
             <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
             <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
             <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
             <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
         </ChartPrimaryXAxis>
-        <ChartPrimaryYAxis Title= "Number of Axle (Allowable Weight)">
+        <ChartPrimaryYAxis Title="Number of Overloaded Vehicles (Units)">
             <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
             <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
             <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
             <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
         </ChartPrimaryYAxis>
         <ChartSeriesCollection>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartPoints" XName="General" YName="NumberofAxle" Width="2" Name="General Motors" Type=ChartSeriesType.StackingColumn>
+            <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="WeekDay" Type=ChartSeriesType.StackingColumn>
                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
             </ChartSeries>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartPoints" XName="Honda" YName="NumberofAxle" Width="2" Name="Honda" Type="ChartSeriesType.StackingColumn">
+            @* <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="GrossVehicleWeight" YName="NumberofAxle" Width="2" Name="Honda" Type="ChartSeriesType.Bar">
                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
             </ChartSeries>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartPoints" XName="Suzuki" YName="NumberofAxle" Width="2" Name="Suzuki" Type="ChartSeriesType.StackingColumn">
+            <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="GrossVehicleWeight" YName="NumberofAxle" Width="2" Name="Suzuki" Type="ChartSeriesType.Bar">
                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
             </ChartSeries>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartPoints" XName="BMW" YName="NumberofAxle" Width="2" Name="BMW" Type="ChartSeriesType.StackingColumn">
+            <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="GrossVehicleWeight" YName="NumberofAxle" Width="2" Name="BMW" Type="ChartSeriesType.Bar">
                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-            </ChartSeries>
+            </ChartSeries> *@
         </ChartSeriesCollection>
         <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
         <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
@@ -64,20 +64,18 @@
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
-    
-    public List<StackedColumnChartData> ChartPoints { get; set; } = new List<StackedColumnChartData>
-    {
-        new StackedColumnChartData { NumberofAxle = 2, General = 9628912, Honda = 4298390, Suzuki = 2842133, BMW = 2006366 },
-        new StackedColumnChartData { NumberofAxle = 3, General = 9609326, Honda = 4513769, Suzuki = 3016710, BMW = 2165566 },
-        new StackedColumnChartData { NumberofAxle = 4, General = 7485587, Honda = 4543838, Suzuki = 3034081, BMW = 2279503 },
-        new StackedColumnChartData { NumberofAxle = 5, General = 7793066, Honda = 4999266, Suzuki = 2945295, BMW = 2359756 },
-        new StackedColumnChartData { NumberofAxle = 6, General = 6856880, Honda = 5235842, Suzuki = 3302336, BMW = 2505741 },
-        new StackedColumnChartData { NumberofAxle = 7, General = 68560, Honda = 52352, Suzuki = 33026, BMW = 25051 },
-    };
 
-    public IQueryable<List<LoadData>> listLoadData { get; set; }
     public DateTime startDate { get; set; }
     public DateTime endDate { get; set; }
+    public int NumberofAxle { get; set; }
+    public int ClassStatus { get; set; }
+    public int WheelBase { get; set; }
+    public bool IsOverloaded { get; set; }
+
+    public IEnumerable<AxleLoadReport> ChartData { get; set; }
+
+    public IQueryable<List<LoadData>> listLoadData { get; set; }
+
     public Station station { get; set; }
 
     protected override async void OnInitialized()
@@ -87,11 +85,6 @@
         // {
         //     Width = "100%";
         // }
-        station = new();
-        station.StationId = 1;
-        startDate = DateTime.Now.AddDays(-7);
-        endDate = DateTime.Now;
-        dynamic var = await loadService.GetDateWise(station, startDate, endDate); 
     }
     void axisLabel(AxisLabelRenderEventArgs args)
     {
@@ -100,14 +93,7 @@
             args.Text = args.Value.ToString("0,,.##M", CultureInfo.InvariantCulture);
         }
     }
-    public class StackedColumnChartData
-    {
-        public int NumberofAxle { get; set; }
-        public double General { get; set; }
-        public double Honda { get; set; }
-        public double Suzuki { get; set; }
-        public double BMW { get; set; }
-    }
+
     private async Task Export(MouseEventArgs args)
     {
         await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
@@ -116,5 +102,21 @@
     public void ExportComplete(ExportEventArgs exportEventArgs)
     {
         string base64 = exportEventArgs.Base64;
+    }
+
+    private async Task HandleParametersChanged(ReportParameters parameters)
+    {
+        this.station = parameters.SelectedStation;
+        this.startDate = parameters.StartDate;
+        this.endDate = parameters.EndDate;
+        this.NumberofAxle = parameters.AxleNumber;
+        this.ClassStatus = parameters.ClassStatus;
+        this.WheelBase = parameters.WheelBase;
+        this.IsOverloaded = parameters.IsOverloaded;
+        await LoadChartData(); 
+    }
+    private async Task LoadChartData()
+    {
+        ChartData = await loadService.GetDateWise(station, startDate, endDate); 
     }
 }
