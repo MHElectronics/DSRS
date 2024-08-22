@@ -39,7 +39,6 @@
 @code {
     private DateTime date { get; set; } = DateTime.Today.AddDays(-1);
     private int iteration { get; set; } = 1000;
-
     private List<string> sb { get; set; } = new();
 
     private async Task GenerateAxleLoad()
@@ -54,7 +53,7 @@
         for (int i = 1; i <= iteration; i++)
         {
             //TransactionNumber
-            string line = "TN" + rnd.Next(0,10000000);
+            string line = "TN" + rnd.Next(0,100000);
             //LaneNumber
             line += "," + rnd.Next(1, 5);
             //DateTime
@@ -155,7 +154,7 @@
             //LaneNumber
             string line = rnd.Next(1, 5).ToString();
             //TransactionNumber
-            line += ",TN" + rnd.Next(0, 10000000);
+            line += ",TN" + rnd.Next(0, 100000);
             //PaymentTransactionId
             line += ",PT" + i; 
             //DateTime

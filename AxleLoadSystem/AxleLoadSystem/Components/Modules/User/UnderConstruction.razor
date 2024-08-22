@@ -20,43 +20,55 @@
 </div>
 
 <ReportSelection OnParametersChanged="HandleParametersChanged" />
+@if (Chartview)
+{
+    <div class="control-section" align='center'>
+        <SfChart @ref="@chartInstance" Title="Number of overweight vehicles -" Width="@Width" Theme="@Theme">
+            <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+            <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
+            <ChartPrimaryXAxis Title="Number of Axle (Allowable Weight)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+                <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
+                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+            </ChartPrimaryXAxis>
+            <ChartPrimaryYAxis Title="Number of Overloaded Vehicles (Units)">
+                <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+                <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
+                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+            </ChartPrimaryYAxis>
+            <ChartSeriesCollection>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Saturday" Type=ChartSeriesType.StackingColumn>
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Sunday" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Monday" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Tuesday" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Wednessday" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Thusday" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Friday" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+            </ChartSeriesCollection>
+            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+            <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+        </SfChart>
+        <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat"></SfButton>
+    </div>
+}
 
-<div class="control-section" align='center'>
-    <SfChart @ref="@chartInstance" Title="Number of overweight vehicles -" Width="@Width" Theme="@Theme">
-        <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
-        <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
-        <ChartPrimaryXAxis Title="Number of Axle (Allowable Weight)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
-            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-            <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
-            <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
-            <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
-        </ChartPrimaryXAxis>
-        <ChartPrimaryYAxis Title="Number of Overloaded Vehicles (Units)">
-            <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-            <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
-            <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
-            <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
-        </ChartPrimaryYAxis>
-        <ChartSeriesCollection>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="WeekDay" Type=ChartSeriesType.StackingColumn>
-                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-            </ChartSeries>
-            @* <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="GrossVehicleWeight" YName="NumberofAxle" Width="2" Name="Honda" Type="ChartSeriesType.Bar">
-                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-            </ChartSeries>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="GrossVehicleWeight" YName="NumberofAxle" Width="2" Name="Suzuki" Type="ChartSeriesType.Bar">
-                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-            </ChartSeries>
-            <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="GrossVehicleWeight" YName="NumberofAxle" Width="2" Name="BMW" Type="ChartSeriesType.Bar">
-                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-            </ChartSeries> *@
-        </ChartSeriesCollection>
-        <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-        <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-    </SfChart>
-    <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat"></SfButton>
-</div>
 @code {
     private Theme Theme { get; set; } = 0;
     public string Width { get; set; } = "90%";
@@ -72,11 +84,16 @@
     public int WheelBase { get; set; }
     public bool IsOverloaded { get; set; }
 
+    private bool Chartview { get; set; }
+
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
 
     public IQueryable<List<LoadData>> listLoadData { get; set; }
 
     public Station station { get; set; }
+    private List<string> DayNames;
+    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+
 
     protected override async void OnInitialized()
     {
@@ -85,6 +102,15 @@
         // {
         //     Width = "100%";
         // }
+    }
+    private void GenerateDayNames()
+    {
+        DayNames = new List<string>();
+
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            DayNames.Add(date.ToString("dddd")); 
+        }
     }
     void axisLabel(AxisLabelRenderEventArgs args)
     {
@@ -117,6 +143,7 @@
     }
     private async Task LoadChartData()
     {
+        Chartview = true;
         ChartData = await loadService.GetDateWise(station, startDate, endDate); 
     }
 }

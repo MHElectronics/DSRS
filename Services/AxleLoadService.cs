@@ -121,45 +121,93 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<IEnumerable<AxleLoadReport>> GetDateWise(Station station, DateTime startDate, DateTime endDate)
     {
         string query = @"
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT);
+    DECLARE @DateStart DATE = @DateStartParam;
+    DECLARE @DateEnd DATE = @DateEndParam;
+    DECLARE @NumberOfAxle INT = @NumberOfAxleParam;
+    DECLARE @Wheelbase INT = @WheelbaseParam;
+    DECLARE @ClassStatus INT = @ClassStatusParam;
+    DECLARE @CheckWeightCalculation BIT = @CheckWeightCalculationParam;
+
+    -- Insert Station ID
+    INSERT INTO @Stations(StationId) VALUES (@StationId);
+
+    -- Define a CTE for all dates within the range
+    ;WITH Dates AS (
+        SELECT @DateStart AS Datetime
+        UNION ALL
+        SELECT DATEADD(DAY, 1, Datetime)
+        FROM Dates
+        WHERE DATEADD(DAY, 1, Datetime) <= @DateEnd
+    )
+
+    -- Main query with LEFT JOIN to ensure all dates and axle numbers are included
     SELECT 
-        COUNT(1) AS Count,
-        DATEPART(WEEKDAY, DateTime) AS Weekday,
-        NumberofAxle,
-        SUM(Axle1) AS Axle1,
-        SUM(Axle2) AS Axle2,
-        SUM(Axle3) AS Axle3,
-        SUM(Axle4) AS Axle4,
-        SUM(Axle5) AS Axle5,
-        SUM(Axle6) AS Axle6,
-        SUM(Axle7) AS Axle7,
-        SUM(AxleRemaining) AS AxleRemaining,
-        SUM(GrossVehicleWeight) AS GrossVehicleWeight
+        D.Datetime,
+        ISNULL(AL.NumberOfAxle, @NumberOfAxle) AS NumberOfAxle,
+        ISNULL(SUM(AL.Count), 0) AS TotalVehicle,
+        ISNULL(SUM(AL.Axle1), 0) AS Axle1,
+        ISNULL(SUM(AL.Axle2), 0) AS Axle2,
+        ISNULL(SUM(AL.Axle3), 0) AS Axle3,
+        ISNULL(SUM(AL.Axle4), 0) AS Axle4,
+        ISNULL(SUM(AL.Axle5), 0) AS Axle5,
+        ISNULL(SUM(AL.Axle6), 0) AS Axle6,
+        ISNULL(SUM(AL.Axle7), 0) AS Axle7,
+        ISNULL(SUM(AL.AxleRemaining), 0) AS AxleRemaining,
+        ISNULL(SUM(AL.GrossVehicleWeight), 0) AS GrossVehicleWeight,
+        ISNULL(SUM(AL.IsOverloaded), 0) AS TotalOverloaded  -- Total overloaded vehicles
     FROM 
-        AxleLoad AL
-    WHERE 
-        DateTime >= @DateStart 
-        AND DateTime <= @DateEnd
-        AND IsOverloaded = 1
-        AND AL.StationId = @StationId  -- Filter for specific StationId
-        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        AND (@CheckWeightCalculation = 0 OR (Axle1 + Axle2 + Axle3 + Axle4 + Axle5 + Axle6 + Axle7 + AxleRemaining = GrossVehicleWeight))
+        Dates D
+    LEFT JOIN (
+        SELECT 
+            CONVERT(DATE, DateTime) AS Datetime,
+            NumberOfAxle,
+            COUNT(1) AS Count,
+            SUM(Axle1) AS Axle1,
+            SUM(Axle2) AS Axle2,
+            SUM(Axle3) AS Axle3,
+            SUM(Axle4) AS Axle4,
+            SUM(Axle5) AS Axle5,
+            SUM(Axle6) AS Axle6,
+            SUM(Axle7) AS Axle7,
+            SUM(AxleRemaining) AS AxleRemaining,
+            SUM(GrossVehicleWeight) AS GrossVehicleWeight,
+            SUM(CASE WHEN IsOverloaded = 1 THEN 1 ELSE 0 END) AS IsOverloaded
+        FROM 
+            AxleLoad AS AL 
+        INNER JOIN 
+            @Stations S ON AL.StationId = S.StationId
+        WHERE 
+            DateTime >= @DateStart 
+            AND DateTime <= @DateEnd
+            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+            AND (@CheckWeightCalculation = 1 
+                 AND Axle1 + Axle2 + Axle3 + Axle4 + Axle5 + Axle6 + Axle7 + AxleRemaining = GrossVehicleWeight)
+        GROUP BY 
+            CONVERT(DATE, DateTime),
+            NumberOfAxle
+    ) AL ON D.Datetime = AL.Datetime
     GROUP BY 
-        DATEPART(WEEKDAY, DateTime),
-        NumberOfAxle";
+        D.Datetime,
+        AL.NumberOfAxle
+    ORDER BY 
+        D.Datetime,
+        AL.NumberOfAxle;
+    ";
 
         return await _db.LoadData<AxleLoadReport, dynamic>(
             query,
             new
             {
-                StationId = station.StationId,  // Passing StationId parameter
-                DateStart = startDate,  // Passing start date parameter
-                DateEnd = endDate,  // Passing end date parameter
-                NumberOfAxle = 0,  // Set to 0 for dynamic filtering, can be parameterized as needed
-                Wheelbase = 0,  // Set to 0 for dynamic filtering, can be parameterized as needed
-                ClassStatus = 0,  // Set to 0 for dynamic filtering, can be parameterized as needed
-                CheckWeightCalculation = 1  // Set to 1 as per your previous logic
+                StationId = station.StationId,  
+                DateStart = startDate, 
+                DateEnd = endDate,  
+                NumberOfAxle = 0,  
+                Wheelbase = 0,  
+                ClassStatus = 0,  
+                CheckWeightCalculation = 1  
             });
     }
 }
