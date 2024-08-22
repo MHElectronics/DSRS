@@ -277,7 +277,7 @@ else
             validationSummary = "Name can only contain alphabets";
             return;
         }*/
-        if (user.Name.Any(c => !char.IsLetter(c)))
+        if (user.Name.Any(c => !char.IsLetter(c) && c != ' '))
         {
             validationSummary = "Name can only contain alphabets";
             return;

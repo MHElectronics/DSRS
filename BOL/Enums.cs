@@ -19,7 +19,8 @@
     public enum UserRole
     {
         Admin,
-        User
+        User,
+        AdvancedUser
     }
 
     public enum UploadedFileType
