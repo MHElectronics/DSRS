@@ -20,7 +20,6 @@
                 @foreach (Station station in stations)
                 {
                     int value = station.StationId;
-                    //bool check = stationAccessList.Where(a => a.StationId == station.StationId).Any();
                     bool check = selectedStations.Contains(value);
                     <div class="icheck-primary d-inline">
                         <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
@@ -70,7 +69,6 @@ else
     </table>
 }
 
-
 <ConfirmDialog @ref="submitConfirmationStationAccessRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedStationAccess" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Station Access?" />
 
 @code {
@@ -107,15 +105,7 @@ else
         }
 
     }
-    private async Task SelectedUser(ChangeEventArgs e)
-    {
-        bool isParsed = int.TryParse(e.Value.ToString(), out int parsedUserId);
-        if (isParsed)
-        {
-            userId = parsedUserId;
-            selectedStations = await stationAccessService.GetStationAccessByUserId(userId);
-        }
-    }
+
     private async Task Edit(int selectedUserId)
     {
         userId = selectedUserId;
@@ -135,15 +125,6 @@ else
         }
 
         List<StationAccess> accessList = new();
-
-        // foreach (var access in stationAccessList)
-        // {
-        //     if (!selectedStations.Contains(access.StationId) && access.UserId == currentUser.Id)
-        //     {
-        //         selectedStations.Add(access.StationId);
-        //     }
-        // }
-
 
         foreach (int stationId in selectedStations)
         {
