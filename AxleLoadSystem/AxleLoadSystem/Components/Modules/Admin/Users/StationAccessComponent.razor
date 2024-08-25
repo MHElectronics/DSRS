@@ -12,24 +12,10 @@
 <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    @if (users is not null)
+    @if (userId > 0 && users is not null && stations is not null)
     {
         <div class="col-md-12">
-            <label>List of Users</label>
-            <select class="form-control" @onchange="SelectedUser">
-                <option value="0">-Select User-</option>
-                @foreach (User user in users)
-                {
-                    <option value="@user.Id">@user.Name</option>
-                }
-            </select>
-        </div>
-
-    }
-    @if (stations is not null && selectedStations is not null)
-    {
-        <div class="col-md-12">
-            <label for="stations" class="form-label">@localizer["ListofStation"]</label>
+            <label for="stations" class="form-label">Access for: @users.FirstOrDefault(u => u.Id == userId).Name</label>
             <div class="form-control">
                 @foreach (Station station in stations)
                 {
@@ -43,17 +29,16 @@
                 }
             </div>
         </div>
-    }
-
-    <div class="col-md-12">
-        <div class="form-group btn btn-group">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <NavLink class="btn btn-primary" href="/">@localizerResource["Button.Back"]</NavLink>
+        <div class="col-md-12">
+            <div class="form-group btn btn-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <span class="btn btn-primary" @onclick="@(() => userId = 0)">@localizerResource["Button.Cancel"]</span>
             </div>
         </div>
-    </EditForm>
+    }
+</EditForm>
 
-    @if (allStationAccessList is null)
+@if (allStationAccessList is null)
 {
     <Loader />
 }
@@ -67,22 +52,18 @@ else
         <thead>
             <tr>
                 <th>User Name</th>
-                <th>Station Name</th>
-                <th>Entry Time</th>
-                <th>Entry By</th>
+                <th>Station Name(s)</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (StationAccess stationAccess in allStationAccessList)
+            @foreach (User user in users)
             {
-                string userName = users.Where(u => u.Id == stationAccess.UserId)?.FirstOrDefault()?.Name ?? "";
-                string entryUserName = users.Where(u => u.Id == stationAccess.EntryBy)?.FirstOrDefault()?.Name ?? "";
-                string stationName = stations.Where(s => s.StationId == stationAccess.StationId)?.FirstOrDefault()?.StationName ?? "";
+                string stationNames = String.Join(", ", stations.Where(s => allStationAccessList.Any(sa => sa.StationId == s.StationId && sa.UserId == user.Id)).Select(sn => sn.StationName));
                 <tr>
-                    <td>@userName</td>
-                    <td>@stationName</td>
-                    <td>@stationAccess.EntryTime</td>
-                    <td>@entryUserName</td>
+                    <td>@user.Name</td>
+                    <td>@stationNames</td>
+                    <th><i class="fa fa-edit" @onclick="@(() => Edit(user.Id))"></i></th>
                 </tr>
             }
         </tbody>
@@ -135,7 +116,11 @@ else
             selectedStations = await stationAccessService.GetStationAccessByUserId(userId);
         }
     }
-
+    private async Task Edit(int selectedUserId)
+    {
+        userId = selectedUserId;
+        selectedStations = await stationAccessService.GetStationAccessByUserId(userId);
+    }
     private async Task OnValidSubmit(EditContext editContext)
     {
         submitClicked = true;
