@@ -58,40 +58,30 @@
                     <input type="date" class="form-control" @bind="@endDate" max="@DateTime.Today" placeholder="End Date" />
                 </div>
             </div>
+                                
             <div class="row">
-                <div class="col-md-12">
-                    <button class="btn btn-primary @(isAdvancedSelection ? "fas fa-minus-square"  : "fas fa-plus-square")" @onclick="ToggleDiv" title="Advanced Selection">
-                        @(isAdvancedSelection ? " Hide" : " Filter")
-                    </button>
+                <div class="col-md-4">
+                    <label for="axleNumber" class="form-label">Axle Number</label>
+                    <input type="number" @bind="@axleNumber" class="form-control" placeholder="Number of Axle" id="axleNumber" min="2" max="15" />
                 </div>
-            </div>
-                
-                
-            @if (isAdvancedSelection)
-            {
-                <div class="row">
-                    <div class="col-md-4">
-                        <label for="axleNumber" class="form-label">Axle Number</label>
-                        <input type="number" @bind="@axleNumber" class="form-control" placeholder="Number of Axle" id="axleNumber" min="2" max="15" />
-                    </div>
-                    <div class="col-md-3">
-                        <label for="wheelBase" class="form-label">Wheel Base</label>
-                        <input type="number" @bind="@wheelBase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
-                    </div>
-                    <div class="col-md-3">
-                        <label for="classStatus" class="form-label">Class Status</label>
-                        <input type="number" @bind="@classStatus" class="form-control" placeholder="Class Status" id="classStatus" min="0" max="100" />
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <div class="icheck-primary d-inline">
-                                <input type="checkbox" @bind="isOverloaded" id="chkIsOverloaded" />
-                                <label for="chkIsOverloaded">IsOverloaded?</label>
-                            </div>
+                <div class="col-md-3">
+                    <label for="wheelBase" class="form-label">Wheel Base</label>
+                    <input type="number" @bind="@wheelBase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
+                </div>
+                <div class="col-md-3">
+                    <label for="classStatus" class="form-label">Class Status</label>
+                    <input type="number" @bind="@classStatus" class="form-control" placeholder="Class Status" id="classStatus" min="0" max="100" />
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class="icheck-primary d-inline">
+                            <input type="checkbox" @bind="isOverloaded" id="chkIsOverloaded" />
+                            <label for="chkIsOverloaded">IsOverloaded?</label>
                         </div>
                     </div>
                 </div>
-            }   
+            </div>
+               
         }
         else
         {
@@ -138,7 +128,6 @@
     private DateTime endDate { get; set; } = DateTime.Today;
     private string selectedType { get; set; } = "Daily";
 
-    private bool isAdvancedSelection = false;
     private int axleNumber { get; set; }
     private int wheelBase { get; set; }
     private int classStatus { get; set; }
@@ -201,9 +190,5 @@
     private void TypeChanged(string type)
     {
         selectedType = type;
-    }
-    private void ToggleDiv()
-    {
-        isAdvancedSelection = !isAdvancedSelection;
     }
 }

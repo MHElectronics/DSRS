@@ -23,42 +23,42 @@
 @if (Chartview)
 {
     <div class="control-section" align='center'>
-        <SfChart @ref="@chartInstance" Title="Number of overweight vehicles -" Width="@Width" Theme="@Theme">
+        <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
             <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
             <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
-            <ChartPrimaryXAxis Title="Number of Axle (Allowable Weight)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
+            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
                 <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                 <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                 <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
                 <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
                 <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
             </ChartPrimaryXAxis>
-            <ChartPrimaryYAxis Title="Number of Overloaded Vehicles (Units)">
+            <ChartPrimaryYAxis Title="@YAxisTitle">
                 <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                 <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
                 <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
                 <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
             </ChartPrimaryYAxis>
             <ChartSeriesCollection>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Saturday" Type=ChartSeriesType.StackingColumn>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Saturday" Type=ChartSeriesType.StackingColumn>
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Sunday" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Sunday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Monday" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Monday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Tuesday" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Tuesday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Wednessday" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Wednessday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Thusday" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Thusday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="TotalVehicle" YName="TotalOverloaded" Width="2" Name="Friday" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Friday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
             </ChartSeriesCollection>
@@ -75,6 +75,10 @@
     private SfChart chartInstance;
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
+    public string ChartTitle { get; set; } = "Title";
+    public string XAxisTitle { get; set; } = "Number of Axle (Allowable Weight)";
+    public string YAxisTitle { get; set; } = "Gross Vehicle Weight";
+
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
     public DateTime startDate { get; set; }
@@ -87,11 +91,9 @@
     private bool Chartview { get; set; }
 
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
-
     public IQueryable<List<LoadData>> listLoadData { get; set; }
 
     public Station station { get; set; }
-    private List<string> DayNames;
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
 
 
@@ -103,15 +105,7 @@
         //     Width = "100%";
         // }
     }
-    private void GenerateDayNames()
-    {
-        DayNames = new List<string>();
 
-        for (var date = startDate; date <= endDate; date = date.AddDays(1))
-        {
-            DayNames.Add(date.ToString("dddd")); 
-        }
-    }
     void axisLabel(AxisLabelRenderEventArgs args)
     {
         if (args.Value > 999999 || args.Value < -999999)
