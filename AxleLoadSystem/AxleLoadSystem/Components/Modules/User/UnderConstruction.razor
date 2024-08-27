@@ -81,6 +81,7 @@
 
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
+    public ReportParameters reportParameters { get; set; }
     public DateTime startDate { get; set; }
     public DateTime endDate { get; set; }
     public int NumberofAxle { get; set; }
@@ -126,13 +127,7 @@
 
     private async Task HandleParametersChanged(ReportParameters parameters)
     {
-        this.station = parameters.SelectedStation;
-        this.startDate = parameters.StartDate;
-        this.endDate = parameters.EndDate;
-        this.NumberofAxle = parameters.AxleNumber;
-        this.ClassStatus = parameters.ClassStatus;
-        this.WheelBase = parameters.WheelBase;
-        this.IsOverloaded = parameters.IsOverloaded;
+        reportParameters = parameters;
         await LoadChartData(); 
     }
     private async Task LoadChartData()
