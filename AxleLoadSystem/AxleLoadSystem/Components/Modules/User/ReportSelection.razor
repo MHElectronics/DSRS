@@ -1,5 +1,6 @@
 ﻿@inject IStationService stationService
 @inject IWIMScaleService wimService
+@inject IConfiguration configuration
 @using BOL.CustomModels
 @rendermode InteractiveServer
 
@@ -58,11 +59,16 @@
                     <input type="date" class="form-control" @bind="@reportParameters.DateEnd" max="@DateTime.Today" placeholder="End Date" />
                 </div>
             </div>
-                                
+
             <div class="row">
                 <div class="col-md-4">
-                    <label for="axleNumber" class="form-label">Axle Number</label>
-                    <input type="number" @bind="@reportParameters.NumberOfAxle" class="form-control" placeholder="Number of Axle" id="axleNumber" min="2" max="15" />
+                    <select class="form-control" @bind="@reportParameters.NumberOfAxle">
+                        <option value="0">-Default Axle-</option>
+                        @for(int i= 2; i <= MaxNoOfAxle; i++)
+                        {
+                            <option value="@i">Truck @i Axle</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <label for="wheelBase" class="form-label">Wheel Base</label>
@@ -83,8 +89,18 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    <label for="WeightFilterColumn" class="form-label">Weight Filter Column</label>
-                    <input type="text" @bind="@reportParameters.WeightFilterColumn" class="form-control" placeholder="Weight Filter Column" id="WeightFilterColumn" />
+                    <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
+                        <option value="0">-No Filter-</option>
+                        <option value="GrossVehicleWeight">Gross Vehicle Weight</option>
+                        <option value="Axle1">Axle1</option>
+                        <option value="Axle2">Axle2</option>
+                        <option value="Axle3">Axle3</option>
+                        <option value="Axle4">Axle4</option>
+                        <option value="Axle5">Axle5</option>
+                        <option value="Axle6">Axle6</option>
+                        <option value="Axle7">Axle7</option>
+                        <option value="AxleRemaining">AxleRemaining</option>
+                    </select> 
                 </div>
                 <div class="col-md-3">
                     <label for="WeightMin" class="form-label">Weight Minimum</label>
@@ -143,7 +159,7 @@
     private IEnumerable<Station>? stations;
     private List<Station>? selectedStations;
     private IEnumerable<WIMScale>? wims;
-
+    private int MaxNoOfAxle { get; set; } 
     private bool selectionEnabled { get; set; } = false;
     private int wimId { get; set; } = 0;
     private string selectedType { get; set; } = "Daily";
@@ -153,6 +169,7 @@
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
+        MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
         reportParameters.DateEnd = DateTime.Today;
         reportParameters.DateStart = DateTime.Now.AddDays(-1);
     }

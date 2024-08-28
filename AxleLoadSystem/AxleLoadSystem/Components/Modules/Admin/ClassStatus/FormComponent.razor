@@ -1,0 +1,89 @@
+﻿@using System
+@using BOL
+@inject IClassStatusService classStatusService
+
+@if (classStatus is null)
+{
+    <Loader/>
+}
+else
+{
+    <EditForm Model="@classStatus" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        <label for="name" class="form-label">Name of classStatus</label>
+                        <label class="form-control">@classStatus.Name</label>
+                    }
+                    else
+                    {
+                        <label for="name" class="form-label">Name of classStatus</label>
+                        <input type="text" @bind="classStatus.Name" required class="form-control" placeholder="Name of classStatus" id="name" />
+                        <ValidationMessage For="() => classStatus.Name" />
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                <div class="btn-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                            string editLink = "/classstatus/edit/" + classStatus.Id;
+                        <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
+                    }
+                        <NavLink class="btn btn-primary" href="/classstatus">Back</NavLink>
+                    @if (!string.IsNullOrEmpty(ValidationSummary))
+                    {
+                        <label class="error">@ValidationSummary</label>
+                    }
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public ClassStatus classStatus { get; set; } = new();
+    [Parameter]
+    public FormMode Mode { get; set; } = FormMode.Details;
+    private IEnumerable<ClassStatus>? ClassStatusList;
+
+    string ValidationSummary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClassStatusList = await classStatusService.GetClassStatusList();
+    }
+
+    void OnInvalidSubmit()
+    {
+        ValidationSummary = "Please enter valid data";
+    }
+    async Task OnValidSubmit(EditContext editContext)
+    {
+        ValidationSummary = "";
+
+        if (Mode == FormMode.Edit)
+        {
+            await classStatusService.UpdateClassStatus(classStatus);
+            ValidationSummary = "Class Status Updated Successfully";
+           
+        }
+        else
+        {
+            await classStatusService.InsertClassStatus(classStatus);
+            ValidationSummary = "New Class Status added";
+            
+        }
+    }
+}

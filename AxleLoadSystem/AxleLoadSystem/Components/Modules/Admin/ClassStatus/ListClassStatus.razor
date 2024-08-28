@@ -1,0 +1,49 @@
+﻿@using System
+@using BOL
+@inject IClassStatusService classStatusService
+
+<PageTitle>List of Class Status</PageTitle>
+<h1>List of Class Status</h1>
+<NavLink class="btn btn-primary pull-right" href="/classstatus/new" title="Add New">
+    <i class="fa fa-plus"></i> Add New
+</NavLink>
+@if (ClassStatusList is null)
+{
+    <Loader />
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th colspan="2">Class Status</th>
+                <th> </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var classStatus in ClassStatusList.OrderBy(c => c.Id))
+            {
+                <tr>
+                    <td colspan="2"><b>@classStatus.Name</b></td>
+                    <td>
+                        <a class="btn btn-primary" href="@("/classstatus/details/" + classStatus.Id)" title="Details Information">
+                            <i class="fas fa-info"></i>
+                        </a>
+                        <a class="btn btn-primary" href="@("/classstatus/edit/" + classStatus.Id)" title="Edit Information">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+@code {
+    private IEnumerable<ClassStatus> ClassStatusList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ClassStatusList = await classStatusService.GetClassStatusList();
+    }
+}
