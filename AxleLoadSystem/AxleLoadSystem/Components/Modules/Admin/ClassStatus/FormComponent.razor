@@ -11,11 +11,11 @@ else
     <EditForm Model="@classStatus" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
         <DataAnnotationsValidator />
         <div class="row">
-            <div class="col-md-6 col-sm-12">
+            <div class="col-md-12 col-sm-12">
                 <div class="form-group">
                     @if (Mode == FormMode.Details)
                     {
-                        <label for="name" class="form-label">Name of classStatus</label>
+                        <label for="name" class="form-label">Name of class Status</label>
                         <label class="form-control">@classStatus.Name</label>
                     }
                     else
@@ -27,7 +27,7 @@ else
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-12 col-sm-12">
                 <div class="btn-group">
                     @if (Mode == FormMode.Details)
                     {

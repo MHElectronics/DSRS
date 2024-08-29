@@ -6,9 +6,9 @@ public interface IClassStatusService
 {
     Task<IEnumerable<ClassStatus>> GetClassStatusList();
     Task<ClassStatus> GetClassStatus(int id);
-    Task<ClassStatus> InsertClassStatus(ClassStatus classStatus);
+    Task<bool> InsertClassStatus(ClassStatus classStatus);
     Task<ClassStatus> UpdateClassStatus(ClassStatus classStatus);
-    Task<ClassStatus> DeleteClassStatus(int id);
+    Task<bool> DeleteClassStatus(int id);
 }
 public class ClassStatusService : IClassStatusService
 {
@@ -18,9 +18,11 @@ public class ClassStatusService : IClassStatusService
         _db = db;
     }
 
-    public async Task<ClassStatus> DeleteClassStatus(int id)
+    public async Task<bool> DeleteClassStatus(int id)
     {
-        throw new NotImplementedException();
+        string query = "DELETE FROM ClassStatus WHERE Id=@Id";
+        int count = await _db.DeleteData<ClassStatus, object>(query, new { id });
+        return count > 0;
     }
 
     public async Task<ClassStatus> GetClassStatus(int id)
@@ -32,17 +34,10 @@ public class ClassStatusService : IClassStatusService
     public async Task<IEnumerable<ClassStatus>> GetClassStatusList() =>
         await _db.LoadData<ClassStatus, dynamic>("SELECT * FROM ClassStatus", new { });
 
-    public async Task<ClassStatus> InsertClassStatus(ClassStatus classStatus)
+    public async Task<bool> InsertClassStatus(ClassStatus classStatus)
     {
-        int id = await _db.Insert<ClassStatus>(classStatus);
-
-        if (id != 0)
-        {
-            classStatus.Id = id;
-            return classStatus;
-        }
-
-        return null;
+        string sql = @"INSERT INTO ClassStatus(Name) VALUES(@Name)";
+        return await _db.SaveData<ClassStatus>(sql, classStatus);
     }
 
     public async Task<ClassStatus> UpdateClassStatus(ClassStatus classStatus)

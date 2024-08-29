@@ -156,4 +156,7 @@
   <data name="Menu.StationAccess" xml:space="preserve">
     <value>স্টেশন অ্যাক্সেস</value>
   </data>
+  <data name="Menu.ClassStatus" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাস</value>
+  </data>
 </root>

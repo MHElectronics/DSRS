@@ -1,6 +1,7 @@
 ﻿@using System
 @using BOL
 @inject IClassStatusService classStatusService
+@inject IAppState appState
 
 <PageTitle>List of Class Status</PageTitle>
 <h1>List of Class Status</h1>
@@ -26,12 +27,17 @@ else
                 <tr>
                     <td colspan="2"><b>@classStatus.Name</b></td>
                     <td>
-                        <a class="btn btn-primary" href="@("/classstatus/details/" + classStatus.Id)" title="Details Information">
-                            <i class="fas fa-info"></i>
-                        </a>
-                        <a class="btn btn-primary" href="@("/classstatus/edit/" + classStatus.Id)" title="Edit Information">
-                            <i class="fas fa-edit"></i>
-                        </a>
+                        <div class="btn-group float-right">
+                            <a class="btn btn-primary" href="@("/classstatus/details/" + classStatus.Id)" title="Details Information">
+                                <i class="fas fa-info"></i>
+                            </a>
+                            <a class="btn btn-primary" href="@("/classstatus/edit/" + classStatus.Id)" title="Edit Information">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="btn btn-primary" @onclick="(() => DeleteClassStatus(classStatus))" title="Delete Information">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
             }
@@ -39,11 +45,45 @@ else
         </tbody>
     </table>
 }
+<ConfirmDialog @ref="deleteConfirmationClassStatusRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedClassStatus" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
 @code {
     private IEnumerable<ClassStatus> ClassStatusList;
-
+    protected ConfirmDialog deleteConfirmationClassStatusRef { get; set; }
+    private bool deleteClicked { get; set; } = false;
+    private ClassStatus SelectedClassStatus { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
+        await GetClassStatusList();
+    }
+    private async Task GetClassStatusList()
+    {
         ClassStatusList = await classStatusService.GetClassStatusList();
+    }
+    private async Task DeleteClassStatus(ClassStatus classStatus)
+    {
+        deleteClicked = true;
+        SelectedClassStatus = classStatus;
+        await deleteConfirmationClassStatusRef.Show();
+    }
+    private async Task DeleteConfirmedClassStatus()
+    {
+        Notification notification = new();
+        if (await classStatusService.DeleteClassStatus(SelectedClassStatus.Id))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Class Status Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Class Status Deletion";
+        }
+
+        appState.SetNotification(this, notification);
+        await GetClassStatusList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
     }
 }

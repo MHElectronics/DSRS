@@ -1,6 +1,7 @@
 ﻿@inject IStationService stationService
 @inject IWIMScaleService wimService
 @inject IConfiguration configuration
+@inject IClassStatusService classStatusService
 @using BOL.CustomModels
 @rendermode InteractiveServer
 
@@ -25,21 +26,17 @@
                                 }
                             }
                         </div>
-
                     }
                     else
                     {
                         <Loader />
                     }
                 </div>
-                @if (wims is null || wims.Count() == 0)
-                {
-                    <p></p>
-                }
-                else if (wims.Count() > 0)
+
+                @if (wims is not null && wims.Count() > 0)
                 {
                     <div class="col-md-6">
-                        <label>List of WIM Scale Information </label>
+                        <label>List of WIM Scale Information</label>
                         <select class="form-control" @bind="@wimId">
                             <option value="0">-Select WIM-</option>
                             @foreach (WIMScale item in wims)
@@ -51,44 +48,28 @@
                 }
 
                 <div class="col-md-3">
-                    <label>Start Date </label>
+                    <label>Start Date</label>
                     <input type="date" class="form-control" @bind="@reportParameters.DateStart" max="@DateTime.Today" placeholder="Start Date" />
                 </div>
                 <div class="col-md-3">
-                    <label>End Date </label>
+                    <label>End Date</label>
                     <input type="date" class="form-control" @bind="@reportParameters.DateEnd" max="@DateTime.Today" placeholder="End Date" />
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-4">
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <label>Number of Axles</label>
                     <select class="form-control" @bind="@reportParameters.NumberOfAxle">
                         <option value="0">-Default Axle-</option>
-                        @for(int i= 2; i <= MaxNoOfAxle; i++)
+                        @for (int i = 2; i <= MaxNoOfAxle; i++)
                         {
                             <option value="@i">Truck @i Axle</option>
                         }
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="wheelBase" class="form-label">Wheel Base</label>
-                    <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
-                </div>
-                <div class="col-md-3">
-                    <label for="classStatus" class="form-label">Class Status</label>
-                    <input type="number" @bind="@reportParameters.ClassStatus" class="form-control" placeholder="Class Status" id="classStatus" min="0" max="100" />
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <div class="icheck-primary d-inline">
-                            <input type="checkbox" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
-                            <label for="chkIsOverloaded">IsOverloaded?</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
+                    <label>Weight Filter Column</label>
                     <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
                         <option value="0">-No Filter-</option>
                         <option value="GrossVehicleWeight">Gross Vehicle Weight</option>
@@ -100,26 +81,46 @@
                         <option value="Axle6">Axle6</option>
                         <option value="Axle7">Axle7</option>
                         <option value="AxleRemaining">AxleRemaining</option>
-                    </select> 
+                    </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="WeightMin" class="form-label">Weight Minimum</label>
-                    <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" />
+                    <label>Class Status</label>
+                    <select class="form-control" @bind="@reportParameters.ClassStatus">
+                        <option value="0">-Default Class Status-</option>
+                        @foreach (ClassStatus status in ListClassStatus)
+                        {
+                            <option value="@status.Id">@status.Name</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="WeightMax" class="form-label">Weight Maximum</label>
-                    <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="0" />
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <div class="icheck-primary d-inline">
-                            <input type="checkbox" @bind="reportParameters.CheckWeightCalculation" id="CheckWeightCalculation" />
-                            <label for="CheckWeightCalculation">WeightCalculation?</label>
-                        </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
+                        <label class="form-check-label" for="chkIsOverloaded">Is Overloaded?</label>
                     </div>
                 </div>
             </div>
-               
+
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <label for="wheelBase">Wheel Base</label>
+                    <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
+                </div>
+                <div class="col-md-3">
+                    <label for="WeightMin">Weight Minimum</label>
+                    <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" />
+                </div>
+                <div class="col-md-3">
+                    <label for="WeightMax">Weight Maximum</label>
+                    <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="0" />
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" @bind="reportParameters.CheckWeightCalculation" id="CheckWeightCalculation" />
+                        <label class="form-check-label" for="CheckWeightCalculation">Weight Calculation?</label>
+                    </div>
+                </div>
+            </div>               
         }
         else
         {
@@ -158,6 +159,7 @@
 
     private IEnumerable<Station>? stations;
     private List<Station>? selectedStations;
+    private IEnumerable<ClassStatus> ListClassStatus { get; set; }
     private IEnumerable<WIMScale>? wims;
     private int MaxNoOfAxle { get; set; } 
     private bool selectionEnabled { get; set; } = false;
@@ -169,6 +171,7 @@
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
+        ListClassStatus = await classStatusService.GetClassStatusList();
         MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
         reportParameters.DateEnd = DateTime.Today;
         reportParameters.DateStart = DateTime.Now.AddDays(-1);
