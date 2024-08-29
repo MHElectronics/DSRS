@@ -3,6 +3,7 @@
 @inject IConfiguration configuration
 @inject IClassStatusService classStatusService
 @using BOL.CustomModels
+@using Syncfusion.Blazor.Calendars
 @rendermode InteractiveServer
 
 <div class="card">
@@ -18,11 +19,15 @@
                             {
                                 @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
                                 {
-                                    <span class="btn btn-primary" @onclick="@(() => StationClicked(item))">@item.StationName</span>
+                                    <span class="btn btn-primary" @onclick="@(() => StationClicked(item))">
+                                        <i class="fas fa-check-square"></i><span class="ms-2">&nbsp; @item.StationName</span>
+                                    </span>
                                 }
                                 else
                                 {
-                                    <span class="btn btn-outline-primary" @onclick="@(() => StationClicked(item))">@item.StationName</span>
+                                    <span class="btn btn-outline-primary" @onclick="@(() => StationClicked(item))">
+                                        <i class="fas fa-square"></i><span class="ms-2">&nbsp; @item.StationName</span>
+                                    </span>
                                 }
                             }
                         </div>
@@ -46,14 +51,11 @@
                         </select>
                     </div>
                 }
-
-                <div class="col-md-3">
-                    <label>Start Date</label>
-                    <input type="date" class="form-control" @bind="@reportParameters.DateStart" max="@DateTime.Today" placeholder="Start Date" />
-                </div>
-                <div class="col-md-3">
-                    <label>End Date</label>
-                    <input type="date" class="form-control" @bind="@reportParameters.DateEnd" max="@DateTime.Today" placeholder="End Date" />
+                <div class="col-md-6">
+                    <label>Select Date Range </label>
+                    <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd">
+                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
+                    </SfDateRangePicker>
                 </div>
             </div>
 
@@ -61,7 +63,7 @@
                 <div class="col-md-3">
                     <label>Number of Axles</label>
                     <select class="form-control" @bind="@reportParameters.NumberOfAxle">
-                        <option value="0">-Default Axle-</option>
+                        <option value="0">-No Filter-</option>
                         @for (int i = 2; i <= MaxNoOfAxle; i++)
                         {
                             <option value="@i">Truck @i Axle</option>
@@ -86,7 +88,7 @@
                 <div class="col-md-3">
                     <label>Class Status</label>
                     <select class="form-control" @bind="@reportParameters.ClassStatus">
-                        <option value="0">-Default Class Status-</option>
+                        <option value="0">-No Filter-</option>
                         @foreach (ClassStatus status in ListClassStatus)
                         {
                             <option value="@status.Id">@status.Name</option>
@@ -96,7 +98,7 @@
                 <div class="col-md-3">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
-                        <label class="form-check-label" for="chkIsOverloaded">Is Overloaded?</label>
+                        <label class="form-check-label" for="chkIsOverloaded">Overloaded?</label>
                     </div>
                 </div>
             </div>
@@ -117,7 +119,7 @@
                 <div class="col-md-3">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" @bind="reportParameters.CheckWeightCalculation" id="CheckWeightCalculation" />
-                        <label class="form-check-label" for="CheckWeightCalculation">Weight Calculation?</label>
+                        <label class="form-check-label" for="CheckWeightCalculation">Check Weight Calculation?</label>
                     </div>
                 </div>
             </div>               
@@ -167,6 +169,7 @@
     private string selectedType { get; set; } = "Daily";
 
     private ReportParameters reportParameters { get; set; } = new();
+    private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
 
     protected override async Task OnInitializedAsync()
     {
@@ -174,7 +177,7 @@
         ListClassStatus = await classStatusService.GetClassStatusList();
         MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
         reportParameters.DateEnd = DateTime.Today;
-        reportParameters.DateStart = DateTime.Now.AddDays(-1);
+        reportParameters.DateStart = DateTime.Now.AddYears(-10);
     }
     private async Task StationClicked(Station item)
     {
@@ -204,11 +207,17 @@
             wims = null;
         }
     }
+    private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
+    { 
+        reportParameters.DateStart = args.StartDate ?? DateTime.Now;
+        reportParameters.DateEnd = args.EndDate ?? DateTime.Now;  
+    }
     private async Task SelectionComplete()
     {
         selectionEnabled = !selectionEnabled;
         if (selectedStations is not null)
         {
+            reportParameters.SelectedStation = selectedStations.FirstOrDefault();
             await OnParametersChanged.InvokeAsync(reportParameters);
         }
     }
