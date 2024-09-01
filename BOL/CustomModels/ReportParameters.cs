@@ -8,6 +8,7 @@ namespace BOL.CustomModels;
 public class ReportParameters
 {
     public Station SelectedStation { get; set; }
+    public int SelectedWIMScaleId { get; set; }
     public DateTime DateStart { get; set; }
     public DateTime DateEnd { get; set; }
     public int NumberOfAxle { get; set; }

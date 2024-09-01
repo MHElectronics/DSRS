@@ -42,7 +42,7 @@
                 {
                     <div class="col-md-6">
                         <label>List of WIM Scale Information</label>
-                        <select class="form-control" @bind="@wimId">
+                        <select class="form-control" @bind="@reportParameters.SelectedWIMScaleId">
                             <option value="0">-Select WIM-</option>
                             @foreach (WIMScale item in wims)
                             {
@@ -66,7 +66,7 @@
                         <option value="0">-No Filter-</option>
                         @for (int i = 2; i <= MaxNoOfAxle; i++)
                         {
-                            <option value="@i">Truck @i Axle</option>
+                            <option value="@i">@i Axle</option>
                         }
                     </select>
                 </div>

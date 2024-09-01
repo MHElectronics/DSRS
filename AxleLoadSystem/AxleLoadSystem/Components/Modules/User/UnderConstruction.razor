@@ -133,6 +133,6 @@
     private async Task LoadChartData()
     {
         Chartview = true;
-        ChartData = await loadService.GetDateWise(station, startDate, endDate); 
+        ChartData = await loadService.GetDateWise(reportParameters.SelectedStation, reportParameters.DateStart, reportParameters.DateEnd); 
     }
 }
