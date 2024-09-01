@@ -128,10 +128,49 @@
         {
             <div class="row">
                 <div class="col">
-                    <label>@selectedStations?.Count() station(s) selected</label>
+                    <label>@selectedStations?.Count() station(s) selected </label>
                     @foreach (Station item in selectedStations ?? new())
                     {
                         <span class="badge badge-primary">@item.StationName</span>
+                    }
+                    @if (reportParameters.SelectedWIMScaleId > 0)
+                    {
+                        <label>, WIM Scale <span class="badge badge-primary">@reportParameters.SelectedWIMScaleId</span> selected</label>
+                    }
+                    @* <label>, Date range @reportParameters.DateStart to @reportParameters.DateEnd</label>
+                     *@
+                    @if (reportParameters.NumberOfAxle > 0)
+                    {
+                        <label>, Axle <span class="badge badge-primary">@reportParameters.NumberOfAxle</span> selected</label>
+                    }
+                    @if (reportParameters.WeightFilterColumn is not null)
+                    {
+                        <label>, Weight Filter Column <span class="badge badge-primary">@reportParameters.WeightFilterColumn</span> selected</label>
+                    }
+                    @if (reportParameters.ClassStatus > 0)
+                    {
+                        string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
+                        <label>, <span class="badge badge-primary">@name</span> selected</label>
+                    }
+                    @if (reportParameters.IsOverloaded)
+                    {
+                        <label>, <span class="badge badge-primary">Overloaded</span> selected</label>
+                    }
+                    @if (reportParameters.Wheelbase > 0)
+                    {
+                        <label>, <span class="badge badge-primary">@reportParameters.Wheelbase</span> Wheelbase selected</label>
+                    }
+                    @if (reportParameters.WeightMin > 0)
+                    {
+                        <label>, <span class="badge badge-primary">@reportParameters.WeightMin</span> Weight Minimum selected</label>
+                    }
+                    @if (reportParameters.WeightMax > 0)
+                    {
+                        <label>, <span class="badge badge-primary">@reportParameters.WeightMax</span> Weight Maximum selected</label>
+                    }
+                    @if (reportParameters.CheckWeightCalculation)
+                    {
+                        <label>, <span class="badge badge-primary">Check Weight Calculation</span> selected.</label>
                     }
                 </div>
             </div>
@@ -205,6 +244,7 @@
         else
         {
             wims = null;
+            reportParameters.SelectedWIMScaleId = 0;
         }
     }
     private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
