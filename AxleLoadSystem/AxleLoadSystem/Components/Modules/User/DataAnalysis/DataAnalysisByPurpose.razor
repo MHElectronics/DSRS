@@ -1,28 +1,21 @@
-﻿@page "/datasearch" 
-@page "/datavisualization"
-@page "/sqldirectsearch"
-
- @using BOL.Helpers
+﻿@page "/dataanalysis"
+@using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.PdfExport;
-@* @using ThemeHelper *@
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
 @inject IAxleLoadService loadService
 @inject NavigationManager NavigationManager
 
-<div class="row">
-    <div class="col">
-        <h5>Page is under construction. </h5>
-    </div>
-</div>
+<h3>Data Analysis By Purpose</h3>
 
 <ReportSelection OnParametersChanged="HandleParametersChanged" />
 @if (Chartview)
 {
     <div class="control-section" align='center'>
+        <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat float-right"></SfButton>
         <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
             <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
             <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
@@ -40,35 +33,16 @@
                 <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
             </ChartPrimaryYAxis>
             <ChartSeriesCollection>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="OverloadedVehicles" YName="TotalVehicles" Width="2" Name="August" Type=ChartSeriesType.Bar>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="OverloadedVehicles" YName="Month" Width="2" Name="August" Type=ChartSeriesType.Bar>
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-@*                 <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Sunday" Type="ChartSeriesType.StackingColumn">
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Monday" Type="ChartSeriesType.StackingColumn">
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Tuesday" Type="ChartSeriesType.StackingColumn">
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Wednessday" Type="ChartSeriesType.StackingColumn">
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Thusday" Type="ChartSeriesType.StackingColumn">
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Friday" Type="ChartSeriesType.StackingColumn">
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries> *@
             </ChartSeriesCollection>
             <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
             <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
         </SfChart>
-        <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat"></SfButton>
+
     </div>
 }
-
 @code {
     private Theme Theme { get; set; } = 0;
     public string Width { get; set; } = "90%";
@@ -97,16 +71,6 @@
     public Station station { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
 
-
-    protected override async void OnInitialized()
-    {
-        // Theme = ThemeHelper.GetCurrentTheme(NavigationManager.Uri);
-        // if (SampleService.IsDevice)
-        // {
-        //     Width = "100%";
-        // }
-    }
-
     void axisLabel(AxisLabelRenderEventArgs args)
     {
         if (args.Value > 999999 || args.Value < -999999)
@@ -128,14 +92,16 @@
     private async Task HandleParametersChanged(ReportParameters parameters)
     {
         reportParameters = parameters;
-        await LoadChartData(); 
+        await LoadChartData();
     }
     private async Task LoadChartData()
     {
         if (reportParameters.Stations is not null && reportParameters.Stations.Any())
         {
             Chartview = true;
-            
+            ChartTitle = "Number of Overloaded Vehicle";
+            XAxisTitle = "Number of Vehicles (Units)";
+            YAxisTitle = "Months";
             ChartData = await loadService.GetMonthlyOverloadedReport(reportParameters.Stations, reportParameters.DateStart, reportParameters.DateEnd);
         }
     }

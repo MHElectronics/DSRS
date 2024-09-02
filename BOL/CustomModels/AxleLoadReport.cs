@@ -17,7 +17,7 @@ public class AxleLoadReport
     public int Axle7 { get; set; }
     public int AxleRemaining { get; set; }
     public int GrossVehicleWeight { get; set; }
-    public int TotalVehicles { get; set; }
-    public int OverloadedVehicles { get; set; }
+    public int TotalVehicle { get; set; }
+    public int OverloadVehicle { get; set; }
 
 }
