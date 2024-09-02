@@ -1,8 +1,9 @@
-﻿@page "/datasearch"
+﻿@* @page "/datasearch" *@
 @page "/dataanalysis"
-@page "/datavisualization"
+@* @page "/datavisualization"
 @page "/sqldirectsearch"
-@using BOL.Helpers
+ *@
+ @using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Buttons
@@ -40,10 +41,10 @@
                 <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
             </ChartPrimaryYAxis>
             <ChartSeriesCollection>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Saturday" Type=ChartSeriesType.StackingColumn>
+                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="OverloadedVehicles" YName="TotalVehicles" Width="2" Name="August" Type=ChartSeriesType.Bar>
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Sunday" Type="ChartSeriesType.StackingColumn">
+@*                 <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Sunday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
                 <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Monday" Type="ChartSeriesType.StackingColumn">
@@ -60,7 +61,7 @@
                 </ChartSeries>
                 <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="NumberofAxle" YName="GrossVehicleWeight" Width="2" Name="Friday" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
+                </ChartSeries> *@
             </ChartSeriesCollection>
             <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
             <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
@@ -133,9 +134,11 @@
     private async Task LoadChartData()
     {
         if (reportParameters.Stations is not null && reportParameters.Stations.Any())
-    {
+        {
             Chartview = true;
-            ChartData = await loadService.GetDateWise(reportParameters.Stations, reportParameters.DateStart, reportParameters.DateEnd);
+            
+            ChartData = await loadService.GetMonthlyOverloadedReport(reportParameters.Stations, reportParameters.DateStart, reportParameters.DateEnd);
         }
     }
+
 }
