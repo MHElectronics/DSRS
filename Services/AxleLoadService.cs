@@ -14,6 +14,8 @@ public interface IAxleLoadService
 
     Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate);
     Task<IEnumerable<AxleLoadReport>> GetDateWise (List<Station> stations, DateTime startDate, DateTime endDate);
+    Task<IEnumerable<AxleLoadReport>> GetMonthlyOverloadedReport(List<Station> stations, DateTime startDate, DateTime endDate);
+
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -120,7 +122,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     }
     public async Task<IEnumerable<AxleLoadReport>> GetDateWise(List<Station> stations, DateTime startDate, DateTime endDate)
     {
-        string stationIds = string.Join(",",stations.Select(s => s.StationId));
+        string stationIds = string.Join(",", stations.Select(s => s.StationId));
         string query = @"
     SELECT 
         COUNT(1) AS Count,
@@ -141,7 +143,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DateTime >= @DateStart 
         AND DateTime <= @DateEnd
         AND IsOverloaded = 1
-        AND AL.StationId IN (" + stationIds  + @")
+        AND AL.StationId IN (" + stationIds + @")
         AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
         AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
         AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -154,12 +156,48 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             query,
             new
             {
-                DateStart = startDate, 
-                DateEnd = endDate, 
-                NumberOfAxle = 0,  
-                Wheelbase = 0,  
-                ClassStatus = 0,  
-                CheckWeightCalculation = 1   
+                DateStart = startDate,
+                DateEnd = endDate,
+                NumberOfAxle = 0,
+                Wheelbase = 0,
+                ClassStatus = 0,
+                CheckWeightCalculation = 1
             });
     }
+    public async Task<IEnumerable<AxleLoadReport>> GetMonthlyOverloadedReport(List<Station> stations, DateTime startDate, DateTime endDate)
+    {
+        string stationIds = string.Join(",", stations.Select(s => s.StationId));
+        string query = @"
+    SELECT 
+        DATEPART(MONTH, DateTime) AS Month,
+        COUNT(1) AS TotalVehicles,
+        SUM(CASE WHEN IsOverloaded = 1 THEN 1 ELSE 0 END) AS OverloadedVehicles
+    FROM 
+        AxleLoad AS AL
+    WHERE 
+        DateTime >= @DateStart 
+        AND DateTime <= @DateEnd
+        AND AL.StationId IN (" + stationIds + @")
+        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+        AND (@CheckWeightCalculation = 0 OR (Axle1 + Axle2 + Axle3 + Axle4 + Axle5 + Axle6 + Axle7 + AxleRemaining = GrossVehicleWeight))
+    GROUP BY 
+        DATEPART(MONTH, DateTime)
+    ORDER BY 
+        Month";
+
+        return await _db.LoadData<AxleLoadReport, dynamic>(
+            query,
+            new
+            {
+                DateStart = startDate,
+                DateEnd = endDate,
+                NumberOfAxle = 0,
+                Wheelbase = 0,
+                ClassStatus = 0,
+                CheckWeightCalculation = 1
+            });
+    }
+
 }

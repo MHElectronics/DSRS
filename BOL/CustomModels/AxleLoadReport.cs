@@ -5,6 +5,7 @@ public class AxleLoadReport
 {
     public int Count { get; set; }
     public DateTime Date { get; set; }
+    public int Month { get; set; }
     public int Weekday { get; set; }
     public int NumberofAxle { get; set; }
     public int Axle1 { get; set; }
@@ -16,7 +17,7 @@ public class AxleLoadReport
     public int Axle7 { get; set; }
     public int AxleRemaining { get; set; }
     public int GrossVehicleWeight { get; set; }
-    public int TotalVehicle { get; set; }
-    public int TotalOverloaded { get; set; }
+    public int TotalVehicles { get; set; }
+    public int OverloadedVehicles { get; set; }
 
 }
