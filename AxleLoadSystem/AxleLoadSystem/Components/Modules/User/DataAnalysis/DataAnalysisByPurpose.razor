@@ -55,20 +55,11 @@
 
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
-    public ReportParameters reportParameters { get; set; }
-    public DateTime startDate { get; set; }
-    public DateTime endDate { get; set; }
-    public int NumberofAxle { get; set; }
-    public int ClassStatus { get; set; }
-    public int WheelBase { get; set; }
-    public bool IsOverloaded { get; set; }
-
     private bool Chartview { get; set; }
 
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
 
-    public Station station { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
 
     void axisLabel(AxisLabelRenderEventArgs args)
@@ -91,19 +82,13 @@
 
     private async Task HandleParametersChanged(ReportParameters parameters)
     {
-        reportParameters = parameters;
-        await LoadChartData();
-    }
-    private async Task LoadChartData()
-    {
-        if (reportParameters.Stations is not null && reportParameters.Stations.Any())
+        if (parameters.Stations is not null && parameters.Stations.Any())
         {
             Chartview = true;
             ChartTitle = "Number of Overloaded Vehicle";
             XAxisTitle = "Number of Vehicles (Units)";
             YAxisTitle = "Months";
-            ChartData = await loadService.GetMonthlyOverloadedReport(reportParameters.Stations, reportParameters.DateStart, reportParameters.DateEnd);
+            ChartData = await loadService.GetMonthlyOverloadedReport(parameters);
         }
     }
-
 }
