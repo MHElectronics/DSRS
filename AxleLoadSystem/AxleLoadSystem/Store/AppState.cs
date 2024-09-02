@@ -1,4 +1,5 @@
 ﻿using AxleLoadSystem.Models;
+using Blazored.LocalStorage;
 using BOL.CustomModels;
 using Microsoft.AspNetCore.Components;
 using static AxleLoadSystem.Models.Notification;
@@ -14,16 +15,24 @@ public interface IAppState
     void NotifyProfileImageChange();
     Notification GetNotification();
 
-    void SetReportParameters(ReportParameters param);
-    ReportParameters GetReportParameters();
+    Task SetReportParameters(ReportParameters param);
+    Task<ReportParameters> GetReportParameters();
 }
 public class AppState : IAppState
 {
     public event Action OnChange;
     public event Action OnProfileImageChange;
+
+    private readonly ILocalStorageService _storage;
+
     private Notification _notification { get; set; }
 
     private ReportParameters _reportParameters { get; set; }
+
+    public AppState(ILocalStorageService storageService)
+    {
+        _storage = storageService;
+    }
 
     #region Global Notification
     public void SetNotification(ComponentBase source, Notification notification)
@@ -47,12 +56,19 @@ public class AppState : IAppState
     }
     #endregion
 
-    public void SetReportParameters(ReportParameters param)
+    public async Task SetReportParameters(ReportParameters param)
     {
+        await _storage.SetItemAsync("ReportSelection", param);
         _reportParameters = param;
     }
-    public ReportParameters GetReportParameters()
+    public async Task<ReportParameters> GetReportParameters()
     {
-        return _reportParameters ?? new();
+        if (await _storage.ContainKeyAsync("ReportSelection"))
+        {
+            _reportParameters = await _storage.GetItemAsync<ReportParameters>("ReportSelection") ?? new();
+            return _reportParameters;
+        }
+
+        return new();
     }
 }

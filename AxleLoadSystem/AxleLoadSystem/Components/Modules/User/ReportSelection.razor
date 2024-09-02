@@ -230,7 +230,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        reportParameters = appState.GetReportParameters();
+        reportParameters = await appState.GetReportParameters();
         stations = await stationService.Get();
         ListClassStatus = await classStatusService.GetClassStatusList();
         MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
@@ -273,7 +273,7 @@
     }
     private async Task SelectionComplete()
     {
-        appState.SetReportParameters(reportParameters);
+        await appState.SetReportParameters(reportParameters);
         selectionEnabled = !selectionEnabled;
         await OnParametersChanged.InvokeAsync(reportParameters);
     }
