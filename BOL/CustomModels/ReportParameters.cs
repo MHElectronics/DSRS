@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace BOL.CustomModels;
 public class ReportParameters
 {
-    public Station SelectedStation { get; set; }
-    public int SelectedWIMScaleId { get; set; }
+    public List<Station> Stations { get; set; }
+    public int WIMScaleId { get; set; }
     public DateTime DateStart { get; set; }
     public DateTime DateEnd { get; set; }
     public int NumberOfAxle { get; set; }

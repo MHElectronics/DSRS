@@ -132,7 +132,10 @@
     }
     private async Task LoadChartData()
     {
-        Chartview = true;
-        ChartData = await loadService.GetDateWise(reportParameters.SelectedStation, reportParameters.DateStart, reportParameters.DateEnd); 
+        if (reportParameters.Stations is not null && reportParameters.Stations.Any())
+    {
+            Chartview = true;
+            ChartData = await loadService.GetDateWise(reportParameters.Stations, reportParameters.DateStart, reportParameters.DateEnd);
+        }
     }
 }

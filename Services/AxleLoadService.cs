@@ -13,7 +13,7 @@ public interface IAxleLoadService
     Task<bool> Delete(UploadedFile file);
 
     Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate);
-    Task<IEnumerable<AxleLoadReport>> GetDateWise (Station station, DateTime startDate, DateTime endDate);
+    Task<IEnumerable<AxleLoadReport>> GetDateWise (List<Station> stations, DateTime startDate, DateTime endDate);
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -118,8 +118,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<AxleLoadCount, object>(query, new { station.StationId, startDate, endDate });
     }
-    public async Task<IEnumerable<AxleLoadReport>> GetDateWise(Station station, DateTime startDate, DateTime endDate)
+    public async Task<IEnumerable<AxleLoadReport>> GetDateWise(List<Station> stations, DateTime startDate, DateTime endDate)
     {
+        string stationIds = string.Join(",",stations.Select(s => s.StationId));
         string query = @"
     SELECT 
         COUNT(1) AS Count,
@@ -140,7 +141,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DateTime >= @DateStart 
         AND DateTime <= @DateEnd
         AND IsOverloaded = 1
-        AND AL.StationId = @StationId  -- Filter for specific StationId
+        AND AL.StationId IN (" + stationIds  + @")
         AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
         AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
         AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -153,7 +154,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             query,
             new
             {
-                StationId = station.StationId,  
                 DateStart = startDate, 
                 DateEnd = endDate, 
                 NumberOfAxle = 0,  

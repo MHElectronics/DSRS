@@ -2,10 +2,15 @@
 @inject IWIMScaleService wimService
 @inject IConfiguration configuration
 @inject IClassStatusService classStatusService
+@inject IAppState appState
 @using BOL.CustomModels
 @using Syncfusion.Blazor.Calendars
 @rendermode InteractiveServer
 
+@if (appState is null)
+{
+    return;
+}
 <div class="card">
     <div class="card-body">
         @if (selectionEnabled && reportParameters is not null)
@@ -17,7 +22,7 @@
                         <div class="btn-group">
                             @foreach (Station item in stations.OrderBy(s => s.StationName))
                             {
-                                @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
+                                @if (reportParameters.Stations is not null && reportParameters.Stations.Any(s => s.StationId == item.StationId))
                                 {
                                     <span class="btn btn-primary" @onclick="@(() => StationClicked(item))">
                                         <i class="fas fa-check-square"></i><span class="ms-2">&nbsp; @item.StationName</span>
@@ -37,12 +42,17 @@
                         <Loader />
                     }
                 </div>
-
+                <div class="col-md-6">
+                    <label>Select Date Range </label>
+                    <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd">
+                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
+                    </SfDateRangePicker>
+                </div>
                 @if (wims is not null && wims.Count() > 0)
                 {
                     <div class="col-md-6">
                         <label>List of WIM Scale Information</label>
-                        <select class="form-control" @bind="@reportParameters.SelectedWIMScaleId">
+                        <select class="form-control" @bind="@reportParameters.WIMScaleId">
                             <option value="0">-Select WIM-</option>
                             @foreach (WIMScale item in wims)
                             {
@@ -51,12 +61,6 @@
                         </select>
                     </div>
                 }
-                <div class="col-md-6">
-                    <label>Select Date Range </label>
-                    <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd">
-                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
-                    </SfDateRangePicker>
-                </div>
             </div>
 
             <div class="row mt-3">
@@ -70,21 +74,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label>Weight Filter Column</label>
-                    <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
-                        <option value="0">-No Filter-</option>
-                        <option value="GrossVehicleWeight">Gross Vehicle Weight</option>
-                        <option value="Axle1">Axle1</option>
-                        <option value="Axle2">Axle2</option>
-                        <option value="Axle3">Axle3</option>
-                        <option value="Axle4">Axle4</option>
-                        <option value="Axle5">Axle5</option>
-                        <option value="Axle6">Axle6</option>
-                        <option value="Axle7">Axle7</option>
-                        <option value="AxleRemaining">AxleRemaining</option>
-                    </select>
-                </div>
+                
                 <div class="col-md-3">
                     <label>Class Status</label>
                     <select class="form-control" @bind="@reportParameters.ClassStatus">
@@ -96,56 +86,77 @@
                     </select>
                 </div>
                 <div class="col-md-3">
+                    <label for="wheelBase">Wheel Base</label>
+                    <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
-                        <label class="form-check-label" for="chkIsOverloaded">Overloaded?</label>
+                        <div class="icheck-primary d-inline">
+                            <input type="checkbox" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
+                            <label for="chkIsOverloaded"></label>
+                        </div>
+                        <label class="form-check-label" for="chkIsOverloaded">Show only overloads?</label>
                     </div>
                 </div>
             </div>
 
             <div class="row mt-3">
                 <div class="col-md-3">
-                    <label for="wheelBase">Wheel Base</label>
-                    <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
+                    <label>Filter by Weight</label>
+                    <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
+                        <option value="">-No Filter-</option>
+                        <option value="GrossVehicleWeight">Gross Vehicle Weight</option>
+                        <option value="Axle1">Axle 1</option>
+                        <option value="Axle2">Axle 2</option>
+                        <option value="Axle3">Axle 3</option>
+                        <option value="Axle4">Axle 4</option>
+                        <option value="Axle5">Axle 5</option>
+                        <option value="Axle6">Axle 6</option>
+                        <option value="Axle7">Axle 7</option>
+                        <option value="AxleRemaining">Remaining</option>
+                    </select>
                 </div>
-                <div class="col-md-3">
-                    <label for="WeightMin">Weight Minimum</label>
-                    <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" />
-                </div>
-                <div class="col-md-3">
-                    <label for="WeightMax">Weight Maximum</label>
-                    <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="0" />
-                </div>
-                <div class="col-md-3">
+                @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
+                {
+                    <div class="col-md-3">
+                        <label for="WeightMin">Weight Minimum</label>
+                        <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="WeightMax">Weight Maximum</label>
+                        <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="0" />
+                    </div>
+                }
+               @*  <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" @bind="reportParameters.CheckWeightCalculation" id="CheckWeightCalculation" />
+                        <div class="icheck-primary d-inline">
+                            <input type="checkbox" @bind="reportParameters.CheckWeightCalculation" id="CheckWeightCalculation" />
+                            <label for="CheckWeightCalculation"></label>
+                        </div>
                         <label class="form-check-label" for="CheckWeightCalculation">Check Weight Calculation?</label>
                     </div>
-                </div>
+                </div> *@
             </div>               
         }
         else
         {
             <div class="row">
                 <div class="col">
-                    <label>@selectedStations?.Count() station(s) selected </label>
-                    @foreach (Station item in selectedStations ?? new())
+                    <label>@reportParameters.Stations?.Count() station(s) selected: </label>
+                    @foreach (Station item in reportParameters.Stations ?? new())
                     {
                         <span class="badge badge-primary">@item.StationName</span>
                     }
-                    @if (reportParameters.SelectedWIMScaleId > 0)
+                    @if (reportParameters.WIMScaleId > 0)
                     {
-                        <label>, WIM Scale <span class="badge badge-primary">@reportParameters.SelectedWIMScaleId</span> selected</label>
+                        <label>, WIM Scale <span class="badge badge-primary">@reportParameters.WIMScaleId</span> selected</label>
                     }
-                    @* <label>, Date range @reportParameters.DateStart to @reportParameters.DateEnd</label>
-                     *@
+                    <br /><label>Date range: @reportParameters.DateStart.ToString("dd MMM yy") to @reportParameters.DateEnd.ToString("dd MMM yy")</label>
                     @if (reportParameters.NumberOfAxle > 0)
                     {
                         <label>, Axle <span class="badge badge-primary">@reportParameters.NumberOfAxle</span> selected</label>
-                    }
-                    @if (reportParameters.WeightFilterColumn is not null)
-                    {
-                        <label>, Weight Filter Column <span class="badge badge-primary">@reportParameters.WeightFilterColumn</span> selected</label>
                     }
                     @if (reportParameters.ClassStatus > 0)
                     {
@@ -160,21 +171,28 @@
                     {
                         <label>, <span class="badge badge-primary">@reportParameters.Wheelbase</span> Wheelbase selected</label>
                     }
-                    @if (reportParameters.WeightMin > 0)
+                    @if (reportParameters.WeightFilterColumn is not null)
                     {
-                        <label>, <span class="badge badge-primary">@reportParameters.WeightMin</span> Weight Minimum selected</label>
+                        string message = "";
+                        @if (reportParameters.WeightMin > 0)
+                        {
+                            message += "Min: " + reportParameters.WeightMin.ToString("N0");
+                        }
+                        @if (reportParameters.WeightMax > 0)
+                        {
+                            message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
+                        }
+                        message = "(" + message + ")";
+                        <br/><label>Weight: <span class="badge badge-primary">@reportParameters.WeightFilterColumn @message</span></label>
                     }
-                    @if (reportParameters.WeightMax > 0)
-                    {
-                        <label>, <span class="badge badge-primary">@reportParameters.WeightMax</span> Weight Maximum selected</label>
-                    }
+                    
                     @if (reportParameters.CheckWeightCalculation)
                     {
                         <label>, <span class="badge badge-primary">Check Weight Calculation</span> selected.</label>
                     }
                 </div>
             </div>
-            @if (selectedStations is not null)
+            @if (reportParameters.Stations is not null)
             {
                 <div class="row">
                     <div class="col-md-6 btn-group">
@@ -199,7 +217,7 @@
     public EventCallback<ReportParameters?> OnParametersChanged { get; set; }
 
     private IEnumerable<Station>? stations;
-    private List<Station>? selectedStations;
+    //private List<Station>? selectedStations;
     private IEnumerable<ClassStatus> ListClassStatus { get; set; }
     private IEnumerable<WIMScale>? wims;
     private int MaxNoOfAxle { get; set; } 
@@ -212,28 +230,29 @@
 
     protected override async Task OnInitializedAsync()
     {
+        reportParameters = appState.GetReportParameters();
         stations = await stationService.Get();
         ListClassStatus = await classStatusService.GetClassStatusList();
         MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
         reportParameters.DateEnd = DateTime.Today;
-        reportParameters.DateStart = DateTime.Now.AddYears(-10);
+        reportParameters.DateStart = DateTime.Now.AddMonths(-1);
     }
     private async Task StationClicked(Station item)
     {
-        if (selectedStations is null)
+        if (reportParameters.Stations is null)
         {
-            selectedStations = new();
+            reportParameters.Stations = new();
         }
-        if (selectedStations.Any(s => s.StationId == item.StationId))
+        if (reportParameters.Stations.Any(s => s.StationId == item.StationId))
         {
-            selectedStations.Remove(item);
+            reportParameters.Stations.Remove(item);
         }
         else
         {
-            selectedStations.Add(item);
+            reportParameters.Stations.Add(item);
         }
 
-        if (selectedStations.Count() == 1)
+        if (reportParameters.Stations.Count() == 1)
         {
             wims = await wimService.GetByStation(new WIMScale() { StationId = item.StationId });
             if (wims is not null && wims.Count() == 1)
@@ -244,7 +263,7 @@
         else
         {
             wims = null;
-            reportParameters.SelectedWIMScaleId = 0;
+            reportParameters.WIMScaleId = 0;
         }
     }
     private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
@@ -254,12 +273,9 @@
     }
     private async Task SelectionComplete()
     {
+        appState.SetReportParameters(reportParameters);
         selectionEnabled = !selectionEnabled;
-        if (selectedStations is not null)
-        {
-            reportParameters.SelectedStation = selectedStations.FirstOrDefault();
-            await OnParametersChanged.InvokeAsync(reportParameters);
-        }
+        await OnParametersChanged.InvokeAsync(reportParameters);
     }
     private void StationSelected(List<Station> selectedStations)
     {
