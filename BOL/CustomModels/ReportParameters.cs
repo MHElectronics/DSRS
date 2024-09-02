@@ -1,7 +1,7 @@
 ﻿namespace BOL.CustomModels;
 public class ReportParameters
 {
-    public List<int> Stations { get; set; }
+    public List<int> Stations { get; set; } = new();
     public int WIMScaleId { get; set; }
     public DateTime DateStart { get; set; }
     public DateTime DateEnd { get; set; }

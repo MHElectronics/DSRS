@@ -67,10 +67,6 @@ public class AppState : IAppState
         if (await _storage.ContainKeyAsync("ReportSelection"))
         {
             _reportParameters = await _storage.GetItemAsync<ReportParameters>("ReportSelection") ?? new();
-            if(_reportParameters.Stations is null)
-            {
-                _reportParameters.Stations = new();
-            }
             return _reportParameters;
         }
 

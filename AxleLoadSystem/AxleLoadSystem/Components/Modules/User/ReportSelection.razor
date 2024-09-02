@@ -210,7 +210,7 @@ else
             }
         </div>
     </div>
-    @if (selectedStations is not null)
+    @* @if (selectedStations is not null)
     {
         <div class="row">
             <div class="col-md-6 btn-group">
@@ -219,7 +219,7 @@ else
                 <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
             </div>
         </div>
-    }
+    } *@
 }
 
 @code {

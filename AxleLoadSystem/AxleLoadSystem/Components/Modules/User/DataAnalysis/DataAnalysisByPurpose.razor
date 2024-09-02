@@ -85,10 +85,15 @@
         if (parameters.Stations is not null && parameters.Stations.Any())
         {
             Chartview = true;
-            ChartTitle = "Number of Overloaded Vehicle";
-            XAxisTitle = "Number of Vehicles (Units)";
-            YAxisTitle = "Months";
-            ChartData = await loadService.GetMonthlyOverloadedReport(parameters);
+            // ChartTitle = "Number of Overloaded Vehicle";
+            // XAxisTitle = "Number of Vehicles (Units)";
+            // YAxisTitle = "Months";
+
+            IEnumerable<AxleLoadReport> Data = await loadService.GetMonthlyOverloadedReport(parameters);
+            if (Data is not null)
+            {
+                ChartData = Data;
+            }
         }
     }
 }
