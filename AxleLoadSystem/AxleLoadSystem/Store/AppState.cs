@@ -49,13 +49,14 @@ public class AppState : IAppState
     {
         return _notification;
     }
+    #endregion
 
     public void NotifyProfileImageChange()
     {
         OnProfileImageChange?.Invoke();
     }
-    #endregion
 
+    #region Report Parameters
     public async Task SetReportParameters(ReportParameters param)
     {
         await _storage.SetItemAsync("ReportSelection", param);
@@ -71,4 +72,5 @@ public class AppState : IAppState
 
         return new();
     }
+    #endregion
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BOL.CustomModels;
+﻿namespace BOL.CustomModels;
 public class ReportParameters
 {
     public List<Station> Stations { get; set; }
@@ -14,7 +8,7 @@ public class ReportParameters
     public int NumberOfAxle { get; set; }
     public int ClassStatus { get; set; }
     public int Wheelbase { get; set; }
-    public string WeightFilterColumn { get; set; }
+    public string WeightFilterColumn { get; set; } = String.Empty;
     public int WeightMin { get; set; }
     public int WeightMax { get; set; }
     public bool CheckWeightCalculation { get; set; }
