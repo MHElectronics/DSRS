@@ -17,35 +17,33 @@
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
     </div>
 </div>
-@if (Chartview)
+@if (Chartview && ChartData is not null)
 {
-    @* <div class="control-section" align='center'>
-        <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat float-right"></SfButton>
-        <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+     <div class="control-section" align='center'>
+        <buton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat float-left"></buton>
+        <SfChart @ref="@chartInstance" Title="Number of Overloaded Vehicles" Width="@Width" Theme="@Theme">
             <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
-            <ChartEvents OnAxisLabelRender="axisLabel"></ChartEvents>
-            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelIntersectAction="LabelIntersectAction.Rotate45">
+            <ChartPrimaryXAxis Title="Months" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
                 <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                 <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
-                <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
-                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
             </ChartPrimaryXAxis>
-            <ChartPrimaryYAxis Title="@YAxisTitle">
+            <ChartPrimaryYAxis Title="Number of Vehicles (Units)">
                 <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
-                <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
-                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
             </ChartPrimaryYAxis>
             <ChartSeriesCollection>
-                <ChartSeries ColumnWidth="0.5" DataSource="@ChartData" XName="OverloadedVehicles" YName="Month" Width="2" Name="August" Type=ChartSeriesType.Bar>
+                <ChartSeries Name="Number of Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn">
+                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                </ChartSeries>
+                <ChartSeries Name="Total Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn">
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
             </ChartSeriesCollection>
             <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
             <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
         </SfChart>
-    </div>*@
+    </div> 
+    
+
 }
 @if(ChartData is not null)
 {
@@ -110,8 +108,7 @@
     private async Task HandleParametersChanged(ReportParameters parameters)
     {
         if (parameters.Stations is not null && parameters.Stations.Any())
-        {
-            Chartview = true;
+        { 
             // ChartTitle = "Number of Overloaded Vehicle";
             // XAxisTitle = "Number of Vehicles (Units)";
             // YAxisTitle = "Months";
@@ -120,6 +117,7 @@
             if (Data is not null)
             {
                 ChartData = Data;
+                Chartview = true;
             }
         }
     }
