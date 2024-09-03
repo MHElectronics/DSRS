@@ -9,12 +9,17 @@
 @inject IAxleLoadService loadService
 @inject NavigationManager NavigationManager
 
-<h3>Data Analysis By Purpose</h3>
-
-<ReportSelection OnParametersChanged="HandleParametersChanged" />
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Monthly Report</h3>
+    </div>
+    <div class="card-body">
+        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+    </div>
+</div>
 @if (Chartview)
 {
-    <div class="control-section" align='center'>
+    @* <div class="control-section" align='center'>
         <SfButton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat float-right"></SfButton>
         <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
             <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
@@ -40,9 +45,31 @@
             <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
             <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
         </SfChart>
-
-    </div>
+    </div>*@
 }
+@if(ChartData is not null)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Total Vehicle</th>
+                <th>Overloaded Vehicle</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(AxleLoadReport item in ChartData)
+            {
+                <tr>
+                    <td>@item.MonthName</td>
+                    <td>@item.TotalVehicle</td>
+                    <td>@item.OverloadVehicle</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 @code {
     private Theme Theme { get; set; } = 0;
     public string Width { get; set; } = "90%";

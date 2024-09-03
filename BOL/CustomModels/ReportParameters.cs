@@ -3,8 +3,8 @@ public class ReportParameters
 {
     public List<int> Stations { get; set; } = new();
     public int WIMScaleId { get; set; }
-    public DateTime DateStart { get; set; }
-    public DateTime DateEnd { get; set; }
+    public DateTime DateStart { get; set; } = DateTime.Today.AddMonths(-1);
+    public DateTime DateEnd { get; set; } = DateTime.Today;
     public int NumberOfAxle { get; set; }
     public int ClassStatus { get; set; }
     public int Wheelbase { get; set; }
