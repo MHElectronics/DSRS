@@ -25,10 +25,20 @@
             </div>
 
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-12">
             @if (stations is not null)
             {
+                string strIconAll = "fa-square";
+                if (stations?.Count() == selectedStations?.Count())
+                {
+                    strIconAll = "fa-check-square";
+                }
                 <div class="btn-group">
+                    <span class="btn btn-outline-primary" @onclick="@(() => AllStationClicked())" title="Select/Unselect All ALCS">
+                        <i class="fas @strIconAll"></i><span class="ms-2">&nbsp;All</span>
+                    </span>
                     @foreach (Station item in stations.OrderBy(s => s.StationName))
                     {
                         string strIcon = "fa-square";
@@ -147,16 +157,14 @@
 }
 else
 {
-    <div class="row">
-        <div class="col">
-            <button class="btn btn-primary" @onclick="EnableChange">Change Selection</button>
-            <br />
-            @if (reportParameters.Stations is null || reportParameters.Stations.Count() == 0)
-            {
-                <span class="text text-danger">No ALCS is selected</span>
-            }
-            else
-            {
+    <div class="row" @onclick="EnableChange" title="Click to change" style="cursor:context-menu;">
+        @if (reportParameters.Stations is null || reportParameters.Stations.Count() == 0)
+        {
+            <span class="text text-danger">No ALCS is selected</span>
+        }
+        else
+        {
+            <div class="col-md-10">
                 <label>@reportParameters.Stations?.Count() station(s) selected: </label>
                 @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList())
                 {
@@ -166,49 +174,63 @@ else
                 {
                     <label>, WIM Scale <span class="badge badge-primary">@reportParameters.WIMScaleId</span> selected</label>
                 }
-                <br />
-
-                <label>Date range: @reportParameters.DateStart.ToString("dd MMM yy") to @reportParameters.DateEnd.ToString("dd MMM yy")</label>
-                @if (reportParameters.NumberOfAxle > 0)
-                {
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary float-right" @onclick="EnableChange">Change Selection</button>
+            </div>
+            <div class="col-md-3">
+                <label>Date range: <span class="badge badge-primary">@reportParameters.DateStart.ToString("dd MMM yy")</span> to <span class="badge badge-primary">@reportParameters.DateEnd.ToString("dd MMM yy")</span></label>
+            </div>
+            @if (reportParameters.NumberOfAxle > 0)
+            {
+                <div class="col-md-3">
                     <label>, Axle <span class="badge badge-primary">@reportParameters.NumberOfAxle</span> selected</label>
-                }
-                @if (reportParameters.ClassStatus > 0)
-                {
-                    string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
-                    <label>, <span class="badge badge-primary">@name</span> selected</label>
-                }
-                @if (reportParameters.IsOverloaded)
-                {
-                    <label>, <span class="badge badge-primary">Overloaded</span> selected</label>
-                }
-                @if (reportParameters.Wheelbase > 0)
-                {
-                    <label>, <span class="badge badge-primary">@reportParameters.Wheelbase</span> Wheelbase selected</label>
-                }
-                @if (reportParameters.WeightFilterColumn is not null)
-                {
-                    string message = "";
-                    @if (reportParameters.WeightMin > 0)
-                    {
-                        message += "Min: " + reportParameters.WeightMin.ToString("N0");
-                    }
-                    @if (reportParameters.WeightMax > 0)
-                    {
-                        message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
-                    }
-                    message = "(" + message + ")";
-                    <br />
-
-                    <label>Weight: <span class="badge badge-primary">@reportParameters.WeightFilterColumn @message</span></label>
-                }
-
-                @if (reportParameters.CheckWeightCalculation)
-                {
-                    <label>, <span class="badge badge-primary">Check Weight Calculation</span> selected.</label>
-                }
+                </div>
             }
-        </div>
+            @if (reportParameters.ClassStatus > 0)
+            {
+                string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
+                <div class="col-md-3">
+                    <label>, <span class="badge badge-primary">@name</span> selected</label>
+                </div>
+            }
+            @if (reportParameters.IsOverloaded)
+            {
+                <div class="col-md-3">
+                    <label>, <span class="badge badge-primary">Overloaded</span> selected</label>
+                </div>
+            }
+            @if (reportParameters.Wheelbase > 0)
+            {
+                <div class="col-md-3">
+                    <label>, <span class="badge badge-primary">@reportParameters.Wheelbase</span> Wheelbase selected</label>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
+            {
+                string message = "";
+                @if (reportParameters.WeightMin > 0)
+                {
+                    message += "Min: " + reportParameters.WeightMin.ToString("N0");
+                }
+                @if (reportParameters.WeightMax > 0)
+                {
+                    message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
+                }
+                message = "(" + message + ")";
+
+                <div class="col-md-3">
+                    <label>Weight: <span class="badge badge-primary">@reportParameters.WeightFilterColumn @message</span></label>
+                </div>
+            }
+
+            @if (reportParameters.CheckWeightCalculation)
+            {
+                <div class="col-md-3">
+                    <label>, <span class="badge badge-primary">Check Weight Calculation</span> selected.</label>
+                </div>
+            }
+        }
     </div>
     @* @if (selectedStations is not null)
     {
@@ -249,6 +271,18 @@ else
         MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
         reportParameters.DateEnd = DateTime.Today;
         reportParameters.DateStart = DateTime.Now.AddMonths(-1);
+    }
+    private async Task AllStationClicked()
+    {
+        if(stations?.Count() == selectedStations?.Count())
+        {
+            selectedStations = new();
+        }
+        else
+        {
+            selectedStations = new();
+            selectedStations.AddRange(stations);
+        }
     }
     private async Task StationClicked(Station item)
     {

@@ -191,16 +191,28 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     GROUP BY 
     DATEPART(MONTH,DateTime)
 
-    DECLARE @Months TABLE(MonthNumber INT)
-    INSERT INTO @Months VALUES(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12)
+    
+    DECLARE @DateParts TABLE(MonthNumber INT)
+
+    DECLARE @Min INT,@Max INT
+    SELECT @Min=DATEPART(MONTH,@DateStart),@Max=DATEPART(MONTH,@DateEnd)
+
+    INSERT INTO @DateParts
+    SELECT N.number
+    FROM master..spt_values as N
+    WHERE N.number between @Min AND @Max
+    AND N.type ='P'
+    AND N.number>0
 
     INSERT INTO #T(DateUnit)
     SELECT MonthNumber
-    FROM @Months
+    FROM @DateParts
     WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
 
 
-    SELECT *, DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
+
+    SELECT OverloadVehicle,TotalVehicle - OverloadVehicle TotalVehicle,DateUnit,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight
+    ,DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
     FROM #T
     ORDER BY DateUnit
 
