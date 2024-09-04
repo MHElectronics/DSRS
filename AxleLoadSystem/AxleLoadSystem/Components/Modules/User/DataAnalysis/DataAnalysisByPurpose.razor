@@ -15,6 +15,18 @@
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
     </div>
+    <div class="card-footer">
+        @if (reportParameters is not null)
+        {
+        <div class="row">
+            <div class="col-md-6 btn-group">
+                <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
+                <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
+                <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
+            </div>
+        </div>
+        }
+    </div>
 </div>
 @if (Chartview && ChartData is not null)
 {
@@ -34,7 +46,7 @@
             </ChartPrimaryYAxis>
 
             <ChartSeriesCollection>
-                <ChartSeries Name="Number of Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
+                <ChartSeries Name="Number of Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
                     <ChartMarker>
                         <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                             <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -42,8 +54,8 @@
                     </ChartMarker>
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-            
-                <ChartSeries Name="Total Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
+
+                <ChartSeries Name="Total Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
                     <ChartMarker>
                         <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                             <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -73,7 +85,7 @@
             @foreach(AxleLoadReport item in ChartData)
             {
                 <tr>
-                    <td>@item.MonthName</td>
+                    <td>@item.DateUnitName</td>
                     <td>@item.TotalVehicle</td>
                     <td>@item.OverloadVehicle</td>
                 </tr>
@@ -91,7 +103,11 @@
     public string ChartTitle { get; set; } = "";
     public string XAxisTitle { get; set; } = "";
     public string YAxisTitle { get; set; } = "";
+    public string XParameter { get; set; } = "";
+    public string YParameter { get; set; } = "";
 
+    public ReportParameters reportParameters { get; set; } = new();
+    private string selectedType { get; set; } = "Monthly";
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
     private bool Chartview { get; set; }
@@ -122,14 +138,41 @@
     private async Task HandleParametersChanged(ReportParameters parameters)
     {
         if (parameters.Stations is not null && parameters.Stations.Any())
-        { 
-            IEnumerable<AxleLoadReport> Data = await loadService.GetMonthlyOverloadedReport(parameters);
+        {
+            reportParameters = parameters;
+        }
+    }
+    private async Task TypeChanged(string type)
+    {
+        selectedType = type;
+        if (reportParameters.Stations is not null)
+        {
+            await LoadChart();    
+        }
+    }
+    private async Task LoadChart()
+    { 
+        if (selectedType == "Monthly")
+        {
+            IEnumerable<AxleLoadReport> Data = await loadService.GetMonthlyOverloadedReport(reportParameters);
             if (Data is not null)
             {
                 ChartData = Data;
-                ChartTitle = "Number of Overloaded Vehicle " + "( " + parameters.DateStart.ToString("dd MMM yyy") + " to " + parameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+                ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
                 XAxisTitle = "Number of Vehicles (Units)";
                 YAxisTitle = "Months";
+                Chartview = true;
+            }
+        }
+        if (selectedType == "Weekly")
+        {
+            IEnumerable<AxleLoadReport> Data = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            if (Data is not null)
+            {
+                ChartData = Data;
+                ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+                XAxisTitle = "Number of Vehicles (Units)";
+                YAxisTitle = "Weeks";
                 Chartview = true;
             }
         }

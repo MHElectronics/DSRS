@@ -15,7 +15,7 @@ public interface IAxleLoadService
     Task<IEnumerable<AxleLoadCount>> GetDateWiseCount(Station station, DateTime startDate, DateTime endDate);
     Task<IEnumerable<AxleLoadReport>> GetDateWise (List<Station> stations, DateTime startDate, DateTime endDate);
     Task<IEnumerable<AxleLoadReport>> GetMonthlyOverloadedReport(ReportParameters reportParameters);
-
+    Task<IEnumerable<AxleLoadReport>> GetWeeklyOverloadedReport(ReportParameters reportParameters);
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -169,43 +169,43 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
 
         string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1),StationId INT)
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1),StationId INT)
 
-        INSERT INTO @Stations(StationId) VALUES " + stationIds +
-        @" CREATE TABLE #T(TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[Month] INT,Axle1 INT DEFAULT 0,Axle2 INT DEFAULT 0,Axle3 INT DEFAULT 0,Axle4 INT DEFAULT 0,Axle5 INT DEFAULT 0,Axle6 INT DEFAULT 0,Axle7 INT DEFAULT 0,AxleRemaining INT DEFAULT 0,GrossVehicleWeight INT DEFAULT 0)
+    INSERT INTO @Stations(StationId) VALUES " + stationIds +
+        @" CREATE TABLE #T(TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,Axle1 INT DEFAULT 0,Axle2 INT DEFAULT 0,Axle3 INT DEFAULT 0,Axle4 INT DEFAULT 0,Axle5 INT DEFAULT 0,Axle6 INT DEFAULT 0,Axle7 INT DEFAULT 0,AxleRemaining INT DEFAULT 0,GrossVehicleWeight INT DEFAULT 0)
 
-        INSERT INTO #T([Month],TotalVehicle,OverloadVehicle,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight)
-        SELECT 
-        DATEPART(MONTH,DateTime) Month
-        ,COUNT(1) TotalVehicle
-        ,SUM(CAST(IsOverloaded AS INT))
-        ,SUM(Axle1) Axle1,SUM(Axle2) Axle2,SUM(Axle3) Axle3,SUM(Axle4) Axle4,SUM(Axle5) Axle5,SUM(Axle6) Axle6,SUM(Axle7) Axle7
-        ,SUM(AxleRemaining) AxleRemaining,SUM(GrossVehicleWeight) GrossVehicleWeight
-        FROM AxleLoad AL INNER JOIN @Stations S ON AL.StationId=S.StationId
-        WHERE DATEDIFF(DAY,DateTime,@DateStart)<=0
-        AND DATEDIFF(DAY,DateTime,@DateEnd)>=0
-        AND NumberOfAxle=(CASE WHEN @NumberOfAxle=0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-        AND Wheelbase=(CASE WHEN @Wheelbase=0 THEN Wheelbase ELSE @Wheelbase END)
-        AND ClassStatus=(CASE WHEN @ClassStatus=0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
-        DATEPART(MONTH,DateTime)
+    INSERT INTO #T([DateUnit],TotalVehicle,OverloadVehicle,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight)
+    SELECT 
+    DATEPART(MONTH,DateTime) AS DateUnit
+    ,COUNT(1) AS TotalVehicle
+    ,SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
+    ,SUM(Axle1) AS Axle1,SUM(Axle2) AS Axle2,SUM(Axle3) AS Axle3,SUM(Axle4) AS Axle4,SUM(Axle5) AS Axle5,SUM(Axle6) AS Axle6,SUM(Axle7) AS Axle7
+    ,SUM(AxleRemaining) AS AxleRemaining,SUM(GrossVehicleWeight) AS GrossVehicleWeight
+    FROM AxleLoad AL INNER JOIN @Stations S ON AL.StationId=S.StationId
+    WHERE DATEDIFF(DAY,DateTime,@DateStart) <= 0
+    AND DATEDIFF(DAY,DateTime,@DateEnd) >= 0
+    AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+    AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+    AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+    GROUP BY 
+    DATEPART(MONTH,DateTime)
 
-        DECLARE @Months TABLE(MonthNumber INT)
-        INSERT INTO @Months VALUES(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12)
+    DECLARE @Months TABLE(MonthNumber INT)
+    INSERT INTO @Months VALUES(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12)
 
-        INSERT INTO #T(Month)
-        SELECT MonthNumber
-        FROM @Months
-        WHERE MonthNumber NOT IN (SELECT Month FROM #T)
-
-
-        SELECT *,DATENAME(month,DATEFROMPARTS(1900, Month, 1)) MonthName
-        FROM #T
-        ORDER BY Month
+    INSERT INTO #T(DateUnit)
+    SELECT MonthNumber
+    FROM @Months
+    WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
 
 
-        DROP TABLE #T
-        ";
+    SELECT *, DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
+    FROM #T
+    ORDER BY DateUnit
+
+
+    DROP TABLE #T
+    ";
 
         var parameters = new
         {
@@ -219,5 +219,91 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
     }
+
+    public async Task<IEnumerable<AxleLoadReport>> GetWeeklyOverloadedReport(ReportParameters reportParameters)
+    {
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+
+        string query = @"
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+
+    INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+
+    DECLARE @DateRange TABLE([Date] DATE)
+    DECLARE @CurrentDate DATE = @DateStart
+
+    WHILE @CurrentDate <= @DateEnd
+    BEGIN
+        INSERT INTO @DateRange VALUES(@CurrentDate)
+        SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
+    END
+
+    CREATE TABLE #T(
+        TotalVehicle INT DEFAULT 0,
+        OverloadVehicle INT DEFAULT 0,
+        [DateUnit] INT,
+        Axle1 INT DEFAULT 0,
+        Axle2 INT DEFAULT 0,
+        Axle3 INT DEFAULT 0,
+        Axle4 INT DEFAULT 0,
+        Axle5 INT DEFAULT 0,
+        Axle6 INT DEFAULT 0,
+        Axle7 INT DEFAULT 0,
+        AxleRemaining INT DEFAULT 0,
+        GrossVehicleWeight INT DEFAULT 0
+    )
+
+    INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight)
+    SELECT 
+        DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
+        COUNT(1) AS TotalVehicle,
+        SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+        SUM(Axle1) AS Axle1,
+        SUM(Axle2) AS Axle2,
+        SUM(Axle3) AS Axle3,
+        SUM(Axle4) AS Axle4,
+        SUM(Axle5) AS Axle5,
+        SUM(Axle6) AS Axle6,
+        SUM(Axle7) AS Axle7,
+        SUM(AxleRemaining) AS AxleRemaining,
+        SUM(GrossVehicleWeight) AS GrossVehicleWeight
+    FROM AxleLoad AL
+    INNER JOIN @Stations S ON AL.StationId = S.StationId
+    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+    GROUP BY DATEPART(WEEKDAY, AL.DateTime)
+
+    SELECT *,
+        DATENAME(WEEKDAY, DATEADD(DAY, DateUnit - 1, 0)) AS DateUnitName
+    FROM #T
+    ORDER BY 
+        CASE 
+            WHEN DateUnit = 7 THEN 1  -- Saturday
+            WHEN DateUnit = 1 THEN 2  -- Sunday
+            WHEN DateUnit = 2 THEN 3  -- Monday
+            WHEN DateUnit = 3 THEN 4  -- Tuesday
+            WHEN DateUnit = 4 THEN 5  -- Wednesday
+            WHEN DateUnit = 5 THEN 6  -- Thursday
+            WHEN DateUnit = 6 THEN 7  -- Friday
+        END
+
+    DROP TABLE #T
+    ";
+
+        var parameters = new
+        {
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+        };
+
+        return await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+    }
+
 
 }
