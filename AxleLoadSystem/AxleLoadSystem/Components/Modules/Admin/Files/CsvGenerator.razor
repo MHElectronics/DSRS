@@ -46,8 +46,8 @@
         sb = new();
         date = date.AddHours(7);
 
-        Random rnd = new Random(1);
-
+        Random rnd = new Random((int)DateTime.Now.Ticks);
+        
         sb.Add("TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId,NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time");
 
         for (int i = 1; i <= iteration; i++)
@@ -145,7 +145,7 @@
         sb = new();
         date = date.AddHours(7);
         List<string> paymentMethods = ["Cash", "Bkash", "OnlineBanking"];
-        Random rnd = new Random(1);
+        Random rnd = new Random((int)DateTime.Now.Ticks);
 
         sb.Add("LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber");
 

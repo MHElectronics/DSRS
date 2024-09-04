@@ -2,7 +2,6 @@
 @using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
-@using Syncfusion.Blazor.Buttons
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
@@ -20,21 +19,36 @@
 @if (Chartview && ChartData is not null)
 {
      <div class="control-section" align='center'>
-        <buton Id="button" Content="Export" @onclick="Export" IsPrimary="true" CssClass="e-flat float-left"></buton>
-        <SfChart @ref="@chartInstance" Title="Number of Overloaded Vehicles" Width="@Width" Theme="@Theme">
+        <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
+        
+        <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
             <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
-            <ChartPrimaryXAxis Title="Months" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+            
+            <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
                 <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                 <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
             </ChartPrimaryXAxis>
-            <ChartPrimaryYAxis Title="Number of Vehicles (Units)">
+            
+            <ChartPrimaryYAxis Title="@XAxisTitle">
                 <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
             </ChartPrimaryYAxis>
+
             <ChartSeriesCollection>
-                <ChartSeries Name="Number of Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn">
+                <ChartSeries Name="Number of Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
+                    <ChartMarker>
+                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                        </ChartDataLabel>
+                    </ChartMarker>
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
-                <ChartSeries Name="Total Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn">
+            
+                <ChartSeries Name="Total Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="MonthName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
+                    <ChartMarker>
+                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                        </ChartDataLabel>
+                    </ChartMarker>
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
             </ChartSeriesCollection>
@@ -74,9 +88,9 @@
     private SfChart chartInstance;
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
-    public string ChartTitle { get; set; } = "Title";
-    public string XAxisTitle { get; set; } = "Number of Axle (Allowable Weight)";
-    public string YAxisTitle { get; set; } = "Gross Vehicle Weight";
+    public string ChartTitle { get; set; } = "";
+    public string XAxisTitle { get; set; } = "";
+    public string YAxisTitle { get; set; } = "";
 
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
@@ -109,14 +123,13 @@
     {
         if (parameters.Stations is not null && parameters.Stations.Any())
         { 
-            // ChartTitle = "Number of Overloaded Vehicle";
-            // XAxisTitle = "Number of Vehicles (Units)";
-            // YAxisTitle = "Months";
-
             IEnumerable<AxleLoadReport> Data = await loadService.GetMonthlyOverloadedReport(parameters);
             if (Data is not null)
             {
                 ChartData = Data;
+                ChartTitle = "Number of Overloaded Vehicle " + "( " + parameters.DateStart.ToString("dd MMM yyy") + " to " + parameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+                XAxisTitle = "Number of Vehicles (Units)";
+                YAxisTitle = "Months";
                 Chartview = true;
             }
         }
