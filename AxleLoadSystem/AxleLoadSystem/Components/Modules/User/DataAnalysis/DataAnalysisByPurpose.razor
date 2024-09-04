@@ -76,7 +76,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Month</th>
+                <th>Date Frame</th>
                 <th>Total Vehicle</th>
                 <th>Overloaded Vehicle</th>
             </tr>
@@ -173,6 +173,18 @@
                 ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
                 XAxisTitle = "Number of Vehicles (Units)";
                 YAxisTitle = "Weeks";
+                Chartview = true;
+            }
+        }
+        if (selectedType == "Daily")
+        {
+            IEnumerable<AxleLoadReport> Data = await loadService.GetHourlyOverloadedReport(reportParameters);
+            if (Data is not null)
+            {
+                ChartData = Data;
+                ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+                XAxisTitle = "Number of Vehicles (Units)";
+                YAxisTitle = "Hourly";
                 Chartview = true;
             }
         }
