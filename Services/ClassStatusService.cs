@@ -1,5 +1,7 @@
 ﻿using BOL;
 using Services.Helpers;
+using System.Xml.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Services;
 public interface IClassStatusService
@@ -36,8 +38,13 @@ public class ClassStatusService : IClassStatusService
 
     public async Task<bool> InsertClassStatus(ClassStatus classStatus)
     {
-        string sql = @"INSERT INTO ClassStatus(Name) VALUES(@Name)";
-        return await _db.SaveData<ClassStatus>(sql, classStatus);
+        bool hasDuplicate = await this.CheckDuplicateClassStatus(classStatus);
+        if (!hasDuplicate)
+        {
+            string sql = @"INSERT INTO ClassStatus(Name) VALUES(@Name)";
+            return await _db.SaveData<ClassStatus>(sql, classStatus);
+        }
+        return hasDuplicate;
     }
 
     public async Task<ClassStatus> UpdateClassStatus(ClassStatus classStatus)
@@ -45,5 +52,10 @@ public class ClassStatusService : IClassStatusService
         string sql = @"UPDATE ClassStatus SET Name=@Name WHERE Id=@Id";
         await _db.SaveData(sql, classStatus);
         return classStatus;
+    }
+    public async Task<bool> CheckDuplicateClassStatus(ClassStatus classStatus)
+    {
+        string query = "SELECT COUNT(1) Count FROM ClassStatus WHERE(LOWER(Name)=LOWER(@Name) OR Id=@Id)";
+        return await _db.LoadSingleAsync<bool, object>(query, classStatus);
     }
 }
