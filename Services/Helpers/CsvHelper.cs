@@ -41,11 +41,15 @@ public class CsvHelper : ICsvHelper
             {
                 string[] csvFieldData = csvReader.ReadFields() ?? [];
                 bool requiredFieldsValid = true;
-                if (string.IsNullOrEmpty(csvFieldData[0]) || string.IsNullOrEmpty(csvFieldData[2]))
+                if (csvFieldData is not null)
                 {
-                    requiredFieldsValid = false;
-                    summary += row + "-Missing Required field,";
+                    if (string.IsNullOrEmpty(csvFieldData[0]) || string.IsNullOrEmpty(csvFieldData[2]))
+                    {
+                        requiredFieldsValid = false;
+                        summary += row + "-Missing Required field,";
+                    }
                 }
+                    
 
                 //Check required
                 //List<int> requiredIndexes = [1];
