@@ -108,3 +108,43 @@ input:-webkit-autofill:active {
     background: #343a40 !important;
     color:white !important;
 }
+
+/*input range*/
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    outline: none;
+}
+
+    .slider:hover {
+        /*opacity: 1;*/
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #007bff;
+        cursor: pointer;
+        border-radius:10%;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        background: #007bff;
+        cursor: pointer;
+    }
+
+.slider-primary::-webkit-slider-thumb,
+.slider-primary::-moz-range-thumb {
+    background: #007bff;
+}
+.dark-mode .slider-primary::-moz-range-thumb {
+    background: #3f6791;
+}
+.dark-mode .slider-primary::-webkit-slider-thumb{
+    background: #3f6791;
+}
