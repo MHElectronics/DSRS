@@ -21,12 +21,16 @@
         {
             <div class="row">
                 <div class="col-md-12 btn-group">
-                    <span class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))">Daily</span>
-                    <span class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))">Weekly</span>
-                    <span class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))">Monthly</span>
-                    <span class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))">Yearly</span>
+                    <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
+                    <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
+                    <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
+                    <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
                 </div>
             </div>
+        }
+        @if (!string.IsNullOrEmpty(Summary))
+        {
+            <label class="text-danger">@Summary</label>
         }
     </div>
 </div>
@@ -70,10 +74,9 @@
             <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
         </SfChart>
     </div>
-
-
 }
-@if (ChartData is not null)
+
+@* @if (ChartData is not null)
 {
     <table class="table table-striped">
         <thead>
@@ -94,12 +97,18 @@
             }
         </tbody>
     </table>
-}
+} *@
 
 @code {
     private Theme Theme { get; set; } = 0;
-    public string Width { get; set; } = "90%";
     private SfChart chartInstance;
+    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
+
+    public IEnumerable<AxleLoadReport> ChartData { get; set; }
+    public IQueryable<List<LoadData>> listLoadData { get; set; }
+    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+
+    public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
@@ -107,17 +116,14 @@
     public string YAxisTitle { get; set; } = "";
     public string XParameter { get; set; } = "";
     public string YParameter { get; set; } = "";
-
-    private bool showReportGroupSelection { get; set; } = false;
     private string selectedType { get; set; } = "";
-    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
+    private string Summary { get; set; } = "";
 
+    private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
+    private bool isLoading = false;
 
-    public IEnumerable<AxleLoadReport> ChartData { get; set; }
-    public IQueryable<List<LoadData>> listLoadData { get; set; }
-
-    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
 
     protected override async Task OnInitializedAsync()
     {
@@ -153,11 +159,13 @@
     private async Task TypeChanged(string type)
     {
         selectedType = type;
+        isLoading = true;
         ReportParameters reportParameters = await appState.GetReportParameters();
         if (reportParameters.Stations is not null)
         {
             await LoadChart();
         }
+        isLoading = false;
     }
     private async Task LoadChart()
     {
@@ -169,29 +177,86 @@
 
         if (selectedType == "Monthly")
         {
-            IEnumerable<AxleLoadReport> Data = await loadService.GetMonthlyOverloadedReport(reportParameters);
-            if (Data is not null)
+            report = await loadService.GetMonthlyOverloadedReport(reportParameters);
+            if (report.Item2)
             {
-                ChartData = Data;
-                YAxisTitle = "Months";
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                    YAxisTitle = "Months";
+                }
+                else 
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;    
             }
         }
         else if (selectedType == "Weekly")
         {
-            IEnumerable<AxleLoadReport> Data = await loadService.GetWeeklyOverloadedReport(reportParameters);
-            if (Data is not null)
+            report = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            if (report.Item2)
             {
-                ChartData = Data;
-                YAxisTitle = "Weeks";
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                    YAxisTitle = "Weeks";
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
             }
         }
         else if (selectedType == "Daily")
         {
-            IEnumerable<AxleLoadReport> Data = await loadService.GetHourlyOverloadedReport(reportParameters);
-            if (Data is not null)
+            report = await loadService.GetHourlyOverloadedReport(reportParameters);
+            if (report.Item2)
             {
-                ChartData = Data;
-                YAxisTitle = "Hourly";
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                    YAxisTitle = "Hourly";
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Yearly")
+        {
+            report = await loadService.GetYearlyOverloadedReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                    YAxisTitle = "Yearly";
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
             }
         }
     }
