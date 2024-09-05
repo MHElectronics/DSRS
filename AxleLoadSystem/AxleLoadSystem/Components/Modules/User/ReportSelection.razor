@@ -14,19 +14,7 @@
 
 @if (selectionEnabled && reportParameters is not null)
 {
-    <div class="row">
-        <div class="col-12">
-            <div class="btn-group">
-                @if (selectedStations is not null && selectedStations.Any())
-                {
-                    <button class="btn btn-primary" @onclick="SelectionComplete">Save Selection</button>
-                }
-                <button class="btn btn-primary" @onclick="SelectionCancel">Cancel</button>
-            </div>
-
-        </div>
-    </div>
-    <div class="row">
+    <div class="row" @ondblclick="SelectionCancel" title="Double click to cancle selection">
         <div class="col-md-12">
             @if (stations is not null)
             {
@@ -36,17 +24,19 @@
                     strIconAll = "fa-check-square";
                 }
                 <div class="btn-group">
-                    <span class="btn btn-outline-primary" @onclick="@(() => AllStationClicked())" title="Select/Unselect All ALCS">
+                    <span class="btn btn-primary" @onclick="@(() => AllStationClicked())" title="Select/Unselect All ALCS">
                         <i class="fas @strIconAll"></i><span class="ms-2">&nbsp;All</span>
                     </span>
                     @foreach (Station item in stations.OrderBy(s => s.StationName))
                     {
                         string strIcon = "fa-square";
+                        string btnClass = "btn-danger";
                         @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
                         {
                             strIcon = "fa-check-square";
+                            btnClass = "btn-success";
                         }
-                        <span class="btn btn-outline-primary" @onclick="@(() => StationClicked(item))">
+                        <span class="btn @btnClass" @onclick="@(() => StationClicked(item))">
                             <i class="fas @strIcon"></i><span class="ms-2">&nbsp; @item.StationName</span>
                         </span>
                     }
@@ -58,7 +48,7 @@
             }
         </div>
         <div class="col-md-6">
-            <label>Select Date Range </label>
+            <label>Date Range </label>
             <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
                 <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
             </SfDateRangePicker>
@@ -76,9 +66,7 @@
                 </select>
             </div>
         }
-    </div>
 
-    <div class="row mt-3">
         <div class="col-md-3">
             <label>Number of Axles</label>
             <select class="form-control" @bind="@reportParameters.NumberOfAxle">
@@ -114,9 +102,7 @@
                 <label class="form-check-label" for="chkIsOverloaded">Show only overloads?</label>
             </div>
         </div>
-    </div>
 
-    <div class="row mt-3">
         <div class="col-md-3">
             <label>Filter by Weight</label>
             <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
@@ -135,14 +121,30 @@
         @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
         {
             <div class="col-md-3">
-                <label for="WeightMin">Weight Minimum</label>
-                <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" />
+                <div class="form-group">
+                    <label for="WeightMin">Weight (Kg) Minimum</label>
+                    <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" />
+                </div>
             </div>
             <div class="col-md-3">
-                <label for="WeightMax">Weight Maximum</label>
-                <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="0" />
+                <div class="form-group">
+                    <label for="WeightMax">Weight (Kg) Maximum</label>
+                    @* <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="0" /> *@
+                </div>
             </div>
         }
+        <div class="col align-self-end">
+            <div class="form-group float-right align-bottom">
+                <label>&nbsp;</label>
+                <div class="btn-group">
+                    @if (selectedStations is not null && selectedStations.Any())
+                    {
+                        <button class="btn btn-primary" @onclick="SelectionComplete">Save Selection</button>
+                    }
+                    <button class="btn btn-primary" @onclick="SelectionCancel">Cancel</button>
+                </div>
+            </div>
+        </div>
         @*  <div class="col-md-3">
     <label class="form-label">&nbsp;</label>
     <div class="form-check">
@@ -157,53 +159,50 @@
 }
 else
 {
-    <div class="row" @onclick="EnableChange" title="Click to change" style="cursor:context-menu;">
+    <div class="row" @onclick="EnableChange" title="Click to change selection" style="cursor:pointer;">
         @if (reportParameters.Stations is null || reportParameters.Stations.Count() == 0)
         {
             <span class="text text-danger">No ALCS is selected</span>
         }
         else
         {
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <label>@reportParameters.Stations?.Count() station(s) selected: </label>
-                @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList())
+                @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList().OrderBy(s => s.StationName))
                 {
-                    <span class="badge badge-primary">@item.StationName</span>
+                    <span class="badge bg-success"> @item.StationName</span>
                 }
                 @if (reportParameters.WIMScaleId > 0)
                 {
-                    <label>, WIM Scale <span class="badge badge-primary">@reportParameters.WIMScaleId</span> selected</label>
+                    <label>, WIM Scale <span class="badge bg-success">@reportParameters.WIMScaleId</span> selected</label>
                 }
             </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary float-right" @onclick="EnableChange">Change Selection</button>
-            </div>
             <div class="col-md-3">
-                <label>Date range: <span class="badge badge-primary">@reportParameters.DateStart.ToString("dd MMM yy")</span> to <span class="badge badge-primary">@reportParameters.DateEnd.ToString("dd MMM yy")</span></label>
+                <label>Date range: <span class="badge bg-success">@reportParameters.DateStart.ToString("dd MMM yy")</span> to <span class="badge bg-success">@reportParameters.DateEnd.ToString("dd MMM yy")</span></label>
             </div>
             @if (reportParameters.NumberOfAxle > 0)
             {
                 <div class="col-md-3">
-                    <label>, Axle <span class="badge badge-primary">@reportParameters.NumberOfAxle</span> selected</label>
+                    <label>, Axle <span class="badge bg-success">@reportParameters.NumberOfAxle</span> selected</label>
                 </div>
             }
             @if (reportParameters.ClassStatus > 0)
             {
                 string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
                 <div class="col-md-3">
-                    <label>, <span class="badge badge-primary">@name</span> selected</label>
+                    <label>, <span class="badge bg-success">@name</span> selected</label>
                 </div>
             }
             @if (reportParameters.IsOverloaded)
             {
                 <div class="col-md-3">
-                    <label>, <span class="badge badge-primary">Overloaded</span> selected</label>
+                    <label>, <span class="badge bg-success">Overloaded</span> selected</label>
                 </div>
             }
             @if (reportParameters.Wheelbase > 0)
             {
                 <div class="col-md-3">
-                    <label>, <span class="badge badge-primary">@reportParameters.Wheelbase</span> Wheelbase selected</label>
+                    <label>, <span class="badge bg-success">@reportParameters.Wheelbase</span> Wheelbase selected</label>
                 </div>
             }
             @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
@@ -220,16 +219,22 @@ else
                 message = "(" + message + ")";
 
                 <div class="col-md-3">
-                    <label>Weight: <span class="badge badge-primary">@reportParameters.WeightFilterColumn @message</span></label>
+                    <label>Weight: <span class="badge bg-success">@reportParameters.WeightFilterColumn @message</span></label>
                 </div>
             }
 
             @if (reportParameters.CheckWeightCalculation)
             {
                 <div class="col-md-3">
-                    <label>, <span class="badge badge-primary">Check Weight Calculation</span> selected.</label>
+                    <label>, <span class="badge bg-success">Check Weight Calculation</span> selected.</label>
                 </div>
             }
+            <div class="col align-self-end">
+                <div class="form-group float-right align-bottom">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary float-right" @onclick="EnableChange">Change Selection</button>
+                </div>
+            </div>
         }
     </div>
     @* @if (selectedStations is not null)
@@ -274,7 +279,7 @@ else
     }
     private async Task AllStationClicked()
     {
-        if(stations?.Count() == selectedStations?.Count())
+        if (stations?.Count() == selectedStations?.Count())
         {
             selectedStations = new();
         }

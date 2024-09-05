@@ -102,3 +102,9 @@ input:-webkit-autofill:active {
     border: 1px solid #555 !important;
 }*/
 /*Apex chart dark theme issue code from net*/
+
+/*Syncfusion date range*/
+.dark-mode .e-control.e-daterangepicker {
+    background: #343a40 !important;
+    color:white !important;
+}
