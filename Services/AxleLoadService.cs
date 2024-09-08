@@ -750,60 +750,28 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
         END
 
-        CREATE TABLE #T(
-            TotalVehicle INT DEFAULT 0,
-            OverloadVehicle INT DEFAULT 0,
-            [DateUnit] INT,
-            Axle1 INT DEFAULT 0,
-            Axle2 INT DEFAULT 0,
-            Axle3 INT DEFAULT 0,
-            Axle4 INT DEFAULT 0,
-            Axle5 INT DEFAULT 0,
-            Axle6 INT DEFAULT 0,
-            Axle7 INT DEFAULT 0,
-            AxleRemaining INT DEFAULT 0,
-            GrossVehicleWeight INT DEFAULT 0,
-            NumberOfAxle INT DEFAULT 0  
-        )
-
-        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight, NumberOfAxle)
         SELECT 
             DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
-            COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            SUM(Axle1) AS Axle1,
-            SUM(Axle2) AS Axle2,
-            SUM(Axle3) AS Axle3,
-            SUM(Axle4) AS Axle4,
-            SUM(Axle5) AS Axle5,
-            SUM(Axle6) AS Axle6,
-            SUM(Axle7) AS Axle7,
-            SUM(AxleRemaining) AS AxleRemaining,
-            SUM(GrossVehicleWeight) AS GrossVehicleWeight,
-            NumberOfAxle 
+            DATENAME(WEEKDAY, AL.DateTime) AS DateUnitName,
+            AL.NumberOfAxle,
+            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY DATEPART(WEEKDAY, AL.DateTime), NumberOfAxle  
-
-        SELECT *,
-            DATENAME(WEEKDAY, DATEADD(DAY, DateUnit - 1, 0)) AS DateUnitName
-        FROM #T
+            AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+            AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
+            AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
+        GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
         ORDER BY 
             CASE 
-                WHEN DateUnit = 7 THEN 1  -- Saturday
-                WHEN DateUnit = 1 THEN 2  -- Sunday
-                WHEN DateUnit = 2 THEN 3  -- Monday
-                WHEN DateUnit = 3 THEN 4  -- Tuesday
-                WHEN DateUnit = 4 THEN 5  -- Wednesday
-                WHEN DateUnit = 5 THEN 6  -- Thursday
-                WHEN DateUnit = 6 THEN 7  -- Friday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 7 THEN 1  -- Saturday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 1 THEN 2  -- Sunday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 2 THEN 3  -- Monday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 3 THEN 4  -- Tuesday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 4 THEN 5  -- Wednesday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 5 THEN 6  -- Thursday
+                WHEN DATEPART(WEEKDAY, AL.DateTime) = 6 THEN 7  -- Friday
             END
-
-        DROP TABLE #T
         ";
 
         var parameters = new
@@ -829,7 +797,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
-
 
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverweightReport(ReportParameters reportParameters)
     {
@@ -867,7 +834,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         )
 
         INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight, NumberOfAxle)
-        SELECT 
+        SELECT
             CASE 
                 WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 0 AND 5 THEN 0
                 WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 6 AND 11 THEN 6
