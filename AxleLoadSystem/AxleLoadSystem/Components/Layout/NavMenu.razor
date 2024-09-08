@@ -3,45 +3,6 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <!-- Add icons to the links using the .nav-icon class
          with font-awesome or any other icon font library -->
-    @* <li class="nav-item menu-open">
-    <a href="#" class="nav-link active">
-    <i class="nav-icon fas fa-tachometer-alt"></i>
-    <p>
-    Dashboard
-    <i class="right fas fa-angle-left"></i>
-    </p>
-    </a>
-    <ul class="nav nav-treeview">
-    <li class="nav-item">
-    <a href="./index.html" class="nav-link active">
-    <i class="far fa-circle nav-icon"></i>
-    <p>Dashboard v1</p>
-    </a>
-    </li>
-    <li class="nav-item">
-    <a href="./index2.html" class="nav-link">
-    <i class="far fa-circle nav-icon"></i>
-    <p>Dashboard v2</p>
-    </a>
-    </li>
-    <li class="nav-item">
-    <a href="./index3.html" class="nav-link">
-    <i class="far fa-circle nav-icon"></i>
-    <p>Dashboard v3</p>
-    </a>
-    </li>
-    </ul>
-    </li>
-    <li class="nav-item">
-    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-    <i class="nav-icon fas fa-th"></i>
-    <p>
-    Home
-    <span class="right badge badge-danger">New</span>
-    </p>
-    </NavLink>
-    </li> *@
-
     @*<li class="nav-item">
     <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
     <i class="nav-icon fas fa-th"></i>
@@ -74,131 +35,181 @@
     </li>
     <AuthorizeView Roles="Admin">
         <Authorized>
-            <li class="nav-header">Administration</li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-users"></i>
+            <li class="nav-item @(selectedGroup == "admin" ? " menu-is-opening menu-open" : "")">
+                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("admin"))'>
+                    @* <i class="nav-icon fas fa-copy"></i> *@
                     <p>
-                        @localizer["Menu.User"]
-                        @* <span class="right badge badge-danger">New</span> *@
+                        Administration
+                        <i class="fas fa-angle-left right"></i>
                     </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-list"></i>
-                    <p>
-                        @localizer["Menu.Station"]
-                    </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="stationaccess" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-key"></i>
-                    <p>
-                        @localizer["Menu.StationAccess"]
-                    </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="classstatus" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-layer-group"></i>
-                    <p>
-                        @localizer["Menu.ClassStatus"]
-                    </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="filelist" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-file"></i>
-                    <p>
-                        @localizer["Menu.UploadedFiles"]
-                    </p>
-                </NavLink>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>
+                                @localizer["Menu.User"]
+                                @* <span class="right badge badge-danger">New</span> *@
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>
+                                @localizer["Menu.Station"]
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="stationaccess" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-key"></i>
+                            <p>
+                                @localizer["Menu.StationAccess"]
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="classstatus" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-layer-group"></i>
+                            <p>
+                                @localizer["Menu.ClassStatus"]
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="filelist" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-file"></i>
+                            <p>
+                                @localizer["Menu.UploadedFiles"]
+                            </p>
+                        </NavLink>
+                    </li>
+                </ul>
             </li>
         </Authorized>
     </AuthorizeView>
 
     <AuthorizeView Roles="User">
         <Authorized>
-            <li class="nav-header">Pages</li>
+            <li class="nav-item @(selectedGroup == "pages" ? " menu-is-opening menu-open" : "")">
+                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("pages"))'>
+                    <p>
+                        Pages
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-map"></i>
+                            <p>
+                                @localizer["Menu.Map"]
+                                @* <span class="right badge badge-danger">New</span> *@
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="databydate" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-file"></i>
+                            <p>
+                                Data by Date
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="brta" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-file"></i>
+                            <p>
+                                @localizer["Menu.BRTA"]
+                            </p>
+                        </NavLink>
+                    </li>
+                </ul>
+            </li>
+
+
+            <li class="nav-item @(selectedGroup == "reports" ? " menu-is-opening menu-open" : "")">
+                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("reports"))'>
+                    @* <i class="nav-icon fas fa-copy"></i> *@
+                    <p>
+                        Reports
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="dataanalysis" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <p>
+                                Number Of Vechicle
+                            </p>
+                        </NavLink>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="nav-item @(selectedGroup == "analysis" ? " menu-is-opening menu-open" : "")">
+                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("analysis"))'>
+                    @* <i class="nav-icon fas fa-copy"></i> *@
+                    <p>
+                        Analysis
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="#" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <p>
+                                Under Development
+                            </p>
+                        </NavLink>
+                    </li>
+                </ul>
+            </li>
+
             @* <li class="nav-item">
-            <NavLink class="nav-link" href="changepassword" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-key"></i>
+            <NavLink class="nav-link" href="datasearch" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-search"></i>
             <p>
-            @localizer["Menu.ChangePassword"]
+            Data Search
             </p>
             </NavLink>
             </li>
             <li class="nav-item">
-            <NavLink class="nav-link" href="fileupload" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-upload"></i>
+            <NavLink class="nav-link" href="datavisualization" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-chart-pie"></i>
             <p>
-            @localizer["Menu.FileUpload"]
+            Data Visualization
+            </p>
+            </NavLink>
+            </li>
+            <li class="nav-item">
+            <NavLink class="nav-link" href="sqldirectsearch" Match="NavLinkMatch.All">
+            <i class="nav-icon fas fa-filter"></i>
+            <p>
+            SQL Direct Search
             </p>
             </NavLink>
             </li> *@
-            <li class="nav-item">
-                <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-map"></i>
-                    <p>
-                        @localizer["Menu.Map"]
-                        @* <span class="right badge badge-danger">New</span> *@
-                    </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="databydate" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-file"></i>
-                    <p>
-                        Data by Date
-                    </p>
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="brta" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-file"></i>
-                    <p>
-                        @localizer["Menu.BRTA"]
-                    </p>
-                </NavLink>
-            </li>
-
-
-            <li class="nav-header">Reports</li>
-            @* <li class="nav-item">
-                <NavLink class="nav-link" href="datasearch" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-search"></i>
-                    <p>
-                        Data Search
-                    </p>
-                </NavLink>
-            </li> *@
-            <li class="nav-item">
-                <NavLink class="nav-link" href="dataanalysis" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-chart-line"></i>
-                    <p>
-                        Number Of Vechicle
-                    </p>
-                </NavLink>
-            </li>
-@*             <li class="nav-item">
-                <NavLink class="nav-link" href="datavisualization" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-chart-pie"></i>
-                    <p>
-                        Data Visualization
-                        @localizer["Menu.BRTA"]
-                    </p>
-                </NavLink>
-            </li> *@
-            @* <li class="nav-item">
-                <NavLink class="nav-link" href="sqldirectsearch" Match="NavLinkMatch.All">
-                    <i class="nav-icon fas fa-filter"></i>
-                    <p>
-                        SQL Direct Search
-                    </p>
-                </NavLink>
-            </li> *@
+            
         </Authorized>
     </AuthorizeView>
 </ul>
+
+@code {
+    private string selectedGroup { get; set; }
+
+    private void MenuHeaderClicked(string clickedGroup)
+    {
+        if (selectedGroup == clickedGroup)
+        {
+            selectedGroup = "";
+        }
+        else
+        {
+            selectedGroup = clickedGroup;
+        }
+    }
+}
