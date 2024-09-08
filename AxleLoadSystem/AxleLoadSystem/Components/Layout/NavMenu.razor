@@ -35,7 +35,7 @@
     </li>
     <AuthorizeView Roles="Admin">
         <Authorized>
-            <li class="nav-item @(selectedGroup == "admin" ? " menu-is-opening menu-open" : "")">
+            <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("admin"))'>
                     @* <i class="nav-icon fas fa-copy"></i> *@
                     <p>
@@ -92,7 +92,7 @@
 
     <AuthorizeView Roles="User">
         <Authorized>
-            <li class="nav-item @(selectedGroup == "pages" ? " menu-is-opening menu-open" : "")">
+            <li class="nav-item @(selectedGroups.Contains("pages") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("pages"))'>
                     <p>
                         Pages
@@ -129,7 +129,7 @@
             </li>
 
 
-            <li class="nav-item @(selectedGroup == "reports" ? " menu-is-opening menu-open" : "")">
+            <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("reports"))'>
                     @* <i class="nav-icon fas fa-copy"></i> *@
                     <p>
@@ -165,7 +165,7 @@
                 </ul>
             </li>
 
-            <li class="nav-item @(selectedGroup == "analysis" ? " menu-is-opening menu-open" : "")">
+            <li class="nav-item @(selectedGroups.Contains("analysis") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("analysis"))'>
                     @* <i class="nav-icon fas fa-copy"></i> *@
                     <p>
@@ -215,17 +215,22 @@
 </ul>
 
 @code {
-    private string selectedGroup { get; set; }
+    private List<string> selectedGroups { get; set; } = new();
 
     private void MenuHeaderClicked(string clickedGroup)
     {
-        if (selectedGroup == clickedGroup)
+        if(selectedGroups is null)
         {
-            selectedGroup = "";
+            selectedGroups = new();
+        }
+
+        if (selectedGroups.Contains(clickedGroup))
+        {
+            selectedGroups.Remove(clickedGroup);
         }
         else
         {
-            selectedGroup = clickedGroup;
+            selectedGroups.Add(clickedGroup);
         }
     }
 }
