@@ -1,0 +1,242 @@
+﻿@page "/overweightvehicle"
+@using BOL.Helpers
+@using Services
+@using Syncfusion.Blazor
+@using Syncfusion.PdfExport;
+@using Syncfusion.Blazor.Charts
+@using System.Globalization
+@inject IAxleLoadService loadService
+@inject NavigationManager NavigationManager
+@inject IAppState appState
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Monthly Report</h3>
+    </div>
+    <div class="card-body">
+        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+    </div>
+    <div class="card-footer">
+        @if (appState is not null && showReportGroupSelection)
+        {
+            <div class="row">
+                <div class="col-md-12 btn-group">
+                    <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
+                    <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
+                    <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
+                    <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Summary))
+        {
+            <label class="text-danger">@Summary</label>
+        }
+    </div>
+</div>
+@if (Chartview && ChartData is not null)
+{
+    <div class="control-section" align='center'>
+        <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
+        <SfChart @ref="@overweightChartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+            <ChartArea>
+                <ChartAreaBorder Width="0"></ChartAreaBorder>
+            </ChartArea>
+
+            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+            </ChartPrimaryXAxis>
+
+            <ChartPrimaryYAxis Title="@YAxisTitle">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+            </ChartPrimaryYAxis>
+
+            <ChartSeriesCollection>
+                @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                {
+                    <ChartSeries Name="@dayGroup.First().DateUnitName" 
+                                 ColumnWidth="0.5"
+                                 DataSource="@dayGroup"
+                                 XName="NumberofAxle"
+                                 YName="OverloadVehicle"
+                                 Type="ChartSeriesType.StackingColumn"
+                                 EnableTooltip="true">
+
+                        <ChartMarker>
+                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                            </ChartDataLabel>
+                        </ChartMarker>
+
+                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                    </ChartSeries>
+                }
+            </ChartSeriesCollection>
+
+            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+            <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+        </SfChart>
+    </div>
+}
+
+@code {
+    private Theme Theme { get; set; } = 0;
+    private SfChart overweightChartInstance;
+    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
+
+    public IEnumerable<AxleLoadReport> ChartData { get; set; }
+    public IQueryable<List<LoadData>> listLoadData { get; set; }
+    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+
+    public string Width { get; set; } = "90%";
+    public string FileName { get; set; } = "Charts";
+    public string Format { get; set; } = "{value} GW";
+    public string ChartTitle { get; set; } = "";
+    public string XAxisTitle { get; set; } = "";
+    public string YAxisTitle { get; set; } = "";
+    public string XParameter { get; set; } = "";
+    public string YParameter { get; set; } = "";
+    private string selectedType { get; set; } = "";
+    private string Summary { get; set; } = "";
+
+    private bool showReportGroupSelection { get; set; } = false;    
+    private bool Chartview { get; set; }
+    private bool isLoading = false;
+
+    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        ReportParameters reportParameters = await appState.GetReportParameters();
+        showReportGroupSelection = reportParameters is not null;
+    }
+
+    void axisLabel(AxisLabelRenderEventArgs args)
+    {
+        if (args.Value > 999999 || args.Value < -999999)
+        {
+            args.Text = args.Value.ToString("0,,.##M", CultureInfo.InvariantCulture);
+        }
+    }
+
+    private async Task Export(MouseEventArgs args)
+    {
+        await overweightChartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+    }
+
+    public void ExportComplete(ExportEventArgs exportEventArgs)
+    {
+        string base64 = exportEventArgs.Base64;
+    }
+
+    private async Task HandleParametersChanged(ReportParameters parameters)
+    {
+        if (parameters.Stations is not null && parameters.Stations.Any())
+        {
+            //reportParameters = parameters;
+        }
+    }
+    private async Task TypeChanged(string type)
+    {
+        selectedType = type;
+        isLoading = true;
+        ReportParameters reportParameters = await appState.GetReportParameters();
+        if (reportParameters.Stations is not null)
+        {
+            await LoadChart();
+        }
+        isLoading = false;
+    }
+    private async Task LoadChart()
+    {
+        ReportParameters reportParameters = await appState.GetReportParameters();
+
+        ChartTitle = "Number of Overweight Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+        XAxisTitle = "Number of Axle ";
+        YAxisTitle = "Number of Overload Vehicles (Units)";
+        Chartview = true;
+
+        if (selectedType == "Monthly")
+        {
+            report = await loadService.GetMonthlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else 
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;    
+            }
+        }
+        else if (selectedType == "Weekly")
+        {
+            report = await loadService.GetWeeklyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Daily")
+        {
+            report = await loadService.GetHourlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Yearly")
+        {
+            report = await loadService.GetYearlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+    }
+}

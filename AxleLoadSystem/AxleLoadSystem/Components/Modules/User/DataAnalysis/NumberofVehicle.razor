@@ -1,4 +1,4 @@
-﻿@page "/dataanalysis"
+﻿@page "/numberofvehicle"
 @using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
@@ -75,29 +75,6 @@
         </SfChart>
     </div>
 }
-
-@* @if (ChartData is not null)
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date Frame</th>
-                <th>Total Vehicle</th>
-                <th>Overloaded Vehicle</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (AxleLoadReport item in ChartData)
-            {
-                <tr>
-                    <td>@item.DateUnitName</td>
-                    <td>@item.TotalVehicle</td>
-                    <td>@item.OverloadVehicle</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-} *@
 
 @code {
     private Theme Theme { get; set; } = 0;
