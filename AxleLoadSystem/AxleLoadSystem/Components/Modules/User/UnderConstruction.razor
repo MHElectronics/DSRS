@@ -90,6 +90,7 @@
     public bool IsOverloaded { get; set; }
 
     private bool Chartview { get; set; }
+    private bool selectionEnabled { get; set; }
 
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
@@ -125,9 +126,9 @@
         string base64 = exportEventArgs.Base64;
     }
 
-    private async Task HandleParametersChanged(ReportParameters parameters)
+    private async Task HandleParametersChanged(bool parameters)
     {
-        reportParameters = parameters;
+        selectionEnabled = parameters;
         await LoadChartData(); 
     }
     private async Task LoadChartData()

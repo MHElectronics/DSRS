@@ -9,8 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 
-<h1>Page is under construstion</h1>
-@* 
+
 <div class="card card-primary">
     <div class="card-header">
         <h3 class="card-title">Monthly Report</h3>
@@ -18,23 +17,26 @@
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
     </div>
-    <div class="card-footer">
-        @if (appState is not null && showReportGroupSelection)
-        {
-            <div class="row">
-                <div class="col-md-12 btn-group">
-                    <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
-                    <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
-                    <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
-                    <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
+    @if (!selectionEnabled)
+    {
+        <div class="card-footer">
+            @if (appState is not null && showReportGroupSelection)
+            {
+                <div class="row">
+                    <div class="col-md-12 btn-group">
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
+                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
+                        <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
+                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
+                    </div>
                 </div>
-            </div>
-        }
-        @if (!string.IsNullOrEmpty(Summary))
-        {
-            <label class="text-danger">@Summary</label>
-        }
-    </div>
+            }
+            @if (!string.IsNullOrEmpty(Summary))
+            {
+                <label class="text-danger">@Summary</label>
+            }
+        </div>
+    } 
 </div>
 @if (Chartview && ChartData is not null)
 {
@@ -42,36 +44,42 @@
         <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
 
         <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
-            <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+            <ChartArea>
+                <ChartAreaBorder Width="0"></ChartAreaBorder>
+            </ChartArea>
 
-            <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
                 <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                 <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
             </ChartPrimaryXAxis>
 
-            <ChartPrimaryYAxis Title="@XAxisTitle">
+            <ChartPrimaryYAxis Title="@YAxisTitle">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                 <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
             </ChartPrimaryYAxis>
 
             <ChartSeriesCollection>
-                <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
-                    <ChartMarker>
-                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                        </ChartDataLabel>
-                    </ChartMarker>
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
+                @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                {
+                    <ChartSeries Name="@dayGroup.First().DateUnitName"
+                                 ColumnWidth="0.5"
+                                 DataSource="@dayGroup"
+                                 XName="GrossVehicleWeight"
+                                 YName="TotalVehicle"
+                                 Type="ChartSeriesType.StackingColumn"
+                                 EnableTooltip="true">
 
-                <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
-                    <ChartMarker>
-                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                        </ChartDataLabel>
-                    </ChartMarker>
-                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                </ChartSeries>
+                        <ChartMarker>
+                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                            </ChartDataLabel>
+                        </ChartMarker>
+
+                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                    </ChartSeries>
+                }
             </ChartSeriesCollection>
+
             <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
             <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
         </SfChart>
@@ -93,15 +101,13 @@
     public string ChartTitle { get; set; } = "";
     public string XAxisTitle { get; set; } = "";
     public string YAxisTitle { get; set; } = "";
-    public string XParameter { get; set; } = "";
-    public string YParameter { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
 
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
     private bool isLoading = false;
-
+    private bool selectionEnabled = false;
     private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
 
     protected override async Task OnInitializedAsync()
@@ -128,12 +134,9 @@
         string base64 = exportEventArgs.Base64;
     }
 
-    private async Task HandleParametersChanged(ReportParameters parameters)
+    private async Task HandleParametersChanged(bool parameters)
     {
-        if (parameters.Stations is not null && parameters.Stations.Any())
-        {
-            //reportParameters = parameters;
-        }
+        selectionEnabled = parameters;
     }
     private async Task TypeChanged(string type)
     {
@@ -156,7 +159,7 @@
 
         if (selectedType == "Monthly")
         {
-            report = await loadService.GetMonthlyOverloadedReport(reportParameters);
+            report = await loadService.GetMonthlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -177,7 +180,7 @@
         }
         else if (selectedType == "Weekly")
         {
-            report = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            report = await loadService.GetWeeklyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -198,7 +201,7 @@
         }
         else if (selectedType == "Daily")
         {
-            report = await loadService.GetHourlyOverloadedReport(reportParameters);
+            report = await loadService.GetHourlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -219,7 +222,7 @@
         }
         else if (selectedType == "Yearly")
         {
-            report = await loadService.GetYearlyOverloadedReport(reportParameters);
+            report = await loadService.GetYearlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -239,4 +242,4 @@
             }
         }
     }
-} *@
+}

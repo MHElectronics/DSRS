@@ -16,23 +16,26 @@
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
     </div>
-    <div class="card-footer">
-        @if (appState is not null && showReportGroupSelection)
-        {
-            <div class="row">
-                <div class="col-md-12 btn-group">
-                    <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
-                    <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
-                    <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
-                    <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
+    @if (!selectionEnabled)
+    {
+        <div class="card-footer">
+            @if (appState is not null && showReportGroupSelection)
+            {
+                <div class="row">
+                    <div class="col-md-12 btn-group">
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
+                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
+                        <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
+                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
+                    </div>
                 </div>
-            </div>
-        }
-        @if (!string.IsNullOrEmpty(Summary))
-        {
-            <label class="text-danger">@Summary</label>
-        }
-    </div>
+            }
+            @if (!string.IsNullOrEmpty(Summary))
+            {
+                <label class="text-danger">@Summary</label>
+            }
+        </div>
+    }
 </div>
 @if (Chartview && ChartData is not null)
 {
@@ -122,7 +125,7 @@
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
     private bool isLoading = false;
-
+    private bool selectionEnabled = false;
     private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
 
     protected override async Task OnInitializedAsync()
@@ -149,12 +152,9 @@
         string base64 = exportEventArgs.Base64;
     }
 
-    private async Task HandleParametersChanged(ReportParameters parameters)
+    private async Task HandleParametersChanged(bool parameters)
     {
-        if (parameters.Stations is not null && parameters.Stations.Any())
-        {
-            //reportParameters = parameters;
-        }
+        selectionEnabled = parameters;
     }
     private async Task TypeChanged(string type)
     {

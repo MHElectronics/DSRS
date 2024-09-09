@@ -265,7 +265,7 @@ else
 
 @code {
     [Parameter]
-    public EventCallback<ReportParameters?> OnParametersChanged { get; set; }
+    public EventCallback<bool> OnParametersChanged { get; set; }
 
     private IEnumerable<Station>? stations;
     private List<Station>? selectedStations;
@@ -342,6 +342,7 @@ else
         reportParameters = await appState.GetReportParameters();
         selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
         selectionEnabled = true;
+        await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
     private async Task SelectionComplete()
     {
@@ -359,12 +360,13 @@ else
 
         await appState.SetReportParameters(reportParameters);
         selectionEnabled = false;
-        await OnParametersChanged.InvokeAsync(reportParameters);
+        await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
     private async Task SelectionCancel()
     {
         selectionEnabled = false;
-        //await OnParametersChanged.InvokeAsync(reportParameters);
+        reportParameters = await appState.GetReportParameters();
+        await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
 
     private void TypeChanged(string type)
