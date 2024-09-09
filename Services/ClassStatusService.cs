@@ -41,7 +41,7 @@ public class ClassStatusService : IClassStatusService
         bool hasDuplicate = await this.CheckDuplicateClassStatus(classStatus);
         if (!hasDuplicate)
         {
-            string sql = @"INSERT INTO ClassStatus(Name) VALUES(@Name)";
+            string sql = @"INSERT INTO ClassStatus(Id,Name) VALUES(@Id,@Name)";
             return await _db.SaveData<ClassStatus>(sql, classStatus);
         }
         return hasDuplicate;

@@ -13,16 +13,16 @@ else
         <div class="row">
             <div class="col-md-6 col-sm-12">
                 <div class="form-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                        <label for="id" class="form-label">Class Status Id</label>
-                        <label class="form-control">@classStatus.Id</label>
-                    }
-                    else
+                    @if(Mode == FormMode.Add)
                     {
                         <label for="id" class="form-label">Class Status Id</label>
                         <input type="number" @bind="classStatus.Id" required class="form-control" placeholder="Class Status Id" id="id" min="1"/>
                         <ValidationMessage For="() => classStatus.Id" />
+                    }
+                    else
+                    {
+                        <label for="id" class="form-label">Class Status Id</label>
+                        <label class="form-control">@classStatus.Id</label>
                     }
                 </div>
             </div>
