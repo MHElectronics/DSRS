@@ -39,69 +39,81 @@ public class CsvHelper : ICsvHelper
             int row = 1;
             while (!csvReader.EndOfData)
             {
-                string[] csvFieldData = csvReader.ReadFields() ?? [];
-                bool requiredFieldsValid = true;
-                if (csvFieldData is not null)
+                string csvLineString = csvReader.ReadLine() ?? string.Empty;
+                if (string.IsNullOrEmpty(csvLineString))
                 {
-                    if (string.IsNullOrEmpty(csvFieldData[0]) || string.IsNullOrEmpty(csvFieldData[2]))
+                    summary += row + "-Empty Row,";
+                }
+                else
+                {
+                    string[] csvFieldData = csvLineString.Split(','); //csvReader.ReadFields() ?? [];
+                    bool requiredFieldsValid = true;
+                    if (csvFieldData is not null)
                     {
-                        requiredFieldsValid = false;
-                        summary += row + "-Missing Required field,";
+                        if (string.IsNullOrEmpty(csvFieldData[0]) || string.IsNullOrEmpty(csvFieldData[2]))
+                        {
+                            requiredFieldsValid = false;
+                            summary += row + "-Missing Required field,";
+                        }
+                    }
+
+
+                    //Check required
+                    //List<int> requiredIndexes = [1];
+                    //foreach (int i in requiredIndexes)
+                    //{
+                    //    if (string.IsNullOrEmpty(fieldData[i]))
+                    //    {
+                    //        summary += row + "-Required (" + row + "," + (i - 1) + ")";
+                    //        requiredFieldsValid = false;
+                    //        break;
+                    //    }
+                    //}
+
+                    //Adjust boolean fields if required fields are valid
+                    if (requiredFieldsValid)
+                    {
+                        string[] fieldData = [file.Id.ToString()];
+                        fieldData = fieldData.Concat(csvFieldData).ToArray();
+
+                        List<int> boolenIndexes = [5];
+                        if (file.FileType == (int)UploadedFileType.LoadData)
+                        {
+                            boolenIndexes = [19, 20, 21, 25];
+                        }
+
+                        foreach (int i in boolenIndexes)
+                        {
+                            fieldData[i] = fieldData[i] == "1" ? "true" : "false";
+                        }
+
+                        try
+                        {
+                            csvData.Rows.Add(fieldData);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.Message.Contains("unique"))
+                            {
+                                summary += row + "-Duplicate";
+                            }
+                            else
+                            {
+                                summary += row + "-Parse error,";
+                            }
+                            //summary += row + "-" + ex.Message + ",";
+                        }
                     }
                 }
-                    
-
-                //Check required
-                //List<int> requiredIndexes = [1];
-                //foreach (int i in requiredIndexes)
-                //{
-                //    if (string.IsNullOrEmpty(fieldData[i]))
-                //    {
-                //        summary += row + "-Required (" + row + "," + (i - 1) + ")";
-                //        requiredFieldsValid = false;
-                //        break;
-                //    }
-                //}
-
-                //Adjust boolean fields if required fields are valid
-                if (requiredFieldsValid)
-                {
-                    string[] fieldData = [file.Id.ToString()];
-                    fieldData = fieldData.Concat(csvFieldData).ToArray();
-
-                    List<int> boolenIndexes = [5];
-                    if (file.FileType == (int)UploadedFileType.LoadData)
-                    {
-                        boolenIndexes = [19, 20, 21, 25];
-                    }
-
-                    foreach (int i in boolenIndexes)
-                    {
-                        fieldData[i] = fieldData[i] == "1" ? "true" : "false";
-                    }
-
-                    try
-                    {
-                        csvData.Rows.Add(fieldData);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex.Message.Contains("unique"))
-                        {
-                            summary += row + "-Duplicate";
-                        }
-                        else
-                        {
-                            summary += row + "-Parse error,";
-                        }
-                        //summary += row + "-" + ex.Message + ",";
-                    }
-                }
-
+                
                 row++;
             }
 
-            if (!string.IsNullOrEmpty(summary))
+            if (csvData.Rows.Count == 0)
+            {
+                summary = "No Data Found";
+            }
+            else if (!string.IsNullOrEmpty(summary))
             {
                 summary = "Error in line: " + summary.TrimEnd(',');
             }
