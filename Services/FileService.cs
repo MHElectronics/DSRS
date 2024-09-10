@@ -106,9 +106,10 @@ public class FileService : IFileService
                         
                         //Process inserted data
                         await this.RunProcess(file);
-                        file.IsProcessed = true;
-                        bool isUpdated = await this.UpdateProcessStatus(file);
                     }
+
+                    file.IsProcessed = true;
+                    bool isUpdated = await this.UpdateProcessStatus(file);
                 }
                 catch (Exception)
                 {

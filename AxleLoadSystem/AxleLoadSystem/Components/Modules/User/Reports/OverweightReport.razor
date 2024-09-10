@@ -1,4 +1,4 @@
-﻿@page "/overloadedvehicle"
+﻿@page "/Overweight"
 @using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
@@ -11,7 +11,7 @@
 
 <div class="card card-primary">
     <div class="card-header">
-        <h3 class="card-title">Monthly Report</h3>
+        <h3 class="card-title">Over Weight Report</h3>
     </div>
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
@@ -23,10 +23,10 @@
             {
                 <div class="row">
                     <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Hourly</button>
-                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekdays</button>
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
+                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
                         <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
-                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Annual</button>
+                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
                     </div>
                 </div>
             }
@@ -35,72 +35,61 @@
                 <label class="text-danger">@Summary</label>
             }
         </div>
-    }
+    }  
 </div>
 @if (Chartview && ChartData is not null)
 {
-    <div class="card card-primary">
-        <div class="card-header">
-            <ul class="nav nav-pills ml-auto p-2">
-                <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Table</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Tab 2</a></li>
-                <li><button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button></li>
-            </ul>
-        </div>
-        <div class="card-body">
-            <div class="tab-content">
-                <div class="tab-pane active" id="tab_1">
-                    Table goes here
-                </div>
-                <!-- /.tab-pane -->
-                <div class="tab-pane" id="tab_2">
-                    <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
-                        <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+    <div class="control-section" align='center'>
+        <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
+        <SfChart @ref="@overweightChartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+            <ChartArea>
+                <ChartAreaBorder Width="0"></ChartAreaBorder>
+            </ChartArea>
 
-                        <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
-                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-                        </ChartPrimaryXAxis>
+            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+            </ChartPrimaryXAxis>
 
-                        <ChartPrimaryYAxis Title="@XAxisTitle">
-                            <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-                        </ChartPrimaryYAxis>
+            <ChartPrimaryYAxis Title="@YAxisTitle">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+            </ChartPrimaryYAxis>
 
-                        <ChartSeriesCollection>
-                            <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
-                                <ChartMarker>
-                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                        <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                    </ChartDataLabel>
-                                </ChartMarker>
-                                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                            </ChartSeries>
+            <ChartSeriesCollection>
+                @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                {
+                    <ChartSeries Name="@dayGroup.First().DateUnitName" 
+                                 ColumnWidth="0.5"
+                                 DataSource="@dayGroup"
+                                 XName="NumberofAxle"
+                                 YName="OverloadVehicle"
+                                 Type="ChartSeriesType.StackingColumn"
+                                 EnableTooltip="true">
 
-                            <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.StackingColumn" EnableTooltip="true">
-                                <ChartMarker>
-                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                        <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                    </ChartDataLabel>
-                                </ChartMarker>
-                                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                            </ChartSeries>
-                        </ChartSeriesCollection>
-                        <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-                        <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-                    </SfChart>
-                </div>
-            </div>
-        </div>
+                        <ChartMarker>
+                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                            </ChartDataLabel>
+                        </ChartMarker>
+
+                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                    </ChartSeries>
+                }
+            </ChartSeriesCollection>
+
+            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+            <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+        </SfChart>
     </div>
 }
-
-@* @if (ChartData is not null)
+@if (ChartData is not null)
 {
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Date Frame</th>
-                <th>Total Vehicle</th>
+                <th>Number of Axle</th>
                 <th>Overloaded Vehicle</th>
             </tr>
         </thead>
@@ -109,17 +98,18 @@
             {
                 <tr>
                     <td>@item.DateUnitName</td>
-                    <td>@item.TotalVehicle</td>
+                    <td>@item.NumberofAxle</td>
                     <td>@item.OverloadVehicle</td>
                 </tr>
             }
         </tbody>
     </table>
-} *@
+}
+
 
 @code {
     private Theme Theme { get; set; } = 0;
-    private SfChart chartInstance;
+    private SfChart overweightChartInstance;
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
@@ -132,8 +122,6 @@
     public string ChartTitle { get; set; } = "";
     public string XAxisTitle { get; set; } = "";
     public string YAxisTitle { get; set; } = "";
-    public string XParameter { get; set; } = "";
-    public string YParameter { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
 
@@ -159,7 +147,7 @@
 
     private async Task Export(MouseEventArgs args)
     {
-        await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        await overweightChartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)
@@ -186,19 +174,19 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
 
-        ChartTitle = "Number of Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
-        XAxisTitle = "Number of Vehicles (Units)";
+        ChartTitle = "Number of Overweight Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+        XAxisTitle = "Number of Axle ";
+        YAxisTitle = "Number of Overload Vehicles (Units)";
         Chartview = true;
 
         if (selectedType == "Monthly")
         {
-            report = await loadService.GetMonthlyOverloadedReport(reportParameters);
+            report = await loadService.GetMonthlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
-                    YAxisTitle = "Months";
                 }
                 else 
                 {
@@ -213,13 +201,12 @@
         }
         else if (selectedType == "Weekly")
         {
-            report = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            report = await loadService.GetWeeklyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
-                    YAxisTitle = "Weeks";
                 }
                 else
                 {
@@ -234,13 +221,12 @@
         }
         else if (selectedType == "Daily")
         {
-            report = await loadService.GetHourlyOverloadedReport(reportParameters);
+            report = await loadService.GetHourlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
-                    YAxisTitle = "Hourly";
                 }
                 else
                 {
@@ -255,13 +241,12 @@
         }
         else if (selectedType == "Yearly")
         {
-            report = await loadService.GetYearlyOverloadedReport(reportParameters);
+            report = await loadService.GetYearlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
-                    YAxisTitle = "Yearly";
                 }
                 else
                 {

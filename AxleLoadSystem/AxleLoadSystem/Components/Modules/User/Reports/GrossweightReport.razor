@@ -1,4 +1,4 @@
-﻿@page "/overweightvehicle"
+﻿@page "/grossweight"
 @using BOL.Helpers
 @using Services
 @using Syncfusion.Blazor
@@ -9,9 +9,10 @@
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 
+
 <div class="card card-primary">
     <div class="card-header">
-        <h3 class="card-title">Monthly Report</h3>
+        <h3 class="card-title">Gross Weight Report</h3>
     </div>
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
@@ -35,13 +36,14 @@
                 <label class="text-danger">@Summary</label>
             }
         </div>
-    }  
+    } 
 </div>
 @if (Chartview && ChartData is not null)
 {
     <div class="control-section" align='center'>
         <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
-        <SfChart @ref="@overweightChartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+
+        <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
             <ChartArea>
                 <ChartAreaBorder Width="0"></ChartAreaBorder>
             </ChartArea>
@@ -59,11 +61,11 @@
             <ChartSeriesCollection>
                 @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
                 {
-                    <ChartSeries Name="@dayGroup.First().DateUnitName" 
+                    <ChartSeries Name="@dayGroup.First().DateUnitName"
                                  ColumnWidth="0.5"
                                  DataSource="@dayGroup"
-                                 XName="NumberofAxle"
-                                 YName="OverloadVehicle"
+                                 XName="GrossVehicleWeight"
+                                 YName="TotalVehicle"
                                  Type="ChartSeriesType.StackingColumn"
                                  EnableTooltip="true">
 
@@ -83,33 +85,10 @@
         </SfChart>
     </div>
 }
-@if (ChartData is not null)
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date Frame</th>
-                <th>Number of Axle</th>
-                <th>Overloaded Vehicle</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (AxleLoadReport item in ChartData)
-            {
-                <tr>
-                    <td>@item.DateUnitName</td>
-                    <td>@item.NumberofAxle</td>
-                    <td>@item.OverloadVehicle</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
 
 @code {
     private Theme Theme { get; set; } = 0;
-    private SfChart overweightChartInstance;
+    private SfChart chartInstance;
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
@@ -147,7 +126,7 @@
 
     private async Task Export(MouseEventArgs args)
     {
-        await overweightChartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)
@@ -174,19 +153,19 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
 
-        ChartTitle = "Number of Overweight Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
-        XAxisTitle = "Number of Axle ";
-        YAxisTitle = "Number of Overload Vehicles (Units)";
+        ChartTitle = "Number of Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
+        XAxisTitle = "Number of Vehicles (Units)";
         Chartview = true;
 
         if (selectedType == "Monthly")
         {
-            report = await loadService.GetMonthlyOverweightReport(reportParameters);
+            report = await loadService.GetMonthlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
+                    YAxisTitle = "Months";
                 }
                 else 
                 {
@@ -201,12 +180,13 @@
         }
         else if (selectedType == "Weekly")
         {
-            report = await loadService.GetWeeklyOverweightReport(reportParameters);
+            report = await loadService.GetWeeklyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
+                    YAxisTitle = "Weeks";
                 }
                 else
                 {
@@ -221,12 +201,13 @@
         }
         else if (selectedType == "Daily")
         {
-            report = await loadService.GetHourlyOverweightReport(reportParameters);
+            report = await loadService.GetHourlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
+                    YAxisTitle = "Hourly";
                 }
                 else
                 {
@@ -241,12 +222,13 @@
         }
         else if (selectedType == "Yearly")
         {
-            report = await loadService.GetYearlyOverweightReport(reportParameters);
+            report = await loadService.GetYearlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
                 {
                     ChartData = report.Item1;
+                    YAxisTitle = "Yearly";
                 }
                 else
                 {

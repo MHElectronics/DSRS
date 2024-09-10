@@ -7,8 +7,8 @@ public class FinePayment
     public int Id { get; set; }
     public int StationId { get; set; }
     [Required]
-    [MinValue(1)]
-    [MaxLength(99)]
+    [MinValue(0)]
+    [MaxValue(99)]
     public int LaneNumber { get; set; }
     [NoSpecialCharacters]
     public string TransactionNumber { get; set; }
