@@ -1,6 +1,7 @@
 ﻿@page "/overloadedvehicle"
 @using BOL.Helpers
 @using Services
+@using Services.Helpers
 @using Syncfusion.Blazor
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
@@ -8,6 +9,7 @@
 @inject IAxleLoadService loadService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
+@inject IJSRuntime jsRuntime
 
 <div class="card card-primary">
     <div class="card-header">
@@ -159,7 +161,15 @@
 
     private async Task Export(MouseEventArgs args)
     {
-        await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        // await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+
+        List<(string Header, string FieldName, Type FieldType)> fields = new();
+        fields.Add(("Month", nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
+        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
+        fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
+
+        MemoryStream ms = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+        await jsRuntime.InvokeVoidAsync("downloadFileFromStream", ms);
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)

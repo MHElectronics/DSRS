@@ -7,7 +7,7 @@ public class AxleLoadReport
     public int OverloadVehicle { get; set; }
     public DateTime Date { get; set; }
     public int DateUnit { get; set; }
-    public string DateUnitName { get; set; }
+    public string DateUnitName { get; set; } = "";
     public int Weekday { get; set; }
     public int NumberofAxle { get; set; }
     public int Axle1 { get; set; }

@@ -2,16 +2,11 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Helpers;
-public class ExcelHelper
+public static class ExcelHelper
 {
-    public static MemoryStream CreateSpreadsheetWorkbook()
+    public static MemoryStream CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
     {
         MemoryStream memoryStream = new MemoryStream();
 
@@ -30,34 +25,40 @@ public class ExcelHelper
 
         //Header row
         Row headerRow = new Row();
-        String[] headerNames = ["Name", "Age"];
-        Cell[] headerCells = new Cell[headerNames.Length];
+        Cell[] headerCells = new Cell[fields.Count];
 
-        for(int i=0; i<headerNames.Length; i++)
+        int i = 0;
+        foreach((string Header, string FieldName, Type FieldType) item in fields)
         {
             headerCells[i] = new Cell();
-            headerCells[i].DataType = CellValues.String;
-            headerCells[i].CellValue = new CellValue(headerNames[i]);
+            headerCells[i].DataType = GetCellValuesFromType(item.FieldType);
+            headerCells[i].CellValue = new CellValue(item.Header);
             headerRow.Append(headerCells[i]);
+            i++;
         }
+        //Add header row in sheet
         sheetData.Append(headerRow);
 
         //Add the data rows
-        Row dataRow = new Row();
-        Cell[] dataCells = new Cell[2];
-        
-        dataCells[0] = new Cell();
-        dataCells[0].DataType = CellValues.String;
-        dataCells[0].CellValue = new CellValue("Test 1");
-        dataRow.Append(dataCells[0]);
+        foreach(T item in data)
+        {
+            int columnIndex = 0;
+            Row dataRow = new Row();
+            Cell[] dataCells = new Cell[fields.Count];
 
-        dataCells[1] = new Cell();
-        dataCells[1].DataType = CellValues.String;
-        dataCells[1].CellValue = new CellValue("Test 2");
-        dataRow.Append(dataCells[1]);
-
-        sheetData.Append(dataRow);
-
+            foreach ((string Header, string FieldName, Type FieldType) column in fields)
+            {
+                dataCells[columnIndex] = new Cell();
+                dataCells[columnIndex].DataType = GetCellValuesFromType(column.FieldType);
+                //var value = (item as dynamic)[column.FieldName];
+                var value2 = item.GetType().GetProperty(column.FieldName).GetValue(item, null);
+                dataCells[columnIndex].CellValue = new CellValue(value2.ToString());
+                dataRow.Append(dataCells[columnIndex]);
+                columnIndex++;
+            }
+            
+            sheetData.Append(dataRow);
+        }
 
         // Add Sheets to the Workbook.
         Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
@@ -73,5 +74,23 @@ public class ExcelHelper
         spreadsheetDocument.Dispose();
 
         return memoryStream;
+    }
+
+    private static CellValues GetCellValuesFromType(Type type)
+    {
+        if (type == typeof(int) || type == typeof(decimal) || type == typeof(double))
+        {
+            return CellValues.Number;
+        }
+        else if (type == typeof(bool))
+        {
+            return CellValues.Boolean;
+        }
+        else if (type == typeof(DateTime) || type == typeof(DateOnly))
+        {
+            return CellValues.Date;
+        }
+
+        return CellValues.String;
     }
 }
