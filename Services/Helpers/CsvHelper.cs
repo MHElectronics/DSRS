@@ -57,7 +57,6 @@ public class CsvHelper : ICsvHelper
                         }
                     }
 
-
                     //Check required
                     //List<int> requiredIndexes = [1];
                     //foreach (int i in requiredIndexes)
@@ -111,6 +110,7 @@ public class CsvHelper : ICsvHelper
 
             if (csvData.Rows.Count == 0)
             {
+                isSuccess = false;
                 summary = "No Data Found";
             }
             else if (!string.IsNullOrEmpty(summary))

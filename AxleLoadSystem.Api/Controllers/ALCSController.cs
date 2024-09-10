@@ -274,7 +274,7 @@ public class ALCSController : ControllerBase
         {
             return Ok("Fine payment data insert successful");
         }
-        return BadRequest(isSuccess.Item2);
+        return BadRequest("Error: Fine payment validation failed");
     }
     [HttpPost("[action]")]
     public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
@@ -301,6 +301,6 @@ public class ALCSController : ControllerBase
         {
             return Ok("Fine payment multiple data insert successful");
         }
-        return BadRequest(isSuccess.Item2);
+        return BadRequest("Error: Fine payment multiple validation failed");
     }
 }

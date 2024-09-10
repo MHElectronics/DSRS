@@ -26,7 +26,7 @@
             {
                 <span>Summary:</span>
                 <br />
-                @foreach (string item in File.Summary.Split('|'))
+                @foreach (string item in File.Summary.Trim('|').Split('|'))
                 {
                     <span>@item</span>
                     <br />

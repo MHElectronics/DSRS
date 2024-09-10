@@ -9,8 +9,8 @@ public class LoadData
     [Required]
     public string TransactionNumber { get; set; }
     [Required]
-    [MinValue(1)]
-    [MaxLength(99)]
+    [MinValue(0)]
+    [MaxValue(99)]
     public int LaneNumber { get; set; }
     
     [JsonDateTimeFormat]
