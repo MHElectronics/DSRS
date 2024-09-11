@@ -6,7 +6,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 namespace Services.Helpers;
 public static class ExcelHelper
 {
-    public static MemoryStream CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
+    public static string CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
     {
         MemoryStream memoryStream = new MemoryStream();
 
@@ -70,10 +70,13 @@ public static class ExcelHelper
         workbookPart.Workbook.Save();
         spreadsheetDocument.Save();
 
+        byte[] fileByte = memoryStream.ToArray();
+        string base64string = Convert.ToBase64String(fileByte, 0, fileByte.Length);
+
         // Dispose the document.
         spreadsheetDocument.Dispose();
 
-        return memoryStream;
+        return base64string;
     }
 
     private static CellValues GetCellValuesFromType(Type type)
