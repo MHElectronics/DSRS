@@ -37,13 +37,13 @@
     }
 </EditForm>
 
-@if (allStationAccessList is null)
+@if (stations is null)
 {
     <Loader />
 }
-else if (allStationAccessList.Count() == 0)
+else if (stations.Count() == 0)
 {
-    <p>No Station Access Found</p>
+    <p>No Station Found</p>
 }
 else
 {
