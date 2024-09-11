@@ -57,7 +57,7 @@
             </ChartPrimaryYAxis>
 
             <ChartSeriesCollection>
-                <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
+                <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                     <ChartMarker>
                         <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                             <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -66,7 +66,7 @@
                     <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                 </ChartSeries>
 
-                <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
+                <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                     <ChartMarker>
                         <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                             <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -112,6 +112,7 @@
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+    private ChartSeriesType chartSeriesType { get; set; }
 
     public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
@@ -184,7 +185,18 @@
         ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
         XAxisTitle = "Number of Vehicles (Units)";
         Chartview = true;
-
+        if (reportParameters.ChartType == 1)
+        {
+            chartSeriesType = ChartSeriesType.Line;
+        }
+        else if (reportParameters.ChartType == 2)
+        {
+            chartSeriesType = ChartSeriesType.StackingColumn;    
+        }
+        else
+        {
+            chartSeriesType = ChartSeriesType.Bar;
+        }
         if (selectedType == "Monthly")
         {
             report = await loadService.GetMonthlyOverloadedReport(reportParameters);

@@ -13,4 +13,5 @@ public class ReportParameters
     public int WeightMax { get; set; }
     public bool CheckWeightCalculation { get; set; }
     public bool IsOverloaded { get; set; }
+    public int ChartType { get; set; }
 }
