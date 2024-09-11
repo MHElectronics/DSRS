@@ -23,7 +23,7 @@
             {
                 <div class="row">
                     <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Daily</button>
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hourly"))" disabled="@(isLoading ? "disabled" : null)">Hourly</button>
                         <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
                         <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
                         <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
@@ -39,73 +39,83 @@
 </div>
 @if (Chartview && ChartData is not null)
 {
-    <div class="control-section" align='center'>
-        <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
-        <SfChart @ref="@overweightChartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
-            <ChartArea>
-                <ChartAreaBorder Width="0"></ChartAreaBorder>
-            </ChartArea>
+    <div class="card card-primary">
+        <div class="card-header">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Table</a></li>
+                <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Graph</a></li>
+                <li class="nav-item float-right"><button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button></li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>@selectedType</th>
+                                <th class="text-right">Number of Axle</th>
+                                <th class="text-right">Overloaded Vehicle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (AxleLoadReport item in ChartData)
+                            {
+                                <tr>
+                                    <td>@item.DateUnitName</td>
+                                    <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
+                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="tab_2" style="width:100%">
+                    <SfChart @ref="@overweightChartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+                        <ChartArea>
+                            <ChartAreaBorder Width="0"></ChartAreaBorder>
+                        </ChartArea>
 
-            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
-                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-            </ChartPrimaryXAxis>
+                        <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                        </ChartPrimaryXAxis>
 
-            <ChartPrimaryYAxis Title="@YAxisTitle">
-                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-            </ChartPrimaryYAxis>
+                        <ChartPrimaryYAxis Title="@YAxisTitle">
+                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                            <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                        </ChartPrimaryYAxis>
 
-            <ChartSeriesCollection>
-                @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
-                {
-                    <ChartSeries Name="@dayGroup.First().DateUnitName" 
-                                 ColumnWidth="0.5"
-                                 DataSource="@dayGroup"
-                                 XName="NumberofAxle"
-                                 YName="OverloadVehicle"
-                                 Type="ChartSeriesType.StackingColumn"
-                                 EnableTooltip="true">
+                        <ChartSeriesCollection>
+                            @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                            {
+                                <ChartSeries Name="@dayGroup.First().DateUnitName"
+                                             ColumnWidth="0.5"
+                                             DataSource="@dayGroup"
+                                             XName="NumberofAxle"
+                                             YName="OverloadVehicle"
+                                             Type="ChartSeriesType.StackingColumn"
+                                             EnableTooltip="true">
 
-                        <ChartMarker>
-                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                            </ChartDataLabel>
-                        </ChartMarker>
+                                    <ChartMarker>
+                                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                        </ChartDataLabel>
+                                    </ChartMarker>
 
-                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                    </ChartSeries>
-                }
-            </ChartSeriesCollection>
+                                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                </ChartSeries>
+                            }
+                        </ChartSeriesCollection>
 
-            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-            <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-        </SfChart>
+                        <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                        <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                    </SfChart>
+                </div>
+            </div>
+        </div>
     </div>
 }
-@if (ChartData is not null)
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date Frame</th>
-                <th>Number of Axle</th>
-                <th>Overloaded Vehicle</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (AxleLoadReport item in ChartData)
-            {
-                <tr>
-                    <td>@item.DateUnitName</td>
-                    <td>@item.NumberofAxle</td>
-                    <td>@item.OverloadVehicle</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
 
 @code {
     private Theme Theme { get; set; } = 0;
@@ -116,7 +126,7 @@
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
 
-    public string Width { get; set; } = "90%";
+    public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
@@ -219,7 +229,7 @@
                 Summary = report.Item3;
             }
         }
-        else if (selectedType == "Daily")
+        else if (selectedType == "Hourly")
         {
             report = await loadService.GetHourlyOverweightReport(reportParameters);
             if (report.Item2)

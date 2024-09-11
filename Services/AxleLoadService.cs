@@ -456,66 +456,41 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
         END
 
+        DECLARE @AllHours TABLE([Hour] INT)
+        INSERT INTO @AllHours([Hour])
+        VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23)
+
         CREATE TABLE #T(
             TotalVehicle INT DEFAULT 0,
             OverloadVehicle INT DEFAULT 0,
-            [DateUnit] INT,
-            Axle1 INT DEFAULT 0,
-            Axle2 INT DEFAULT 0,
-            Axle3 INT DEFAULT 0,
-            Axle4 INT DEFAULT 0,
-            Axle5 INT DEFAULT 0,
-            Axle6 INT DEFAULT 0,
-            Axle7 INT DEFAULT 0,
-            AxleRemaining INT DEFAULT 0,
-            GrossVehicleWeight INT DEFAULT 0
+            [DateUnit] INT 
         )
 
-        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight)
+        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle)
         SELECT 
-            CASE 
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 0 AND 5 THEN 0
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 6 AND 11 THEN 6
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 12 AND 17 THEN 12
-                ELSE 18
-            END AS DateUnit,
+            DATEPART(HOUR, AL.DateTime) AS DateUnit,
             COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            SUM(Axle1) AS Axle1,
-            SUM(Axle2) AS Axle2,
-            SUM(Axle3) AS Axle3,
-            SUM(Axle4) AS Axle4,
-            SUM(Axle5) AS Axle5,
-            SUM(Axle6) AS Axle6,
-            SUM(Axle7) AS Axle7,
-            SUM(AxleRemaining) AS AxleRemaining,
-            SUM(GrossVehicleWeight) AS GrossVehicleWeight
+            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
-            CASE 
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 0 AND 5 THEN 0
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 6 AND 11 THEN 6
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 12 AND 17 THEN 12
-                ELSE 18
-            END
+        GROUP BY DATEPART(HOUR, AL.DateTime)
 
-        SELECT *,
-            CASE DateUnit
-                WHEN 0 THEN '0:00'
-                WHEN 6 THEN '6:00'
-                WHEN 12 THEN '12:00'
-                ELSE '18:00'
-            END AS DateUnitName
-        FROM #T
-        ORDER BY DateUnit
+        SELECT 
+            AH.Hour AS DateUnit,
+            ISNULL(T.TotalVehicle, 0) AS TotalVehicle,
+            ISNULL(T.OverloadVehicle, 0) AS OverloadVehicle,
+            FORMAT(AH.Hour, '00') AS DateUnitName
+        FROM @AllHours AH
+        LEFT JOIN #T T ON AH.Hour = T.DateUnit
+        ORDER BY AH.Hour
 
         DROP TABLE #T
         ";
+
 
         var parameters = new
         {
@@ -546,12 +521,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     {
         throw new NotImplementedException();
     }
-
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyVehicleReport(ReportParameters reportParameters)
     {
         throw new NotImplementedException();
     }
-
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
@@ -684,9 +657,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
-
-
-
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyVehicleReport(ReportParameters reportParameters)
     {
         throw new NotImplementedException();
@@ -903,41 +873,20 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
         END
 
+        DECLARE @AllHours TABLE([Hour] INT)
+        INSERT INTO @AllHours([Hour])
+        VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23)
+
         CREATE TABLE #T(
-            TotalVehicle INT DEFAULT 0,
             OverloadVehicle INT DEFAULT 0,
             [DateUnit] INT,
-            Axle1 INT DEFAULT 0,
-            Axle2 INT DEFAULT 0,
-            Axle3 INT DEFAULT 0,
-            Axle4 INT DEFAULT 0,
-            Axle5 INT DEFAULT 0,
-            Axle6 INT DEFAULT 0,
-            Axle7 INT DEFAULT 0,
-            AxleRemaining INT DEFAULT 0,
-            GrossVehicleWeight INT DEFAULT 0,
             NumberOfAxle INT DEFAULT 0  
         )
 
-        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight, NumberOfAxle)
+        INSERT INTO #T([DateUnit], OverloadVehicle, NumberOfAxle)
         SELECT
-            CASE 
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 0 AND 5 THEN 0
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 6 AND 11 THEN 6
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 12 AND 17 THEN 12
-                ELSE 18
-            END AS DateUnit,
-            COUNT(1) AS TotalVehicle,
+            DATEPART(HOUR, AL.DateTime) AS DateUnit,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            SUM(Axle1) AS Axle1,
-            SUM(Axle2) AS Axle2,
-            SUM(Axle3) AS Axle3,
-            SUM(Axle4) AS Axle4,
-            SUM(Axle5) AS Axle5,
-            SUM(Axle6) AS Axle6,
-            SUM(Axle7) AS Axle7,
-            SUM(AxleRemaining) AS AxleRemaining,
-            SUM(GrossVehicleWeight) AS GrossVehicleWeight,
             NumberOfAxle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
@@ -945,23 +894,16 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
-            CASE 
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 0 AND 5 THEN 0
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 6 AND 11 THEN 6
-                WHEN DATEPART(HOUR, AL.DateTime) BETWEEN 12 AND 17 THEN 12
-                ELSE 18
-            END, NumberOfAxle
+        GROUP BY DATEPART(HOUR, AL.DateTime), NumberOfAxle
 
-        SELECT *,
-            CASE DateUnit
-                WHEN 0 THEN '0:00'
-                WHEN 6 THEN '6:00'
-                WHEN 12 THEN '12:00'
-                ELSE '18:00'
-            END AS DateUnitName
-        FROM #T
-        ORDER BY DateUnit
+        SELECT 
+            AH.Hour AS DateUnit,
+            ISNULL(T.OverloadVehicle, 0) AS OverloadVehicle,
+            ISNULL(T.NumberOfAxle, 0) AS NumberOfAxle,
+            FORMAT(AH.Hour, '00') AS DateUnitName
+        FROM @AllHours AH
+        LEFT JOIN #T T ON AH.Hour = T.DateUnit
+        ORDER BY AH.Hour
 
         DROP TABLE #T
         ";
