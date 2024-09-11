@@ -75,47 +75,51 @@
                 <div class="tab-pane" id="tab_2">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "bar" ? "btn-danger" : "btn-primary")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
-                            <button class="btn @(chartType == "line" ? "btn-danger" : "btn-primary")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
-                            <button class="btn @(chartType == "column" ? "btn-danger" : "btn-primary")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
+                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
+                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
                         </div>
                     </div>
-                    <div class="col-md-12 col-sm-12" style="width:auto">
-                        <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
-                            <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+                    <br/>
+                    @if (!string.IsNullOrEmpty(chartType))
+                    {
+                        <div class="col-md-12 col-sm-12" style="width:auto">
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+                                <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
 
-                            <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
-                                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-                            </ChartPrimaryXAxis>
+                                <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                    <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                </ChartPrimaryXAxis>
 
-                            <ChartPrimaryYAxis Title="@XAxisTitle">
-                                <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-                            </ChartPrimaryYAxis>
+                                <ChartPrimaryYAxis Title="@XAxisTitle">
+                                    <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                                </ChartPrimaryYAxis>
 
-                            <ChartSeriesCollection>
-                                <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
-                                    <ChartMarker>
-                                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                        </ChartDataLabel>
-                                    </ChartMarker>
-                                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                                </ChartSeries>
+                                <ChartSeriesCollection>
+                                    <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartMarker>
+                                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                            </ChartDataLabel>
+                                        </ChartMarker>
+                                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                    </ChartSeries>
 
-                                <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
-                                    <ChartMarker>
-                                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                        </ChartDataLabel>
-                                    </ChartMarker>
-                                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                                </ChartSeries>
-                            </ChartSeriesCollection>
-                            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-                            <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-                        </SfChart>
-                    </div>
+                                    <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartMarker>
+                                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                            </ChartDataLabel>
+                                        </ChartMarker>
+                                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                    </ChartSeries>
+                                </ChartSeriesCollection>
+                                <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                                <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                            </SfChart>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -130,7 +134,7 @@
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
-    private ChartSeriesType chartSeriesType { get; set; }
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Bar;
 
     public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
@@ -139,7 +143,7 @@
     public string XAxisTitle { get; set; } = "";
     public string YAxisTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
-    private string chartType { get; set; } = "column";
+    private string chartType { get; set; } = "bar";
     private string Summary { get; set; } = "";
 
     private bool showReportGroupSelection { get; set; } = false;    
