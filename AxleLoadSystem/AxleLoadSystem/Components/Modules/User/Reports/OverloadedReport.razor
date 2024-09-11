@@ -163,8 +163,9 @@
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
 
-        MemoryStream ms = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
-        await jsRuntime.InvokeVoidAsync("downloadFileFromStream", ms);
+        string base64string = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+        await jsRuntime.InvokeVoidAsync("DownloadBlob", new { data = base64string, fileName = "Test.xlsx" });
+        // await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "test.xls", fileByte);
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)

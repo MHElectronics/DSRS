@@ -129,6 +129,16 @@
             anchorElement.remove();
             URL.revokeObjectURL(url);
         }
+
+        function DownloadBlob(options) {
+            var link = document.createElement('a');
+            //link.href = url;
+            link.href = "data:application/octet-stream;base64," + options.data;
+            link.setAttribute('download', options.fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 
 </body>
