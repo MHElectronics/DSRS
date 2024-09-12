@@ -128,4 +128,16 @@ public static class ExcelHelper
 
         return sb.ToString();
     }
+    public static MemoryStream GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
+    {
+        string csvString = GenerateCSVString(fields, data);
+
+        MemoryStream stream = new MemoryStream();
+        StreamWriter writer = new StreamWriter(stream);
+        writer.Write(csvString);
+        writer.Flush();
+        stream.Position = 0;
+
+        return stream;
+    }
 }

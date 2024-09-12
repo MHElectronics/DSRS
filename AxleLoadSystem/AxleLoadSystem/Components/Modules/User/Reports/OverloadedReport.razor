@@ -198,13 +198,7 @@
         }
         else if (type == "csv")
         {
-            string csv = ExcelHelper.GenerateCSVString<AxleLoadReport>(fields, ChartData.ToList());
-
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
-            writer.Write(csv);
-            writer.Flush();
-            stream.Position = 0;
+            MemoryStream stream = ExcelHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList());
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
