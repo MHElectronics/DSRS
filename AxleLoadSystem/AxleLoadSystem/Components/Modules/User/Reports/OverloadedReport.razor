@@ -43,10 +43,24 @@
 {
     <div class="card card-primary">
         <div class="card-header">
-            <ul class="nav nav-tabs">
-                <li class="nav-item"><a class="nav-link active" href="#tab_1" data-toggle="tab">Table</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tab_2" data-toggle="tab">Graph</a></li>
-                <li class="nav-item float-right"><button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button></li>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Export
+                    </span>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
+                    </ul>
+                </li>
             </ul>
         </div>
         <div class="card-body">
@@ -166,18 +180,39 @@
         }
     }
 
-    private async Task Export(MouseEventArgs args)
+    private async Task Export(string type)
     {
-        // await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
-
         List<(string Header, string FieldName, Type FieldType)> fields = new();
         fields.Add(("Month", nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
 
-        string base64string = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
-        await jsRuntime.InvokeVoidAsync("DownloadBlob", new { data = base64string, fileName = "Test.xlsx" });
-        // await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "test.xls", fileByte);
+        if (type == "excel")
+        {
+            byte[] fileByte = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+
+            MemoryStream ms = new MemoryStream(fileByte);
+
+            using var streamRef = new DotNetStreamReference(ms);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+        }
+        else if (type == "csv")
+        {
+            string csv = ExcelHelper.GenerateCSVString<AxleLoadReport>(fields, ChartData.ToList());
+
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream);
+            writer.Write(csv);
+            writer.Flush();
+            stream.Position = 0;
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+        }
+        else if(type == "chart")
+        {
+            await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)

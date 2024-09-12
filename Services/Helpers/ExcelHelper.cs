@@ -2,11 +2,12 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.Text;
 
 namespace Services.Helpers;
 public static class ExcelHelper
 {
-    public static string CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
+    public static byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
     {
         MemoryStream memoryStream = new MemoryStream();
 
@@ -64,19 +65,17 @@ public static class ExcelHelper
         Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
 
         // Append a new worksheet and associate it with the workbook.
-        Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "mySheet" };
+        Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Data" };
         sheets.Append(sheet);
 
         workbookPart.Workbook.Save();
+        spreadsheetDocument.WorkbookPart.Workbook.Save();
         spreadsheetDocument.Save();
-
-        byte[] fileByte = memoryStream.ToArray();
-        string base64string = Convert.ToBase64String(fileByte, 0, fileByte.Length);
 
         // Dispose the document.
         spreadsheetDocument.Dispose();
 
-        return base64string;
+        return memoryStream.ToArray();
     }
 
     private static CellValues GetCellValuesFromType(Type type)
@@ -95,5 +94,38 @@ public static class ExcelHelper
         }
 
         return CellValues.String;
+    }
+
+    public static string GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        string header = "";
+        foreach ((string Header, string FieldName, Type FieldType) item in fields)
+        {
+            header += item.Header + ",";
+        }
+        //Remove , from end
+        header = header.TrimEnd(',');
+
+        //Add header
+        sb.AppendLine(header);
+
+        //Add data rows
+        foreach (T item in data)
+        {
+            string row = "";
+
+            foreach ((string Header, string FieldName, Type FieldType) column in fields)
+            {
+                row += item.GetType().GetProperty(column.FieldName).GetValue(item, null) + ",";
+            }
+            //Remove , from end
+            row = row.TrimEnd(',');
+
+            sb.AppendLine(row);
+        }
+
+        return sb.ToString();
     }
 }

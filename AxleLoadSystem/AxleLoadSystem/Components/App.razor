@@ -50,7 +50,7 @@
     <!-- Bootstrap 4 -->
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- ChartJS -->
-    <script src="plugins/chart.js/Chart.min.js"></script>
+    @* <script src="plugins/chart.js/Chart.min.js"></script> *@
     <!-- Sparkline -->
     @* <script src="plugins/sparklines/sparkline.js"></script> *@
     <!-- JQVMap -->
@@ -129,18 +129,6 @@
             anchorElement.remove();
             URL.revokeObjectURL(url);
         }
-
-        function DownloadBlob(options) {
-            var link = document.createElement('a');
-            //link.href = url;
-            link.href = "data:application/octet-stream;base64," + options.data;
-            link.setAttribute('download', options.fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
     </script>
-
 </body>
-
 </html>
