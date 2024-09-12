@@ -253,6 +253,17 @@ public class ALCSController : ControllerBase
 
         return data;
     }
+    private async Task<List<FinePayment>> CheckValidFineData(int stationId, List<FinePayment> data)
+    {
+        //Data check
+        data.RemoveAll(d => d.DateTime.Date != DateTime.Today);
+
+        //Check lane number
+        IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
+        data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+
+        return data;
+    }
 
     [HttpPost("[action]")]
     public async Task<IActionResult> FinePayment(FinePayment obj)
@@ -268,12 +279,17 @@ public class ALCSController : ControllerBase
 
         //Check station code
         obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
-
-        isSuccess = await _finePaymentService.Add(obj);
-        if (isSuccess.Item1)
+        List<FinePayment> validData = await this.CheckValidFineData(obj.StationId, new List<FinePayment> { obj });
+        if (validData.Count > 0)
         {
-            return Ok("Fine payment data insert successful");
+            isSuccess = await _finePaymentService.Add(obj);
+            if (isSuccess.Item1)
+            {
+                return Ok("Fine payment data insert successful");
+            }
+            return BadRequest(isSuccess.Item2);
         }
+
         return BadRequest("Error: Fine payment validation failed");
     }
     [HttpPost("[action]")]
@@ -296,10 +312,15 @@ public class ALCSController : ControllerBase
             item.StationId = stationId;
         }
 
-        isSuccess = await _finePaymentService.Add(obj);
-        if (isSuccess.Item1)
+        List<FinePayment> validData = await this.CheckValidFineData(stationId,  obj );
+        if (validData.Count > 0)
         {
-            return Ok("Fine payment multiple data insert successful");
+            isSuccess = await _finePaymentService.Add(obj);
+            if (isSuccess.Item1)
+            {
+                return Ok("Fine payment multiple data insert successful");
+            }
+            return BadRequest(isSuccess.Item2);
         }
         return BadRequest("Error: Fine payment multiple validation failed");
     }
