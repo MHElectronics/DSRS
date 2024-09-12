@@ -1,5 +1,6 @@
 ﻿@page "/overloaded"
 @using BOL.Helpers
+@using Microsoft.Playwright
 @using Services
 @using Services.Helpers
 @using Syncfusion.Blazor
@@ -49,6 +50,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link" data-toggle="pill" @onclick="Test">Test</span>
                 </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -335,5 +339,15 @@
                 Summary = report.Item3;
             }
         }
+    }
+
+    private async Task Test()
+    {
+        //var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_1");
+
+        // Microsoft.Playwright.Program.Main(["install"]);
+
+        using var playright = Playwright.CreateAsync();
+        // var browser = await playright.
     }
 }

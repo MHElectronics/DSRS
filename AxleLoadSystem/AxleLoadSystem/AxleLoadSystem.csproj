@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.4" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.46.0" />
     <PackageReference Include="Syncfusion.Blazor.Charts" Version="25.1.42" />
     <PackageReference Include="Syncfusion.Blazor.Grid" Version="26.2.7" />
     <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="25.1.42" />
