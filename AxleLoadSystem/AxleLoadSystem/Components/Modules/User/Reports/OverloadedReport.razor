@@ -183,7 +183,7 @@
     private async Task Export(string type)
     {
         List<(string Header, string FieldName, Type FieldType)> fields = new();
-        fields.Add(("Month", nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
+        fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
 
