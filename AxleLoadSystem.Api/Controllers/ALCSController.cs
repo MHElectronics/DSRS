@@ -98,12 +98,16 @@ public class ALCSController : ControllerBase
             using (var reader = new StreamReader(stream))
             {
                 string headerLine = await reader.ReadLineAsync();
+                reader.Close();
+                reader.Dispose();   
+                stream.Close();
+                stream.Dispose();
                 if (string.IsNullOrEmpty(headerLine))
                 {
                     return BadRequest("CSV file is empty or missing headers.");
                 }
 
-                string headers = headerLine.Trim();
+                headerLine = headerLine.Replace(" ", "");
 
                 string requiredHeaders = "TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId," +
                     "NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded," +
@@ -138,10 +142,6 @@ public class ALCSController : ControllerBase
     [HttpPost("[action]")]
     public async Task<IActionResult> UploadFineData([ModelBinder(BinderType = typeof(JsonModelBinder))] FileUploadModel station, IFormFile uploadFile)
     {
-        if (uploadFile.Headers is not null)
-        {
-
-        }
         if (uploadFile == null || uploadFile.Length == 0 || station == null)
         {
             return new BadRequestResult();
@@ -174,15 +174,19 @@ public class ALCSController : ControllerBase
             using (var reader = new StreamReader(stream))
             {
                 string headerLine = await reader.ReadLineAsync();
+                reader.Close();
+                reader.Dispose();
+                stream.Close();
+                stream.Dispose();
                 if (string.IsNullOrEmpty(headerLine))
                 {
                     return BadRequest("CSV file is empty or missing headers");
                 }
 
-                string headers = headerLine.Trim();
+                headerLine = headerLine.Replace(" ", "");
 
                 string requiredHeaders = "LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber," +
-                    "BillNumber,WarehouseCharge,DriversLicenseNumber";
+                    "BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation";
                 if (requiredHeaders.ToLower() != headerLine.ToLower())
                 {
                     return BadRequest("Wrong Header");
