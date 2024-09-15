@@ -1,9 +1,9 @@
 ﻿@using Syncfusion.Blazor
 @using Syncfusion.Blazor.Charts
-@using ApexCharts
 @inject IStationService stationService
 @inject IFileService fileService
-@inject IAxleLoadService axleLoadService
+@inject IAxleLoadService loadService
+@inject IAppState appState
 
 <div class="card card-primary">
     <div class="card-header">
@@ -50,31 +50,11 @@
                             </tr>
                         }
                     </table>
+                    @if (!string.IsNullOrEmpty(Summary))
+                    {
+                        <label class="text-danger">@Summary</label>
+                    }
                 </div>
-                @* <div class="col-12">
-            @if (loadCounts is null)
-            {
-            <Loader />
-            }
-            else
-            {
-            <SfChart>
-            <ChartPrimaryXAxis IntervalType="IntervalType.Auto" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
-            <ChartSeriesCollection>
-            <ChartSeries DataSource="@loadCounts" XName="Date" YName="TotalVehicle" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="green">
-            <ChartMarker>
-            <ChartDataLabel Visible="true"></ChartDataLabel>
-            </ChartMarker>
-            </ChartSeries>
-            <ChartSeries DataSource="@loadCounts" XName="Date" YName="Overloaded" Type="ChartSeriesType.Column" ColumnWidth="0.7" ColumnSpacing="0.1" Fill="red">
-            <ChartMarker>
-            <ChartDataLabel Visible="true"></ChartDataLabel>
-            </ChartMarker>
-            </ChartSeries>
-            </ChartSeriesCollection>
-            </SfChart>
-            }
-            </div> *@
                 <div class="col-12">
                     @if (loadCounts is null)
                     {
@@ -86,43 +66,56 @@
                     }
                     else
                     {
-                        <div class="apexchart">
+                        <div class="col-md-12 col-sm-12">
+                            <label class="text"> Data Analysis Chart</label>
+                            <div class="col-md-12 btn-group">
+                                <button class="btn @(selectedType == "Today" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Today"))">Today</button>
+                                <button class="btn @(selectedType == "Yesterday" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yesterday"))">Yesterday</button>
+                            </div>
+                            <br/>
+                            @if (chartview)
+                            {
+                                <div class="col-md-12 col-sm-12">
+                                    <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+                                        <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
 
-                            <ApexChart TItem="AxleLoadCount"
-                                       Title="Sample Data"
-                                       OnClick="OnClick"
-                                       @ref="chart">
-                                <ChildContent>
+                                        <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                        </ChartPrimaryXAxis>
 
-                                    <ApexPointSeries TItem="AxleLoadCount"
-                                                     Items="loadCounts"
-                                                     Name="Total Vehicle"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="e => e.Date"
-                                                     YValue="e=> e.TotalVehicle" />
+                                        <ChartPrimaryYAxis Title="@XAxisTitle">
+                                            <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                                        </ChartPrimaryYAxis>
 
-                                    <ApexPointSeries TItem="AxleLoadCount"
-                                                     Items="loadCounts"
-                                                     Name="Overload"
-                                                     SeriesType="SeriesType.Bar"
-                                                     XValue="e => e.Date"
-                                                     YValue="e=> e.Overload" />
-                                </ChildContent>
-                            </ApexChart>
+                                        <ChartSeriesCollection>
+                                            <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                                <ChartMarker>
+                                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                        <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                                    </ChartDataLabel>
+                                                </ChartMarker>
+                                                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                            </ChartSeries>
+
+                                            <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                                <ChartMarker>
+                                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                        <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                                    </ChartDataLabel>
+                                                </ChartMarker>
+                                                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                            </ChartSeries>
+                                        </ChartSeriesCollection>
+                                        <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                                        <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                                    </SfChart>
+                                </div>
+                                
+                            }
                         </div>
                     }
-                </div>
-                <div class="col-12">
-                    @if (selectedData != null && selectedData.DataPoint != null)
-                    {
-                        <h3>You clicked  @selectedData.DataPoint.X  @selectedData.DataPoint.Items.Sum(e => e.TotalVehicle) (@selectedData.DataPoint.Items.Sum(e => e.Overload))  </h3>
-                        <h3>@selectedData.DataPoint.</h3>
-                    }
-                    else if (selectedData != null)
-                    {
-                        <h3>You clicked the chart but not a data point</h3>
-                    }
-                </div>
+                </div>              
             </div>
         }
     </div>
@@ -135,38 +128,75 @@
     private IEnumerable<UploadedFile> files { get; set; }
     private IEnumerable<AxleLoadCount> loadCounts { get; set; } = null;
 
-    private ApexChart<AxleLoadCount> chart;
-    private ApexChartOptions<AxleLoadCount> options;
-    private SelectedData<AxleLoadCount> selectedData;
-
+    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; }
+    private Theme Theme { get; set; } = 0;
+    private SfChart chartInstance;
+    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
+    public IEnumerable<AxleLoadReport> ChartData { get; set; }
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
+    public string Width { get; set; } = "100%";
+    public string FileName { get; set; } = "Charts";
+    public string Format { get; set; } = "{value} GW";
+    public string ChartTitle { get; set; } = "";
+    public string XAxisTitle { get; set; } = "";
+    public string YAxisTitle { get; set; } = "";
+    private string Summary { get; set; } = "";
+    private string selectedType { get; set; } 
+    private ReportParameters reportParameters { get; set; } = new();
+    private bool chartview { get; set; } = false;
     private bool redrawPaths = true;
     private bool animate = false;
 
     protected override async Task OnParametersSetAsync()
     {
-        options = new ApexChartOptions<AxleLoadCount>
-            {
-                Theme = new ApexCharts.Theme
-                {
-                    Mode = Mode.Dark,
-                    Palette = PaletteType.Palette1
-                }
-            };
-
         files = await fileService.Get(Station.StationId);
-        loadCounts = await axleLoadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
+        loadCounts = await loadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
+        await TypeChanged("Today");
     }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task TypeChanged(string type)
     {
-        //Update chart in after render
-        if(chart is not null)
+        if (type.ToLower() == "today")
         {
-            await chart.UpdateOptionsAsync(redrawPaths, animate, false);
-        }
-    }
+            selectedType = type;
+            reportParameters.DateStart = DateTime.Now.Date;
+            reportParameters.DateEnd = DateTime.Now.AddDays(+1);
 
-    private void OnClick(SelectedData<AxleLoadCount> data)
+        }
+        else if (type.ToLower() == "yesterday")
+        {
+            selectedType = type;
+            reportParameters.DateStart = DateTime.Now.AddDays(-1);
+            reportParameters.DateEnd = DateTime.Now;
+        }
+        await LoadChart();
+        chartview = true;
+    }
+    private async Task LoadChart()
     {
-        selectedData = data;
+        if (Station.StationId > 0 && !reportParameters.Stations.Contains(Station.StationId))
+        {
+            reportParameters.Stations.Add(Station.StationId);
+        }
+
+        ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.AddDays(-1).ToString("dd MMM yyy") + " )";
+        XAxisTitle = "Number of Vehicles (Units)";
+        report = await loadService.GetHourlyOverloadedReport(reportParameters);
+        if (report.Item2)
+        {
+            if (report.Item1.Count() > 0)
+            {
+                ChartData = report.Item1;
+                YAxisTitle = "Hourly";
+            }
+            else
+            {
+                Summary = "No value is available";
+            }
+        }
+        else
+        {
+            Summary = report.Item3;
+        }
+     
     }
 }

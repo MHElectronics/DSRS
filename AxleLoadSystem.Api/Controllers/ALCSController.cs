@@ -70,7 +70,83 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        if (Path.GetExtension(uploadFile.FileName).ToLower() != ".csv") 
+
+        if (Path.GetExtension(uploadFile.FileName).ToLower() != ".csv")
+        {
+            return BadRequest("Only CSV files are allowed.");
+        }
+
+        // Check station code
+        string stationId = this.HttpContext.Request.Headers["StationId"].ToString();
+        if (Convert.ToInt16(stationId) != station.StationId)
+        {
+            return BadRequest("Station Id doesn't match");
+        }
+
+        if (station.Date >= DateTime.Today)
+        {
+            return BadRequest("Only date before today is allowed");
+        }
+
+        station.StationId = Convert.ToInt16(stationId);
+        UploadedFile file = station.ToUploadedFile();
+        file.FileType = (int)UploadedFileType.LoadData;
+
+        try
+        {
+            using (var stream = uploadFile.OpenReadStream())
+            using (var reader = new StreamReader(stream))
+            {
+                string headerLine = await reader.ReadLineAsync();
+                if (string.IsNullOrEmpty(headerLine))
+                {
+                    return BadRequest("CSV file is empty or missing headers.");
+                }
+
+                string headers = headerLine.Trim();
+
+                string requiredHeaders = "TransactionNumber,LaneNumber,DateTime,PlateZone,PlateSeries,PlateNumber,VehicleId," +
+                    "NumberOfAxle,VehicleSpeed,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded," +
+                    "OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber,Axle1Time," +
+                    "Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time";
+                if (requiredHeaders.ToLower() != headerLine.ToLower())
+                {
+                    return BadRequest("Wrong Header");
+                }
+            }
+            if (await _fileService.FileExists(file))
+            {
+                return BadRequest("File already uploaded");
+            }
+            file = await this.UploadFile(file, uploadFile);
+            if (file.Id > 0)
+            {
+                return Ok("Axle load file uploaded successfully");
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        return BadRequest("Error: Axle load file upload failed");
+    }
+
+    [CustomAuthorize]
+    [DisableRequestSizeLimit]
+    //[ServiceFilter(typeof(ModelValidationAttribute))]
+    [HttpPost("[action]")]
+    public async Task<IActionResult> UploadFineData([ModelBinder(BinderType = typeof(JsonModelBinder))] FileUploadModel station, IFormFile uploadFile)
+    {
+        if (uploadFile.Headers is not null)
+        {
+
+        }
+        if (uploadFile == null || uploadFile.Length == 0 || station == null)
+        {
+            return new BadRequestResult();
+        }
+        if (Path.GetExtension(uploadFile.FileName).ToLower() != ".csv")
         {
             return BadRequest("Only CSV files are allowed.");
         }
@@ -90,68 +166,33 @@ public class ALCSController : ControllerBase
 
         station.StationId = Convert.ToInt16(stationId);
         UploadedFile file = station.ToUploadedFile();
-        file.FileType = (int)UploadedFileType.LoadData;
-        
-        if (await _fileService.FileExists(file))
-        {
-            return BadRequest("File already uploaded");
-        }
-
-        try
-        {
-            file = await this.UploadFile(file, uploadFile);
-            if (file.Id > 0)
-            {
-                return Ok("Axle load file uploaded successfully");
-            }
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        
-        return BadRequest("Error: Axle load file upload failed");  
-    }
-    
-    [CustomAuthorize]
-    [DisableRequestSizeLimit]
-    //[ServiceFilter(typeof(ModelValidationAttribute))]
-    [HttpPost("[action]")]
-    public async Task<IActionResult> UploadFineData([ModelBinder(BinderType = typeof(JsonModelBinder))] FileUploadModel station, IFormFile uploadFile)
-    {
-        if (uploadFile == null || uploadFile.Length == 0 || station == null)
-        {
-            return new BadRequestResult();
-        }
-        if (Path.GetExtension(uploadFile.FileName).ToLower() != ".csv")
-        {
-            return BadRequest("Only CSV files are allowed.");
-        }
-        //Check station code
-        string stationId = this.HttpContext.Request.Headers["StationId"].ToString();
-        //string apiKey = this.HttpContext.Response.Headers["ApiKey"].ToString();
-        //string key = this.HttpContext.Response.Headers.Authorization[0].ToString();
-
-        if (Convert.ToInt16(stationId) != station.StationId)
-        {
-            return BadRequest("Station Id doesn't match");
-        }
-        if(station.Date >= DateTime.Today)
-        {
-            return BadRequest("Only date before today is allowed");
-        }
-
-        station.StationId = Convert.ToInt16(stationId);
-        UploadedFile file = station.ToUploadedFile();
         file.FileType = (int)UploadedFileType.FineData;
 
-        if (await _fileService.FileExists(file))
-        {
-            return BadRequest("File already uploaded");
-        }
-
         try
         {
+            using (var stream = uploadFile.OpenReadStream())
+            using (var reader = new StreamReader(stream))
+            {
+                string headerLine = await reader.ReadLineAsync();
+                if (string.IsNullOrEmpty(headerLine))
+                {
+                    return BadRequest("CSV file is empty or missing headers");
+                }
+
+                string headers = headerLine.Trim();
+
+                string requiredHeaders = "LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber," +
+                    "BillNumber,WarehouseCharge,DriversLicenseNumber";
+                if (requiredHeaders.ToLower() != headerLine.ToLower())
+                {
+                    return BadRequest("Wrong Header");
+                }
+            }
+
+            if (await _fileService.FileExists(file))
+            {
+                return BadRequest("File already uploaded");
+            }
             file = await this.UploadFile(file, uploadFile);
             if (file.Id > 0)
             {
@@ -162,7 +203,7 @@ public class ALCSController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
-        
+
         return BadRequest("Error: Fine payment file upload failed");
     }
     private async Task<UploadedFile> UploadFile(UploadedFile file, IFormFile uploadFile)
@@ -179,7 +220,7 @@ public class ALCSController : ControllerBase
         return await _fileService.Upload(byteFile, file);
     }
     #endregion
-
+    
     [HttpPost("[action]")]
     public async Task<IActionResult> LoadData(LoadData obj)
     {
