@@ -57,7 +57,11 @@
         if (firstRender)
         {
             var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            currentUser = await customStateProvider.GetAuthorizedUser();
+            if(customStateProvider is not null)
+            {
+                currentUser = await customStateProvider.GetAuthorizedUser();
+            }
+            
             await this.InvokeAsync(StateHasChanged);
         }
     }

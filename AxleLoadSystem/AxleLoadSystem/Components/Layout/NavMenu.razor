@@ -61,7 +61,7 @@
                             </p>
                         </NavLink>
                     </li>
-                    <li class="nav-item">
+                    @* <li class="nav-item">
                         <NavLink class="nav-link" href="stationaccess" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-key"></i>
                             <p>
@@ -76,7 +76,7 @@
                                 @localizer["Menu.ClassStatus"]
                             </p>
                         </NavLink>
-                    </li>
+                    </li> *@
                     <li class="nav-item">
                         <NavLink class="nav-link" href="filelist" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-file"></i>
@@ -129,9 +129,8 @@
             </li>
 
 
-            <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
+            @* <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("reports"))'>
-                    @* <i class="nav-icon fas fa-copy"></i> *@
                     <p>
                         Reports
                         <i class="fas fa-angle-left right"></i>
@@ -167,7 +166,6 @@
 
             <li class="nav-item @(selectedGroups.Contains("analysis") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("analysis"))'>
-                    @* <i class="nav-icon fas fa-copy"></i> *@
                     <p>
                         Analysis
                         <i class="fas fa-angle-left right"></i>
@@ -183,7 +181,7 @@
                         </NavLink>
                     </li>
                 </ul>
-            </li>
+            </li> *@
 
             @* <li class="nav-item">
             <NavLink class="nav-link" href="datasearch" Match="NavLinkMatch.All">

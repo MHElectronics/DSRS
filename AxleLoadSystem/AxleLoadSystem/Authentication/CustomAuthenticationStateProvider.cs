@@ -95,8 +95,15 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 
     public async Task<User?> GetAuthorizedUser()
     {
-        var userSessonStorageResult = await _sessionStorage.GetAsync<User>("UserSession");
-        User? user = userSessonStorageResult.Success ? userSessonStorageResult.Value : null;
-        return user;
+        try
+        {
+            var userSessonStorageResult = await _sessionStorage.GetAsync<User>("UserSession");
+            User? user = userSessonStorageResult.Success ? userSessonStorageResult.Value : null;
+            return user;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 }
