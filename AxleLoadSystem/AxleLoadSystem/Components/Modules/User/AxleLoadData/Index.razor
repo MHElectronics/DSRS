@@ -32,11 +32,11 @@
                     <div class="form-control">
                         <div class="col-12">
                             <div class="icheck-primary d-inline">
-                                <input type="checkbox" id="checkType1" checked="@(fileType == 1)" @onchange="@(() => fileType = 1)" />
+                                <input type="radio" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(() => fileType = 1)" />
                                 <label for="checkType1">Axle Load Data</label>
                             </div>
                             <div class="icheck-primary d-inline">
-                                <input type="checkbox" id="checkType2" checked="@(fileType == 2)" @onchange="@(() => fileType = 2)" />
+                                <input type="radio" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(() => fileType = 2)" />
                                 <label for="checkType2">Fine Payment Data</label>
                             </div>
                         </div>
@@ -48,6 +48,10 @@
                 <div class="col-3">
                     <button @onclick="Search" class="btn btn-primary">Search</button>
                 </div>
+                @if (!string.IsNullOrEmpty(Summary))
+                {
+                    <label class="text-danger">@Summary</label>
+                }
             }
             else
             {
@@ -62,16 +66,19 @@
             }
             else
             {
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">Daily Data</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="data-table-container">
-                            <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
+                if (showTable)
+                {
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Daily Data</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="data-table-container">
+                                <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
+                            </div>
                         </div>
                     </div>
-                </div>
+                } 
             }
         </div>
     </div>
@@ -85,7 +92,8 @@
 
     private IQueryable<LoadData> axleLoadData { get; set; }
     private IQueryable<FinePayment> fineRepaymentData { get; set; }
-
+    private string Summary { get; set; }
+    private bool showTable { get; set; }
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
@@ -105,19 +113,38 @@
     }
     private async Task Search()
     {
-        if (fileType == 1)
+        if (station.StationId > 0)
         {
-            LoadData loadData = new() { StationId = station.StationId, DateTime = selectedDate };
-            IEnumerable<LoadData> items = await loadService.Get(loadData);
+            if (fileType == 1)
+            {
+                LoadData loadData = new() { StationId = station.StationId, DateTime = selectedDate };
+                IEnumerable<LoadData> items = await loadService.Get(loadData);
 
-            axleLoadData = items.AsQueryable();
+                axleLoadData = items.AsQueryable();
+                showTable = true;
+                if (axleLoadData is null)
+                {
+                    showTable = false;
+                    Summary = "No load data found";    
+                }
+            }
+            else if (fileType == 2)
+            {
+                FinePayment finePayment = new() { StationId = station.StationId, DateTime = selectedDate };
+                IEnumerable<FinePayment> items = await fineRepaymentService.Get(finePayment);
+
+                fineRepaymentData = items.AsQueryable();
+                showTable = true;
+                if (fineRepaymentData is null)
+                {
+                    showTable = false;
+                    Summary = "No Fine Payment data found";
+                }
+            }
         }
         else
         {
-            FinePayment finePayment = new() { StationId = station.StationId, DateTime = selectedDate };
-            IEnumerable<FinePayment> items = await fineRepaymentService.Get(finePayment);
-
-            fineRepaymentData = items.AsQueryable();
+            Summary = "Please Select Station";
         }
     }
 }
