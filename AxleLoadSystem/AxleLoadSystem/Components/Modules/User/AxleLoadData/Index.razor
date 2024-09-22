@@ -58,30 +58,26 @@
                 <Loader />
             }
         </div>
-        <hr />
-        <div class="row">
-            @if (station is null)
-            {
-                <p>No station is selected</p>
-            }
-            else
-            {
-                if (showTable)
-                {
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Daily Data</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="data-table-container">
-                                <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
-                            </div>
-                        </div>
-                    </div>
-                } 
-            }
-        </div>
     </div>
+    @if (station is null)
+    {
+        <p>No station is selected</p>
+    }
+    else
+    {
+        if (showTable)
+        {
+            <hr />
+            <div class="card-header">
+                <h3 class="card-title">Daily Data</h3>
+            </div>
+            <div class="card-body">
+                <div class="data-table-container">
+                    <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
+                </div>
+            </div>
+        }
+    }
 </div>
 
 @code {
@@ -113,7 +109,7 @@
     }
     private async Task Search()
     {
-        if (station.StationId > 0)
+        if (station is not null && station.StationId > 0)
         {
             if (fileType == 1)
             {
@@ -125,7 +121,7 @@
                 if (axleLoadData is null)
                 {
                     showTable = false;
-                    Summary = "No load data found";    
+                    Summary = "No load data found";
                 }
             }
             else if (fileType == 2)
