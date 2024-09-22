@@ -230,7 +230,7 @@ else
     private User userPassword { get; set; } = new();
     private bool showPassword { get; set; } = false;
     string PasswordMatch, NewPasswordInput;
-    string validationSummary { get; set; }
+    string validationSummary { get; set; } = "";
     string RolevalidationSummary { get; set; }
     protected override void OnParametersSet()
     {
@@ -248,6 +248,7 @@ else
     }
     async Task OnValidSubmit(EditContext editContext)
     {
+        validationSummary = "";
         saveDisabled = true;
         Notification notification = new();
 

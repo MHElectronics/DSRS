@@ -40,6 +40,8 @@ public class CsvHelper : ICsvHelper
             while (!csvReader.EndOfData)
             {
                 string csvLineString = csvReader.ReadLine() ?? string.Empty;
+                //Remove space and commas
+                csvLineString = csvLineString.Replace(" ", "").Replace(",", "");
                 if (string.IsNullOrEmpty(csvLineString))
                 {
                     summary += row + "-Empty Row,";
