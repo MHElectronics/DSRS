@@ -62,6 +62,7 @@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li>
                     </ul>
                 </li>
             </ul>
@@ -192,7 +193,7 @@
 
         if (type == "excel")
         {
-            byte[] fileByte = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+            byte[] fileByte = ExportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
 
             MemoryStream ms = new MemoryStream(fileByte);
 
@@ -201,7 +202,7 @@
         }
         else if (type == "csv")
         {
-            MemoryStream stream = ExcelHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList());
+            MemoryStream stream = ExportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList());
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
@@ -209,6 +210,13 @@
         else if(type == "chart")
         {
             await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        }
+        else if(type == "pdf")
+        {
+            MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
         }
     }
 
