@@ -1,6 +1,7 @@
 ﻿@page "/grossweight"
 @using BOL.Helpers
 @using Services
+@using Services.Helpers
 @using Syncfusion.Blazor
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
@@ -8,7 +9,7 @@
 @inject IAxleLoadService loadService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
-
+@inject IJSRuntime jsRuntime
 
 <div class="card card-primary">
     <div class="card-header">
@@ -40,49 +41,103 @@
 </div>
 @if (Chartview && ChartData is not null)
 {
-    <div class="control-section" align='center'>
-        <button Id="button" Content="Export" @onclick="Export" IsPrimary="true" class="btn btn-primary float-left">Export</button>
+    <div class="card card-primary">
+        <div class="card-header">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Export
+                    </span>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>@selectedType</th>
+                                <th class="text-right">Number of Axle</th>
+                                <th class="text-right">Overloaded Vehicle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (AxleLoadReport item in ChartData)
+                            {
+                                <tr>
+                                    <td>@item.DateUnitName</td>
+                                    <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
+                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="tab_2" style="width:100%">
+                    <div class="row">
+                        <div class="col-md-12 btn-group">
+                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
+                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
+                        </div>
+                    </div>
+                    <br />
+                    <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+                        <ChartArea>
+                            <ChartAreaBorder Width="0"></ChartAreaBorder>
+                        </ChartArea>
 
-        <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
-            <ChartArea>
-                <ChartAreaBorder Width="0"></ChartAreaBorder>
-            </ChartArea>
+                        <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                        </ChartPrimaryXAxis>
 
-            <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
-                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-            </ChartPrimaryXAxis>
+                        <ChartPrimaryYAxis Title="@YAxisTitle">
+                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                            <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                        </ChartPrimaryYAxis>
 
-            <ChartPrimaryYAxis Title="@YAxisTitle">
-                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-            </ChartPrimaryYAxis>
+                        <ChartSeriesCollection>
+                            @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                            {
+                                <ChartSeries Name="@dayGroup.First().DateUnitName"
+                                             ColumnWidth="0.5"
+                                             DataSource="@dayGroup"
+                                             XName="GrossVehicleWeight"
+                                             YName="TotalVehicle"
+                                             Type="chartSeriesType"
+                                             EnableTooltip="true">
 
-            <ChartSeriesCollection>
-                @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
-                {
-                    <ChartSeries Name="@dayGroup.First().DateUnitName"
-                                 ColumnWidth="0.5"
-                                 DataSource="@dayGroup"
-                                 XName="GrossVehicleWeight"
-                                 YName="TotalVehicle"
-                                 Type="ChartSeriesType.StackingColumn"
-                                 EnableTooltip="true">
+                                    <ChartMarker>
+                                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                        </ChartDataLabel>
+                                    </ChartMarker>
 
-                        <ChartMarker>
-                            <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                            </ChartDataLabel>
-                        </ChartMarker>
+                                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                </ChartSeries>
+                            }
+                        </ChartSeriesCollection>
 
-                        <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                    </ChartSeries>
-                }
-            </ChartSeriesCollection>
-
-            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-            <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-        </SfChart>
+                        <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                        <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                    </SfChart>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -94,6 +149,7 @@
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Bar;
 
     public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
@@ -103,6 +159,7 @@
     public string YAxisTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
+    private string chartType { get; set; } = "bar";
 
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
@@ -124,16 +181,55 @@
         }
     }
 
-    private async Task Export(MouseEventArgs args)
+    private async Task Export(string type)
     {
-        await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        List<(string Header, string FieldName, Type FieldType)> fields = new();
+        fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
+        fields.Add(("Number of Axle", nameof(AxleLoadReport.NumberofAxle), new AxleLoadReport().NumberofAxle.GetType()));
+        fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
+
+        if (type == "excel")
+        {
+            byte[] fileByte = ExcelHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+
+            MemoryStream ms = new MemoryStream(fileByte);
+
+            using var streamRef = new DotNetStreamReference(ms);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+        }
+        else if (type == "csv")
+        {
+            MemoryStream stream = ExcelHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList());
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+        }
+        else if (type == "chart")
+        {
+            await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)
     {
         string base64 = exportEventArgs.Base64;
     }
-
+    private async Task ChartChanged(string type)
+    {
+        if (type.ToLower() == "line")
+        {
+            chartSeriesType = ChartSeriesType.Line;
+        }
+        else if (type.ToLower() == "column")
+        {
+            chartSeriesType = ChartSeriesType.StackingColumn;
+        }
+        else if (type.ToLower() == "bar")
+        {
+            chartSeriesType = ChartSeriesType.Bar;
+        }
+        chartType = type;
+    }
     private async Task HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;

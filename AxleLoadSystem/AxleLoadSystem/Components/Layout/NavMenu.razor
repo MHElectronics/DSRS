@@ -128,8 +128,7 @@
                 </ul>
             </li>
 
-
-            @* <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
+            <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
                 <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("reports"))'>
                     <p>
                         Reports
@@ -181,7 +180,7 @@
                         </NavLink>
                     </li>
                 </ul>
-            </li> *@
+            </li>
 
             @* <li class="nav-item">
             <NavLink class="nav-link" href="datasearch" Match="NavLinkMatch.All">
