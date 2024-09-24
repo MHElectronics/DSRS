@@ -1,9 +1,13 @@
 ﻿using BOL;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic.FileIO;
+using Syncfusion.Drawing;
+using System.Drawing.Imaging;
 using System.Data;
 using System.Net;
+using System.Runtime.Versioning;
 using System.Text;
+using System.Drawing;
 
 namespace Services.Helpers
 {
@@ -18,8 +22,9 @@ namespace Services.Helpers
         Task<string> MakeDirectory(string path = "");
         Task<bool> DirectoryExists(string path = "");
         Task<string> DeleteDirectory(string path = "");
-
+        Task<bool> UploadFileInParts(byte[] byteFile, string path);
         Task<(bool isSuccess, DataTable? csvData, string summary)> GetDataTableFromCSV(string path, UploadedFile file);
+        byte[] DownloadImageThumb(string path, int height = 100, int width = 100);
     }
     /// <summary>
     /// Ftp Helper class to handle all ftp requests
@@ -275,7 +280,81 @@ namespace Services.Helpers
             return statusDescription;
         }
         #endregion
+        public async Task<bool> UploadFileInParts(byte[] byteFile, string path)
+        {
+            //return false if file size is 0
+            if (byteFile.Length == 0)
+            {
+                return false;
+            }
 
+            OpenConnection(WebRequestMethods.Ftp.AppendFile, path);
+
+            // Notify the server about the size of the uploaded file
+            _ftpRequest.ContentLength = byteFile.Length;
+
+            // Stream to which the file to be upload is written
+            Stream responseStream = await _ftpRequest.GetRequestStreamAsync();
+            await responseStream.WriteAsync(byteFile, 0, byteFile.Length);
+
+            responseStream.Close();
+
+            return true;
+        }
+        [SupportedOSPlatform("windows")]
+        public byte[]? DownloadImageThumb(string path, int height = 100, int width = 100)
+        {
+            OpenConnection(WebRequestMethods.Ftp.DownloadFile, path);
+
+            try
+            {
+                using FtpWebResponse response = (FtpWebResponse)_ftpRequest.GetResponse();
+                using Stream reader = response.GetResponseStream();
+
+                byte[] byteData;
+                using (var image = System.Drawing.Image.FromStream(reader, true, true)) // Creates Image from the data stream
+                {
+                    using (Bitmap thumb = new Bitmap(width, height))
+                    {
+                        using (Graphics g = Graphics.FromImage(thumb))
+                        {
+                            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
+                            g.DrawImage(image, 0, 0, width, height); // Manually resizing the image
+                        }
+
+                        using (MemoryStream memStream = new MemoryStream())
+                        {
+                            ImageCodecInfo myImageCodecInfo = GetEncoderInfo("image/jpeg")!;
+                            thumb.Save(memStream, myImageCodecInfo, null);
+                            byteData = memStream.ToArray();
+                        }
+                    }
+                }
+
+                // Clean up
+                response.Close();
+                return byteData;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        private static ImageCodecInfo GetEncoderInfo(string mimeType)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+            foreach (ImageCodecInfo codec in codecs)
+            {
+                if (codec.MimeType == mimeType)
+                {
+                    return codec;
+                }
+            }
+            return null!;
+        }
         public async Task<(bool isSuccess, DataTable? csvData, string summary)> GetDataTableFromCSV(string path, UploadedFile file)
         {
             byte[] streamInByte = await this.DownloadFile(path);

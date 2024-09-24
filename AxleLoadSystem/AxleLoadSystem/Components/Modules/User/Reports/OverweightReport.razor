@@ -45,7 +45,7 @@
         <div class="card-header">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Home</a>
+                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Table</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
@@ -59,6 +59,7 @@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li>
                     </ul>
                 </li>
             </ul>
@@ -151,7 +152,7 @@
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Bar;
 
-    public string Width { get; set; } = "100%";
+    public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
@@ -171,14 +172,6 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
         showReportGroupSelection = reportParameters is not null;
-    }
-
-    void axisLabel(AxisLabelRenderEventArgs args)
-    {
-        if (args.Value > 999999 || args.Value < -999999)
-        {
-            args.Text = args.Value.ToString("0,,.##M", CultureInfo.InvariantCulture);
-        }
     }
 
     private async Task Export(string type)
@@ -207,6 +200,13 @@
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+        }
+        else if (type == "pdf")
+        {
+            MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
         }
     }
 

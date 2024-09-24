@@ -45,7 +45,7 @@
         <div class="card-header">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Home</a>
+                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Table</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
@@ -101,7 +101,7 @@
                     <br/>
                     @if (!string.IsNullOrEmpty(chartType))
                     {
-                        <div class="col-md-12 col-sm-12" style="width:auto">
+                        <div class="col-md-12 col-sm-12" style="width:stretch">
                             <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
                                 <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
 
@@ -154,7 +154,7 @@
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Bar;
 
-    public string Width { get; set; } = "100%";
+    public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
@@ -174,14 +174,6 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
         showReportGroupSelection = reportParameters is not null;
-    }
-
-    void axisLabel(AxisLabelRenderEventArgs args)
-    {
-        if (args.Value > 999999 || args.Value < -999999)
-        {
-            args.Text = args.Value.ToString("0,,.##M", CultureInfo.InvariantCulture);
-        }
     }
 
     private async Task Export(string type)
