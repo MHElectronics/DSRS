@@ -158,6 +158,7 @@ public static class ExportHelper
             int cellMargin = 8;
             //Add page to the PDF document.
             PdfPage page = pdfDocument.Pages.Add();
+            page.Rotation = PdfPageRotateAngle.RotateAngle90;
             //Create a new font.
             PdfStandardFont font = new PdfStandardFont(PdfFontFamily.TimesRoman, 16);
 

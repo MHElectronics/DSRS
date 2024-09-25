@@ -206,9 +206,10 @@
         else if(type == "pdf")
         {
             MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
-
-            using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
+            byte[] bytes = stream.ToArray();
+            
+            //using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
         }
     }
 
