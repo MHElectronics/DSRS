@@ -6,14 +6,14 @@ namespace Services.Helpers;
 
 public interface IFileStoreHelper
 {
-    Task<bool> CreateDocumentDirectory(Documents document);
+    Task<bool> CreateDocumentDirectory(Document document);
 
-    Task<string> GetImageContentAsync(Documents document);
-    string GetImageThumb(Documents document);
+    Task<string> GetImageContentAsync(Document document);
+    string GetImageThumb(Document document);
 
-    string GetNewFileLocation(string fileName, Documents document);
+    string GetNewFileLocation(string fileName, Document document);
 
-    Task<string> UploadFile(byte[] fileBytes, string fileName, Documents document);
+    Task<string> UploadFile(byte[] fileBytes, string fileName, Document document);
     Task UploadFileInPartsAsync(byte[] fileBytes, string path);
 
     void DeleteFile(string path);
@@ -28,7 +28,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
     private readonly string _ftpUser = config.GetSection("FtpAccess:User").Value ?? "";
     private readonly string _ftpPassword = config.GetSection("FtpAccess:Password").Value ?? "";
 
-    public async Task<bool> CreateDocumentDirectory(Documents document)
+    public async Task<bool> CreateDocumentDirectory(Document document)
     {
         string folderPath = this.GetDocumentDirectoryPath(document);
 
@@ -67,7 +67,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", rootFolderPath);
         }
     }
-    private string GetDocumentDirectoryPath(Documents document)
+    private string GetDocumentDirectoryPath(Document document)
     {
         if (_isFtpEnabled)
         {
@@ -79,7 +79,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
     }
 
-    public async Task<string> GetImageContentAsync(Documents document)
+    public async Task<string> GetImageContentAsync(Document document)
     {
         if (_isFtpEnabled)
         {
@@ -101,7 +101,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             return referencePath;
         }
     }
-    public string GetImageThumb(Documents document)
+    public string GetImageThumb(Document document)
     {
         try
         {
@@ -128,7 +128,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             throw new Exception("Image file corrupted" + ex);
         }  
     }
-    public async Task<string> UploadFile(byte[] fileBytes, string fileName, Documents document)
+    public async Task<string> UploadFile(byte[] fileBytes, string fileName, Document document)
     {
         //Generate random file name
         string newFileName = Path.ChangeExtension(
@@ -155,7 +155,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
 
         return fileLocation;
     }
-    public string GetNewFileLocation(string fileName, Documents document)
+    public string GetNewFileLocation(string fileName, Document document)
     {
         //Generate random file name
         string newFileName = Path.ChangeExtension(

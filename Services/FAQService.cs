@@ -61,7 +61,7 @@ public class FAQService : IFAQService
     public async Task<bool> DeleteFAQ(FAQ faq)
     {
         string sql = "DELETE FROM FAQ WHERE Id=@Id";
-        int count = await _db.DeleteData<User, object>(sql, new { faq.Id });
+        int count = await _db.DeleteData<FAQ, object>(sql, new { faq.Id });
         return count > 0;
     }
     public async Task<bool> UpdateQuestion(FAQ faq)
