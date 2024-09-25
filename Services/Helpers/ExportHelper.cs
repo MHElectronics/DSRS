@@ -6,6 +6,7 @@ using Syncfusion.Pdf.Grid;
 using Syncfusion.Pdf;
 using System.Text;
 using Syncfusion.Drawing;
+using Syncfusion.HtmlConverter;
 
 namespace Services.Helpers;
 public static class ExportHelper
@@ -194,5 +195,61 @@ public static class ExportHelper
                 return stream;
             }
         }
+    }
+
+    public static MemoryStream CreatePdfFromHtml(string html)
+    {
+        //Initialize HTML to PDF converter.
+        HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
+        string baseUrl = @"D:/Projects/AxleLoadSystemSolution/AxleLoadSystem/AxleLoadSystem/wwwroot/";
+        string htmlPage = WrapHtmlInPage(html);
+        //Convert URL to PDF document.
+        PdfDocument document = htmlConverter.Convert(htmlPage, baseUrl);
+        //Create memory stream.
+        MemoryStream stream = new MemoryStream();
+        //Save the document to memory stream.
+        document.Save(stream);
+        return stream;
+    }
+    private static string WrapHtmlInPage(string html)
+    {
+        string start = @"<!DOCTYPE html>
+<html lang=""en"">
+
+<head>
+    <meta charset=""utf-8"" name=""view-transition"" content=""same-origin"" />
+
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+    <base href=""/"" />
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel=""stylesheet"" href=""https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"">
+    <!-- Font Awesome -->
+    <link rel=""stylesheet"" href=""plugins/fontawesome-free/css/all.min.css"">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel=""stylesheet"" href=""plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css"">
+    <!-- iCheck -->
+    <link rel=""stylesheet"" href=""plugins/icheck-bootstrap/icheck-bootstrap.min.css"">
+    <!-- Theme style -->
+    <link rel=""stylesheet"" href=""dist/css/adminlte.min.css"">
+    <!-- overlayScrollbars -->
+    <link rel=""stylesheet"" href=""plugins/overlayScrollbars/css/OverlayScrollbars.min.css"">
+    <!-- Daterange picker -->
+    <link rel=""stylesheet"" href=""plugins/daterangepicker/daterangepicker.css"">
+    <!-- summernote -->
+    <link rel=""stylesheet"" href=""plugins/summernote/summernote-bs4.min.css"">
+    <link href=""_content/Syncfusion.Blazor.Themes/bootstrap5.css"" rel=""stylesheet"" />
+
+    <link rel=""stylesheet"" href=""AxleLoadSystem.styles.css"" />
+    <!-- Customization-->
+    <link rel=""stylesheet"" href=""css/style.css"" />
+</head>
+
+<body class=""sidebar-mini layout-fixed"">";
+
+
+        string end = "</body></html>";
+
+        return start + html + end;
     }
 }

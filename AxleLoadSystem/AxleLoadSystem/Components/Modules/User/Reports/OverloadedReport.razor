@@ -50,9 +50,6 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
                 </li>
-                <li class="nav-item">
-                    <span class="nav-link" data-toggle="pill" @onclick="Test">Test</span>
-                </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         Export
@@ -205,10 +202,13 @@
         }
         else if(type == "pdf")
         {
-            MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+            // MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+            // byte[] bytes = stream.ToArray();
+            // await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
+
+            var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_1");
+            MemoryStream stream = ExportHelper.CreatePdfFromHtml(html);
             byte[] bytes = stream.ToArray();
-            
-            //using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
         }
     }
@@ -339,11 +339,5 @@
                 Summary = report.Item3;
             }
         }
-    }
-
-    private async Task Test()
-    {
-        //var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_1");
-
     }
 }
