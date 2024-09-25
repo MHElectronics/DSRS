@@ -201,7 +201,8 @@ public static class ExportHelper
     {
         //Initialize HTML to PDF converter.
         HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
-        string baseUrl = @"D:/Projects/AxleLoadSystemSolution/AxleLoadSystem/AxleLoadSystem/wwwroot/";
+        //string baseUrl = @"D:/Projects/AxleLoadSystemSolution/AxleLoadSystem/AxleLoadSystem/wwwroot/";
+        string baseUrl = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
         string htmlPage = WrapHtmlInPage(html);
         //Convert URL to PDF document.
         PdfDocument document = htmlConverter.Convert(htmlPage, baseUrl);
