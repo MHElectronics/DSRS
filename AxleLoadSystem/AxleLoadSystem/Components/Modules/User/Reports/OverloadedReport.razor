@@ -25,10 +25,10 @@
             {
                 <div class="row">
                     <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">Hourly</button>
-                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekdays</button>
-                        <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
-                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Annual</button>
+                        <button class="btn @(selectedType == "Hour" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hour"))" disabled="@(isLoading ? "disabled" : null)">Hourly</button>
+                        <button class="btn @(selectedType == "Day" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day"))" disabled="@(isLoading ? "disabled" : null)">Weekdays</button>
+                        <button class="btn @(selectedType == "Month" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Month"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
+                        <button class="btn @(selectedType == "Year" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Year"))" disabled="@(isLoading ? "disabled" : null)">Annual</button>
                     </div>
                 </div>
             }
@@ -95,7 +95,7 @@
                             <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
                         </div>
                     </div>
-                    <br/>
+                    <br />
                     @if (!string.IsNullOrEmpty(chartType))
                     {
                         <div class="col-md-12 col-sm-12" style="width:stretch">
@@ -161,11 +161,11 @@
     private string chartType { get; set; } = "bar";
     private string Summary { get; set; } = "";
 
-    private bool showReportGroupSelection { get; set; } = false;    
+    private bool showReportGroupSelection { get; set; } = false;
     private bool Chartview { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
-    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
+    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -196,17 +196,17 @@
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
         }
-        else if(type == "chart")
+        else if (type == "chart")
         {
             await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
         }
-        else if(type == "pdf")
+        else if (type == "pdf")
         {
             // MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
             // byte[] bytes = stream.ToArray();
             // await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
 
-            var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_1");
+            var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_2");
             MemoryStream stream = ExportHelper.CreatePdfFromHtml(html);
             byte[] bytes = stream.ToArray();
             await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
@@ -227,7 +227,7 @@
         {
             chartSeriesType = ChartSeriesType.StackingColumn;
         }
-        else if(type.ToLower() == "bar")
+        else if (type.ToLower() == "bar")
         {
             chartSeriesType = ChartSeriesType.Bar;
         }
@@ -255,89 +255,60 @@
         ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
         XAxisTitle = "Number of Vehicles (Units)";
         Chartview = true;
-        if (selectedType == "Monthly")
+        if (selectedType == "Month")
         {
             report = await loadService.GetMonthlyOverloadedReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                    YAxisTitle = "Months";
-                }
-                else 
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;    
-            }
         }
-        else if (selectedType == "Weekly")
+        else if (selectedType == "Day")
         {
             report = await loadService.GetWeeklyOverloadedReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                    YAxisTitle = "Weeks";
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
         }
-        else if (selectedType == "Daily")
+        else if (selectedType == "Hour")
         {
             report = await loadService.GetHourlyOverloadedReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                    YAxisTitle = "Hourly";
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
         }
-        else if (selectedType == "Yearly")
+        else if (selectedType == "Year")
         {
             report = await loadService.GetYearlyOverloadedReport(reportParameters);
-            if (report.Item2)
+        }
+
+        if (report.Item2)
+        {
+            if (report.Item1.Count() > 0)
             {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                    YAxisTitle = "Yearly";
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
+                ChartData = report.Item1;
+                YAxisTitle = selectedType;
             }
             else
             {
-                Summary = report.Item3;
+                Chartview = false;
+                Summary = "No value is available";
             }
         }
+        else
+        {
+            Summary = report.Item3;
+        }
+    }
+    private string dataTypeTitle2()
+    {
+        if (selectedType == "Month")
+        {
+            return "Month";
+        }
+        else if (selectedType == "Day")
+        {
+            return "Day";
+        }
+        else if (selectedType == "Hour")
+        {
+            return "Hour";
+        }
+        else if (selectedType == "Year")
+        {
+            return "Year";
+        }
+
+        return "";
     }
 }

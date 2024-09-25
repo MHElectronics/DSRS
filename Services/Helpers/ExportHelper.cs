@@ -233,12 +233,6 @@ public static class ExportHelper
     <link rel=""stylesheet"" href=""plugins/icheck-bootstrap/icheck-bootstrap.min.css"">
     <!-- Theme style -->
     <link rel=""stylesheet"" href=""dist/css/adminlte.min.css"">
-    <!-- overlayScrollbars -->
-    <link rel=""stylesheet"" href=""plugins/overlayScrollbars/css/OverlayScrollbars.min.css"">
-    <!-- Daterange picker -->
-    <link rel=""stylesheet"" href=""plugins/daterangepicker/daterangepicker.css"">
-    <!-- summernote -->
-    <link rel=""stylesheet"" href=""plugins/summernote/summernote-bs4.min.css"">
     <link href=""_content/Syncfusion.Blazor.Themes/bootstrap5.css"" rel=""stylesheet"" />
 
     <link rel=""stylesheet"" href=""AxleLoadSystem.styles.css"" />
@@ -246,7 +240,7 @@ public static class ExportHelper
     <link rel=""stylesheet"" href=""css/style.css"" />
 </head>
 
-<body class=""sidebar-mini layout-fixed"">";
+<body>";
 
 
         string end = "</body></html>";
