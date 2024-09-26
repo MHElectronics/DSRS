@@ -43,24 +43,23 @@ else
             </div>
             <div class="row">
                 <div class="col-md-12 col-sm-12">
-                <div class="btn-group">
-                    @if (Mode == FormMode.Details)
-                    {
-                            string editLink = "/classstatus/edit/" + classStatus.Id;
-                        <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
-                    }
-                    else
-                    {
-                        <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
-                    }
-                        <NavLink class="btn btn-primary" href="/classstatus">Back</NavLink>
-                    @if (!string.IsNullOrEmpty(ValidationSummary))
-                    {
-                        <label class="error">@ValidationSummary</label>
-                    }
+                    <div class="btn-group">
+                        @if (Mode == FormMode.Details)
+                        {
+                                string editLink = "/classstatus/edit/" + classStatus.Id;
+                            <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
+                        }
+                            <NavLink class="btn btn-primary" href="/classstatus">Back</NavLink>
+                        @if (!string.IsNullOrEmpty(ValidationSummary))
+                        {
+                            <label class="error">@ValidationSummary</label>
+                        }
+                    </div>
                 </div>
-            </div>
-
             </div>
         </div>
     </EditForm>
@@ -103,7 +102,7 @@ else
             }
             else
             {
-                ValidationSummary = "New Class Status added";
+                ValidationSummary = "New Class Status added failed";
             }
 
         }

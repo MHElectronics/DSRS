@@ -1,0 +1,176 @@
+﻿@page "/configuration"
+@using BOL;
+@using Services;
+@inject IConfigurationService configurationService
+
+@if (configuration != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <h3>Configuration Management</h3>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@configuration" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
+                <DataAnnotationsValidator />
+                <div class="row">
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
+                            @if (editConfiguration)
+                            {
+                                <label for="numberofAxle" class="form-label">Maximum Axle Number</label>
+                                <input type="number" @bind="configuration.NumberOfAxle" required class="form-control" placeholder="Maximum Axle Number" id="numberofAxle" min="1" />
+                                <ValidationMessage For="() => configuration.NumberOfAxle" />
+                            }
+                            else
+                            {
+                                <label for="numberofAxle" class="form-label">Maximum Axle Number</label>
+                                <label class="form-control">@configuration.NumberOfAxle</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
+                            @if (editConfiguration)
+                            {
+                                <label for="WheelBaseMax" class="form-label">WheelBase Maximum</label>
+                                <input type="number" @bind="configuration.WheelBaseMaximum" required class="form-control" placeholder="WheelBase Maximum" id="WheelBaseMax" min="1" />
+                                <ValidationMessage For="() => configuration.WheelBaseMaximum" />
+                            }
+                            else
+                            {
+                                <label for="WheelBaseMax" class="form-label">WheelBase Maximum</label>
+                                <label class="form-control">@configuration.WheelBaseMaximum</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
+                            @if (editConfiguration)
+                            {
+                                <label for="startDate" class="form-label">System Start Date</label>
+                                <input type="date" @bind="configuration.SystemStartDate" required class="form-control" placeholder="System Start Date" id="startDate" />
+                                <ValidationMessage For="() => configuration.SystemStartDate" />
+                            }
+                            else
+                            {
+                                <label for="startDate" class="form-label">System Start Date</label>
+                                <label class="form-control">@configuration.SystemStartDate</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (editConfiguration)
+                            {
+                                <label for="WeightMin" class="form-label">Weight Minimum</label>
+                                <input type="number" @bind="configuration.WeightMinimum" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" max="@(configuration.WeightMaximum-1)"/>
+                                <ValidationMessage For="() => configuration.WeightMinimum" />
+                            }
+                            else
+                            {
+                                <label for="WeightMin" class="form-label">Weight Minimum</label>
+                                <label class="form-control">@configuration.WeightMinimum</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (editConfiguration)
+                            {
+                                <label for="WeightMax" class="form-label">Weight Maximum</label>
+                                <input type="number" @bind="configuration.WeightMaximum" class="form-control" placeholder="System Start Date" id="WeightMax" min="@(configuration.WeightMinimum+1)" />
+                                <ValidationMessage For="() => configuration.WeightMaximum" />
+                            }
+                            else
+                            {
+                                <label for="WeightMax" class="form-label">Weight Maximum</label>
+                                <label class="form-control">@configuration.WeightMaximum</label>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="btn-group">
+                                @if (editConfiguration)
+                                {
+                                    <button class="btn btn-primary" type="submit">Save</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+            @if (!editConfiguration)
+            {
+                <button class="btn btn-primary" @onclick="ToggleEdit">Edit</button>
+            }
+            @if (!string.IsNullOrEmpty(Summary))
+            {
+                <label class="error">@Summary</label>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <Loader />
+}
+
+@code {
+    public Configuration configuration { get; set; } = new();
+    public bool editConfiguration { get; set; } = false;
+    public bool trigger { get; set; } = false;
+    public string Summary { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Summary = "";
+        var config = await configurationService.GetConfiguration();
+        if (config == null || !config.Any())
+        {
+            configuration = new Configuration();
+            editConfiguration = true;
+            trigger = true;
+        }
+        else
+        {
+            configuration = config.FirstOrDefault();
+            editConfiguration = false;
+            trigger = false; 
+        }
+    }
+
+    void OnInvalidSubmit()
+    {
+        Summary = "Please enter valid data";
+    }
+
+    async Task OnValidSubmit(EditContext editContext)
+    {
+        Summary = "";
+
+        if (editConfiguration && trigger)
+        {
+            if (await configurationService.InsertConfiguration(configuration))
+            {
+                Summary = "Configuration added successfully";
+            }
+            else
+            {
+                Summary = "Failed to add configuration";
+            }
+        }
+        else
+        {
+            await configurationService.UpdateConfiguration(configuration);
+            Summary = "Configuration updated successfully";
+        }
+        editConfiguration = false;
+    }
+
+    void ToggleEdit()
+    {
+        Summary = "";
+        editConfiguration = !editConfiguration;
+    }
+}

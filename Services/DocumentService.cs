@@ -19,7 +19,8 @@ public interface IDocumentService
 public class DocumentService : IDocumentService
 {
     private readonly ISqlDataAccess _db;
-    private DocumentService(ISqlDataAccess db)
+
+    public DocumentService(ISqlDataAccess db)
     {
         _db = db;
     }

@@ -1,5 +1,103 @@
-﻿<h3>index</h3>
+﻿@page "/tutorial"
+@using BOL.Models
+@using Services.Helpers
+@inject IDocumentService documentService
+@inject IFileStoreHelper fileStoreHelper
 
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Tutorial</h3>
+        <div class="btn-group float-right">
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <a href="documentadmin" class="btn btn-primary">Manage Document</a>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+    </div>
+    <div class="card-body" id="accordion">
+        @if (documents == null)
+        {
+            <Loader />
+        }
+        else if (documents.Count() == 0)
+        {
+            <p>No Data Found</p>
+        }
+        else
+        {
+            @foreach (Document document in documents.Where(f => f.IsPublished))
+            {
+                <div class="d-flex text-muted" style="display:inline-flex">
+                    @if (uploadedFilesImages is not null && uploadedFilesImages.ContainsKey(document.Id))
+                    {
+                        <img alt="Image" src="@uploadedFilesImages[document.Id]" @onclick="ShowModal" style="margin-right:5px; max-width:100px; max-height:100px;" />
+                    }
+                    else
+                    {
+                        <Loader />
+                    }
+                    <div class="w-100 pb-3 mb-0 small lh-sm border-bottom">
+                        <p class="d-block text-gray-dark">
+                            <b @onclick="ShowModal">@document.Description</b>                           
+                            <AuthorizeView Roles="Admin">
+                                <Authorized>
+                                    <a class="bi-trash" @onclick="() => SubmitForDelete(document)" title="Delete file"></a>
+                                </Authorized>
+                            </AuthorizeView>
+                        </p>
+                        <p>Uploaded: @document.Date.ToString("dd MMM yyyy")</p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+<ConfirmDialog @ref="deleteConfirmationRef" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" ConfirmationMessage="Sure to delete?" />
 @code {
+    private List<Document> documents { get; set; } = null;
+    private Document TempDocument { get; set; }
+    public Dictionary<int, string> uploadedFilesImages { get; set; }
+    protected ConfirmDialog deleteConfirmationRef { get; set; }
+    // private ModalFileViewer modalRef;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var ListDocument = await documentService.GetDocuments();
+        documents = ListDocument.ToList();
+        if (documents.Any())
+        {
+            uploadedFilesImages = new();
+
+            foreach (Document doc in documents)
+            {
+                if (uploadedFilesImages.ContainsKey(doc.Id) == false)
+                {
+                    string fileString = fileStoreHelper.GetImageThumb(doc);
+                    uploadedFilesImages.TryAdd(doc.Id, fileString);
+                }
+            }
+        }
+    }
+    private async Task ShowModal()
+    {
+       // await modalRef?.Show();
+    }
+    private async Task SubmitForDelete(Document document)
+    {
+        TempDocument = document;
+        await deleteConfirmationRef.Show();
+    }
+    private async void DeleteConfirmed()
+    {
+        // FTP Document Delete
+        fileStoreHelper.DeleteFile(TempDocument.FileLocation);
+        // DB Document Delete
+        await documentService.DeleteDocument(TempDocument);
+        // Frontend Document Delete
+        documents.Remove(TempDocument);
+            
+        TempDocument = new Document();
+    }
 }
