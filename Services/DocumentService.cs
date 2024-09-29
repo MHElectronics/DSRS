@@ -12,7 +12,7 @@ public interface IDocumentService
 {
     Task<IEnumerable<Document>> GetDocuments(bool onlyPublished = false);
     Task<IEnumerable<Document>> GetByUser(User user);
-    Task<bool> InsertDocument(Document document);
+    Task<int> InsertDocument(Document document);
     Task<bool> UpdateDocument(Document document);
     Task<bool> DeleteDocument(Document document);
 }
@@ -48,11 +48,13 @@ public class DocumentService : IDocumentService
         return await _db.LoadData<Document, dynamic>(sql, param);
     }
 
-    public async Task<bool> InsertDocument(Document document)
+    public async Task<int> InsertDocument(Document document)
     {
         string sql = @"INSERT INTO Document(FileName,FileLocation,Description,UserId,IsPublished,Date)
-            VALUES (@FileName,@FileLocation,@Description,@UserId,@IsPublished,@Date)";
-        return await _db.SaveData<Document>(sql, document);
+                        OUTPUT INSERTED.Id
+                        VALUES (@FileName,@FileLocation,@Description,@UserId,@IsPublished,@Date)";
+        int documentId = await _db.ExecuteScalar<int>(sql, document);
+        return documentId;
     }
 
     public async Task<bool> UpdateDocument(Document document)

@@ -75,7 +75,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
         else
         {
-            return Path.Combine(document.Date.ToString("yyyy") + "_" + document.Date.ToString("MM"), "C_" + document.Id);
+            return Path.Combine(document.Date.ToString("yyyy") + "_" + document.Date.ToString("MM"));
         }
     }
 
@@ -176,10 +176,18 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
         else
         {
-            string fullPath = Path.Combine(this.GetRootPath(), path);
-            using FileStream writeStream = new(fullPath, FileMode.Append);
-            await writeStream.WriteAsync(fileBytes, 0, fileBytes.Length);
-            writeStream.Close();
+            try 
+            {
+                string fullPath = Path.Combine(this.GetRootPath(), path);
+                using FileStream writeStream = new(fullPath, FileMode.Append);
+                await writeStream.WriteAsync(fileBytes, 0, fileBytes.Length);
+                writeStream.Close();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+           
         }
     }
     public void DeleteFile(string path)

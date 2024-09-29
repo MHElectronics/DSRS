@@ -14,6 +14,7 @@ public interface ISqlDataAccess
     Task<bool> SaveData<T>(string query, T parameters);
     Task InsertDataTable(DataTable csvFileData, string destinationTableName);
     Task<int> Insert<T>(T obj) where T : class;
+    Task<T> ExecuteScalar<T>(string sql, object parameters);
 }
 public class SqlDataAccess : ISqlDataAccess
 {
@@ -74,7 +75,21 @@ public class SqlDataAccess : ISqlDataAccess
             throw ex;
         }
     }
-
+    public async Task<T> ExecuteScalar<T>(string sql, object parameters)
+    {
+        try
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                return await connection.ExecuteScalarAsync<T>(sql, parameters);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
     public async Task InsertDataTable(DataTable csvFileData, string destinationTableName)
     {
         using (SqlBulkCopy bulkCopy = new SqlBulkCopy(_connectionString))
@@ -89,4 +104,5 @@ public class SqlDataAccess : ISqlDataAccess
             await bulkCopy.WriteToServerAsync(csvFileData);
         }
     }
+
 }
