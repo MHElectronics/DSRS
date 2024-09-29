@@ -190,7 +190,7 @@ else
                     <label>, WIM Scale <span class="badge bg-success">@reportParameters.WIMScaleId</span></label>
                 }
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <label>Date: <span class="badge bg-success">@reportParameters.DateStart.ToString("dd MMM yy, dddd")</span> to <span class="badge bg-success">@reportParameters.DateEnd.ToString("dd MMM yy, dddd")</span></label>
             </div>
             @if (reportParameters.NumberOfAxle > 0)
@@ -203,7 +203,7 @@ else
             {
                 string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
                 <div class="col-md-3">
-                    <label>, <span class="badge bg-success">@name</span></label>
+                    <label>, Class Status:<span class="badge bg-success">@name</span></label>
                 </div>
             }
             @if (reportParameters.IsOverloaded)
