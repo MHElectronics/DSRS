@@ -7,7 +7,7 @@
 {
     <div class="card">
         <div class="card-header">
-            <h3>Configuration Management</h3>
+            <h3>Report Configuration</h3>
         </div>
         <div class="card-body">
             <EditForm Model="@configuration" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
@@ -32,13 +32,13 @@
                         <div class="form-group">
                             @if (editConfiguration)
                             {
-                                <label for="WheelBaseMax" class="form-label">WheelBase Maximum</label>
+                                <label for="WheelBaseMax" class="form-label">Maximum WheelBase</label>
                                 <input type="number" @bind="configuration.WheelBaseMaximum" required class="form-control" placeholder="WheelBase Maximum" id="WheelBaseMax" min="1" />
                                 <ValidationMessage For="() => configuration.WheelBaseMaximum" />
                             }
                             else
                             {
-                                <label for="WheelBaseMax" class="form-label">WheelBase Maximum</label>
+                                <label for="WheelBaseMax" class="form-label">Maximum WheelBase</label>
                                 <label class="form-control">@configuration.WheelBaseMaximum</label>
                             }
                         </div>
@@ -58,7 +58,7 @@
                             }
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-12">
+                    @* <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             @if (editConfiguration)
                             {
@@ -87,7 +87,7 @@
                                 <label class="form-control">@configuration.WeightMaximum</label>
                             }
                         </div>
-                    </div>
+                    </div> *@
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
                             <div class="btn-group">

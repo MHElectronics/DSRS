@@ -1,6 +1,6 @@
 ﻿@inject IStationService stationService
 @inject IWIMScaleService wimService
-@inject IConfiguration configuration
+@inject IConfigurationService configurationService
 @inject IClassStatusService classStatusService
 @inject IAppState appState
 @using BOL.CustomModels
@@ -12,7 +12,7 @@
     return;
 }
 
-@if (selectionEnabled && reportParameters is not null)
+@if (selectionEnabled && reportParameters is not null && configuration is not null)
 {
     <div class="row">
         <div class="col-md-12">
@@ -49,7 +49,7 @@
         </div>
         <div class="col-md-6">
             <label>Date Range </label>
-            <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
+            <SfDateRangePicker TValue="DateTime?" StartDate="@configuration.SystemStartDate" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
                 <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
             </SfDateRangePicker>
         </div>
@@ -87,7 +87,7 @@
         <option value="@i">@i Axle</option>
         }
         </select> *@
-            <input type="range" id="NumberOfAxle" min="0" max="@MaxNoOfAxle" class="form-control slider slider-primary" @bind="@reportParameters.NumberOfAxle" @bind:event="oninput">
+            <input type="range" id="NumberOfAxle" min="0" max="@configuration.NumberOfAxle" class="form-control slider slider-primary" @bind="@reportParameters.NumberOfAxle" @bind:event="oninput">
         </div>
 
         <div class="col-md-3">
@@ -102,7 +102,7 @@
         </div>
         <div class="col-md-3">
             <label for="wheelBase">Wheel Base</label>
-            <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="100" />
+            <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="@configuration.WheelBaseMaximum" />
         </div>
         <div class="col-md-3">
             <label class="form-label">&nbsp;</label>
@@ -272,10 +272,10 @@ else
     private List<Station>? selectedStations;
     private IEnumerable<ClassStatus> ListClassStatus { get; set; }
     private IEnumerable<WIMScale>? wims;
-    private int MaxNoOfAxle { get; set; }
     private bool selectionEnabled { get; set; } = false;
     private int wimId { get; set; } = 0;
     private string selectedType { get; set; } = "Daily";
+    public Configuration configuration { get; set; }
 
     private ReportParameters reportParameters { get; set; } = new();
     private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
@@ -288,7 +288,11 @@ else
         selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
 
         ListClassStatus = await classStatusService.GetClassStatusList();
-        MaxNoOfAxle = Convert.ToInt32(configuration.GetSection("CustomSettings:MaxNoOfAxle").Value);
+        var config = await configurationService.GetConfiguration();
+        if (config is not null || config.Any())
+        {
+            configuration = config.FirstOrDefault();
+        }
         reportParameters.DateEnd = DateTime.Today;
         reportParameters.DateStart = DateTime.Now.AddMonths(-1);
     }
@@ -352,6 +356,11 @@ else
             appState.SetNotification(this, "Select ALCS", Notification.NotificationType.Warning);
             return;
         }
+        if (reportParameters.Wheelbase > configuration.WheelBaseMaximum)
+        {
+            appState.SetNotification(this, "Maximum Wheelbase Number " + configuration.WheelBaseMaximum, Notification.NotificationType.Warning);
+            return;
+        }
 
         reportParameters.Stations = new();
         if (selectedStations is not null && selectedStations.Any())
@@ -369,7 +378,6 @@ else
         reportParameters = await appState.GetReportParameters();
         await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
-
     private void TypeChanged(string type)
     {
         selectedType = type;
