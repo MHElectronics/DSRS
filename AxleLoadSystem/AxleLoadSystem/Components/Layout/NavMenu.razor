@@ -45,7 +45,7 @@
     <AuthorizeView Roles="Admin">
         <Authorized>
             <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">
-                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("admin"))'>
+                <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("admin"))'>
                     <i class="nav-icon fas fa-user-cog"></i>
                     <p>
                         Administration
@@ -110,7 +110,7 @@
     <AuthorizeView Roles="User">
         <Authorized>
             <li class="nav-item @(selectedGroups.Contains("pages") ? " menu-is-opening menu-open" : "")">
-                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("pages"))'>
+                <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("pages"))'>
                     <i class="nav-icon fas fa-book"></i>
                     <p>
                         Pages
@@ -148,7 +148,7 @@
 
 
             <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
-                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("reports"))'>
+                <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("reports"))'>
                     <i class="nav-icon fas fa-th"></i>
                     <p>
                         Reports
@@ -184,7 +184,7 @@
             </li>
 
             <li class="nav-item @(selectedGroups.Contains("analysis") ? " menu-is-opening menu-open" : "")">
-                <a href="#" class="nav-link" @onclick='(() => MenuHeaderClicked("analysis"))'>
+                <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("analysis"))'>
                     <i class="nav-icon fas fa-chart-pie"></i>
                     <p>
                         Analysis
