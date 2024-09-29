@@ -45,28 +45,82 @@
         <div class="card-header">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="pill" href="#tab_1" role="tab" aria-selected="true">Table</a>
+                    <a class="nav-link active" data-toggle="pill" href="#tab_graph" role="tab" aria-selected="true">Graph</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#tab_2" role="tab" aria-selected="false">Graph</a>
+                    <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">Table</a>
                 </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         Export
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li>
+                       @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
-                        <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li>
+                       @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
                     </ul>
                 </li>
             </ul>
         </div>
         <div class="card-body">
             <div class="tab-content">
-                <div class="tab-pane active" id="tab_1">
+                <div class="tab-pane active" id="tab_graph">
+                    <div class="row">
+                        <div class="col-md-12 btn-group">
+                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
+                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
+                        @if (!string.IsNullOrEmpty(chartType))
+                        {
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+                                <ChartArea>
+                                    <ChartAreaBorder Width="0"></ChartAreaBorder>
+                                </ChartArea>
+
+                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                    <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                </ChartPrimaryXAxis>
+
+                                <ChartPrimaryYAxis Title="@YAxisTitle">
+                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                    <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                                </ChartPrimaryYAxis>
+
+                                <ChartSeriesCollection>
+                                    @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                                    {
+                                        <ChartSeries Name="@dayGroup.First().DateUnitName"
+                                                     ColumnWidth="0.5"
+                                                     DataSource="@dayGroup"
+                                                     XName="NumberofAxle"
+                                                     YName="OverloadVehicle"
+                                                     Type="chartSeriesType"
+                                                     EnableTooltip="true">
+
+                                            <ChartMarker>
+                                                <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                    <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                                </ChartDataLabel>
+                                            </ChartMarker>
+
+                                            <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                        </ChartSeries>
+                                    }
+                                </ChartSeriesCollection>
+
+                                <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                                <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                            </SfChart>
+                        }
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_table">
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
@@ -86,56 +140,6 @@
                             }
                         </tbody>
                     </table>
-                </div>
-                <div class="tab-pane" id="tab_2" style="width:100%">
-                    <div class="row">
-                        <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
-                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
-                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
-                        </div>
-                    </div>
-                    <br />
-                    <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
-                        <ChartArea>
-                            <ChartAreaBorder Width="0"></ChartAreaBorder>
-                        </ChartArea>
-
-                        <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
-                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-                        </ChartPrimaryXAxis>
-
-                        <ChartPrimaryYAxis Title="@YAxisTitle">
-                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                            <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-                        </ChartPrimaryYAxis>
-
-                        <ChartSeriesCollection>
-                            @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
-                            {
-                                <ChartSeries Name="@dayGroup.First().DateUnitName"
-                                             ColumnWidth="0.5"
-                                             DataSource="@dayGroup"
-                                             XName="NumberofAxle"
-                                             YName="OverloadVehicle"
-                                             Type="chartSeriesType"
-                                             EnableTooltip="true">
-
-                                    <ChartMarker>
-                                        <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                            <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                        </ChartDataLabel>
-                                    </ChartMarker>
-
-                                    <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                                </ChartSeries>
-                            }
-                        </ChartSeriesCollection>
-
-                        <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-                        <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-                    </SfChart>
                 </div>
             </div>
         </div>
