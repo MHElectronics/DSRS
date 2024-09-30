@@ -4,38 +4,37 @@
 @inject IDocumentService documentService
 @inject IFileStoreHelper fileStoreHelper
 @inject AuthenticationStateProvider authStateProvider
+@inject IJSRuntime jsRuntime
 
-<h3 >Tutorial Management</h3>
 <div class="card">
     <div class="card-header">
-        <div class="row">
-            <AuthorizeView Roles="Admin">
-                <Authorized>
-                    <div class="col-md-12 col-sm-12">
-                        <label for="description" class="form-label">File Description</label>
-                        <input type="text" @bind-value="document.Description" class="form-control" placeholder="File Description" id="description" min="5" maxlength="300" />
+        <h3 class="card-title">Tutorial Management</h3>
+        <br>
+         <AuthorizeView Roles="Admin">
+            <Authorized>
 
-                    </div>
-                    <div class="col-md-12 col-sm-12">
-                        <label for="inputfile">Upload Files</label>
-                        <InputFile OnChange="@LoadFiles" @key=@(_inputFileId) id="inputfile" class="form-control" disabled="@uploading" multiple />
-                        @if (uploading)
-                        {
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: @uploadProgress.ToString("0")%" aria-valuenow="@uploadProgress.ToString("0")" aria-valuemin="0" aria-valuemax="100">@uploadProgress.ToString("0")%</div>
-                            </div>
-                        }
-                    </div>
-                    
-                </Authorized>
-            </AuthorizeView>
-            @if (!string.IsNullOrEmpty(Summary))
-            {
-                <label class="text-danger">@Summary</label>
-            }
-        </div>
-
+                <div class="col-md-12 col-sm-12">
+                    <label for="description" class="form-label">File Description</label>
+                        <input type="text" @bind="document.Description" class="form-control" placeholder="File Description" id="description" min="5" maxlength="300" />
+                </div>
+                <div class="col-md-12 col-sm-12">
+                    <label for="inputfile">Upload Files</label>
+                    <InputFile OnChange="@LoadFiles" @key=@(_inputFileId) id="inputfile" class="form-control" disabled="@uploading" multiple />
+                    @if (uploading)
+                    {
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @uploadProgress.ToString("0")%" aria-valuenow="@uploadProgress.ToString("0")" aria-valuemin="0" aria-valuemax="100">@uploadProgress.ToString("0")%</div>
+                        </div>
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(Summary))
+                {
+                    <label class="text-danger">@Summary</label>
+                }
+            </Authorized>
+        </AuthorizeView>
     </div>
+
     <div class="card-body" id="accordion">
         @if (documents == null)
         {
@@ -47,9 +46,43 @@
         }
         else
         {
-            @foreach (Document document in documents.Where(f => f.IsPublished))
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>File Description</th>
+                        <th>Uploaded Time</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Document document in documents.Where(f => f.IsPublished))
+                    {
+                        <tr>
+                            <td>@document.FileName</td>
+                            <td>@document.Description</td>
+                            <td>@document.Date</td>
+                            <td class="text-right">     
+                                <div class="btn-group">
+                                    <AuthorizeView Roles="Admin">
+                                        <Authorized>
+                                            <span class="btn btn-primary" @onclick="() => SubmitForDelete(document)" title="Delete file">
+                                                <i class="fa fa-trash"></i>
+                                            </span>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                        <span class="btn btn-primary" @onclick="() => SubmitForDownload(document)" title="Download file">
+                                        <i class="fa fa-download"></i>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+@*             @foreach (Document document in documents.Where(f => f.IsPublished))
             {
-                <div class="d-flex text-muted" style="display:inline-flex">
+                 <div class="d-flex text-muted" style="display:inline-flex">
                     @if (uploadedFilesImages is not null && uploadedFilesImages.ContainsKey(document.Id))
                     {
                         <img alt="Image" src="@uploadedFilesImages[document.Id]" style="margin-right:5px; max-width:100px; max-height:100px;" />
@@ -86,8 +119,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                </div> 
+            } *@
         }
     </div>
 </div>
@@ -110,19 +143,24 @@
     {
         var ListDocument = await documentService.GetDocuments();
         documents = ListDocument.ToList();
-        if (documents.Any())
-        {
-            uploadedFilesImages = new();
+        // if (documents.Any())
+        // {
+        //     uploadedFilesImages = new();
 
-            foreach (Document doc in documents)
-            {
-                if (uploadedFilesImages.ContainsKey(doc.Id) == false)
-                {
-                    string fileString = fileStoreHelper.GetImageThumb(doc);
-                    uploadedFilesImages.TryAdd(doc.Id, fileString);
-                }
-            }
-        }
+        //     foreach (Document doc in documents)
+        //     {
+        //         if (uploadedFilesImages.ContainsKey(doc.Id) == false)
+        //         {
+        //             string fileString = fileStoreHelper.GetImageThumb(doc);
+        //             uploadedFilesImages.TryAdd(doc.Id, fileString);
+        //         }
+        //     }
+        // }
+    }
+    private async Task SubmitForDownload(Document document)
+    {
+        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(document.FileLocation);
+        await jsRuntime.InvokeVoidAsync("downloadFileFromString", document.FileName, Convert.ToBase64String(fileBytes));
     }
     private async Task SubmitForDelete(Document document)
     {
@@ -209,14 +247,14 @@
                             Newdocument.Id = documentId; 
                             documents.Add(Newdocument);
                             //string strImage = await fileStoreHelper.GetImageContent(document);
-                            string strImage = "data:image/png;base64, " + Convert.ToBase64String(byteFullFile, 0, byteFullFile.Length);
+                            // string strImage = "data:image/png;base64, " + Convert.ToBase64String(byteFullFile, 0, byteFullFile.Length);
 
                             //Display file
-                            if (uploadedFilesImages is null)
-                            {
-                                uploadedFilesImages = new Dictionary<int, string>();
-                            }
-                            uploadedFilesImages.Add(Newdocument.Id, strImage);
+                            // if (uploadedFilesImages is null)
+                            // {
+                            //     uploadedFilesImages = new Dictionary<int, string>();
+                            // }
+                            // uploadedFilesImages.Add(Newdocument.Id, strImage);
                         }
                     }
                 }

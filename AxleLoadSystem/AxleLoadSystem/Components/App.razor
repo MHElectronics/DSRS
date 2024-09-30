@@ -105,7 +105,15 @@
                 $('body').removeClass('dark-mode');
             }
         }
-
+        function DownloadBlob(options) {
+            var link = document.createElement('a');
+            //link.href = url;
+            link.href = "data:application/octet-stream;base64," + options.data;
+            link.setAttribute('download', options.fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
         $(document).on('click', '.menu-opener', function () {
             if ($('body').hasClass('sidebar-collapse')) {
                 $('body').removeClass('sidebar-collapse');

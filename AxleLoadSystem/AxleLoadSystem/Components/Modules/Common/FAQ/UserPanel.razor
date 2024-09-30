@@ -35,17 +35,21 @@
             }
         </div>
     }
-    <div class="card-body" id="accordion">
-        @if (faqs == null)
-        {
-            <Loader />
-        }
-        else if (faqs.Count() == 0)
-        {
-            <p>No Data Found</p>
-        }
-        else
-        {
+    <div class="card-header">
+        <h3 class="card-title">List of Questions</h3>
+    </div>
+  
+    @if (faqs == null)
+    {
+        <Loader />
+    }
+    else if (faqs.Count() == 0)
+    {
+        <p>No Data Found</p>
+    }
+    else
+    {
+        <div class="card-footer" id="accordion">
             @foreach (FAQ faq in faqs.OrderBy(f => f.AnswerUserId > 0).OrderByDescending(f => f.Id))
             {
                 <div class="card @(!string.IsNullOrEmpty(faq.Answer) ? "card-primary" : "card-danger")  card-outline">
@@ -83,8 +87,9 @@
                     </div>
                 </div>
             }
-        }
-    </div>
+        
+        </div>
+    }
 </div>
 
 <ConfirmDialog @ref="submitConfirmationQuestionRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedQuestion" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Question?" />
