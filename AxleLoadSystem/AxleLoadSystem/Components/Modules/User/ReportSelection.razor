@@ -15,7 +15,6 @@
 @if (selectionEnabled && reportParameters is not null && configuration is not null)
 {
     <div class="row">
-        <div class="col-md-12">
             @if (stations is not null)
             {
                 string strIconAll = "fa-square";
@@ -23,30 +22,45 @@
                 {
                     strIconAll = "fa-check-square";
                 }
-                <div class="btn-group">
-                    <span class="btn btn-primary" @onclick="@(() => AllStationClicked())" title="Select/Unselect All ALCS">
-                        <i class="fas @strIconAll"></i><span class="ms-2">&nbsp;All</span>
-                    </span>
-                    @foreach (Station item in stations.OrderBy(s => s.StationName))
+                <div class="btn-group-vertical col-md-12" role="group">
+
+                    @for (int i = 0; i < stations.Count();)
                     {
-                        string strIcon = "fa-square";
-                        string btnClass = "btn-danger";
-                        @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
-                        {
-                            strIcon = "fa-check-square";
-                            btnClass = "btn-success";
-                        }
-                        <span class="btn @btnClass" @onclick="@(() => StationClicked(item))">
-                            <i class="fas @strIcon"></i><span class="ms-2">&nbsp; @item.StationName</span>
-                        </span>
+                        <div class="btn-group">
+                            @for (int j = 0; j < 6; j++)
+                            {
+                                if (i >= stations.Count())
+                                {
+                                    break;
+                                }
+                                Station item = stations.OrderBy(s => s.StationName).ElementAt(i);
+                                if (i == 0)
+                                {
+                                    <span class="btn btn-primary col-md-2" @onclick="@(() => AllStationClicked())" title="Select/Unselect All ALCS">
+                                        <i class="fas @strIconAll"></i><span class="ms-2">&nbsp;All</span>
+                                    </span>
+                                }
+                                string strIcon = "fa-square";
+                                string btnClass = "btn-danger";
+                                @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
+                                {
+                                    strIcon = "fa-check-square";
+                                    btnClass = "btn-success";
+                                }
+                                <span class="btn @btnClass col-md-2" @onclick="@(() => StationClicked(item))">
+                                    <i class="fas @strIcon"></i><span class="ms-2">&nbsp; @item.StationName</span>
+                                </span>
+
+                                i++;
+                            }
+                        </div>
                     }
                 </div>
             }
             else
             {
-                <Loader />
+            <Loader />
             }
-        </div>
         <div class="col-md-6">
             <label>Date Range </label>
             <SfDateRangePicker TValue="DateTime?" StartDate="@configuration.SystemStartDate" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
@@ -55,32 +69,32 @@
         </div>
         <div class="col-md-6">
             <label>WIM Scale</label>
-            @if (wims is not null && wims.Count() > 0)
-            {
+                @if (wims is not null && wims.Count() > 0)
+                {
                 <select class="form-control" @bind="@reportParameters.WIMScaleId">
                     <option value="0">-Select WIM-</option>
-                    @foreach (WIMScale item in wims)
-                    {
+                        @foreach (WIMScale item in wims)
+                        {
                         <option value="@item.Id">@item.LaneNumber - @item.LaneDirection</option>
-                    }
+                        }
                 </select>
-            }
-            else
-            {
-                <span class="form-control">Not available</span>
-            }
-        </div>
-        
-        <div class="col-md-3">
-            @{
-                string selectedAxle = "No Filter";
-                if (reportParameters.NumberOfAxle > 0)
-                {
-                    selectedAxle = reportParameters.NumberOfAxle + " Axle";
                 }
-            }
+                else
+                {
+                <span class="form-control">Not available</span>
+                }
+        </div>
+
+        <div class="col-md-3">
+                @{
+                    string selectedAxle = "No Filter";
+                    if (reportParameters.NumberOfAxle > 0)
+                    {
+                        selectedAxle = reportParameters.NumberOfAxle + " Axle";
+                    }
+                }
             <label for="NumberOfAxle">Number of Axles <span class="badge bg-primary">[@selectedAxle]</span></label>
-            @* <select class="form-control" @bind="@reportParameters.NumberOfAxle">
+                @* <select class="form-control" @bind="@reportParameters.NumberOfAxle">
         <option value="0">-No Filter-</option>
         @for (int i = 2; i <= MaxNoOfAxle; i++)
         {
@@ -94,10 +108,10 @@
             <label>Class Status</label>
             <select class="form-control" @bind="@reportParameters.ClassStatus">
                 <option value="0">-No Filter-</option>
-                @foreach (ClassStatus status in ListClassStatus)
-                {
+                    @foreach (ClassStatus status in ListClassStatus)
+                    {
                     <option value="@status.Id">@status.Name</option>
-                }
+                    }
             </select>
         </div>
         <div class="col-md-3">
@@ -130,8 +144,8 @@
                 <option value="AxleRemaining">Remaining</option>
             </select>
         </div>
-        @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
-        {
+            @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
+            {
             <div class="col-md-3">
                 <div class="form-group">
                     <label for="WeightMin">Weight (Kg) Minimum</label>
@@ -144,21 +158,21 @@
                     <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="@(reportParameters.WeightMin+1)" />
                 </div>
             </div>
-        }
-        
+            }
+
         <div class="col align-self-end">
             <div class="form-group float-right align-bottom">
                 <label class="form-label">&nbsp;</label>
                 <div class="btn-group">
-                    @if (selectedStations is not null && selectedStations.Any())
-                    {
+                        @if (selectedStations is not null && selectedStations.Any())
+                        {
                         <button class="btn btn-primary" @onclick="SelectionComplete">Save Selection</button>
-                    }
+                        }
                     <button class="btn btn-primary" @onclick="SelectionCancel">Cancel</button>
                 </div>
             </div>
         </div>
-        @*  <div class="col-md-3">
+            @*  <div class="col-md-3">
     <label class="form-label">&nbsp;</label>
     <div class="form-check">
     <div class="icheck-primary d-inline">
@@ -169,90 +183,90 @@
     </div>
     </div> *@
     </div>
-}
-else
-{
+    }
+    else
+    {
     <div class="row" @onclick="EnableChange" title="Click to change selection" style="cursor:pointer;">
-        @if (reportParameters.Stations is null || reportParameters.Stations.Count() == 0)
-        {
+            @if (reportParameters.Stations is null || reportParameters.Stations.Count() == 0)
+            {
             <span class="text text-danger">No ALCS is selected</span>
-        }
-        else
-        {
+            }
+            else
+            {
             <div class="col-md-12">
                 <label>@reportParameters.Stations?.Count() station(s) selected: </label>
-                @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList().OrderBy(s => s.StationName))
-                {
+                    @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList().OrderBy(s => s.StationName))
+                    {
                     <span class="badge bg-success"> @item.StationName</span>
-                }
-                @if (reportParameters.WIMScaleId > 0)
-                {
+                    }
+                    @if (reportParameters.WIMScaleId > 0)
+                    {
                     <label>, WIM Scale <span class="badge bg-success">@reportParameters.WIMScaleId</span></label>
-                }
+                    }
             </div>
             <div class="col-md-6">
                 <label>Date: <span class="badge bg-success">@reportParameters.DateStart.ToString("dd MMM yy, dddd")</span> to <span class="badge bg-success">@reportParameters.DateEnd.ToString("dd MMM yy, dddd")</span></label>
             </div>
-            @if (reportParameters.NumberOfAxle > 0)
-            {
+                @if (reportParameters.NumberOfAxle > 0)
+                {
                 <div class="col-md-3">
                     <label>Axle <span class="badge bg-success">@reportParameters.NumberOfAxle</span></label>
                 </div>
-            }
-            @if (reportParameters.ClassStatus > 0)
-            {
-                string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
+                }
+                @if (reportParameters.ClassStatus > 0)
+                {
+                    string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
                 <div class="col-md-3">
                     <label>, Class Status:<span class="badge bg-success">@name</span></label>
                 </div>
-            }
-            @if (reportParameters.IsOverloaded)
-            {
+                }
+                @if (reportParameters.IsOverloaded)
+                {
                 <div class="col-md-3">
                     <label>, <span class="badge bg-success">Overloaded only</span></label>
                 </div>
-            }
-            @if (reportParameters.Wheelbase > 0)
-            {
+                }
+                @if (reportParameters.Wheelbase > 0)
+                {
                 <div class="col-md-3">
                     <label>Wheelbase: <span class="badge bg-success">@reportParameters.Wheelbase</span></label>
                 </div>
-            }
-            @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
-            {
-                string message = "";
-                
-                @if (reportParameters.WeightMin > 0)
-                {
-                    message += "Min: " + reportParameters.WeightMin.ToString("N0");
                 }
-                @if (reportParameters.WeightMax > 0)
+                @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
                 {
-                    message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
-                }
-                message = System.Text.RegularExpressions.Regex.Replace(reportParameters.WeightFilterColumn, "(\\B[A-Z0-9])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim()
-                + " (" + message + ")";
+                    string message = "";
+
+                    @if (reportParameters.WeightMin > 0)
+                    {
+                        message += "Min: " + reportParameters.WeightMin.ToString("N0");
+                    }
+                    @if (reportParameters.WeightMax > 0)
+                    {
+                        message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
+                    }
+                    message = System.Text.RegularExpressions.Regex.Replace(reportParameters.WeightFilterColumn, "(\\B[A-Z0-9])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim()
+                    + " (" + message + ")";
 
                 <div class="col-md-3">
                     <label>Weight: <span class="badge bg-success">@message</span></label>
                 </div>
-            }
+                }
 
-            @if (reportParameters.CheckWeightCalculation)
-            {
+                @if (reportParameters.CheckWeightCalculation)
+                {
                 <div class="col-md-3">
                     <label>, <span class="badge bg-success">Check Weight Calculation</span> selected.</label>
                 </div>
-            }
+                }
             <div class="col align-self-end">
                 <div class="form-group float-right align-bottom">
                     <label class="form-label">&nbsp;</label>
                     <button class="btn btn-primary float-right" @onclick="EnableChange">Change Selection</button>
                 </div>
             </div>
-        }
+            }
     </div>
-    @* @if (selectedStations is not null)
+        @* @if (selectedStations is not null)
     {
         <div class="row">
             <div class="col-md-6 btn-group">
@@ -262,124 +276,124 @@ else
             </div>
         </div>
     } *@
-}
+    }
 
-@code {
-    [Parameter]
-    public EventCallback<bool> OnParametersChanged { get; set; }
+        @code {
+            [Parameter]
+            public EventCallback<bool> OnParametersChanged { get; set; }
 
     private IEnumerable<Station>? stations;
-    private List<Station>? selectedStations;
-    private IEnumerable<ClassStatus> ListClassStatus { get; set; }
-    private IEnumerable<WIMScale>? wims;
-    private bool selectionEnabled { get; set; } = false;
-    private int wimId { get; set; } = 0;
-    private string selectedType { get; set; } = "Daily";
-    public Configuration configuration { get; set; }
+        private List<Station>? selectedStations;
+        private IEnumerable<ClassStatus> ListClassStatus { get; set; }
+        private IEnumerable<WIMScale>? wims;
+        private bool selectionEnabled { get; set; } = false;
+        private int wimId { get; set; } = 0;
+        private string selectedType { get; set; } = "Daily";
+        public Configuration configuration { get; set; }
 
-    private ReportParameters reportParameters { get; set; } = new();
-    private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
+        private ReportParameters reportParameters { get; set; } = new();
+        private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
 
-    protected override async Task OnInitializedAsync()
-    {
-        stations = await stationService.Get();
+        protected override async Task OnInitializedAsync()
+        {
+            stations = await stationService.Get();
 
-        reportParameters = await appState.GetReportParameters();
-        selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+            reportParameters = await appState.GetReportParameters();
+            selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
 
-        ListClassStatus = await classStatusService.GetClassStatusList();
-        var config = await configurationService.GetConfiguration();
-        if (config is not null || config.Any())
-        {
-            configuration = config.FirstOrDefault();
-        }
-        reportParameters.DateEnd = DateTime.Today;
-        reportParameters.DateStart = DateTime.Now.AddMonths(-1);
-    }
-    private async Task AllStationClicked()
-    {
-        if (stations?.Count() == selectedStations?.Count())
-        {
-            selectedStations = new();
-        }
-        else
-        {
-            selectedStations = new();
-            selectedStations.AddRange(stations);
-        }
-    }
-    private async Task StationClicked(Station item)
-    {
-        if (selectedStations is null)
-        {
-            selectedStations = new();
-        }
-        if (selectedStations.Any(s => s.StationId == item.StationId))
-        {
-            selectedStations.Remove(selectedStations.FirstOrDefault(s => s.StationId == item.StationId));
-        }
-        else
-        {
-            selectedStations.Add(item);
-        }
-
-        if (selectedStations.Count() == 1)
-        {
-            wims = await wimService.GetByStation(new WIMScale() { StationId = selectedStations.FirstOrDefault().StationId });
-            if (wims is not null && wims.Count() == 1)
+            ListClassStatus = await classStatusService.GetClassStatusList();
+            var config = await configurationService.GetConfiguration();
+            if (config is not null || config.Any())
             {
-                wimId = wims.FirstOrDefault().Id;
+                configuration = config.FirstOrDefault();
+            }
+            reportParameters.DateEnd = DateTime.Today;
+            reportParameters.DateStart = DateTime.Now.AddMonths(-1);
+        }
+        private async Task AllStationClicked()
+        {
+            if (stations?.Count() == selectedStations?.Count())
+            {
+                selectedStations = new();
+            }
+            else
+            {
+                selectedStations = new();
+                selectedStations.AddRange(stations);
             }
         }
-        else
+        private async Task StationClicked(Station item)
         {
-            wims = null;
-            reportParameters.WIMScaleId = 0;
-        }
-    }
-    private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
-    {
-        reportParameters.DateStart = args.StartDate ?? DateTime.Now;
-        reportParameters.DateEnd = args.EndDate ?? DateTime.Now;
-    }
-    private async Task EnableChange()
-    {
-        reportParameters = await appState.GetReportParameters();
-        selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
-        selectionEnabled = true;
-        await OnParametersChanged.InvokeAsync(selectionEnabled);
-    }
-    private async Task SelectionComplete()
-    {
-        if (selectedStations?.Count() == 0)
-        {
-            appState.SetNotification(this, "Select ALCS", Notification.NotificationType.Warning);
-            return;
-        }
-        if (reportParameters.Wheelbase > configuration.WheelBaseMaximum)
-        {
-            appState.SetNotification(this, "Maximum Wheelbase Number " + configuration.WheelBaseMaximum, Notification.NotificationType.Warning);
-            return;
-        }
+            if (selectedStations is null)
+            {
+                selectedStations = new();
+            }
+            if (selectedStations.Any(s => s.StationId == item.StationId))
+            {
+                selectedStations.Remove(selectedStations.FirstOrDefault(s => s.StationId == item.StationId));
+            }
+            else
+            {
+                selectedStations.Add(item);
+            }
 
-        reportParameters.Stations = new();
-        if (selectedStations is not null && selectedStations.Any())
-        {
-            reportParameters.Stations = selectedStations.Select(s => s.StationId).ToList();
+            if (selectedStations.Count() == 1)
+            {
+                wims = await wimService.GetByStation(new WIMScale() { StationId = selectedStations.FirstOrDefault().StationId });
+                if (wims is not null && wims.Count() == 1)
+                {
+                    wimId = wims.FirstOrDefault().Id;
+                }
+            }
+            else
+            {
+                wims = null;
+                reportParameters.WIMScaleId = 0;
+            }
         }
+        private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
+        {
+            reportParameters.DateStart = args.StartDate ?? DateTime.Now;
+            reportParameters.DateEnd = args.EndDate ?? DateTime.Now;
+        }
+        private async Task EnableChange()
+        {
+            reportParameters = await appState.GetReportParameters();
+            selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+            selectionEnabled = true;
+            await OnParametersChanged.InvokeAsync(selectionEnabled);
+        }
+        private async Task SelectionComplete()
+        {
+            if (selectedStations?.Count() == 0)
+            {
+                appState.SetNotification(this, "Select ALCS", Notification.NotificationType.Warning);
+                return;
+            }
+            if (reportParameters.Wheelbase > configuration.WheelBaseMaximum)
+            {
+                appState.SetNotification(this, "Maximum Wheelbase Number " + configuration.WheelBaseMaximum, Notification.NotificationType.Warning);
+                return;
+            }
 
-        await appState.SetReportParameters(reportParameters);
-        selectionEnabled = false;
-        await OnParametersChanged.InvokeAsync(selectionEnabled);
-    }
-    private async Task SelectionCancel()
-    {
-        selectionEnabled = false;
-        reportParameters = await appState.GetReportParameters();
-        await OnParametersChanged.InvokeAsync(selectionEnabled);
-    }
-    private void TypeChanged(string type)
-    {
-        selectedType = type;
-    }
+            reportParameters.Stations = new();
+            if (selectedStations is not null && selectedStations.Any())
+            {
+                reportParameters.Stations = selectedStations.Select(s => s.StationId).ToList();
+            }
+
+            await appState.SetReportParameters(reportParameters);
+            selectionEnabled = false;
+            await OnParametersChanged.InvokeAsync(selectionEnabled);
+        }
+        private async Task SelectionCancel()
+        {
+            selectionEnabled = false;
+            reportParameters = await appState.GetReportParameters();
+            await OnParametersChanged.InvokeAsync(selectionEnabled);
+        }
+        private void TypeChanged(string type)
+        {
+            selectedType = type;
+        }
 }
