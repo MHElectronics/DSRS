@@ -19,4 +19,5 @@ public class AxleLoadReport
     public int Axle7 { get; set; }
     public int AxleRemaining { get; set; }
     public int GrossVehicleWeight { get; set; }
+    public string GrossVehicleWeightRange { get; set; }
 }

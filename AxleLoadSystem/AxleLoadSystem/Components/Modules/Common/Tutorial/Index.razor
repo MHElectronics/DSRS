@@ -12,10 +12,9 @@
         <br>
          <AuthorizeView Roles="Admin">
             <Authorized>
-
                 <div class="col-md-12 col-sm-12">
                     <label for="description" class="form-label">File Description</label>
-                        <input type="text" @bind="document.Description" class="form-control" placeholder="File Description" id="description" min="5" maxlength="300" />
+                    <input type="text" @bind="document.Description" class="form-control" placeholder="File Description" id="description" min="5" maxlength="300" />
                 </div>
                 <div class="col-md-12 col-sm-12">
                     <label for="inputfile">Upload Files</label>

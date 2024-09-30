@@ -531,117 +531,53 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         bool isSuccess = false;
         string message = "";
         string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+        DECLARE @DateStart DATE = @DateStartParam  
+        DECLARE @DateEnd DATE = @DateEndParam  
+        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
+        DECLARE @Wheelbase INT = @WheelbaseParam           
+        DECLARE @ClassStatus INT = @ClassStatusParam
+        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @TotalIteration INT = 10
 
+        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
-        DECLARE @DateRange TABLE([Date] DATE)
-        DECLARE @CurrentDate DATE = @DateStart
+        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
 
-        WHILE @CurrentDate <= @DateEnd
-        BEGIN
-            INSERT INTO @DateRange VALUES(@CurrentDate)
-            SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
-        END
+        INSERT INTO @Range(GroupId, Minimum, Maximum)
+        SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
+        FROM master..[spt_values] 
+        WHERE number BETWEEN 1 AND @TotalIteration
 
-        CREATE TABLE #T2(
-            TotalVehicle INT DEFAULT 0,
-            OverloadVehicle INT DEFAULT 0,
-            [DateUnit] INT,
-            GrossWeightBin NVARCHAR(50),
-            VehiclesInBin INT DEFAULT 0
-        )
-
-        INSERT INTO #T2([DateUnit], TotalVehicle, OverloadVehicle, GrossWeightBin, VehiclesInBin)
         SELECT 
             DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
+            DATENAME(WEEKDAY, DATEADD(DAY, DATEPART(WEEKDAY, AL.DateTime) - 1, 0)) AS DateUnitName,
+            R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CASE 
-                WHEN GrossVehicleWeight BETWEEN 15000 AND 17500 THEN '15-17.5'
-                WHEN GrossVehicleWeight BETWEEN 17501 AND 20000 THEN '17.5-20'
-                WHEN GrossVehicleWeight BETWEEN 20001 AND 22500 THEN '20-22.5'
-                WHEN GrossVehicleWeight BETWEEN 22501 AND 25000 THEN '22.5-25'
-                WHEN GrossVehicleWeight BETWEEN 25001 AND 27500 THEN '25-27.5'
-                WHEN GrossVehicleWeight BETWEEN 27501 AND 30000 THEN '27.5-30'
-                WHEN GrossVehicleWeight BETWEEN 30001 AND 32500 THEN '30-32.5'
-                WHEN GrossVehicleWeight BETWEEN 32501 AND 35000 THEN '32.5-35'
-                WHEN GrossVehicleWeight BETWEEN 35001 AND 37500 THEN '35-37.5'
-                WHEN GrossVehicleWeight BETWEEN 37501 AND 40000 THEN '37.5-40'
-                WHEN GrossVehicleWeight BETWEEN 40001 AND 42500 THEN '40-42.5'
-                WHEN GrossVehicleWeight BETWEEN 42501 AND 45000 THEN '42.5-45'
-                WHEN GrossVehicleWeight BETWEEN 45001 AND 47500 THEN '45-47.5'
-                WHEN GrossVehicleWeight BETWEEN 47501 AND 50000 THEN '47.5-50'
-                WHEN GrossVehicleWeight BETWEEN 50001 AND 52500 THEN '50-52.5'
-                WHEN GrossVehicleWeight BETWEEN 52501 AND 55000 THEN '52.5-55'
-                WHEN GrossVehicleWeight BETWEEN 55001 AND 57500 THEN '55-57.5'
-                WHEN GrossVehicleWeight BETWEEN 57501 AND 60000 THEN '57.5-60'
-                WHEN GrossVehicleWeight BETWEEN 60001 AND 62500 THEN '60-62.5'
-                WHEN GrossVehicleWeight > 62500 THEN '62.5-65'
-                ELSE 'Other'
-            END AS GrossWeightBin,
-            COUNT(1) AS VehiclesInBin
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
         WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY 
-            DATEPART(WEEKDAY, AL.DateTime), GrossVehicleWeight,
-            CASE 
-                WHEN GrossVehicleWeight BETWEEN 15000 AND 17500 THEN '15-17.5'
-                WHEN GrossVehicleWeight BETWEEN 17501 AND 20000 THEN '17.5-20'
-                WHEN GrossVehicleWeight BETWEEN 20001 AND 22500 THEN '20-22.5'
-                WHEN GrossVehicleWeight BETWEEN 22501 AND 25000 THEN '22.5-25'
-                WHEN GrossVehicleWeight BETWEEN 25001 AND 27500 THEN '25-27.5'
-                WHEN GrossVehicleWeight BETWEEN 27501 AND 30000 THEN '27.5-30'
-                WHEN GrossVehicleWeight BETWEEN 30001 AND 32500 THEN '30-32.5'
-                WHEN GrossVehicleWeight BETWEEN 32501 AND 35000 THEN '32.5-35'
-                WHEN GrossVehicleWeight BETWEEN 35001 AND 37500 THEN '35-37.5'
-                WHEN GrossVehicleWeight BETWEEN 37501 AND 40000 THEN '37.5-40'
-                WHEN GrossVehicleWeight BETWEEN 40001 AND 42500 THEN '40-42.5'
-                WHEN GrossVehicleWeight BETWEEN 42501 AND 45000 THEN '42.5-45'
-                WHEN GrossVehicleWeight BETWEEN 45001 AND 47500 THEN '45-47.5'
-                WHEN GrossVehicleWeight BETWEEN 47501 AND 50000 THEN '47.5-50'
-                WHEN GrossVehicleWeight BETWEEN 50001 AND 52500 THEN '50-52.5'
-                WHEN GrossVehicleWeight BETWEEN 52501 AND 55000 THEN '52.5-55'
-                WHEN GrossVehicleWeight BETWEEN 55001 AND 57500 THEN '55-57.5'
-                WHEN GrossVehicleWeight BETWEEN 57501 AND 60000 THEN '57.5-60'
-                WHEN GrossVehicleWeight BETWEEN 60001 AND 62500 THEN '60-62.5'
-                WHEN GrossVehicleWeight > 62500 THEN '62.5-65'
-            END
-
-        SELECT 
-            DateUnit,
-            DATENAME(WEEKDAY, DATEADD(DAY, DateUnit - 1, 0)) AS DateUnitName,
-            GrossWeightBin,
-            SUM(VehiclesInBin) AS VehiclesInBin,
-            AVG(CAST(VehiclesInBin AS FLOAT)) OVER (PARTITION BY GrossWeightBin) AS AverageVehiclesInBin
-        FROM #T2
-        GROUP BY DateUnit, GrossWeightBin
-        ORDER BY 
-            CASE 
-                WHEN DateUnit = 7 THEN 1  -- Saturday
-                WHEN DateUnit = 1 THEN 2  -- Sunday
-                WHEN DateUnit = 2 THEN 3  -- Monday
-                WHEN DateUnit = 3 THEN 4  -- Tuesday
-                WHEN DateUnit = 4 THEN 5  -- Wednesday
-                WHEN DateUnit = 5 THEN 6  -- Thursday
-                WHEN DateUnit = 6 THEN 7  -- Friday
-            END, GrossWeightBin
-
-        DROP TABLE #T2
+            DATEPART(WEEKDAY, AL.DateTime),
+            DATENAME(WEEKDAY, DATEADD(DAY, DATEPART(WEEKDAY, AL.DateTime) - 1, 0)),
+            R.GroupId,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(WEEKDAY, AL.DateTime), R.GroupId
         ";
 
         var parameters = new
         {
-            DateStart = reportParameters.DateStart,
-            DateEnd = reportParameters.DateEnd,
-            NumberOfAxle = reportParameters.NumberOfAxle,
-            Wheelbase = reportParameters.Wheelbase,
-            ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            DateStartParam = reportParameters.DateStart,
+            DateEndParam = reportParameters.DateEnd,
+            NumberOfAxleParam = reportParameters.NumberOfAxle,
+            WheelbaseParam = reportParameters.Wheelbase,
+            ClassStatusParam = reportParameters.ClassStatus
         };
 
         try
@@ -657,6 +593,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
+
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyVehicleReport(ReportParameters reportParameters)
     {
         throw new NotImplementedException();
