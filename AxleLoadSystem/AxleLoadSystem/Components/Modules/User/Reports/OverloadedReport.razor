@@ -106,6 +106,18 @@
                                             </ChartMarker>
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
+
+                                        @if(average is not null)
+                                        {
+                                            <ChartSeries Name="Average" ColumnWidth="0.5" DataSource="@average" XName="UnitName" YName="Average" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
+                                                @* <ChartMarker>
+                                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                        <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                                    </ChartDataLabel>
+                                                </ChartMarker>
+                                                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder> *@
+                                            </ChartSeries>
+                                        }
                                     </ChartSeriesCollection>
                                     <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                     <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
@@ -247,6 +259,13 @@
         }
         isLoading = false;
     }
+    private class AverageValue
+    {
+        public string UnitName{ get; set; }
+        public decimal Average{ get; set; }
+    }
+    private List<AverageValue> average { get; set; }
+
     private async Task LoadChart()
     {
         Summary = "";
@@ -278,6 +297,17 @@
             {
                 ChartData = report.Item1;
                 YAxisTitle = selectedType;
+
+                average=new();
+                foreach(var item in ChartData.Select(d => d.DateUnitName).Distinct())
+                {
+                    int totalOverload = ChartData.Where(d => d.DateUnitName == item).Sum(d => d.OverloadVehicle);
+                    int totalVehicle = ChartData.Where(d => d.DateUnitName == item).Sum(d => d.TotalVehicle);
+                    AverageValue r = new();
+                    r.UnitName = item;
+                    r.Average = totalVehicle == 0 ? 0 : (totalOverload / totalVehicle);
+                    average.Add(r);
+                }
             }
             else
             {
