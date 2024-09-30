@@ -65,17 +65,21 @@
             </EditForm>
         </div>
     }
-    <div class="card-body" id="accordion">
-        @if (faqs == null)
-        {
-            <Loader />
-        }
-        else if (faqs.Count() == 0)
-        {
-            <p>No Data Found</p>
-        }
-        else
-        {
+
+    <div class="card-header">
+        <h3 class="card-title">List of Questions</h3>
+    </div> 
+    @if (faqs == null)
+    {
+        <Loader />
+    }
+    else if (faqs.Count() == 0)
+    {
+        <p>No Data Found</p>
+    }
+    else
+    {      
+        <div class="card-body" id="accordion">
             @foreach (FAQ faq in faqs.OrderBy(f => Convert.ToInt16(f.IsPublished)).ThenBy(f => f.DisplayOrder))
             {
                 <div class="card @((string.IsNullOrEmpty(faq.Answer) || !faq.IsPublished) ? "card-danger" : "card-primary")  card-outline">
@@ -120,8 +124,8 @@
                     </div>
                 </div>
             }
-        }
-    </div>
+        </div>
+    }
 </div>
 <ConfirmDialog @ref="submitConfirmationFAQRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedFAQ" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit FAQ?" />
 <ConfirmDialog @ref="deleteConfirmationFAQRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedFAQ" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete FAQ?" />

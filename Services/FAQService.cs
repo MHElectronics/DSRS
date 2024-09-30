@@ -48,8 +48,9 @@ public class FAQService : IFAQService
 
     public async Task<bool> InsertFAQ(FAQ faq)
     {
-        string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,IsPublished,DisplayOrder)
-            VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder)";
+        faq.EntryTime = DateTime.Now;
+        string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,IsPublished,DisplayOrder,EntryTime)
+            VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder,@EntryTime)";
         return await _db.SaveData<FAQ>(sql, faq);
     }
     public async Task<bool> UpdateFAQ(FAQ faq)

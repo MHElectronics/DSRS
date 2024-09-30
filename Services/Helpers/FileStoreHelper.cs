@@ -9,6 +9,7 @@ public interface IFileStoreHelper
     Task<bool> CreateDocumentDirectory(Document document);
 
     Task<string> GetImageContentAsync(Document document);
+    Task<byte[]> GetFileContentAsync(string filePath);
     string GetImageThumb(Document document);
 
     string GetNewFileLocation(string fileName, Document document);
@@ -99,6 +100,42 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             string rootFolderPath = _ftpRootFolder;
             string referencePath = Path.Combine(rootFolderPath, document.FileLocation);
             return referencePath;
+        }
+    }
+    public async Task<byte[]> GetFileContentAsync(string filePath)
+    {
+        if (_isFtpEnabled)
+        {
+            try
+            {
+                // Download file from FTP
+                byte[] fileContent = await ftpHelper.DownloadFile(filePath);
+                return fileContent;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to download file from FTP: {ex.Message}", ex);
+            }
+        }
+        else
+        {
+            try
+            {
+                // Get the root path for local file storage
+                string rootPath = this.GetRootPath();
+                string fullFilePath = Path.Combine(rootPath, filePath);
+
+                if (!File.Exists(fullFilePath))
+                    throw new FileNotFoundException($"File not found at path: {fullFilePath}");
+
+                // Read the file bytes
+                byte[] fileContent = await File.ReadAllBytesAsync(fullFilePath);
+                return fileContent;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to download file from local storage: {ex.Message}", ex);
+            }
         }
     }
     public string GetImageThumb(Document document)
