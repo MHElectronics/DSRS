@@ -174,4 +174,7 @@
   <data name="WIMScaleManagement" xml:space="preserve">
     <value>WIM Scale Management</value>
   </data>
+  <data name="StationAccess" xml:space="preserve">
+    <value>Station Access</value>
+  </data>
 </root>

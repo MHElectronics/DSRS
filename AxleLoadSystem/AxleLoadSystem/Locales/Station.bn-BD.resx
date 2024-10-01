@@ -171,4 +171,7 @@
   <data name="ListofStation" xml:space="preserve">
     <value>স্টেশনের তালিকা</value>
   </data>
+  <data name="StationAccess" xml:space="preserve">
+    <value>স্টেশন অ্যাক্সেস</value>
+  </data>
 </root>
