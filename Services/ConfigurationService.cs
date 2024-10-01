@@ -20,15 +20,15 @@ public class ConfigurationService : IConfigurationService
 
     public async Task<bool> InsertConfiguration(Configuration configuration)
     {
-        string sql = @"INSERT INTO Configuration(NumberOfAxle,SystemStartDate,WheelBaseMaximum,WeightMinimum,WeightMaximum)
-            VALUES (@NumberOfAxle,@SystemStartDate,@WheelBaseMaximum,@WeightMinimum,@WeightMaximum)";
+        string sql = @"INSERT INTO Configuration(NumberOfAxle,SystemStartDate,WheelBaseMaximum)
+            VALUES (@NumberOfAxle,@SystemStartDate,@WheelBaseMaximum)";
         return await _db.SaveData<Configuration>(sql, configuration);
 
     }
 
     public async Task<bool> UpdateConfiguration(Configuration configuration)
     {
-        string sql = @"UPDATE Configuration SET NumberOfAxle=@NumberOfAxle, SystemStartDate=@SystemStartDate, WheelBaseMaximum=@WheelBaseMaximum, WeightMinimum=@WeightMinimum, WeightMaximum=@WeightMaximum
+        string sql = @"UPDATE Configuration SET NumberOfAxle=@NumberOfAxle, SystemStartDate=@SystemStartDate, WheelBaseMaximum=@WheelBaseMaximum
                        WHERE Id=@Id";
         return await _db.SaveData<Configuration>(sql, configuration);
     }

@@ -140,7 +140,7 @@
                                                      DataSource="@dayGroup"
                                                      XName="GrossVehicleWeightRange"
                                                      YName="TotalVehicle"
-                                                     Type="chartSeriesType"
+                                                     Type="ChartSeriesType.StackingColumn"
                                                      EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="true" Position="LabelPosition.Top">
@@ -148,6 +148,23 @@
                                                 </ChartDataLabel>
                                             </ChartMarker>
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                        </ChartSeries>
+                                        <ChartSeries Name="@dayGroup.First().DateUnitName"
+                                                     ColumnWidth="0.5"
+                                                     DataSource="@dayGroup"
+                                                     XName="GrossVehicleWeightRange"
+                                                     YName="TotalVehicle"
+                                                     Type="ChartSeriesType.Line"
+                                                     Width="2"
+                                                     Opacity="0.6"
+                                                     EnableTooltip="true">
+                                            @* <ChartMarker>
+                                                <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                    <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                                </ChartDataLabel>
+                                            </ChartMarker>
+                                            <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder> *@
+                                            <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
                                         </ChartSeries>
                                     }
                                 </ChartSeriesCollection>
