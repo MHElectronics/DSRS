@@ -9,6 +9,7 @@
 @inject NavigationManager navigation
 @inject IAppState appState
 
+<PageTitleComponent Title="@localizer["UserManagement"]"></PageTitleComponent>
 @if (user is null)
 {
     <Loader />
@@ -21,10 +22,7 @@ else
     ="@OnInvalidSubmit" FormName
     ="Users" method="post">
         <DataAnnotationsValidator />
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">@localizer["UserManagement"]</h3>
-            </div>
+        <div class="card card-primary card-outline">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 col-sm-12">

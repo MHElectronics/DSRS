@@ -2,6 +2,7 @@
 @inherits BasePageComponent
 @inject IUserService userService
 @rendermode InteractiveServer
+@inject IStringLocalizer<Locales.User> localizer
 
 @if (string.IsNullOrEmpty(Mode))
 {

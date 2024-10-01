@@ -8,95 +8,99 @@
 @inject IWIMScaleService wimService
 @inject IAppState appState
 
-<PageTitle>@localizer["StationList"]</PageTitle>
-    <h1>@localizer["StationList"]</h1>
+<PageTitleComponent Title="@localizer["StationList"]">
+    <NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New Station">
+        <i class="fa fa-plus"></i> @localizer["Button.AddStation"]
+    </NavLink>
+    <NavLink class="btn btn-primary pull-right" href="/wimscale/new" title="Add New WIM Scale">
+        <i class="fa fa-plus"></i> @localizer["Button.AddWim"]
+    </NavLink>
+</PageTitleComponent>
 
-<NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New Station">
-    <i class="fa fa-plus"></i> @localizer["Button.AddStation"]
-</NavLink>
-<NavLink class="btn btn-primary pull-right" href="/wimscale/new" title="Add New WIM Scale">
-    <i class="fa fa-plus"></i> @localizer["Button.AddWim"]
-</NavLink>
 @if (stations is null)
 {
     <Loader />
 }
 else
 {
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>@localizer["StationId"]</th>
-                <th></th>
-                <th>@localizer["Name"]</th>
-                <th>@localizer["Address"]</th>
-                <th>@localizer["AuthKey"]</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in stations.OrderBy(s => s.StationId))
-            {
-                <tr>
-                    <td>@item.StationId</td>
-                    <td></td>
-                    <td>@item.StationName</td>
-                    <td>@item.Address</td>
-                    <td>@item.AuthKey</td>
-                    <td>
-                        <div class="btn-group float-right">
-                            <a class="btn btn-primary" href="@("/station/details/" + item.StationId)" title="Details Information">
-                                <i class="fa fa-info"></i>
-                            </a>
-                            <a class="btn btn-primary" href="@("/station/edit/" + item.StationId)" title="Edit Information">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            <span class="btn btn-primary">
-                                @if (wims is not null && !wims.Any(w => w.StationId == item.StationId))
-                                {
-                                    <i class="fa fa-trash" @onclick="(() => DeleteStation(item))" title="Delete Station"></i>
-                                }
-                                else
-                                {
-                                    <i class="fa fa-ban" title="Can't delete station with WIMs"></i>
-                                }
-                            </span>
-                        </div>
-                    </td>
-                </tr>
-
-                @if (wims is not null && wims.Any(w => w.StationId == item.StationId))
-                {
-                    foreach (WIMScale wim in wims.Where(w => w.StationId == item.StationId))
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["StationId"]</th>
+                        <th></th>
+                        <th>@localizer["Name"]</th>
+                        <th>@localizer["Address"]</th>
+                        <th>@localizer["AuthKey"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in stations.OrderBy(s => s.StationId))
                     {
                         <tr>
+                            <td>@item.StationId</td>
                             <td></td>
-                            <td>Lane: @wim.LaneNumber</td>
-                            <td>High Speed: @(wim.IsHighSpeed ? "Yes" : "No")</td>
-                            <td>Eq. Code: @wim.EquipmentCode</td>
-                            <td>Direction: @wim.LaneDirection</td>
+                            <td>@item.StationName</td>
+                            <td>@item.Address</td>
+                            <td>@item.AuthKey</td>
                             <td>
                                 <div class="btn-group float-right">
-                                    <a class="btn btn-primary" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
+                                    <a class="btn btn-primary" href="@("/station/details/" + item.StationId)" title="Details Information">
                                         <i class="fa fa-info"></i>
                                     </a>
-                                    <a class="btn btn-primary" href="@("/wimscale/edit/" + wim.Id)" title="Edit Information">
+                                    <a class="btn btn-primary" href="@("/station/edit/" + item.StationId)" title="Edit Information">
                                         <i class="fa fa-edit"></i>
                                     </a>
-                                    <a class="btn btn-primary" @onclick="(() => DeleteWim(wim))" title="Delete WIM Scale">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
+                                    <span class="btn btn-primary">
+                                        @if (wims is not null && !wims.Any(w => w.StationId == item.StationId))
+                                        {
+                                            <i class="fa fa-trash" @onclick="(() => DeleteStation(item))" title="Delete Station"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa fa-ban" title="Can't delete station with WIMs"></i>
+                                        }
+                                    </span>
                                 </div>
                             </td>
                         </tr>
-                    }
-                }
-            }
-        </tbody>
-    </table>
 
-        <ConfirmDialog @ref="deleteConfirmationStationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStation" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station?" />
-        <ConfirmDialog @ref="deleteConfirmationWimRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedWim" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Wim Scale?" />
+                        @if (wims is not null && wims.Any(w => w.StationId == item.StationId))
+                        {
+                            foreach (WIMScale wim in wims.Where(w => w.StationId == item.StationId))
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>Lane: @wim.LaneNumber</td>
+                                    <td>High Speed: @(wim.IsHighSpeed ? "Yes" : "No")</td>
+                                    <td>Eq. Code: @wim.EquipmentCode</td>
+                                    <td>Direction: @wim.LaneDirection</td>
+                                    <td>
+                                        <div class="btn-group float-right">
+                                            <a class="btn btn-primary" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
+                                                <i class="fa fa-info"></i>
+                                            </a>
+                                            <a class="btn btn-primary" href="@("/wimscale/edit/" + wim.Id)" title="Edit Information">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a class="btn btn-primary" @onclick="(() => DeleteWim(wim))" title="Delete WIM Scale">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <ConfirmDialog @ref="deleteConfirmationStationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedStation" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Station?" />
+    <ConfirmDialog @ref="deleteConfirmationWimRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedWim" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Wim Scale?" />
 
 }
 <style>
@@ -153,7 +157,7 @@ else
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Error Station Deletion";
         }
-        
+
         appState.SetNotification(this, notification);
         await GetStationandWimList();
     }
@@ -170,7 +174,7 @@ else
             notification.Type = Notification.NotificationType.Failure;
             notification.Message = "Error Wim Scale Deletion";
         }
-        
+
         appState.SetNotification(this, notification);
         await GetStationandWimList();
     }
