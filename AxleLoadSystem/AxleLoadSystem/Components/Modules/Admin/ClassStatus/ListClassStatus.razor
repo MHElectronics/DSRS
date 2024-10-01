@@ -2,52 +2,59 @@
 @using BOL
 @inject IClassStatusService classStatusService
 @inject IAppState appState
+@inject IStringLocalizer<Locales.Reports> localizer
 
-<PageTitle>List of Class Status</PageTitle>
-<h1>List of Class Status</h1>
-<NavLink class="btn btn-primary pull-right" href="/classstatus/new" title="Add New">
-    <i class="fa fa-plus"></i> Add New
-</NavLink>
+<PageTitleComponent Title="@localizer["ReportConfiguration.ClassStatusList"]">
+    <NavLink class="btn btn-primary pull-right" href="/classstatus/new" title="Add New">
+        <i class="fa fa-plus"></i> Add New
+    </NavLink>
+</PageTitleComponent>
+
 @if (ClassStatusList is null)
 {
     <Loader />
 }
 else
 {
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Class Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var classStatus in ClassStatusList.OrderBy(c => c.Id))
-            {
-                <tr>
-                    <td>@classStatus.Id</td>
-                    <td><b>@classStatus.Name</b></td>
-                    <td>
-                        <div class="btn-group float-right">
-                            <a class="btn btn-primary" href="@("/classstatus/details/" + classStatus.Id)" title="Details Information">
-                                <i class="fas fa-info"></i>
-                            </a>
-                            <a class="btn btn-primary" href="@("/classstatus/edit/" + classStatus.Id)" title="Edit Information">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a class="btn btn-primary" @onclick="(() => DeleteClassStatus(classStatus))" title="Delete Information">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            }
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Class Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var classStatus in ClassStatusList.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@classStatus.Id</td>
+                            <td><b>@classStatus.Name</b></td>
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/classstatus/details/" + classStatus.Id)" title="Details Information">
+                                        <i class="fas fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/classstatus/edit/" + classStatus.Id)" title="Edit Information">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteClassStatus(classStatus))" title="Delete Information">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
 
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>    
 }
 <ConfirmDialog @ref="deleteConfirmationClassStatusRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedClassStatus" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
+
 @code {
     private IEnumerable<ClassStatus> ClassStatusList;
     protected ConfirmDialog deleteConfirmationClassStatusRef { get; set; }

@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ReportConfiguration.ClassStatus" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাস</value>
+  </data>
+  <data name="ReportConfiguration.ClassStatusList" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাসের তালিকা</value>
+  </data>
+  <data name="ReportConfiguration.Title" xml:space="preserve">
+    <value>রিপোর্ট কনফিগারেশন</value>
+  </data>
   <data name="ReportTitle.GrossWeight" xml:space="preserve">
     <value>মোট ওজন রিপোর্ট</value>
   </data>

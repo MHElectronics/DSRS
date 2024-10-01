@@ -2,13 +2,13 @@
 @using BOL;
 @using Services;
 @inject IConfigurationService configurationService
+@inject IStringLocalizer<Locales.Reports> localizer
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
 
 @if (configuration != null)
 {
-    <div class="card">
-        <div class="card-header">
-            <h3>Report Configuration</h3>
-        </div>
+    <div class="card card-primary card-outline">
         <div class="card-body">
             <EditForm Model="@configuration" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
                 <DataAnnotationsValidator />
