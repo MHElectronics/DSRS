@@ -10,11 +10,11 @@
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
+@inject IStringLocalizer<Locales.Reports> localizer
 
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">Overloaded Report</h3>
-    </div>
+<PageTitleComponent Title="@localizer["ReportTitle.Overloaded"]"></PageTitleComponent>
+
+<div class="card card-primary card-outline">
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
     </div>

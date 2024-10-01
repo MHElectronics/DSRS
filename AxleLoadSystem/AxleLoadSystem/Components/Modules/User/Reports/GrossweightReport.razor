@@ -10,11 +10,11 @@
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
+@inject IStringLocalizer<Locales.Reports> localizer
+
+<PageTitleComponent Title="@localizer["ReportTitle.GrossWeight"]"></PageTitleComponent>
 
 <div class="card card-primary card-outline">
-    <div class="card-header">
-        <h3 class="card-title">Gross Weight Report</h3>
-    </div>
     <div class="card-body">
         <ReportSelection OnParametersChanged="HandleParametersChanged" />
     </div>
