@@ -55,13 +55,19 @@
                         Export
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
-                        <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
-                        <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li>
                     </ul>
                 </li>
+                @* <li class="nav-item dropdown">
+                    <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Export 2
+                    </span>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li>
+                    </ul>
+                </li> *@
             </ul>
         </div>
         <div class="card-body">
