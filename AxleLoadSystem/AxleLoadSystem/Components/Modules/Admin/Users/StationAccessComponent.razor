@@ -7,67 +7,75 @@
 @inject IStringLocalizer<Locales.Station> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
-<h3>Station Access</h3>
+<PageTitleComponent Title="@localizer["StationAccess"]"></PageTitleComponent>
 
 <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     @if (userId > 0 && users is not null && stations is not null)
     {
-        <div class="col-md-12">
-            <label for="stations" class="form-label">Access for: @users.FirstOrDefault(u => u.Id == userId).Name</label>
-            <div class="form-control">
-                @foreach (Station station in stations)
-                {
-                    int value = station.StationId;
-                    bool check = selectedStations.Contains(value);
-                    <div class="icheck-primary d-inline">
-                        <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
-                        <label for="checkId@(station.StationId)">@station.StationName</label>
-                    </div>
-                }
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <label for="stations" class="form-label">Access for: @users.FirstOrDefault(u => u.Id == userId).Name</label>
             </div>
-        </div>
-        <div class="col-md-12">
-            <div class="form-group btn btn-group">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <span class="btn btn-primary" @onclick="@(() => userId = 0)">@localizerResource["Button.Cancel"]</span>
+            <div class="card-body">
+                <div class="form-control">
+                    @foreach (Station station in stations)
+                    {
+                        int value = station.StationId;
+                        bool check = selectedStations.Contains(value);
+                        <div class="icheck-primary d-inline">
+                            <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
+                            <label for="checkId@(station.StationId)">@station.StationName</label>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group btn btn-group">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <span class="btn btn-primary" @onclick="@(() => userId = 0)">@localizerResource["Button.Cancel"]</span>
+                    </div>
+                </div>
             </div>
         </div>
     }
 </EditForm>
 
-@if (stations is null)
-{
-    <Loader />
-}
-else if (stations.Count() == 0)
-{
-    <p>No Station Found</p>
-}
-else
-{
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>User Name</th>
-                <th>Station Name(s)</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (User user in users)
-            {
-                string stationNames = String.Join(", ", stations.Where(s => allStationAccessList.Any(sa => sa.StationId == s.StationId && sa.UserId == user.Id)).Select(sn => sn.StationName));
-                <tr>
-                    <td>@user.Name</td>
-                    <td>@stationNames</td>
-                    <th><i class="fa fa-edit" @onclick="@(() => Edit(user.Id))"></i></th>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="card card-primary card-outline">
+    <div class="card-body">
+        @if (stations is null)
+        {
+            <Loader />
+        }
+        else if (stations.Count() == 0)
+        {
+            <p>No Station Found</p>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Station Name(s)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (User user in users)
+                    {
+                        string stationNames = String.Join(", ", stations.Where(s => allStationAccessList.Any(sa => sa.StationId == s.StationId && sa.UserId == user.Id)).Select(sn => sn.StationName));
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@stationNames</td>
+                            <th><i class="fa fa-edit" @onclick="@(() => Edit(user.Id))"></i></th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
 
 <ConfirmDialog @ref="submitConfirmationStationAccessRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedStationAccess" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Station Access?" />
 

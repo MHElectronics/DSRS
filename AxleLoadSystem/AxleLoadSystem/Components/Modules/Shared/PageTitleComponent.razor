@@ -1,0 +1,22 @@
+﻿@if (!string.IsNullOrEmpty(Title))
+{
+    <PageTitle>@Title</PageTitle>
+    <div class="row">
+        <div class="col-6 mt-2">
+            <h2>@Title</h2>
+        </div>
+        @if (ChildContent is not null)
+        {
+            <div class="col-6 mt-2 text-right">
+                @ChildContent
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public LocalizedString Title { get; set; } = null;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null;
+}

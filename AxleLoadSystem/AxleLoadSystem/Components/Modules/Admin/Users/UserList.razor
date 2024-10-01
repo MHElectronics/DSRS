@@ -6,53 +6,58 @@
 @inject IStringLocalizer<Locales.User> localizer
 @rendermode InteractiveServer
 
-<PageTitle>@localizer["UserList"]</PageTitle>
-    <h1>@localizer["UserList"]</h1>
+<PageTitleComponent Title="@localizer["UserManagement"]">
+    <NavLink class="btn btn-primary pull-right" href="/user/new" title="Add New">
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddUser"]
+    </NavLink>
+</PageTitleComponent>
 
-<NavLink class="btn btn-primary pull-right" href="/user/new" title="Add New">
-    <i class="fa fa-plus"></i> @localizerResource["Button.AddUser"]
-</NavLink>
 @if (users is null)
 {
     <Loader />
 }
 else
 {
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>@localizer["Email"]</th>
-                <th>@localizer["Name"]</th>
-                <th>@localizer["Roles"]</th>
-                <th>@localizer["Active"]/@localizer["Inactive"]</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in users.OrderBy(c => c.Id))
-            {
-                <tr>
-                    <td>@user.Email</td>
-                    <td>@user.Name</td>
-                    <td>@user.Role</td>
-                    <td>@(user.IsActive ? @localizer["Active"] : @localizer["Inactive"])</td>
-                    <td>
-                        <div class="btn-group float-right">
-                            <a class="btn btn-primary" href="@("/user/details/" + user.Id)" title="Details Information">
-                                <i class="fa fa-info"></i>
-                            </a>
-                            <a class="btn btn-primary" href="@("/user/edit/" + user.Id)" title="Edit Information">
-                                <i class="fa fa-edit"></i>
-                            </a>
-                            @* <span class="btn btn-primary" @onclick="(() => DeleteUser(user))" title="Delete User">
-                                <i class="fa fa-trash"></i>
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["Email"]</th>
+                        <th>@localizer["Name"]</th>
+                        <th>@localizer["Roles"]</th>
+                        <th>@localizer["Active"]/@localizer["Inactive"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.Name</td>
+                            <td>@user.Role</td>
+                            <td>@(user.IsActive ? @localizer["Active"] : @localizer["Inactive"])</td>
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/user/details/" + user.Id)" title="Details Information">
+                                        <i class="fa fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/user/edit/" + user.Id)" title="Edit Information">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    @* <span class="btn btn-primary" @onclick="(() => DeleteUser(user))" title="Delete User">
+                            <i class="fa fa-trash"></i>
                             </span> *@
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
  <ConfirmDialog @ref="deleteConfirmationRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmed" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete User?" />
 
 }

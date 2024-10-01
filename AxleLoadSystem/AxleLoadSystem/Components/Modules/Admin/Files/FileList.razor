@@ -7,12 +7,9 @@
 @inject IStringLocalizer<Locales.File> localizer
 @rendermode InteractiveServer
 
-<PageTitle>List of Uploaded Files</PageTitle>
+<PageTitleComponent Title="@localizer["ListofUploadedFiles"]"></PageTitleComponent>
 
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">@localizer["ListofUploadedFiles"] </h3>
-    </div>
+<div class="card card-primary card-outline">
     <div class="card-body">
         @if (stations is not null)
         {
