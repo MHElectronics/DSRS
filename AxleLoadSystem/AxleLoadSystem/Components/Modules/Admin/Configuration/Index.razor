@@ -58,36 +58,6 @@
                             }
                         </div>
                     </div>
-                    @* <div class="col-md-6 col-sm-12">
-                        <div class="form-group">
-                            @if (editConfiguration)
-                            {
-                                <label for="WeightMin" class="form-label">Weight Minimum</label>
-                                <input type="number" @bind="configuration.WeightMinimum" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" max="@(configuration.WeightMaximum-1)"/>
-                                <ValidationMessage For="() => configuration.WeightMinimum" />
-                            }
-                            else
-                            {
-                                <label for="WeightMin" class="form-label">Weight Minimum</label>
-                                <label class="form-control">@configuration.WeightMinimum</label>
-                            }
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-12">
-                        <div class="form-group">
-                            @if (editConfiguration)
-                            {
-                                <label for="WeightMax" class="form-label">Weight Maximum</label>
-                                <input type="number" @bind="configuration.WeightMaximum" class="form-control" placeholder="System Start Date" id="WeightMax" min="@(configuration.WeightMinimum+1)" />
-                                <ValidationMessage For="() => configuration.WeightMaximum" />
-                            }
-                            else
-                            {
-                                <label for="WeightMax" class="form-label">Weight Maximum</label>
-                                <label class="form-control">@configuration.WeightMaximum</label>
-                            }
-                        </div>
-                    </div> *@
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
                             <div class="btn-group">
