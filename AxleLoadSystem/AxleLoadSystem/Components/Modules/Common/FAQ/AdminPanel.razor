@@ -6,11 +6,10 @@
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
-<h3>Admin FAQ Panel</h3>
 
-<div class="card">
+<div class="card card-primary">
     <div class="card-header">
-        <h3 class="card-title">FAQ - Frequently Asked Question</h3>
+        <h3 class="card-title">Admin FAQ Panel</h3>
     </div>
     @if (newQuestion is not null)
     {
@@ -53,8 +52,10 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Save</button>
-                            <NavLink class="btn btn-primary" href="/faq">@localizerResource["Button.Back"]</NavLink>
+                            <div class="btn btn-group">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <NavLink class="btn btn-primary" href="/faq">@localizerResource["Button.Cancel"]</NavLink>
+                            </div>
                         </div>
                     </div>
                     @if (!string.IsNullOrEmpty(validationSummary))
