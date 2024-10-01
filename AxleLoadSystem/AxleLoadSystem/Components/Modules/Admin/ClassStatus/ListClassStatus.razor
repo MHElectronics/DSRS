@@ -17,15 +17,17 @@ else
     <table class="table table-hover">
         <thead>
             <tr>
-                <th colspan="2">Class Status</th>
-                <th> </th>
+                <th>Id</th>
+                <th>Class Status</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var classStatus in ClassStatusList.OrderBy(c => c.Id))
             {
                 <tr>
-                    <td colspan="2"><b>@classStatus.Name</b></td>
+                    <td>@classStatus.Id</td>
+                    <td><b>@classStatus.Name</b></td>
                     <td>
                         <div class="btn-group float-right">
                             <a class="btn btn-primary" href="@("/classstatus/details/" + classStatus.Id)" title="Details Information">

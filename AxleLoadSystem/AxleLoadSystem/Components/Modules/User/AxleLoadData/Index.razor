@@ -9,11 +9,11 @@
 @inject IFinePaymentService fineRepaymentService
 @rendermode InteractiveServer
 
-<PageTitle>List of Uploaded Files</PageTitle>
+<PageTitle>Data by Date</PageTitle>
 
 <div class="card card-primary">
     <div class="card-header">
-        <h3 class="card-title">@localizer["ListofUploadedFiles"] </h3>
+        <h3 class="card-title">@localizer["DataByDate"] </h3>
     </div>
     <div class="card-body">
         <div class="row">
@@ -28,7 +28,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                     <div class="form-control">
                         <div class="col-12">
                             <div class="icheck-primary d-inline">
@@ -45,7 +45,7 @@
                 <div class="col-3">
                     <input type="date" id="date" @bind="selectedDate" class="form-control" />
                 </div>
-                <div class="col-3">
+                <div class="col-2">
                     <button @onclick="Search" class="btn btn-primary">Search</button>
                 </div>
                 @if (!string.IsNullOrEmpty(Summary))

@@ -64,6 +64,7 @@
                                 @if (editConfiguration)
                                 {
                                     <button class="btn btn-primary" type="submit">Save</button>
+                                    <span class="btn btn-primary" role="button" @onclick="Cancle">Cancle</span>
                                 }
                             </div>
                         </div>
@@ -95,18 +96,12 @@ else
     protected override async Task OnParametersSetAsync()
     {
         Summary = "";
-        var config = await configurationService.GetConfiguration();
-        if (config == null || !config.Any())
+        configuration = await configurationService.GetConfiguration();
+        if (configuration == null)
         {
             configuration = new Configuration();
             editConfiguration = true;
             trigger = true;
-        }
-        else
-        {
-            configuration = config.FirstOrDefault();
-            editConfiguration = false;
-            trigger = false; 
         }
     }
 
@@ -137,7 +132,12 @@ else
         }
         editConfiguration = false;
     }
-
+    private async Task Cancle()
+    {
+        configuration = await configurationService.GetConfiguration();
+        Summary = "";
+        editConfiguration = false;
+    }
     void ToggleEdit()
     {
         Summary = "";

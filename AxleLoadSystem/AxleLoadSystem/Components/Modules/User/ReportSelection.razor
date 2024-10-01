@@ -311,11 +311,7 @@ else
         selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
 
         ListClassStatus = await classStatusService.GetClassStatusList();
-        var config = await configurationService.GetConfiguration();
-        if (config is not null || config.Any())
-        {
-            configuration = config.FirstOrDefault();
-        }
+        configuration = await configurationService.GetConfiguration();
         reportParameters.DateEnd = DateTime.Today;
         reportParameters.DateStart = DateTime.Now.AddMonths(-1);
     }

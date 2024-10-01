@@ -4,7 +4,7 @@ using Services.Helpers;
 namespace Services;
 public interface IConfigurationService
 {
-    Task<IEnumerable<Configuration>> GetConfiguration();
+    Task<Configuration> GetConfiguration();
     Task<bool> InsertConfiguration(Configuration configuration);
     Task<bool> UpdateConfiguration(Configuration configuration);
 }
@@ -15,8 +15,8 @@ public class ConfigurationService : IConfigurationService
     {
         _db = db;
     }
-    public async Task<IEnumerable<Configuration>> GetConfiguration() =>
-        await _db.LoadData<Configuration, dynamic>("SELECT * FROM Configuration", new { });
+    public async Task<Configuration> GetConfiguration() =>
+        await _db.LoadSingleAsync<Configuration, dynamic>("SELECT * FROM Configuration", new { });
 
     public async Task<bool> InsertConfiguration(Configuration configuration)
     {
