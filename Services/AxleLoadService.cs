@@ -519,11 +519,139 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     #region Number of Vehicle report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyVehicleReport(ReportParameters reportParameters)
     {
-        throw new NotImplementedException();
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+        DECLARE @DateStart DATE = @DateStartParam  
+        DECLARE @DateEnd DATE = @DateEndParam  
+        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
+        DECLARE @Wheelbase INT = @WheelbaseParam           
+        DECLARE @ClassStatus INT = @ClassStatusParam
+        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @TotalIteration INT = 10
+
+        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+
+        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+
+        INSERT INTO @Range(GroupId, Minimum, Maximum)
+        SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
+        FROM master..[spt_values] 
+        WHERE number BETWEEN 1 AND @TotalIteration
+
+        SELECT 
+            DATEPART(YEAR, AL.DateTime) AS DateUnit,
+            DATENAME(YEAR, AL.DateTime) AS DateUnitName,
+            R.GroupId,
+            COUNT(1) AS TotalVehicle,
+            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+        FROM AxleLoad AL
+        INNER JOIN @Stations S ON AL.StationId = S.StationId
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
+        WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+        GROUP BY 
+            DATEPART(YEAR, AL.DateTime),
+            DATENAME(YEAR, AL.DateTime),
+            R.GroupId,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(YEAR, AL.DateTime), R.GroupId
+        ";
+
+        var parameters = new
+        {
+            DateStartParam = reportParameters.DateStart,
+            DateEndParam = reportParameters.DateEnd,
+            NumberOfAxleParam = reportParameters.NumberOfAxle,
+            WheelbaseParam = reportParameters.Wheelbase,
+            ClassStatusParam = reportParameters.ClassStatus
+        };
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyVehicleReport(ReportParameters reportParameters)
     {
-        throw new NotImplementedException();
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+    DECLARE @DateStart DATE = @DateStartParam  
+    DECLARE @DateEnd DATE = @DateEndParam  
+    DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
+    DECLARE @Wheelbase INT = @WheelbaseParam           
+    DECLARE @ClassStatus INT = @ClassStatusParam
+    DECLARE @Multiplier DECIMAL(18,2) = 50
+    DECLARE @TotalIteration INT = 10
+
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+    INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+
+    DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+
+    INSERT INTO @Range(GroupId, Minimum, Maximum)
+    SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
+    FROM master..[spt_values] 
+    WHERE number BETWEEN 1 AND @TotalIteration
+
+    SELECT 
+        DATEPART(MONTH, AL.DateTime) AS DateUnit,
+        DATENAME(MONTH, AL.DateTime) AS DateUnitName,
+        R.GroupId,
+        COUNT(1) AS TotalVehicle,
+        SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+        CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+    FROM AxleLoad AL
+    INNER JOIN @Stations S ON AL.StationId = S.StationId
+    INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
+    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+    GROUP BY 
+        DATEPART(MONTH, AL.DateTime),
+        DATENAME(MONTH, AL.DateTime),
+        R.GroupId,
+        CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+    ORDER BY DATEPART(MONTH, AL.DateTime), R.GroupId
+    ";
+
+        var parameters = new
+        {
+            DateStartParam = reportParameters.DateStart,
+            DateEndParam = reportParameters.DateEnd,
+            NumberOfAxleParam = reportParameters.NumberOfAxle,
+            WheelbaseParam = reportParameters.Wheelbase,
+            ClassStatusParam = reportParameters.ClassStatus
+        };
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyVehicleReport(ReportParameters reportParameters)
     {
@@ -593,10 +721,73 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
-
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyVehicleReport(ReportParameters reportParameters)
     {
-        throw new NotImplementedException();
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+    DECLARE @DateStart DATE = @DateStartParam  
+    DECLARE @DateEnd DATE = @DateEndParam  
+    DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
+    DECLARE @Wheelbase INT = @WheelbaseParam           
+    DECLARE @ClassStatus INT = @ClassStatusParam
+    DECLARE @Multiplier DECIMAL(18,2) = 50
+    DECLARE @TotalIteration INT = 10
+
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+    INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+
+    DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+
+    INSERT INTO @Range(GroupId, Minimum, Maximum)
+    SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
+    FROM master..[spt_values] 
+    WHERE number BETWEEN 1 AND @TotalIteration
+
+    SELECT 
+        DATEPART(HOUR, AL.DateTime) AS DateUnit,
+        CAST(DATEPART(HOUR, AL.DateTime) AS VARCHAR) + ':00' AS DateUnitName,
+        R.GroupId,
+        COUNT(1) AS TotalVehicle,
+        SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+        CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+    FROM AxleLoad AL
+    INNER JOIN @Stations S ON AL.StationId = S.StationId
+    INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
+    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+    GROUP BY 
+        DATEPART(HOUR, AL.DateTime),
+        CAST(DATEPART(HOUR, AL.DateTime) AS VARCHAR),
+        R.GroupId,
+        CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+    ORDER BY DATEPART(HOUR, AL.DateTime), R.GroupId
+    ";
+
+        var parameters = new
+        {
+            DateStartParam = reportParameters.DateStart,
+            DateEndParam = reportParameters.DateEnd,
+            NumberOfAxleParam = reportParameters.NumberOfAxle,
+            WheelbaseParam = reportParameters.Wheelbase,
+            ClassStatusParam = reportParameters.ClassStatus
+        };
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
     }
     #endregion
     #region Over Weight Vehicle report query

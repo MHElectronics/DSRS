@@ -1,24 +1,24 @@
 ﻿@page "/FAQ"
 @inject IFAQService faqService
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon 
+
+<PageTitleComponent Title="@localizerCommon["FAQ.Title"]">
+    <div class="btn-group float-right">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <a href="FAQAdmin" class="btn btn-primary">@localizerCommon["FAQ.Link.AdminPage"]</a>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="User">
+            <Authorized>
+                <a href="MyFAQ" class="btn btn-primary">@localizerCommon["FAQ.Link.MyQuestions"]</a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+</PageTitleComponent>
 
 <div class="card">
-    <div class="card-header">
-        <h3 class="card-title">FAQ - Frequently Asked Question</h3>
-        <div class="btn-group float-right">
-            <AuthorizeView Roles="Admin">
-                <Authorized>
-                    <a href="FAQAdmin" class="btn btn-primary">Manage Questions</a>
-                </Authorized>
-            </AuthorizeView>
-            <AuthorizeView Roles="User">
-                <Authorized>
-                    <a href="MyFAQ" class="btn btn-primary">My Questions</a>
-                </Authorized>
-            </AuthorizeView>
-        </div>
-        
-    </div>
-    <div class="card-body" id="accordion">
+    <div class="card-body card-primary card-outline" id="accordion">
         @if(faqs == null)
         {
             <Loader/>

@@ -5,11 +5,12 @@
 @inject IUserService userService
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">User FAQ Panel</h3>
-    </div>
+<PageTitleComponent Title="@localizerCommon["FAQ.UserFAQ"]">
+</PageTitleComponent>
+<div class="card card-primary card-outline">
+
     @if (newQuestion is not null)
     {
         <div class="card-body">
@@ -35,8 +36,8 @@
             }
         </div>
     }
-    <div class="card-header">
-        <h3 class="card-title">List of Questions</h3>
+    <div class="card-header card-primary card-outline">
+        <h3 class="card-title">@localizerCommon["FAQ.List"]</h3>
     </div>
   
     @if (faqs == null)
@@ -49,7 +50,7 @@
     }
     else
     {
-        <div class="card-footer" id="accordion">
+        <div class="card-body" id="accordion">
             @foreach (FAQ faq in faqs.OrderBy(f => f.AnswerUserId > 0).OrderByDescending(f => f.Id))
             {
                 <div class="card @(!string.IsNullOrEmpty(faq.Answer) ? "card-primary" : "card-danger")  card-outline">

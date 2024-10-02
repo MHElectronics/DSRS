@@ -5,20 +5,19 @@
 @inject IFileStoreHelper fileStoreHelper
 @inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime jsRuntime
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Tutorial Panel</h3>
-        <br>
-        <div class="btn-group float-right">
-            <AuthorizeView Roles="Admin">
-                <Authorized>
-                    <a href="TutorialAdmin" class="btn btn-primary">Manage Tutorial</a>
-                </Authorized>
-            </AuthorizeView>
-        </div>
+<PageTitleComponent Title="@localizerCommon["Tutorial.Title"]">
+    <div class="btn-group float-right">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <a href="TutorialAdmin" class="btn btn-primary">@localizerCommon["Tutorial.Link.Admin"]</a>
+            </Authorized>
+        </AuthorizeView>
     </div>
-    <div class="card-body" id="accordion">
+</PageTitleComponent>
+<div class="card">
+    <div class="card-body card-primary card-outline" id="accordion">
         @if (documents == null)
         {
             <Loader />

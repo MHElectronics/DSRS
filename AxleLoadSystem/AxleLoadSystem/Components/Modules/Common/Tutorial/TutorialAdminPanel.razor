@@ -7,11 +7,11 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IJSRuntime jsRuntime
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">Admin Tutorial Panel</h3>
-    </div>
+<PageTitleComponent Title="@localizerCommon["Tutorial.AdminPanel"]">
+</PageTitleComponent>
+<div class="card card-primary card-outline">
     @if (document is not null)
     {
         <div class="card-body">
@@ -53,8 +53,8 @@
             </EditForm> 
         </div>
     }
-    <div class="card-header">
-        <h3 class="card-title">List of Tutorial Information</h3>
+    <div class="card-header card-primary card-outline">
+        <h3 class="card-title">@localizerCommon["Tutorial.List"]</h3>
     </div>
     <div class="card-body">
         @if (documents == null)
@@ -85,6 +85,9 @@
                             <td>@document.Date</td>
                             <td class="text-right">
                                 <div class="btn-group">
+                                    <span class="badge badge-primary" title="Display Order">
+                                        @document.DisplayOrder 
+                                    </span>
                                     <span class="btn btn-primary" @onclick="@(() => Edit(document))" title="Edit file">
                                         <i class="fa fa-edit"></i>
                                     </span>

@@ -69,7 +69,6 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
                             <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
                             <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
                         </div>
@@ -140,7 +139,7 @@
                                                      DataSource="@dayGroup"
                                                      XName="GrossVehicleWeightRange"
                                                      YName="TotalVehicle"
-                                                     Type="ChartSeriesType.StackingColumn"
+                                                     Type="chartSeriesType"
                                                      EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="true" Position="LabelPosition.Top">
@@ -149,26 +148,29 @@
                                             </ChartMarker>
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
-                                        <ChartSeries Name="@dayGroup.First().DateUnitName"
-                                                     ColumnWidth="0.5"
-                                                     DataSource="@dayGroup"
-                                                     XName="GrossVehicleWeightRange"
-                                                     YName="TotalVehicle"
-                                                     Type="ChartSeriesType.Line"
-                                                     Width="2"
-                                                     Opacity="0.6"
-                                                     EnableTooltip="true">
-                                            @* <ChartMarker>
-                                                <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                                    <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                                </ChartDataLabel>
-                                            </ChartMarker>
-                                            <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder> *@
-                                            <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
-                                        </ChartSeries>
                                     }
-                                </ChartSeriesCollection>
+                                    @{
+                                        var averageData = ChartData
+                                        .GroupBy(x => x.GrossVehicleWeightRange)
+                                        .Select(g => new
+                                        {
+                                            GrossVehicleWeightRange = g.Key,
+                                            AverageVehicle = g.Sum(x => x.TotalVehicle) / g.Select(x => x.DateUnit).Distinct().Count()
+                                        }).ToList();
 
+                                    }
+                                    <ChartSeries Name="Average Vehicles"
+                                                 ColumnWidth="0.5"
+                                                 DataSource="@averageData"
+                                                 XName="GrossVehicleWeightRange"
+                                                 YName="AverageVehicle"
+                                                 Type="ChartSeriesType.Line"
+                                                 Width="2"
+                                                 Opacity="0.6"
+                                                 EnableTooltip="true">
+                                        <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                    </ChartSeries>
+                                </ChartSeriesCollection>
                                 <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                 <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                             </SfChart>
@@ -209,7 +211,7 @@
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
-    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Bar;
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
 
     public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
@@ -219,7 +221,7 @@
     public string YAxisTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
-    private string chartType { get; set; } = "bar";
+    private string chartType { get; set; } = "column";
 
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
@@ -282,10 +284,6 @@
         else if (type.ToLower() == "column")
         {
             chartSeriesType = ChartSeriesType.StackingColumn;
-        }
-        else if (type.ToLower() == "bar")
-        {
-            chartSeriesType = ChartSeriesType.Bar;
         }
         chartType = type;
     }

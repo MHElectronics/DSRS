@@ -8,13 +8,12 @@
 @inject IAxleLoadService loadService
 @inject IFinePaymentService fineRepaymentService
 @rendermode InteractiveServer
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
-<PageTitle>Data by Date</PageTitle>
+<PageTitleComponent Title="@localizerCommon["DataByDate"]">
+</PageTitleComponent>
 
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">@localizer["DataByDate"] </h3>
-    </div>
+<div class="card card-primary card-outline">
     <div class="card-body">
         <div class="row">
             @if (stations is not null)
@@ -30,18 +29,18 @@
                 </div>
                 <div class="col-4">
                     <div class="form-control">
-                        <div class="col-12">
-                            <div class="icheck-primary d-inline">
-                                <input type="radio" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(() => fileType = 1)" />
-                                <label for="checkType1">Axle Load Data</label>
-                            </div>
-                            <div class="icheck-primary d-inline">
-                                <input type="radio" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(() => fileType = 2)" />
-                                <label for="checkType2">Fine Payment Data</label>
+                            <div class="col-12">
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(() => fileType = 1)" />
+                                    <label for="checkType1">Axle Load Data</label>
+                                </div>
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(() => fileType = 2)" />
+                                    <label for="checkType2">Fine Payment Data</label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 <div class="col-3">
                     <input type="date" id="date" @bind="selectedDate" class="form-control" />
                 </div>
@@ -68,8 +67,8 @@
         if (showTable)
         {
             <hr />
-            <div class="card-header">
-                <h3 class="card-title">Daily Data</h3>
+            <div class="card-header card-primary card-outline">
+                <h3 class="card-title">@localizerCommon["DailyData"]</h3>
             </div>
             <div class="card-body">
                 <div class="data-table-container">

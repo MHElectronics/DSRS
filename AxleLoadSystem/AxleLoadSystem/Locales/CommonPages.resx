@@ -117,13 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DailyData" xml:space="preserve">
+    <value>Daily Data</value>
+  </data>
+  <data name="DataByDate" xml:space="preserve">
+    <value>Data By Date</value>
+  </data>
+  <data name="FAQ.AdminFAQ" xml:space="preserve">
+    <value>Admin FAQ Panel</value>
+  </data>
   <data name="FAQ.Link.AdminPage" xml:space="preserve">
-    <value>Admin Page</value>
+    <value>Manage FAQ</value>
   </data>
   <data name="FAQ.Link.MyQuestions" xml:space="preserve">
-    <value>My Questions</value>
+    <value>My FAQ</value>
+  </data>
+  <data name="FAQ.List" xml:space="preserve">
+    <value>List of Questions</value>
   </data>
   <data name="FAQ.Title" xml:space="preserve">
-    <value>FAQ</value>
+    <value>Frequently Asked Questions</value>
+  </data>
+  <data name="FAQ.UserFAQ" xml:space="preserve">
+    <value>User FAQ Panel</value>
+  </data>
+  <data name="Tutorial.AdminPanel" xml:space="preserve">
+    <value>Admin Tutorial Panel</value>
+  </data>
+  <data name="Tutorial.Link.Admin" xml:space="preserve">
+    <value>Manage Tutorial</value>
+  </data>
+  <data name="Tutorial.List" xml:space="preserve">
+    <value>List of Tutorial Information</value>
+  </data>
+  <data name="Tutorial.Title" xml:space="preserve">
+    <value>Tutorial Panel</value>
   </data>
 </root>

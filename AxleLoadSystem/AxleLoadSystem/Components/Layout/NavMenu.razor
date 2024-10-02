@@ -33,14 +33,14 @@
             </p>
         </NavLink>
     </li>
-    @* <li class="nav-item">
+    <li class="nav-item">
         <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-store"></i>
             <p>
                 Tutorial
             </p>
         </NavLink>
-    </li> *@
+    </li>
     <AuthorizeView Roles="Admin">
         <Authorized>
             <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">
@@ -155,14 +155,14 @@
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
-                    @* <li class="nav-item">
+                    <li class="nav-item">
                         <NavLink class="nav-link" href="grossweight" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-chart-bar"></i>
                             <p>
                                 Gross Weight 
                             </p>
                         </NavLink>
-                    </li> *@
+                    </li>
                     <li class="nav-item">
                         <NavLink class="nav-link" href="overloaded" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-chart-line"></i>
