@@ -253,7 +253,7 @@
         }
         else if (type == "csv")
         {
-            MemoryStream stream = ExportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList());
+            MemoryStream stream = await ExportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
