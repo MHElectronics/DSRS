@@ -64,7 +64,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
         else
         {
-            string rootFolderPath = _ftpRootFolder;
+            string rootFolderPath = "Uploaded_Files";
             return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", rootFolderPath);
         }
     }
@@ -76,7 +76,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
         else
         {
-            return Path.Combine(document.Date.ToString("yyyy") + "_" + document.Date.ToString("MM"));
+            return Path.Combine("Tutorial");
         }
     }
 
@@ -235,9 +235,11 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
         else
         {
-            if (File.Exists(path))
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploaded_Files");
+            fullPath = Path.Combine(fullPath, path);
+            if (File.Exists(fullPath))
             {
-                File.Delete(path);
+                File.Delete(fullPath);
             }
         }
     }

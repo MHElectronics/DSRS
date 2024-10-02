@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Components\Layout\Locales\" />
+    <Folder Include="images\" />
   </ItemGroup>
 
 </Project>
