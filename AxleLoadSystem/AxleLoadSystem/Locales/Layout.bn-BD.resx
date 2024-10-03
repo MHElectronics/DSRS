@@ -159,4 +159,37 @@
   <data name="Menu.ClassStatus" xml:space="preserve">
     <value>ক্লাস স্ট্যাটাস</value>
   </data>
+  <data name="Menu.Admin" xml:space="preserve">
+    <value>প্রশাসন</value>
+  </data>
+  <data name="Menu.AxleLoadSystem" xml:space="preserve">
+    <value>এক্সেল লোড সিস্টেম</value>
+  </data>
+  <data name="Menu.DatabyDate" xml:space="preserve">
+    <value>তারিখ অনুসারে ডেটা</value>
+  </data>
+  <data name="Menu.FAQ" xml:space="preserve">
+    <value>প্রশ্নাবলী</value>
+  </data>
+  <data name="Menu.GrossWeight" xml:space="preserve">
+    <value>স্থূল ওজন</value>
+  </data>
+  <data name="Menu.Overloaded" xml:space="preserve">
+    <value>ওভারলোডেড</value>
+  </data>
+  <data name="Menu.Overweight" xml:space="preserve">
+    <value>অতিরিক্ত ওজন</value>
+  </data>
+  <data name="Menu.Pages" xml:space="preserve">
+    <value>পাতা</value>
+  </data>
+  <data name="Menu.ReportConfig" xml:space="preserve">
+    <value>রিপোর্ট কনফিগারেশন</value>
+  </data>
+  <data name="Menu.Reports" xml:space="preserve">
+    <value>রিপোর্ট গুলি</value>
+  </data>
+  <data name="Menu.Tutorial" xml:space="preserve">
+    <value>টিউটোরিয়াল</value>
+  </data>
 </root>

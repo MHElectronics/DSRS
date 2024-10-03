@@ -20,17 +20,17 @@
                 <ValidationSummary />
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
-                        <label for="description" class="form-label">Tutorial Description</label>
+                        <label for="description" class="form-label">@localizerCommon["Tutorial.Description"]</label>
                         <input type="text" @bind="@document.Description" class="form-control" placeholder="Tutorial Description" id="description" min="5" maxlength="300" />
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="inputDisplayOrder">Display Order</label>
+                            <label for="inputDisplayOrder">@localizerCommon["DisplayOrder"]</label>
                             <input type="number" class="form-control" @bind="@document.DisplayOrder" min="0" id="inputDisplayOrder" />
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12">
-                        <label for="inputfile">Upload Tutorial Files</label>
+                        <label for="inputfile">@localizerCommon["Tutorial.Upload"]</label>
                         <InputFile OnChange="@LoadFiles" @key=@(_inputFileId) id="inputfile" class="form-control" disabled="@uploading" multiple />
                         @if (uploading)
                         {
@@ -45,7 +45,7 @@
                     }
                     <div class="col-md-12 col-sm-12">
                         <div class="btn btn-group">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">@localizerResource["Button.Save"]</button>
                             <NavLink class="btn btn-primary" href="/tutorial">@localizerResource["Button.Cancel"]</NavLink>
                         </div>
                     </div>

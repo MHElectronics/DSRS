@@ -18,6 +18,7 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="col-12">
+                    <label>@localizerCommon["FAQ.Question"]</label>
                     <SfRichTextEditor @bind-Value="@newQuestion.Question" @ref="@refQuestion" placeholder="Type your question here..." MaxLength="499">
                         <RichTextEditorToolbarSettings Items="@Tools" />
                     </SfRichTextEditor>
@@ -25,7 +26,7 @@
                 </div>
                 <div class="col-4">
                     <div class="btn btn-group">
-                        <button type="submit" class="btn btn-primary">Submit Question</button>
+                        <button type="submit" class="btn btn-primary">@localizerCommon["FAQ.SubmitQuestion"]</button>
                         <NavLink class="btn btn-primary" href="/faq">@localizerResource["Button.Cancel"]</NavLink>
                     </div>
                 </div>

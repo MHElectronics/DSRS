@@ -117,6 +117,72 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ClassStatus.Id" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাস আইডি</value>
+  </data>
+  <data name="ClassStatus.Name" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাসের নাম</value>
+  </data>
+  <data name="ClassStatus.Title" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাস</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>আইডি</value>
+  </data>
+  <data name="MaximumAxleNumber" xml:space="preserve">
+    <value>সর্বোচ্চ এক্সেল সংখ্যা</value>
+  </data>
+  <data name="MaximumWheelBase" xml:space="preserve">
+    <value>সর্বোচ্চ হুইলবেস</value>
+  </data>
+  <data name="Report.BarChart" xml:space="preserve">
+    <value>বার চার্ট</value>
+  </data>
+  <data name="Report.ClassStatus" xml:space="preserve">
+    <value>ক্লাস স্ট্যাটাস</value>
+  </data>
+  <data name="Report.ColumnChart" xml:space="preserve">
+    <value>কলাম চার্ট</value>
+  </data>
+  <data name="Report.CSV" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="Report.DateRange" xml:space="preserve">
+    <value>তারিখ পরিসীমা</value>
+  </data>
+  <data name="Report.Export" xml:space="preserve">
+    <value>রপ্তানি</value>
+  </data>
+  <data name="Report.FilterByWeight" xml:space="preserve">
+    <value>ওজন দ্বারা ফিল্টার</value>
+  </data>
+  <data name="Report.Graph" xml:space="preserve">
+    <value>গ্রাফ</value>
+  </data>
+  <data name="Report.LineChart" xml:space="preserve">
+    <value>লাইন চার্ট</value>
+  </data>
+  <data name="Report.NumberofAxle" xml:space="preserve">
+    <value>অ্যাক্সেলের সংখ্যা</value>
+  </data>
+  <data name="Report.Overload" xml:space="preserve">
+    <value>শুধুমাত্র ওভারলোড দেখান?</value>
+  </data>
+  <data name="Report.Table" xml:space="preserve">
+    <value>টেবিল</value>
+  </data>
+  <data name="Report.WeightMax" xml:space="preserve">
+    <value>ওজন (কেজি) সর্বোচ্চ</value>
+  </data>
+  <data name="Report.WeightMin" xml:space="preserve">
+    <value>ওজন (কেজি) সর্বনিম্ন</value>
+  </data>
+  <data name="Report.WheelBase" xml:space="preserve">
+    <value>হুইলবেস</value>
+  </data>
+  <data name="Report.WimScale" xml:space="preserve">
+    <value>WIM স্কেল</value>
+  </data>
   <data name="ReportConfiguration.ClassStatus" xml:space="preserve">
     <value>ক্লাস স্ট্যাটাস</value>
   </data>
@@ -134,5 +200,8 @@
   </data>
   <data name="ReportTitle.Overweight" xml:space="preserve">
     <value>অতিরিক্ত ওজন রিপোর্ট</value>
+  </data>
+  <data name="SystemStartDate" xml:space="preserve">
+    <value>সিস্টেম শুরুর তারিখ</value>
   </data>
 </root>

@@ -174,4 +174,13 @@
   <data name="StationAccess" xml:space="preserve">
     <value>স্টেশন অ্যাক্সেস</value>
   </data>
+  <data name="Station" xml:space="preserve">
+    <value>স্টেশন</value>
+  </data>
+  <data name="StationNames" xml:space="preserve">
+    <value>স্টেশনের নাম গুলি</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>ব্যবহারকারীর নাম</value>
+  </data>
 </root>

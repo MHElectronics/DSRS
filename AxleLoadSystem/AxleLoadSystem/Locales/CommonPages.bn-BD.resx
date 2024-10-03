@@ -117,13 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DailyData" xml:space="preserve">
+    <value>দৈনিক তথ্য</value>
+  </data>
+  <data name="DataByDate" xml:space="preserve">
+    <value>তারিখ অনুসারে তথ্য</value>
+  </data>
+  <data name="DisplayOrder" xml:space="preserve">
+    <value>প্রদর্শন আদেশ</value>
+  </data>
+  <data name="FAQ.AdminFAQ" xml:space="preserve">
+    <value>অ্যাডমিন FAQ প্যানেল</value>
+  </data>
+  <data name="FAQ.Answer" xml:space="preserve">
+    <value>উত্তর</value>
+  </data>
   <data name="FAQ.Link.AdminPage" xml:space="preserve">
-    <value>Admin Page</value>
+    <value>FAQ পরিচালনা করুন</value>
   </data>
   <data name="FAQ.Link.MyQuestions" xml:space="preserve">
-    <value>My Questions</value>
+    <value>আমার FAQ</value>
+  </data>
+  <data name="FAQ.List" xml:space="preserve">
+    <value>প্রশ্নের তালিকা</value>
+  </data>
+  <data name="FAQ.Question" xml:space="preserve">
+    <value>প্রশ্ন</value>
+  </data>
+  <data name="FAQ.SubmitQuestion" xml:space="preserve">
+    <value>প্রশ্ন জমা দিন</value>
   </data>
   <data name="FAQ.Title" xml:space="preserve">
     <value>প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী</value>
+  </data>
+  <data name="FAQ.UserFAQ" xml:space="preserve">
+    <value>ব্যবহারকারীর FAQ প্যানেল</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>প্রোফাইল</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>প্রকাশ করবেন?</value>
+  </data>
+  <data name="Tutorial.AdminPanel" xml:space="preserve">
+    <value>অ্যাডমিন টিউটোরিয়াল প্যানেল</value>
+  </data>
+  <data name="Tutorial.Description" xml:space="preserve">
+    <value>টিউটোরিয়াল বর্ণনা</value>
+  </data>
+  <data name="Tutorial.Link.Admin" xml:space="preserve">
+    <value>টিউটোরিয়াল পরিচালনা করুন</value>
+  </data>
+  <data name="Tutorial.List" xml:space="preserve">
+    <value>টিউটোরিয়াল তথ্যের তালিকা</value>
+  </data>
+  <data name="Tutorial.Title" xml:space="preserve">
+    <value>টিউটোরিয়াল প্যানেল</value>
+  </data>
+  <data name="Tutorial.Upload" xml:space="preserve">
+    <value>টিউটোরিয়াল ফাইল আপলোড করুন</value>
   </data>
 </root>

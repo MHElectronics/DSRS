@@ -177,4 +177,13 @@
   <data name="StationAccess" xml:space="preserve">
     <value>Station Access</value>
   </data>
+  <data name="Station" xml:space="preserve">
+    <value>Station</value>
+  </data>
+  <data name="StationNames" xml:space="preserve">
+    <value>Station Name(s)</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
 </root>

@@ -17,13 +17,13 @@
                         <div class="form-group">
                             @if (editConfiguration)
                             {
-                                <label for="numberofAxle" class="form-label">Maximum Axle Number</label>
+                                <label for="numberofAxle" class="form-label">@localizer["MaximumAxleNumber"]</label>
                                 <input type="number" @bind="configuration.NumberOfAxle" required class="form-control" placeholder="Maximum Axle Number" id="numberofAxle" min="1" />
                                 <ValidationMessage For="() => configuration.NumberOfAxle" />
                             }
                             else
                             {
-                                <label for="numberofAxle" class="form-label">Maximum Axle Number</label>
+                                <label for="numberofAxle" class="form-label">@localizer["MaximumAxleNumber"]</label>
                                 <label class="form-control">@configuration.NumberOfAxle</label>
                             }
                         </div>
@@ -32,13 +32,13 @@
                         <div class="form-group">
                             @if (editConfiguration)
                             {
-                                <label for="WheelBaseMax" class="form-label">Maximum WheelBase</label>
+                                <label for="WheelBaseMax" class="form-label">@localizer["MaximumWheelBase"]</label>
                                 <input type="number" @bind="configuration.WheelBaseMaximum" required class="form-control" placeholder="WheelBase Maximum" id="WheelBaseMax" min="1" />
                                 <ValidationMessage For="() => configuration.WheelBaseMaximum" />
                             }
                             else
                             {
-                                <label for="WheelBaseMax" class="form-label">Maximum WheelBase</label>
+                                <label for="WheelBaseMax" class="form-label">@localizer["MaximumWheelBase"]</label>
                                 <label class="form-control">@configuration.WheelBaseMaximum</label>
                             }
                         </div>
@@ -47,13 +47,13 @@
                         <div class="form-group">
                             @if (editConfiguration)
                             {
-                                <label for="startDate" class="form-label">System Start Date</label>
+                                <label for="startDate" class="form-label">@localizer["SystemStartDate"]</label>
                                 <input type="date" @bind="configuration.SystemStartDate" required class="form-control" placeholder="System Start Date" id="startDate" />
                                 <ValidationMessage For="() => configuration.SystemStartDate" />
                             }
                             else
                             {
-                                <label for="startDate" class="form-label">System Start Date</label>
+                                <label for="startDate" class="form-label">@localizer["SystemStartDate"]</label>
                                 <label class="form-control">@configuration.SystemStartDate</label>
                             }
                         </div>

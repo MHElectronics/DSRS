@@ -11,6 +11,7 @@
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
 @inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
 
 <PageTitleComponent Title="@localizer["ReportTitle.Overweight"]"></PageTitleComponent>
 
@@ -25,10 +26,10 @@
             {
                 <div class="row">
                     <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hourly"))" disabled="@(isLoading ? "disabled" : null)">Hourly</button>
-                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">Weekly</button>
-                        <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">Monthly</button>
-                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">Yearly</button>
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
+                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
+                        <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
+                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
                     </div>
                 </div>
             }
@@ -45,29 +46,23 @@
         <div class="card-header">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="pill" href="#tab_graph" role="tab" aria-selected="true">Graph</a>
+                    <a class="nav-link active" data-toggle="pill" href="#tab_graph" role="tab" aria-selected="true">@localizer["Report.Graph"]</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">Table</a>
+                    <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">@localizer["Report.Table"]</a>
                 </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Export
+                        @localizer["Report.Export"]
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">CSV</span></li>
-                        <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">Graph</span></li>
+                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
+                        <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">@localizer["Report.CSV"]</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">@localizer["Report.Graph"]</span></li>
+                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
                     </ul>
                 </li>
-                @* <li class="nav-item dropdown">
-                    <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Export 2
-                    </span>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li>
-                        <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li>
-                    </ul>
-                </li> *@
             </ul>
         </div>
         <div class="card-body">
@@ -75,9 +70,9 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">Bar Chart</button>
-                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">Line Chart</button>
-                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">Column Chart</button>
+                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">@localizer["Report.BarChart"]</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
+                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">

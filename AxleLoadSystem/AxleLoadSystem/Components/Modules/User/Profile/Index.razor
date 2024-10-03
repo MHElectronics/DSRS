@@ -2,8 +2,12 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IWebHostEnvironment environment
 @inject IAppState appState
+@inject IStringLocalizer<Locales.User> localizerUser
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon
 @rendermode InteractiveServer
 
+<PageTitleComponent Title="@localizerCommon["Profile"]">
+</PageTitleComponent>
 @if(currentUser is null)
 {
     return;
@@ -24,25 +28,25 @@
 
                 <ul class="list-group list-group-unbordered mb-3">
                     <li class="list-group-item">
-                        <b>Name</b> <a class="float-right">@currentUser.Name</a>
+                        <b>@localizerUser["Name"]</b> <a class="float-right">@currentUser.Name</a>
                     </li>
                     <li class="list-group-item">
-                        <b>Email</b> <a class="float-right">@currentUser.Email</a>
+                        <b>@localizerUser["Email"]</b> <a class="float-right">@currentUser.Email</a>
                     </li>
                     <li class="list-group-item">
-                        <b>Role(s)</b> <a class="float-right">@currentUser.Role</a>
+                        <b>@localizerUser["Roles"]</b> <a class="float-right">@currentUser.Role</a>
                     </li>
                 </ul>
 
                 <div class="btn-group w-100">
                     <AuthorizeView Roles="Admin">
                         <Authorized>
-                            <a href="FAQAdmin" class="btn btn-primary">Manage FAQ</a>
+                            <a href="FAQAdmin" class="btn btn-primary">@localizerCommon["FAQ.Link.AdminPage"]</a>
                         </Authorized>
                     </AuthorizeView>
                     <AuthorizeView Roles="User">
                         <Authorized>
-                            <a href="MyFAQ" class="btn btn-primary">My FAQ</a>
+                            <a href="MyFAQ" class="btn btn-primary">@localizerCommon["FAQ.Link.MyQuestions"]</a>
                         </Authorized>
                     </AuthorizeView>
                 </div>

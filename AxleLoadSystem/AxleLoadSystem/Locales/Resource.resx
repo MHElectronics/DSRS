@@ -120,6 +120,9 @@
   <data name="Button.Add" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="Button.AddNew" xml:space="preserve">
+    <value>Add New</value>
+  </data>
   <data name="Button.AddUser" xml:space="preserve">
     <value>Add User</value>
   </data>
@@ -132,14 +135,32 @@
   <data name="Button.ChangePassword" xml:space="preserve">
     <value>Change Password</value>
   </data>
+  <data name="Button.ChangeSelection" xml:space="preserve">
+    <value>Change Selection</value>
+  </data>
+  <data name="Button.Daily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
   <data name="Button.Edit" xml:space="preserve">
     <value>Edit</value>
+  </data>
+  <data name="Button.Monthly" xml:space="preserve">
+    <value>Monthly</value>
   </data>
   <data name="Button.Save" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="Button.SaveSelection" xml:space="preserve">
+    <value>Save Selection</value>
+  </data>
   <data name="Button.Update" xml:space="preserve">
     <value>Update</value>
+  </data>
+  <data name="Button.Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Button.Yearly" xml:space="preserve">
+    <value>Yearly</value>
   </data>
   <data name="HomeText" xml:space="preserve">
     <value>Welcome to Axle Load Database System!!!</value>

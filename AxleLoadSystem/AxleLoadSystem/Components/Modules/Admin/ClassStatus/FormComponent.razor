@@ -21,13 +21,13 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Add)
                             {
-                                <label for="id" class="form-label">Class Status Id</label>
+                                <label for="id" class="form-label">@localizer["ClassStatus.Id"]</label>
                                 <input type="number" @bind="classStatus.Id" required class="form-control" placeholder="Class Status Id" id="id" min="1" />
                                 <ValidationMessage For="() => classStatus.Id" />
                             }
                             else
                             {
-                                <label for="id" class="form-label">Class Status Id</label>
+                                <label for="id" class="form-label">@localizer["ClassStatus.Id"]</label>
                                 <label class="form-control">@classStatus.Id</label>
                             }
                         </div>
@@ -36,12 +36,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="name" class="form-label">Name of Class Status</label>
+                                <label for="name" class="form-label">@localizer["ClassStatus.Name"]</label>
                                 <label class="form-control">@classStatus.Name</label>
                             }
                             else
                             {
-                                <label for="name" class="form-label">Name of Class Status</label>
+                                <label for="name" class="form-label">@localizer["ClassStatus.Name"]</label>
                                 <input type="text" @bind="classStatus.Name" required class="form-control" placeholder="Name of classStatus" id="name" />
                                 <ValidationMessage For="() => classStatus.Name" />
                             }
@@ -54,11 +54,11 @@ else
                             @if (Mode == FormMode.Details)
                             {
                                 string editLink = "/classstatus/edit/" + classStatus.Id;
-                                <NavLink class="btn btn-primary" href="@editLink">Edit</NavLink>
+                                <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
                             }
                             else
                             {
-                                <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? "Save" : "Update")</button>
+                                <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                             }
                             <NavLink class="btn btn-primary" href="/classstatus">@localizerResource["Button.Cancel"]</NavLink>
                             @if (!string.IsNullOrEmpty(ValidationSummary))

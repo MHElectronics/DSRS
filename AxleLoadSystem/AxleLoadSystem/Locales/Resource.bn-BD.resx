@@ -120,6 +120,9 @@
   <data name="Button.Add" xml:space="preserve">
     <value>যোগ করুন</value>
   </data>
+  <data name="Button.AddNew" xml:space="preserve">
+    <value>নতুন যোগ করুন</value>
+  </data>
   <data name="Button.AddUser" xml:space="preserve">
     <value>ব্যবহারকারী যোগ করুন</value>
   </data>
@@ -132,14 +135,32 @@
   <data name="Button.ChangePassword" xml:space="preserve">
     <value>পাসওয়ার্ড পরিবর্তন করুন</value>
   </data>
+  <data name="Button.ChangeSelection" xml:space="preserve">
+    <value>নির্বাচন পরিবর্তন করুন</value>
+  </data>
+  <data name="Button.Daily" xml:space="preserve">
+    <value>দৈনিক</value>
+  </data>
   <data name="Button.Edit" xml:space="preserve">
     <value>সম্পাদনা করুন</value>
+  </data>
+  <data name="Button.Monthly" xml:space="preserve">
+    <value>মাসিক</value>
   </data>
   <data name="Button.Save" xml:space="preserve">
     <value>সংরক্ষণ</value>
   </data>
+  <data name="Button.SaveSelection" xml:space="preserve">
+    <value>নির্বাচন সংরক্ষণ করুন</value>
+  </data>
   <data name="Button.Update" xml:space="preserve">
     <value>হালনাগাদ</value>
+  </data>
+  <data name="Button.Weekly" xml:space="preserve">
+    <value>সাপ্তাহিক</value>
+  </data>
+  <data name="Button.Yearly" xml:space="preserve">
+    <value>বার্ষিক</value>
   </data>
   <data name="HomeText" xml:space="preserve">
     <value>হোম পেজে স্বাগতম</value>

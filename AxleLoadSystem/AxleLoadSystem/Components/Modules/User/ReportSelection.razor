@@ -3,6 +3,9 @@
 @inject IConfigurationService configurationService
 @inject IClassStatusService classStatusService
 @inject IAppState appState
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResources
+
 @using BOL.CustomModels
 @using Syncfusion.Blazor.Calendars
 @rendermode InteractiveServer
@@ -71,13 +74,13 @@
             <Loader />
         }
         <div class="col-md-6">
-            <label>Date Range </label>
+            <label>@localizer["Report.DateRange"]</label>
             <SfDateRangePicker TValue="DateTime?" StartDate="@configuration.SystemStartDate" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
                 <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
             </SfDateRangePicker>
         </div>
         <div class="col-md-6">
-            <label>WIM Scale</label>
+            <label>@localizer["Report.WimScale"]</label>
             @if (wims is not null && wims.Count() > 0)
             {
                 <select class="form-control" @bind="@reportParameters.WIMScaleId">
@@ -102,7 +105,7 @@
                     selectedAxle = reportParameters.NumberOfAxle + " Axle";
                 }
             }
-            <label for="NumberOfAxle">Number of Axles <span class="badge bg-primary">[@selectedAxle]</span></label>
+            <label for="NumberOfAxle">@localizer["Report.NumberofAxle"] <span class="badge bg-primary">[@selectedAxle]</span></label>
             @* <select class="form-control" @bind="@reportParameters.NumberOfAxle">
         <option value="0">-No Filter-</option>
         @for (int i = 2; i <= MaxNoOfAxle; i++)
@@ -114,7 +117,7 @@
         </div>
 
         <div class="col-md-3">
-            <label>Class Status</label>
+            <label>@localizer["Report.ClassStatus"]</label>
             <select class="form-control" @bind="@reportParameters.ClassStatus">
                 <option value="0">-No Filter-</option>
                 @foreach (ClassStatus status in ListClassStatus)
@@ -124,7 +127,7 @@
             </select>
         </div>
         <div class="col-md-3">
-            <label for="wheelBase">Wheel Base</label>
+            <label for="wheelBase">@localizer["Report.WheelBase"]</label>
             <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="@configuration.WheelBaseMaximum" />
         </div>
         <div class="col-md-3">
@@ -134,12 +137,12 @@
                     <input type="checkbox" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
                     <label for="chkIsOverloaded"></label>
                 </div>
-                <label class="form-check-label" for="chkIsOverloaded">Show only overloads?</label>
+                <label class="form-check-label" for="chkIsOverloaded">@localizer["Report.Overload"]</label>
             </div>
         </div>
 
         <div class="col-md-3">
-            <label>Filter by Weight</label>
+            <label>@localizer["Report.FilterByWeight"]</label>
             <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
                 <option value="">-No Filter-</option>
                 <option value="GrossVehicleWeight">Gross Vehicle Weight</option>
@@ -157,13 +160,13 @@
         {
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="WeightMin">Weight (Kg) Minimum</label>
+                    <label for="WeightMin">@localizer["Report.WeightMin"]</label>
                     <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" max="@(reportParameters.WeightMax-1)" />
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="WeightMax">Weight (Kg) Maximum</label>
+                    <label for="WeightMax">@localizer["Report.WeightMax"]</label>
                     <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="@(reportParameters.WeightMin+1)" />
                 </div>
             </div>
@@ -175,9 +178,9 @@
                 <div class="btn-group">
                     @if (selectedStations is not null && selectedStations.Any())
                     {
-                        <button class="btn btn-primary" @onclick="SelectionComplete">Save Selection</button>
+                        <button class="btn btn-primary" @onclick="SelectionComplete">@localizerResources["Button.SaveSelection"]</button>
                     }
-                    <button class="btn btn-primary" @onclick="SelectionCancel">Cancel</button>
+                    <button class="btn btn-primary" @onclick="SelectionCancel">@localizerResources["Button.Cancel"]</button>
                 </div>
             </div>
         </div>
@@ -270,7 +273,7 @@ else
             <div class="col align-self-end">
                 <div class="form-group float-right align-bottom">
                     <label class="form-label">&nbsp;</label>
-                    <button class="btn btn-primary float-right" @onclick="EnableChange">Change Selection</button>
+                    <button class="btn btn-primary float-right" @onclick="EnableChange">@localizerResources["Button.ChangeSelection"]</button>
                 </div>
             </div>
         }

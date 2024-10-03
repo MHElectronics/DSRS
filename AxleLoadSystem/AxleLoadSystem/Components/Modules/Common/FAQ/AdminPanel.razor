@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Question</label>
+                            <label>@localizerCommon["FAQ.Question"]</label>
                             <SfRichTextEditor @bind-Value="@newQuestion.Question" @ref="@refQuestion" placeholder="Type your question here..." MaxLength="499">
                                 <RichTextEditorToolbarSettings Items="@Tools" />
                             </SfRichTextEditor>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label>Answer</label>
+                            <label>@localizerCommon["FAQ.Answer"]</label>
                             <SfRichTextEditor @bind-Value="@newQuestion.Answer" @ref="@refAnswer" placeholder="Type your answer here...">
                                 <RichTextEditorToolbarSettings Items="@Tools" />
                             </SfRichTextEditor>
@@ -37,7 +37,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="inputDisplayOrder">Display Order</label>
+                            <label for="inputDisplayOrder">@localizerCommon["DisplayOrder"]</label>
                             <input type="number" class="form-control" min="0" @bind="@newQuestion.DisplayOrder" id="inputDisplayOrder" />
                         </div>
                     </div>
@@ -45,14 +45,14 @@
                         <div class="form-group">
                             <div class="icheck-primary d-inline">
                                 <input type="checkbox" @bind="@newQuestion.IsPublished" id="chkIsPublished" />
-                                <label for="chkIsPublished">Publish?</label>
+                                <label for="chkIsPublished">@localizerCommon["Publish"]</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <div class="btn btn-group">
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="submit" class="btn btn-primary">@localizerResource["Button.Save"]</button>
                                 <NavLink class="btn btn-primary" href="/faq">@localizerResource["Button.Cancel"]</NavLink>
                             </div>
                         </div>

@@ -159,4 +159,37 @@
   <data name="Menu.ClassStatus" xml:space="preserve">
     <value>Class Status</value>
   </data>
+  <data name="Menu.Admin" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="Menu.AxleLoadSystem" xml:space="preserve">
+    <value>Axle Load System</value>
+  </data>
+  <data name="Menu.DatabyDate" xml:space="preserve">
+    <value>Data by Date</value>
+  </data>
+  <data name="Menu.FAQ" xml:space="preserve">
+    <value>FAQ</value>
+  </data>
+  <data name="Menu.GrossWeight" xml:space="preserve">
+    <value>Gross Weight</value>
+  </data>
+  <data name="Menu.Overloaded" xml:space="preserve">
+    <value>Overloaded</value>
+  </data>
+  <data name="Menu.Overweight" xml:space="preserve">
+    <value>Overweight</value>
+  </data>
+  <data name="Menu.Pages" xml:space="preserve">
+    <value>Pages</value>
+  </data>
+  <data name="Menu.ReportConfig" xml:space="preserve">
+    <value>Report Configuration</value>
+  </data>
+  <data name="Menu.Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Menu.Tutorial" xml:space="preserve">
+    <value>Tutorial</value>
+  </data>
 </root>

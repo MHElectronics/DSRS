@@ -28,8 +28,7 @@
         <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-question-circle"></i>
             <p>
-                FAQ
-                @* @localizer["Menu.FAQ"] *@
+                @localizer["Menu.FAQ"]
             </p>
         </NavLink>
     </li>
@@ -37,7 +36,7 @@
         <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.All">
             <i class="nav-icon fas fa-store"></i>
             <p>
-                Tutorial
+                @localizer["Menu.Tutorial"]
             </p>
         </NavLink>
     </li>
@@ -47,7 +46,7 @@
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("admin"))'>
                     <i class="nav-icon fas fa-user-cog"></i>
                     <p>
-                        Administration
+                        @localizer["Menu.Admin"]
                         <i class="fas fa-angle-left right"></i>
                     </p>
                 </a>
@@ -89,7 +88,7 @@
                         <NavLink class="nav-link" href="configuration" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-cog"></i>
                             <p>
-                               Report Configuration
+                                @localizer["Menu.ReportConfig"]
                             </p>
                         </NavLink>
                     </li>
@@ -112,7 +111,7 @@
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("pages"))'>
                     <i class="nav-icon fas fa-book"></i>
                     <p>
-                        Pages
+                        @localizer["Menu.Pages"]
                         <i class="fas fa-angle-left right"></i>
                     </p>
                 </a>
@@ -130,7 +129,7 @@
                         <NavLink class="nav-link" href="databydate" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-file"></i>
                             <p>
-                                Data by Date
+                                @localizer["Menu.DatabyDate"]
                             </p>
                         </NavLink>
                     </li>
@@ -150,7 +149,7 @@
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("reports"))'>
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                        Reports
+                        @localizer["Menu.Reports"]
                         <i class="fas fa-angle-left right"></i>
                     </p>
                 </a>
@@ -159,7 +158,7 @@
                         <NavLink class="nav-link" href="grossweight" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-chart-bar"></i>
                             <p>
-                                Gross Weight 
+                                @localizer["Menu.GrossWeight"]
                             </p>
                         </NavLink>
                     </li>
@@ -167,7 +166,7 @@
                         <NavLink class="nav-link" href="overloaded" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-chart-line"></i>
                             <p>
-                                Overloaded 
+                                @localizer["Menu.Overloaded"]
                             </p>
                         </NavLink>
                     </li>
@@ -175,7 +174,7 @@
                         <NavLink class="nav-link" href="overweight" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-chart-pie"></i>
                             <p>
-                                Overweight 
+                                @localizer["Menu.Overweight"]
                             </p>
                         </NavLink>
                     </li>

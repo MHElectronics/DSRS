@@ -3,10 +3,11 @@
 @inject IClassStatusService classStatusService
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
 
 <PageTitleComponent Title="@localizer["ReportConfiguration.ClassStatusList"]">
     <NavLink class="btn btn-primary pull-right" href="/classstatus/new" title="Add New">
-        <i class="fa fa-plus"></i> Add New
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
     </NavLink>
 </PageTitleComponent>
 
@@ -21,8 +22,8 @@ else
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Id</th>
-                        <th>Class Status</th>
+                        <th>@localizer["Id"]</th>
+                        <th>@localizer["ClassStatus.Title"]</th>
                         <th></th>
                     </tr>
                 </thead>
