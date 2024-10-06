@@ -22,7 +22,14 @@
     </NavLink>
     </li> *@
     <AuthorizeView>
-        <NotAuthorized>Login to view menu</NotAuthorized>
+        <NotAuthorized>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="login" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-door-closed"></i>
+                    <p>Login</p>
+                </NavLink>
+            </li>
+        </NotAuthorized>
         <Authorized>
             <li class="nav-item">
                 <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">

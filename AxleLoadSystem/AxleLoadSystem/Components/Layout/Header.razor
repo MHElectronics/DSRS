@@ -37,13 +37,13 @@
         </li>
         @if (currentUser is not null)
         {
-            <li class="nav-item" title="Logout" @onclick="Logout" style="cursor:pointer;">
+            <li class="nav-item" title="Logout" @onclick="Logout" role="button">
                 <i class="fas fa-door-open fa-2x mt-4"></i>
             </li>
         }
         else
         {
-            <li class="nav-item" title="Login" @onclick="Login">
+            <li class="nav-item" title="Login" @onclick="Login" role="button">
                 <i class="fas fa-door-closed fa-2x mt-4"></i>
             </li>
         }
