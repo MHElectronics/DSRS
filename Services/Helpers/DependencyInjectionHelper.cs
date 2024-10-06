@@ -10,7 +10,8 @@ public static class DependencyInjection
         services.AddScoped<ICsvHelper, CsvHelper>();
         services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         services.AddScoped<IFileStoreHelper, FileStoreHelper>();
-        
+        services.AddScoped<IExportHelper, ExportHelper>();
+
         //Services
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IStationService, StationService>();

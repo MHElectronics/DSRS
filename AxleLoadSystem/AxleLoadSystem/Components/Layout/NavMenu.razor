@@ -23,23 +23,26 @@
     </li> *@
     <AuthorizeView>
         <NotAuthorized>Login to view menu</NotAuthorized>
+        <Authorized>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-question-circle"></i>
+                    <p>
+                        @localizer["Menu.FAQ"]
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.All">
+                    <i class="nav-icon fas fa-store"></i>
+                    <p>
+                        @localizer["Menu.Tutorial"]
+                    </p>
+                </NavLink>
+            </li>
+        </Authorized>
     </AuthorizeView>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-question-circle"></i>
-            <p>
-                @localizer["Menu.FAQ"]
-            </p>
-        </NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.All">
-            <i class="nav-icon fas fa-store"></i>
-            <p>
-                @localizer["Menu.Tutorial"]
-            </p>
-        </NavLink>
-    </li>
+    
     <AuthorizeView Roles="Admin">
         <Authorized>
             <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">
