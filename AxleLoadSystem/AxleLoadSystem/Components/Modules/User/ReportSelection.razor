@@ -75,7 +75,7 @@
         }
         <div class="col-md-6">
             <label>@localizer["Report.DateRange"]</label>
-            <SfDateRangePicker TValue="DateTime?" StartDate="@configuration.SystemStartDate" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
+            <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd" Format="dd MMM yy">
                 <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
             </SfDateRangePicker>
         </div>
@@ -316,7 +316,7 @@ else
         ListClassStatus = await classStatusService.GetClassStatusList();
         configuration = await configurationService.GetConfiguration();
         reportParameters.DateEnd = DateTime.Today;
-        reportParameters.DateStart = DateTime.Now.AddMonths(-1);
+        reportParameters.DateStart = configuration.SystemStartDate;
     }
     private async Task AllStationClicked()
     {
