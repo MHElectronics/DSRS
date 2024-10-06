@@ -12,6 +12,7 @@
 @inject IJSRuntime jsRuntime
 @inject IStringLocalizer<Locales.Reports> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IExportHelper exportHelper
 
 <PageTitleComponent Title="@localizer["ReportTitle.Overloaded"]"></PageTitleComponent>
 
@@ -194,7 +195,7 @@
 
         if (type == "excel")
         {
-            byte[] fileByte = ExportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
 
             MemoryStream ms = new MemoryStream(fileByte);
 
@@ -203,7 +204,7 @@
         }
         else if (type == "csv")
         {
-            MemoryStream stream = await ExportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
             
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
@@ -219,7 +220,7 @@
             // await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
 
             var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_2");
-            MemoryStream stream = ExportHelper.CreatePdfFromHtml(html);
+            MemoryStream stream = exportHelper.CreatePdfFromHtml(html);
             byte[] bytes = stream.ToArray();
             await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
         }

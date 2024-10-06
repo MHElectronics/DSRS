@@ -9,15 +9,29 @@ using Syncfusion.Drawing;
 using Syncfusion.HtmlConverter;
 using BOL.CustomModels;
 using BOL;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.Reflection.Emit;
-using System;
 
 namespace Services.Helpers;
-public static class ExportHelper
+
+public interface IExportHelper
 {
-    private static IClassStatusService classStatusService;
-    public static byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
+    MemoryStream CreatePdf<T>(List<T> data);
+    MemoryStream CreatePdfFromHtml(string html);
+    byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data);
+    Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter);
+    Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter);
+}
+
+public class ExportHelper : IExportHelper
+{
+    private IClassStatusService classStatusService;
+    private IStationService stationService;
+    public ExportHelper(IClassStatusService classStatusService, IStationService stationService)
+    {
+        this.classStatusService = classStatusService;
+        this.stationService = stationService;
+    }
+
+    public byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data)
     {
         MemoryStream memoryStream = new MemoryStream();
 
@@ -88,7 +102,7 @@ public static class ExportHelper
         return memoryStream.ToArray();
     }
 
-    private static CellValues GetCellValuesFromType(Type type)
+    private CellValues GetCellValuesFromType(Type type)
     {
         if (type == typeof(int) || type == typeof(decimal) || type == typeof(double))
         {
@@ -106,11 +120,25 @@ public static class ExportHelper
         return CellValues.String;
     }
 
-    public static async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter)
+    public async Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter)
     {
-        StringBuilder sbReportParameters = await GetReportParametersString(reportParameter);
-        
-        StringBuilder sb = new StringBuilder();
+        string csvString = await GenerateCSVString(fields, data, reportParameter);
+
+        MemoryStream stream = new MemoryStream();
+        StreamWriter writer = new StreamWriter(stream);
+        writer.Write(csvString);
+        writer.Flush();
+        stream.Position = 0;
+
+        return stream;
+    }
+    public async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter)
+    {
+        //StringBuilder sbReportParameters = await GetReportParametersString(reportParameter);
+
+        //StringBuilder sb = new StringBuilder();
+
+        StringBuilder sb = await GetReportParametersString(reportParameter);
 
         string header = "";
         foreach ((string Header, string FieldName, Type FieldType) item in fields)
@@ -140,42 +168,46 @@ public static class ExportHelper
 
         return sb.ToString();
     }
-    public static async Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter)
+    private async Task<StringBuilder> GetReportParametersString(ReportParameters reportParamete)
     {
-        string csvString = await GenerateCSVString(fields, data, reportParameter);
+        IEnumerable<Station> stations = await stationService.Get();
 
-        MemoryStream stream = new MemoryStream();
-        StreamWriter writer = new StreamWriter(stream);
-        writer.Write(csvString);
-        writer.Flush();
-        stream.Position = 0;
+        string stationRow = "Stations:,";
+        IEnumerable<string> stationNames = stations.Where(s => reportParamete.Stations.Contains(s.StationId)).Select(s => s.StationName);
+        stationRow += string.Join(",", stationNames);
 
-        return stream;
-    }
-    private static async Task<StringBuilder> GetReportParametersString(ReportParameters reportParamete)
-    {
-        StringBuilder sb = new();
-        sb.AppendLine("Stations:," + string.Join(",", reportParamete.Stations));
+        string headerRow = string.Empty;
+        string dataRow = string.Empty;
 
-        string date = "Date Range," + reportParamete.DateStart.ToString("dd MMM yy") + "," + reportParamete.DateEnd.ToString("dd MMM yy");
-        sb.AppendLine(date);
+        headerRow += "Date Range,";
+        dataRow += reportParamete.DateStart.ToString("dd MMM yy") + " to " + reportParamete.DateEnd.ToString("dd MMM yy") + ",";
 
         if (reportParamete.NumberOfAxle > 0)
         {
-            sb.AppendLine("Axle:," + reportParamete.NumberOfAxle);
+            headerRow += "No of Axle,";
+            dataRow += reportParamete.NumberOfAxle + ",";
         }
         if (reportParamete.ClassStatus > 0)
         {
             ClassStatus classStatus = await classStatusService.GetClassStatus(reportParamete.ClassStatus);
-            sb.AppendLine("Class Status:," + classStatus.Name);
+            headerRow += "Class Status,";
+            dataRow += classStatus.Name + ",";
         }
+
+        headerRow += "Overloaded only,";
         if (reportParamete.IsOverloaded)
         {
-            sb.AppendLine("Overloaded only");
+            dataRow += "Yes,";
         }
+        else
+        {
+            dataRow += "No,";
+        }
+
         if (reportParamete.Wheelbase > 0)
         {
-            sb.AppendLine("Wheelbase:," + reportParamete.Wheelbase);
+            headerRow += "Wheelbase,";
+            dataRow += reportParamete.Wheelbase + ",";
         }
         if (!string.IsNullOrEmpty(reportParamete.WeightFilterColumn))
         {
@@ -192,14 +224,20 @@ public static class ExportHelper
             message = System.Text.RegularExpressions.Regex.Replace(reportParamete.WeightFilterColumn, "(\\B[A-Z0-9])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim()
             + " (" + message + ")";
 
-            sb.AppendLine("Weight:," + message);
+            headerRow += "Weight";
+            dataRow += message;
         }
 
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine(stationRow);
+        sb.AppendLine(headerRow);
+        sb.AppendLine(dataRow);
+        sb.AppendLine("");
         return sb;
     }
 
     //Export weather data to PDF document.
-    public static MemoryStream CreatePdf<T>(List<T> data)
+    public MemoryStream CreatePdf<T>(List<T> data)
     {
         if (data == null)
         {
@@ -250,7 +288,7 @@ public static class ExportHelper
         }
     }
 
-    public static MemoryStream CreatePdfFromHtml(string html)
+    public MemoryStream CreatePdfFromHtml(string html)
     {
         //Initialize HTML to PDF converter.
         HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
@@ -265,7 +303,7 @@ public static class ExportHelper
         document.Save(stream);
         return stream;
     }
-    private static string WrapHtmlInPage(string html)
+    private string WrapHtmlInPage(string html)
     {
         string start = @"<!DOCTYPE html>
 <html lang=""en"">
