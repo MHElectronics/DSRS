@@ -275,19 +275,19 @@
         ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
         XAxisTitle = "Number of Vehicles (Units)";
         Chartview = true;
-        if (selectedType == "Month")
+        if (selectedType == "Monthly")
         {
             report = await loadService.GetMonthlyOverloadedReport(reportParameters);
         }
-        else if (selectedType == "Day")
+        else if (selectedType == "Weekly")
         {
             report = await loadService.GetWeeklyOverloadedReport(reportParameters);
         }
-        else if (selectedType == "Hour")
+        else if (selectedType == "Hourly")
         {
             report = await loadService.GetHourlyOverloadedReport(reportParameters);
         }
-        else if (selectedType == "Year")
+        else if (selectedType == "Yearly")
         {
             report = await loadService.GetYearlyOverloadedReport(reportParameters);
         }
