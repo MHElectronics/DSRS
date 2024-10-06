@@ -10,7 +10,7 @@ public static class DependencyInjection
         services.AddScoped<ICsvHelper, CsvHelper>();
         services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         services.AddScoped<IFileStoreHelper, FileStoreHelper>();
-        
+        services.AddScoped<ISQLSearchService, SQLSearchService>();
         //Services
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IStationService, StationService>();
@@ -24,6 +24,8 @@ public static class DependencyInjection
         services.AddScoped<IClassStatusService, ClassStatusService>();
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IConfigurationService, ConfigurationService>();
+
+
 
         return services;
     }

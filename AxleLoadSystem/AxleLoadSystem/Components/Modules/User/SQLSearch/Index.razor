@@ -1,0 +1,110 @@
+﻿@page "/sqldirectsearch"
+@using System.Data
+@inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject ISQLSearchService sqlSearchService
+@inject IStringLocalizer<Locales.Resource> localizerResource
+
+<h3>SQL Direct Search</h3>
+
+<div class="card card-primary card-outline">
+    @if (sqlSearch is not null)
+    {
+        <div class="card-body">
+            <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                        <label for="sql" class="form-label">SQL Query</label>
+                        <input type="text" @bind="@sqlSearch.Query" class="form-control" placeholder="SQL Query" id="sql" min="5" maxlength="300" />
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Summary))
+                    {
+                        <label class="text-danger">@Summary</label>
+                    }
+                    <div class="col-md-12 col-sm-12">
+                        <div class="btn btn-group">
+                            <button type="submit" class="btn btn-primary">@localizerResource["Button.Save"]</button>
+                            <NavLink class="btn btn-primary" href="/tutorial">@localizerResource["Button.Cancel"]</NavLink>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+    }
+    @if (results != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    @foreach (DataColumn column in results.Columns)
+                    {
+                        <th>@column.ColumnName</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow row in results.Rows)
+                {
+                    <tr>
+                        @foreach (var item in row.ItemArray)
+                        {
+                            <td>@item</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No results to show.</p>
+    }
+</div>
+
+@code {
+    private SQLSearch sqlSearch { get; set; } = new();
+    private EditContext editContext = default!;
+    private User currentUser{ get; set; }
+    private DataTable results;
+
+    private string Summary { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(sqlSearch);
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+    }
+    private async Task OnValidSubmit(EditContext editContext)
+    {
+        sqlSearch.Date = DateTime.Now;
+        sqlSearch.UserId = currentUser.Id;
+        if (await QueryValidation(sqlSearch.Query))
+        {
+             results = await sqlSearchService.GetSQLSearch(sqlSearch);
+        }
+        else
+        {
+            Summary = "Query format is wrong";    
+        }
+    }
+    private void OnInvalidSubmit()
+    {
+        appState.SetNotification(this, "Please enter valid values", Notification.NotificationType.Failure);
+    }
+    private async Task<bool> QueryValidation(string query)
+    {
+        string upperQuery = query.ToUpper();
+        if (upperQuery.Contains("SELECT") && upperQuery.Contains("FROM"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }  
+    }
+}
