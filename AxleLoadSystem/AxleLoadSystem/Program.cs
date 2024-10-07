@@ -25,6 +25,10 @@ builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomSchemeName", options => { });
 builder.Services.AddScoped<IAppState, AppState>();
 builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
+
+//Singleton for Notification
+builder.Services.AddSingleton<ILiveNotificationState, LiveNotificationState>();
+
 //Add service dependencies
 builder.Services.AddServiceLayer();
 

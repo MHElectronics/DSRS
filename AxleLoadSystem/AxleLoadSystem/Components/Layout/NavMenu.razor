@@ -1,4 +1,8 @@
-﻿@inject IStringLocalizer<Locales.Layout> localizer
+﻿@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Layout> localizer
+@inject ILiveNotificationState notificationState
+@inject IFAQService faqService
+@implements IDisposable
 
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <!-- Add icons to the links using the .nav-icon class
@@ -36,6 +40,10 @@
                     <i class="nav-icon fas fa-question-circle"></i>
                     <p>
                         @localizer["Menu.FAQ"]
+                        @if(faqCount > 0)
+                        {
+                            <span class="right badge badge-danger">@faqCount</span>
+                        }
                     </p>
                 </NavLink>
             </li>
@@ -241,7 +249,29 @@
 </ul>
 
 @code {
+    private User currentUser { get; set; } = null;
     private List<string> selectedGroups { get; set; } = new();
+    private int faqCount { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            currentUser = await customStateProvider.GetAuthorizedUser();
+
+            if (currentUser is not null && currentUser.HasRole(nameof(UserRole.Admin)))
+            {
+                notificationState.OnChangeFAQ += FAQNotified;
+                
+                //Set Unanswered FAQ count
+                faqCount = await faqService.GetUnansweredFAQCount();
+                await notificationState.SetFAQCount(faqCount);
+
+                //await this.InvokeAsync(StateHasChanged);
+            }
+        }
+    }
 
     private void MenuHeaderClicked(string clickedGroup)
     {
@@ -258,5 +288,18 @@
         {
             selectedGroups.Add(clickedGroup);
         }
+    }
+    private void FAQNotified(int count)
+    {
+        faqCount = count;
+        this.InvokeAsync(StateHasChanged);
+    }
+    void IDisposable.Dispose()
+    {
+        if (currentUser is not null && currentUser.HasRole(nameof(UserRole.Admin)))
+        {
+            notificationState.OnChangeFAQ += FAQNotified;
+        }
+        notificationState.OnChangeFAQ -= FAQNotified;
     }
 }

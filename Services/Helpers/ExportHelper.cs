@@ -17,8 +17,8 @@ public interface IExportHelper
     MemoryStream CreatePdf<T>(List<T> data);
     MemoryStream CreatePdfFromHtml(string html);
     byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data);
-    Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter);
-    Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter);
+    Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null);
+    Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null);
 }
 
 public class ExportHelper : IExportHelper
@@ -120,7 +120,7 @@ public class ExportHelper : IExportHelper
         return CellValues.String;
     }
 
-    public async Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter)
+    public async Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null)
     {
         string csvString = await GenerateCSVString(fields, data, reportParameter);
 
@@ -132,13 +132,14 @@ public class ExportHelper : IExportHelper
 
         return stream;
     }
-    public async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters reportParameter)
+    public async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null)
     {
-        //StringBuilder sbReportParameters = await GetReportParametersString(reportParameter);
-
-        //StringBuilder sb = new StringBuilder();
-
-        StringBuilder sb = await GetReportParametersString(reportParameter);
+        StringBuilder sb = new StringBuilder();
+        if(reportParameter is not null)
+        {
+            sb = await GetReportParametersString(reportParameter);
+        }
+        
 
         string header = "";
         foreach ((string Header, string FieldName, Type FieldType) item in fields)

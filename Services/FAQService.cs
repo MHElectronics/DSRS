@@ -7,6 +7,8 @@ public interface IFAQService
 {
     Task<IEnumerable<FAQ>> GetFAQs(bool onlyPublished = false);
     Task<IEnumerable<FAQ>> GetByUser(User user);
+    Task<int> GetUnansweredFAQCount();
+
     Task<bool> InsertFAQ(FAQ faq);
     Task<bool> UpdateFAQ(FAQ faq);
     Task<bool> DeleteFAQ(FAQ faq);
@@ -44,6 +46,12 @@ public class FAQService : IFAQService
         };
 
         return await _db.LoadData<FAQ, dynamic>(sql, param);
+    }
+
+    public async Task<int> GetUnansweredFAQCount()
+    {
+        string sql = "SELECT COUNT(1) FROM FAQ WHERE AnswerUserId=0";
+        return await _db.LoadSingleAsync<int, dynamic>(sql, null);
     }
 
     public async Task<bool> InsertFAQ(FAQ faq)

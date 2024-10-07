@@ -4,6 +4,7 @@
 @inject IFAQService faqService
 @inject IUserService userService
 @inject IAppState appState
+@inject ILiveNotificationState liveNotificationState
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -203,6 +204,10 @@
                 appState.SetNotification(this, "Question submission failed", Notification.NotificationType.Failure);
             }
         }
+
+        //Update FAQ Count
+        int countNewFAQ = await faqService.GetUnansweredFAQCount();
+        await liveNotificationState.SetFAQCount(countNewFAQ);
     }
     private void SubmitDeclined()
     {
