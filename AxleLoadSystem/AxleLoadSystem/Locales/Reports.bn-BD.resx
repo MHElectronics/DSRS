@@ -138,6 +138,9 @@
   <data name="Report.BarChart" xml:space="preserve">
     <value>বার চার্ট</value>
   </data>
+  <data name="Report.BRTAApiTest" xml:space="preserve">
+    <value>বিআরটিএ এপিআই পরীক্ষা</value>
+  </data>
   <data name="Report.ClassStatus" xml:space="preserve">
     <value>ক্লাস স্ট্যাটাস</value>
   </data>

@@ -124,16 +124,16 @@
     <value>কাউন্টার দুই</value>
   </data>
   <data name="Menu.Map" xml:space="preserve">
-    <value>বাংলাদেশ</value>
+    <value>ড্যাশবোর্ড</value>
   </data>
   <data name="Menu.Station" xml:space="preserve">
-    <value>স্টেশন</value>
+    <value>স্টেশন ব্যবস্থাপনা</value>
   </data>
-  <data name="Menu.User" xml:space="preserve">
-    <value>ব্যবহারকারী</value>
+  <data name="Menu.UserGroup" xml:space="preserve">
+    <value>ব্যবহারকারী ব্যবস্থাপনা</value>
   </data>
   <data name="Menu.UploadedFiles" xml:space="preserve">
-    <value>আপলোড করা ফাইল</value>
+    <value>ডেটা ব্যবস্থাপনা</value>
   </data>
   <data name="Menu.ChangePassword" xml:space="preserve">
     <value>পাসওয়ার্ড পরিবর্তন করুন</value>
@@ -181,15 +181,18 @@
     <value>অতিরিক্ত ওজন</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
-    <value>পাতা</value>
+    <value>ডেটা বিশ্লেষণ (সাধারণ উদ্দেশ্য)</value>
   </data>
   <data name="Menu.ReportConfig" xml:space="preserve">
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
   <data name="Menu.Reports" xml:space="preserve">
-    <value>রিপোর্ট গুলি</value>
+    <value>ডেটা বিশ্লেষণ (উদ্দেশ্য অনুসারে)</value>
   </data>
   <data name="Menu.Tutorial" xml:space="preserve">
     <value>টিউটোরিয়াল</value>
+  </data>
+  <data name="Menu.Users" xml:space="preserve">
+    <value>ব্যবহারকারী</value>
   </data>
 </root>

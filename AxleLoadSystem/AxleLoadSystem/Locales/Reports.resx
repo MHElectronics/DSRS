@@ -138,6 +138,9 @@
   <data name="Report.BarChart" xml:space="preserve">
     <value>Bar Chart</value>
   </data>
+  <data name="Report.BRTAApiTest" xml:space="preserve">
+    <value>BRTA API Test</value>
+  </data>
   <data name="Report.ClassStatus" xml:space="preserve">
     <value>Class Status</value>
   </data>

@@ -124,16 +124,16 @@
     <value>Counter 2</value>
   </data>
   <data name="Menu.Map" xml:space="preserve">
-    <value>Bangladesh</value>
+    <value>Dashboard</value>
   </data>
   <data name="Menu.Station" xml:space="preserve">
-    <value>Stations</value>
+    <value>Station Management</value>
   </data>
-  <data name="Menu.User" xml:space="preserve">
-    <value>Users</value>
+  <data name="Menu.UserGroup" xml:space="preserve">
+    <value>User Management</value>
   </data>
   <data name="Menu.UploadedFiles" xml:space="preserve">
-    <value>Uploaded Files</value>
+    <value>Data Magement</value>
   </data>
   <data name="Menu.ChangePassword" xml:space="preserve">
     <value>Change Password</value>
@@ -181,15 +181,18 @@
     <value>Overweight</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
-    <value>Pages</value>
+    <value>Data analysis (General purpose)</value>
   </data>
   <data name="Menu.ReportConfig" xml:space="preserve">
     <value>Report Configuration</value>
   </data>
   <data name="Menu.Reports" xml:space="preserve">
-    <value>Reports</value>
+    <value>Data analysis (By purpose)</value>
   </data>
   <data name="Menu.Tutorial" xml:space="preserve">
     <value>Tutorial</value>
+  </data>
+  <data name="Menu.Users" xml:space="preserve">
+    <value>Users</value>
   </data>
 </root>
