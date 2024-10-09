@@ -56,6 +56,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th>@localizer["Email"]</th>
                         <th>@localizer["UserName"]</th>
                         <th>@localizer["StationNames"]</th>
                         <th></th>
@@ -66,6 +67,7 @@
                     {
                         string stationNames = String.Join(", ", stations.Where(s => allStationAccessList.Any(sa => sa.StationId == s.StationId && sa.UserId == user.Id)).Select(sn => sn.StationName));
                         <tr>
+                            <td>@user.Email</td>
                             <td>@user.Name</td>
                             <td>@stationNames</td>
                             <th><i class="fa fa-edit" @onclick="@(() => Edit(user.Id))"></i></th>
