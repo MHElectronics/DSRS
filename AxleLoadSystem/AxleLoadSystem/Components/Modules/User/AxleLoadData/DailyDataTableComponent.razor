@@ -1,13 +1,20 @@
 ﻿@using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Linq.Expressions
+@using Services.Helpers
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IExportHelper exportHelper
+@inject IJSRuntime jsRuntime
 
 <div class="grid">
     <div class="row">
-        <div class="col-md-10 col-sm-12">
+        <div class="col-md-8 col-sm-12">
             <input @bind="searchQuery" placeholder="Search..." class="form-control" />
         </div>
-        <div class="col-md-2 col-sm-12">
-            <button class="btn btn-primary" @onclick="ApplyFilter">Filter</button>
+        <div class="col-md-4 col-sm-12">
+            <div class="btn btn-group">
+                <button class="btn btn-primary" @onclick="ApplyFilter"> <i class="fa fa-filter">&nbsp;</i>Filter</button>
+                <button class="btn btn-primary" @onclick="@(() => Export("csv"))"><i class="fa fa-download">&nbsp;</i>@localizer["Report.CSV"]</button>
+            </div>
         </div>
     </div>
     @if (FileType == 1)
@@ -19,14 +26,14 @@
         else
         {            
             <QuickGrid Items="@filteredAxleLoadData" Virtualize="true">
-                <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.TransactionNumber)" />
                 <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" />
                 <PropertyColumn Property="@(l => l.PlateZone)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.PlateSeries)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.PlateNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.PlateSeries)" />
+                <PropertyColumn Property="@(l => l.PlateNumber)" />
                 <PropertyColumn Property="@(l => l.NumberOfAxle)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.VehicleSpeed)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.VehicleSpeed)" />
                 <PropertyColumn Property="@(l => l.Axle1)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.Axle2)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.Axle3)" Sortable="true" />
@@ -36,12 +43,24 @@
                 <PropertyColumn Property="@(l => l.Axle7)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.AxleRemaining)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.GrossVehicleWeight)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.IsUnloaded)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.IsOverloaded)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.OverSizedModified)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.IsUnloaded)"/>
+                <PropertyColumn Property="@(l => l.IsOverloaded)"/>
+                <PropertyColumn Property="@(l => l.OverSizedModified)"/>
                 <PropertyColumn Property="@(l => l.Wheelbase)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.ClassStatus)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.RecognizedBy)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.IsBRTAInclude)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.LadenWeight)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.UnladenWeight)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.ReceiptNumber)"/>
+                <PropertyColumn Property="@(l => l.BillNumber)"/>
+                <PropertyColumn Property="@(l => l.Axle1Time)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle2Time)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle3Time)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle4Time)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle5Time)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle6Time)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle7Time)" Sortable="true" />
             </QuickGrid>
         }
 
@@ -55,15 +74,18 @@
         else
         {
             <QuickGrid Items="@filteredFineRepaymentData" Virtualize='true'>
-                <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+                <PropertyColumn Property="@(l => l.TransactionNumber)" />
+                <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true"/>
+                <PropertyColumn Property="@(l => l.PaymentTransactionId)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" />
                 <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.FineAmount)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.PaymentMethod)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.ReceiptNumber)" />
+                <PropertyColumn Property="@(l => l.BillNumber)" />
                 <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Sortable="true" />
             </QuickGrid>
         }  
     }
@@ -161,6 +183,83 @@
             || payment.WarehouseCharge.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || payment.DriversLicenseNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || payment.TransportAgencyInformation.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
+    }
+    private async Task Export(string type)
+    {
+        List<(string Header, string FieldName, Type FieldType)> fields = new();
+        if (FileType == 1)
+        {
+            LoadData loadData = new();
+            fields.Add(("Transaction Number", nameof(loadData.TransactionNumber), loadData.TransactionNumber.GetType()));
+            fields.Add(("Lane Number", nameof(loadData.LaneNumber), loadData.LaneNumber.GetType()));
+            fields.Add(("Date Time", nameof(loadData.DateTime), loadData.DateTime.GetType()));
+            fields.Add(("Plate Zone", nameof(loadData.PlateZone), loadData.PlateZone.GetType()));
+            fields.Add(("Plate Series", nameof(loadData.PlateSeries), loadData.PlateSeries.GetType()));
+            fields.Add(("Plate Number", nameof(loadData.PlateNumber), loadData.PlateNumber.GetType()));
+            fields.Add(("Number Of Axle", nameof(loadData.NumberOfAxle), loadData.NumberOfAxle.GetType()));
+            fields.Add(("Vehicle Speed", nameof(loadData.VehicleSpeed), loadData.VehicleSpeed.GetType()));
+            fields.Add(("Axle1", nameof(loadData.Axle1), loadData.Axle1.GetType()));
+            fields.Add(("Axle2", nameof(loadData.Axle2), loadData.Axle2.GetType()));
+            fields.Add(("Axle3", nameof(loadData.Axle3), loadData.Axle3.GetType()));
+            fields.Add(("Axle4", nameof(loadData.Axle4), loadData.Axle4.GetType()));
+            fields.Add(("Axle5", nameof(loadData.Axle5), loadData.Axle5.GetType()));
+            fields.Add(("Axle6", nameof(loadData.Axle6), loadData.Axle6.GetType()));
+            fields.Add(("Axle7", nameof(loadData.Axle7), loadData.Axle7.GetType()));
+            fields.Add(("Axle Remaining", nameof(loadData.AxleRemaining), loadData.AxleRemaining.GetType()));
+            fields.Add(("Gross Vehicle Weight", nameof(loadData.GrossVehicleWeight), loadData.GrossVehicleWeight.GetType()));
+            fields.Add(("IsUnloaded", nameof(loadData.IsUnloaded), loadData.IsUnloaded.GetType()));
+            fields.Add(("IsOverloaded", nameof(loadData.IsOverloaded), loadData.IsOverloaded.GetType()));
+            fields.Add(("Over Sized Modified", nameof(loadData.OverSizedModified), loadData.OverSizedModified.GetType()));
+            fields.Add(("Wheelbase", nameof(loadData.Wheelbase), loadData.Wheelbase.GetType()));
+            fields.Add(("Class Status", nameof(loadData.ClassStatus), loadData.ClassStatus.GetType()));
+            fields.Add(("Recognized By", nameof(loadData.RecognizedBy), loadData.RecognizedBy.GetType()));
+            fields.Add(("IsBRTAInclude", nameof(loadData.IsBRTAInclude), loadData.IsBRTAInclude.GetType()));
+            fields.Add(("Laden Weight", nameof(loadData.LadenWeight), loadData.LadenWeight.GetType()));
+            fields.Add(("Unladen Weight", nameof(loadData.UnladenWeight), loadData.UnladenWeight.GetType()));
+            fields.Add(("Receipt Number", nameof(loadData.ReceiptNumber), loadData.ReceiptNumber.GetType()));
+            fields.Add(("Bill Number", nameof(loadData.BillNumber), loadData.BillNumber.GetType()));
+            fields.Add(("Axle1 Time", nameof(loadData.Axle1Time), typeof(DateTime?)));
+            fields.Add(("Axle2 Time", nameof(loadData.Axle2Time), typeof(DateTime?)));
+            fields.Add(("Axle3 Time", nameof(loadData.Axle3Time), typeof(DateTime?)));
+            fields.Add(("Axle4 Time", nameof(loadData.Axle4Time), typeof(DateTime?)));
+            fields.Add(("Axle5 Time", nameof(loadData.Axle5Time), typeof(DateTime?)));
+            fields.Add(("Axle6 Time", nameof(loadData.Axle6Time), typeof(DateTime?)));
+            fields.Add(("Axle7 Time", nameof(loadData.Axle7Time), typeof(DateTime?)));
+        }
+        else if (FileType == 2)
+        {
+            FinePayment finePayment = new();
+            fields.Add(("Transaction Number", nameof(finePayment.TransactionNumber), finePayment.TransactionNumber.GetType()));
+            fields.Add(("Lane Number", nameof(finePayment.LaneNumber), finePayment.LaneNumber.GetType()));
+            fields.Add(("Payment Transaction Id", nameof(finePayment.PaymentTransactionId), finePayment.PaymentTransactionId.GetType()));
+            fields.Add(("Date Time", nameof(finePayment.DateTime), finePayment.DateTime.GetType()));
+            fields.Add(("IsPaid", nameof(finePayment.IsPaid), finePayment.IsPaid.GetType()));
+            fields.Add(("Fine Amount", nameof(finePayment.FineAmount), finePayment.FineAmount.GetType()));
+            fields.Add(("Payment Method", nameof(finePayment.PaymentMethod), finePayment.PaymentMethod.GetType()));
+            fields.Add(("Receip tNumber", nameof(finePayment.ReceiptNumber), finePayment.ReceiptNumber.GetType()));
+            fields.Add(("Bill Number", nameof(finePayment.BillNumber), finePayment.BillNumber.GetType()));
+            fields.Add(("Warehouse Charge", nameof(finePayment.WarehouseCharge), finePayment.WarehouseCharge.GetType()));
+            fields.Add(("Drivers License Number", nameof(finePayment.DriversLicenseNumber), finePayment.DriversLicenseNumber.GetType()));
+            fields.Add(("Transport Agency Information", nameof(finePayment.TransportAgencyInformation), finePayment.TransportAgencyInformation.GetType()));
+        }
+
+
+        if (type == "csv")
+        {
+            MemoryStream stream = new();
+            if (FileType == 1)
+            {
+                stream = await exportHelper.GenerateCSVStream<LoadData>(fields, filteredAxleLoadData.ToList(), null);
+            }
+            else if (FileType == 2)
+            {
+                stream = await exportHelper.GenerateCSVStream<FinePayment>(fields, filteredFineRepaymentData.ToList(), null);
+            }
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+        }
+        
     }
 
 }

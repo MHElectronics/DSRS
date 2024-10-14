@@ -11,9 +11,9 @@ public class FinePayment
     [MaxValue(99)]
     public int LaneNumber { get; set; }
     [NoSpecialCharacters]
-    public string TransactionNumber { get; set; }
+    public string TransactionNumber { get; set; } = string.Empty;
     [NoSpecialCharacters]
-    public string PaymentTransactionId { get; set; }
+    public string PaymentTransactionId { get; set; } = string.Empty;
     [JsonDateTimeFormat]
     [Required]
     public DateTime DateTime { get; set; }
@@ -21,14 +21,14 @@ public class FinePayment
     [MinValue(0)]
     public decimal FineAmount { get; set; }
     [NoSpecialCharacters]
-    public string PaymentMethod { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
     [NoSpecialCharacters]
-    public string ReceiptNumber { get; set; }
+    public string ReceiptNumber { get; set; } = string.Empty;
     [NoSpecialCharacters]
-    public string BillNumber { get; set; }
+    public string BillNumber { get; set; } = string.Empty;
     [MinValue(0)]
     public decimal WarehouseCharge { get; set; }
-    public string DriversLicenseNumber { get; set; }
-    public string TransportAgencyInformation { get; set; }
+    public string DriversLicenseNumber { get; set; } = string.Empty;
+    public string TransportAgencyInformation { get; set; } = string.Empty;
     public DateTime EntryTime { get; set; }
 }
