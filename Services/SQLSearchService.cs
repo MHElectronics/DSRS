@@ -1,9 +1,5 @@
 ﻿using BOL;
-using Dapper;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Configuration;
-using Services.Helpers;
 using System.Data;
 using System.Data.SqlClient;
 
