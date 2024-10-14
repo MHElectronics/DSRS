@@ -56,7 +56,7 @@ else
                             }
                         </div>
                     </div>
-                    <div class="col-md-12 col-sm-12">
+                    <div class="col-md-8 col-sm-8">
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
@@ -69,6 +69,18 @@ else
                                 <input type="text" @bind-value="station.Address" required class="form-control" placeholder="@localizer["Address"]" id="address" min="5" maxlength="300" />
                                 <ValidationMessage For="() => station.Address" />
                             }
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="chkUpbound" class="form-label">Upbound/Downbound</label>
+                            <div class="form-control">
+                                <div class="icheck-primary d-inline">
+                                    @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
+                                    <input type="checkbox" id="chkUpbound" checked="@station.IsUpbound" @onchange="@(() => station.IsUpbound = !station.IsUpbound)" />
+                                    <label for="chkUpbound">Is Upbound?</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">

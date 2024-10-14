@@ -42,7 +42,7 @@ else
                         <tr>
                             <td>@item.StationId</td>
                             <td></td>
-                            <td>@item.StationName</td>
+                            <td>@item.StationName (@(item.IsUpbound ? "Upbound": "Downbound"))</td>
                             <td>@item.Address</td>
                             <td>@item.AuthKey</td>
                             <td>

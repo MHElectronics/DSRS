@@ -9,6 +9,28 @@
         <div class="img-overlay-wrap">
             <img src="./images/Bangladesh_High_Resolution.jpg">
             <svg id="svgMap" viewBox="0 0 1325 1872">
+                <defs>
+                    <filter x="0" y="0" width="1" height="2" id="solid">
+                        <feFlood flood-color="rgba(0,0,255,0.5)" result="bg" />
+                        <feMerge>
+                            <feMergeNode in="bg" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+
+                    <filter id="rounded-corners" x="-5%" width="110%" y="0%" height="110%">
+                        <feFlood flood-color="green" />
+                        <feGaussianBlur stdDeviation="2" />
+                        <feComponentTransfer>
+                            <feFuncA type="table" tableValues="0 0 0 1" />
+                        </feComponentTransfer>
+
+                        <feComponentTransfer>
+                            <feFuncA type="table" tableValues="0 1 1 1 1 1 1 1" />
+                        </feComponentTransfer>
+                        <feComposite operator="over" in="SourceGraphic" />
+                    </filter>
+                </defs>
                 @if (stations is not null)
                 {
                     foreach (Station item in stations.Where(s => !string.IsNullOrEmpty(s.MapX)))
@@ -24,8 +46,8 @@
                             {
                                 <polygon points="30,0 10,40 50,40" style="fill:green;stroke:purple;stroke-width:3" />
                             }
-                            <rect width="180" height="50" style="fill:rgba(0,0,255,0.4);stroke-width:0;stroke:rgb(0,0,0)" rx="10" ry="10" />
-                            <text x="40" y="15" style="font-size:12pt;fill:white;margin-right:20px;">@item.StationName</text>
+                            @* <rect width="180" height="50" style="fill:rgba(0,0,255,0.5);stroke-width:0;stroke:rgb(0,0,0)" rx="10" ry="10" /> *@
+                            <text filter="url(#rounded-corners)" x="40" y="15" style="font-size:16pt;fill:white;margin-right:20px;">@item.StationName</text>
                         </g>
                     }
                 }
