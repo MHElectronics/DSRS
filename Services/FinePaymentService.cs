@@ -1,4 +1,5 @@
 ﻿using BOL;
+using BOL.CustomModels;
 using Services.Helpers;
 using System.Data.SqlClient;
 
@@ -7,6 +8,7 @@ namespace Services;
 public interface IFinePaymentService
 {
     Task<IEnumerable<FinePayment>> Get(FinePayment obj);
+    Task<IEnumerable<FinePayment>> Get(ReportParameters reportParameters);
     Task<(bool,string)> Add(FinePayment obj);
     Task<(bool,string)> Add(List<FinePayment> obj);
     Task<bool> Delete(UploadedFile file);
@@ -16,10 +18,33 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 {
     public async Task<IEnumerable<FinePayment>> Get(FinePayment obj)
     {
-        string query = @"SELECT * FROM FinePayment WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
+        string query = @"SELECT TransactionNumber,LaneNumber,PaymentTransactionId 
+        ,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber 
+        ,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation 
+        FROM FinePayment
+        WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@DateTime)=0";
 
         return await _db.LoadData<FinePayment, object>(query, obj);
     }
+    public async Task<IEnumerable<FinePayment>> Get(ReportParameters reportParameters)
+    {
+        string query = @"SELECT TransactionNumber,LaneNumber,PaymentTransactionId 
+        ,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber 
+        ,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation 
+        FROM FinePayment
+        WHERE StationId IN @StationIds
+        AND DateTime BETWEEN @DateStart AND @DateEnd";
+
+        var parameters = new
+        {
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd
+        };
+
+        return await _db.LoadData<FinePayment, object>(query, parameters);
+    }
+
     public async Task<(bool,string)> Add(FinePayment obj)
     {
         bool isSuccess = false;

@@ -156,6 +156,9 @@
   <data name="Report.Export" xml:space="preserve">
     <value>রপ্তানি</value>
   </data>
+  <data name="Report.FileType" xml:space="preserve">
+    <value>ফাইলের ধরন</value>
+  </data>
   <data name="Report.FilterByWeight" xml:space="preserve">
     <value>ওজন দ্বারা ফিল্টার</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="Report.Overload" xml:space="preserve">
     <value>শুধুমাত্র ওভারলোড দেখান?</value>
+  </data>
+  <data name="Report.SelectStation" xml:space="preserve">
+    <value>স্টেশন নির্বাচন করুন</value>
   </data>
   <data name="Report.Table" xml:space="preserve">
     <value>টেবিল</value>

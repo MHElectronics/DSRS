@@ -159,6 +159,9 @@
   <data name="Publish" xml:space="preserve">
     <value>Publish?</value>
   </data>
+  <data name="SQLDirectSearch" xml:space="preserve">
+    <value>SQL Direct Search</value>
+  </data>
   <data name="Tutorial.AdminPanel" xml:space="preserve">
     <value>Admin Tutorial Panel</value>
   </data>

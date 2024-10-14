@@ -1,47 +1,71 @@
 ﻿@using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Linq.Expressions
 
 <div class="grid">
+    <div class="row">
+        <div class="col-md-10 col-sm-12">
+            <input @bind="searchQuery" placeholder="Search..." class="form-control" />
+        </div>
+        <div class="col-md-2 col-sm-12">
+            <button class="btn btn-primary" @onclick="ApplyFilter">Filter</button>
+        </div>
+    </div>
     @if (FileType == 1)
     {
-        <QuickGrid Items="@AxleLoadData" Virtualize="true">
-            <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
-            <PropertyColumn Property="@(l => l.PlateZone)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.PlateSeries)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.PlateNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.NumberOfAxle)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.VehicleSpeed)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle1)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle2)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle3)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle4)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle5)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle6)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Axle7)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.AxleRemaining)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.GrossVehicleWeight)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.IsUnloaded)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.IsOverloaded)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.OverSizedModified)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Wheelbase)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
-        </QuickGrid>
+        if (AxleLoadData is null)
+        {
+            <Loader/>
+        }
+        else
+        {            
+            <QuickGrid Items="@filteredAxleLoadData" Virtualize="true">
+                <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.LaneNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+                <PropertyColumn Property="@(l => l.PlateZone)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.PlateSeries)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.PlateNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.NumberOfAxle)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.VehicleSpeed)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle1)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle2)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle3)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle4)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle5)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle6)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Axle7)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.AxleRemaining)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.GrossVehicleWeight)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.IsUnloaded)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.IsOverloaded)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.OverSizedModified)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Wheelbase)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+            </QuickGrid>
+        }
+
     }
-    else
+    else if(FileType == 2)
     {
-        <QuickGrid Items="@FineRepaymentData" Virtualize='true'>
-            <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
-            <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.FineAmount)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.PaymentMethod)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
-        </QuickGrid>
+        if (FineRepaymentData is null)
+        {
+            <Loader/>
+        }
+        else
+        {
+            <QuickGrid Items="@filteredFineRepaymentData" Virtualize='true'>
+                <PropertyColumn Property="@(l => l.TransactionNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+                <PropertyColumn Property="@(l => l.IsPaid)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.FineAmount)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.PaymentMethod)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.ReceiptNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.BillNumber)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.WarehouseCharge)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Sortable="true" />
+            </QuickGrid>
+        }  
     }
 </div>
 
@@ -54,4 +78,89 @@
     public IQueryable<LoadData> AxleLoadData { get; set; }
     [Parameter]
     public IQueryable<FinePayment> FineRepaymentData { get; set; }
+
+    private IQueryable<LoadData> filteredAxleLoadData { get; set;} 
+    private IQueryable<FinePayment> filteredFineRepaymentData { get; set; }
+    private string searchQuery = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {   if (FileType == 1)
+        {
+            filteredAxleLoadData = AxleLoadData;
+        }
+        else if (FileType == 2)
+        {
+            filteredFineRepaymentData = FineRepaymentData;
+        }
+    }
+    private async Task ApplyFilter()
+    {
+        if (FileType == 1)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                filteredAxleLoadData = AxleLoadData;
+            }
+            else
+            {
+                filteredAxleLoadData = AxleLoadData.Where(GenerateSearchExpression());
+            }
+        }
+        else if (FileType == 2)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                filteredFineRepaymentData = FineRepaymentData;
+            }
+            else
+            {
+                filteredFineRepaymentData = FineRepaymentData.Where(GenerateSearchExpressionFinePayment());
+            }       
+        }
+        StateHasChanged(); 
+    }
+    private Expression<Func<LoadData, bool>> GenerateSearchExpression()
+    {
+        return load =>
+            load.TransactionNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.LaneNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.DateTime.ToString("dd-MM-yyyy").Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.PlateZone.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.PlateSeries.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.PlateNumber.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.NumberOfAxle.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.VehicleSpeed.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle1.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle2.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle3.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle4.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle5.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle6.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Axle7.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.AxleRemaining.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.GrossVehicleWeight.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.IsUnloaded.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.IsOverloaded.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.OverSizedModified.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.Wheelbase.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.ReceiptNumber.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.BillNumber.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
+    }
+    private Expression<Func<FinePayment, bool>> GenerateSearchExpressionFinePayment()
+    {
+        return payment =>
+            payment.TransactionNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.LaneNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.PaymentTransactionId.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.DateTime.ToString("dd-MM-yyyy").Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.IsPaid.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.FineAmount.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.PaymentMethod.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.ReceiptNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.BillNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.WarehouseCharge.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.DriversLicenseNumber.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || payment.TransportAgencyInformation.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
+    }
+
 }

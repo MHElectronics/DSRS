@@ -1,13 +1,16 @@
 ﻿@page "/databydate"
 @inherits BasePageComponent
 @using AxleLoadSystem.Models
+@using Syncfusion.Blazor.Calendars
 @inject IFileService fileService
 @inject IStationService stationService
 @inject IAppState appState
-@inject IStringLocalizer<Locales.File> localizer
 @inject IAxleLoadService loadService
+@inject IConfigurationService configurationService
 @inject IFinePaymentService fineRepaymentService
 @rendermode InteractiveServer
+@inject IStringLocalizer<Locales.File> localizer
+@inject IStringLocalizer<Locales.Reports> localizerReports
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
 <PageTitleComponent Title="@localizerCommon["DataByDate"]">
@@ -18,7 +21,8 @@
         <div class="row">
             @if (stations is not null)
             {
-                <div class="col-3">
+                <div class="col-md-3 col-sm-12">
+                    <label>@localizerReports["Report.SelectStation"]</label>
                     <select class="form-control" @onchange="StationChanged">
                         <option value="0">-Select Station-</option>
                         @foreach (Station item in stations)
@@ -27,25 +31,33 @@
                         }
                     </select>
                 </div>
-                <div class="col-4">
+                <div class="col-md-3 col-sm-12">
+                    <label>@localizerReports["Report.DateRange"]</label>
+                    <SfDateRangePicker TValue="DateTime?" StartDate="@DateStart" EndDate="@DateEnd" Format="dd MMM yy" Min="@configuration.SystemStartDate" Max="DateTime.Now">
+                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
+                    </SfDateRangePicker>
+                </div>
+                <div class="col-md-5 col-sm-12">
+                    <label>@localizerReports["Report.FileType"]</label>
                     <div class="form-control">
-                            <div class="col-12">
-                                <div class="icheck-primary d-inline">
-                                    <input type="radio" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(() => fileType = 1)" />
-                                    <label for="checkType1">Axle Load Data</label>
-                                </div>
-                                <div class="icheck-primary d-inline">
-                                    <input type="radio" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(() => fileType = 2)" />
-                                    <label for="checkType2">Fine Payment Data</label>
-                                </div>
+                        <div class="col-12">
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(async() => await HandleFileTypeChange(1))" />
+                                <label for="checkType1">Axle Load Data</label>
+                            </div>
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(async() => await HandleFileTypeChange(2))" />
+                                <label for="checkType2">Fine Payment Data</label>
                             </div>
                         </div>
                     </div>
-                <div class="col-3">
-                    <input type="date" id="date" @bind="selectedDate" class="form-control" />
                 </div>
-                <div class="col-2">
-                    <button @onclick="Search" class="btn btn-primary">Search</button>
+
+                <div class="col align-self-end">
+                    <div class="form-group float-right align-bottom">
+                        <label class="form-label">&nbsp;</label>
+                        <button @onclick="Search" class="btn btn-primary">Search</button>
+                    </div>
                 </div>
                 @if (!string.IsNullOrEmpty(Summary))
                 {
@@ -64,17 +76,23 @@
     }
     else
     {
-        if (showTable)
+        if (showHide)
         {
-            <hr />
             <div class="card-header card-primary card-outline">
                 <h3 class="card-title">@localizerCommon["DailyData"]</h3>
             </div>
-            <div class="card-body">
-                <div class="data-table-container">
-                    <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
+            if (axleLoadData is null && fineRepaymentData is null)
+            {
+                <Loader />
+            }
+            if (showTable)
+            {
+                <div class="card-body">
+                    <div class="data-table-container">
+                        <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
+                    </div>
                 </div>
-            </div>
+            }
         }
     }
 </div>
@@ -83,17 +101,27 @@
     private IEnumerable<Station> stations;
     private Station? station { get; set; } = null;
     private int fileType { get; set; } = 1;
-    private DateTime selectedDate { get; set; } = DateTime.Today;
-
+    private DateTime DateStart { get; set; } 
+    private DateTime DateEnd { get; set; } = DateTime.Today;
+    private Configuration configuration { get; set; }
+    private ReportParameters reportParameters { get; set; } = new();
     private IQueryable<LoadData> axleLoadData { get; set; }
     private IQueryable<FinePayment> fineRepaymentData { get; set; }
     private string Summary { get; set; }
     private bool showTable { get; set; }
+    private bool showHide { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
+        configuration = await configurationService.GetConfiguration();
+        DateStart = configuration.SystemStartDate;
     }
-
+    private async Task HandleFileTypeChange(int selectedFileType)
+    {
+        fileType = selectedFileType;
+        showTable = false;
+        showHide = false;
+    }
     private async Task StationChanged(ChangeEventArgs e)
     {
         int stationId = Convert.ToInt32(e.Value);
@@ -106,14 +134,24 @@
             station = stations.FirstOrDefault(s => s.StationId == stationId);
         }
     }
+    private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
+    {
+        DateStart = args.StartDate ?? DateTime.Now;
+        DateEnd = args.EndDate ?? DateTime.Now;
+    }
     private async Task Search()
     {
+        Summary = "";
         if (station is not null && station.StationId > 0)
         {
+            showHide = true;
             if (fileType == 1)
             {
-                LoadData loadData = new() { StationId = station.StationId, DateTime = selectedDate };
-                IEnumerable<LoadData> items = await loadService.Get(loadData);
+                reportParameters.Stations.Add(station.StationId);
+                reportParameters.DateStart = DateStart;
+                reportParameters.DateEnd = DateEnd;
+
+                IEnumerable<LoadData> items = await loadService.Get(reportParameters);
 
                 axleLoadData = items.AsQueryable();
                 showTable = true;
@@ -125,8 +163,11 @@
             }
             else if (fileType == 2)
             {
-                FinePayment finePayment = new() { StationId = station.StationId, DateTime = selectedDate };
-                IEnumerable<FinePayment> items = await fineRepaymentService.Get(finePayment);
+                reportParameters.Stations.Add(station.StationId);
+                reportParameters.DateStart = DateStart;
+                reportParameters.DateEnd = DateEnd;
+
+                IEnumerable<FinePayment> items = await fineRepaymentService.Get(reportParameters);
 
                 fineRepaymentData = items.AsQueryable();
                 showTable = true;
@@ -136,9 +177,12 @@
                     Summary = "No Fine Payment data found";
                 }
             }
+            reportParameters = new();
+            StateHasChanged();
         }
         else
         {
+            showHide = false;
             Summary = "Please Select Station";
         }
     }

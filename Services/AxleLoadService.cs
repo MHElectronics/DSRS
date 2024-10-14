@@ -7,6 +7,7 @@ namespace Services;
 
 public interface IAxleLoadService
 {
+    Task<IEnumerable<LoadData>> Get(ReportParameters reportParameters);
     Task<IEnumerable<LoadData>> Get(LoadData obj);
     Task<(bool, string)> Add(LoadData obj);
     Task<(bool,string)> Add(List<LoadData> obj);
@@ -42,6 +43,28 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<LoadData, object>(query, obj);
     }
+    public async Task<IEnumerable<LoadData>> Get(ReportParameters reportParameters)
+    {
+        string query = @"SELECT TransactionNumber,LaneNumber,DateTime 
+        ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
+        ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
+        ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
+        ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
+        ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
+            FROM AxleLoad
+            WHERE StationId IN @StationIds
+            AND DateTime BETWEEN @DateStart AND @DateEnd";
+
+        var parameters = new
+        {
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd
+        };
+
+        return await _db.LoadData<LoadData, object>(query, parameters);
+    }
+
     public async Task<(bool, string)> Add(LoadData obj)
     {
         bool isSuccess = false;
