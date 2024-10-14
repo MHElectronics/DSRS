@@ -7,7 +7,7 @@ public class LoadData
     public int StationId { get; set; }
     [NoSpecialCharacters]
     [Required]
-    public string TransactionNumber { get; set; }
+    public string TransactionNumber { get; set; } = string.Empty;
     [Required]
     [MinValue(0)]
     [MaxValue(99)]
@@ -16,10 +16,9 @@ public class LoadData
     [JsonDateTimeFormat]
     [Required]
     public DateTime DateTime { get; set; }
-    public string PlateZone { get; set; }
-    public string PlateSeries { get; set; }
-    public string PlateNumber { get; set; }
-    public string VehicleId { get; set; }
+    public string PlateZone { get; set; } = string.Empty;
+    public string PlateSeries { get; set; } = string.Empty;
+    public string PlateNumber { get; set; } = string.Empty;
     [MinValue(0)]
     [Required]
     public int NumberOfAxle { get; set; }
@@ -57,9 +56,9 @@ public class LoadData
     [MinValue(0)]
     public int UnladenWeight { get; set; }
     [NoSpecialCharacters]
-    public string ReceiptNumber { get; set; }
+    public string ReceiptNumber { get; set; } = string.Empty;
     [NoSpecialCharacters]
-    public string BillNumber { get; set; }
+    public string BillNumber { get; set; } = string.Empty;
 
     //Slow Moving
     [MinValue(0)]
