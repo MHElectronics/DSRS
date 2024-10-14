@@ -19,6 +19,7 @@ public interface IAxleLoadService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyVehicleReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyVehicleReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyVehicleReport(ReportParameters reportParameters);
@@ -538,6 +539,95 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedReport(ReportParameters reportParameters)
+    {
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+
+        INSERT INTO @Stations(StationId) VALUES " + stationIds + @" 
+
+        DECLARE @Days TABLE([Date] DATE)
+        DECLARE @CurrentDate DATE = @DateStart
+
+        WHILE @CurrentDate <= @DateEnd
+        BEGIN
+            INSERT INTO @Days VALUES(@CurrentDate)
+            SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
+        END
+
+        CREATE TABLE #T(
+            TotalVehicle INT DEFAULT 0,
+            OverloadVehicle INT DEFAULT 0,
+            [Date] DATE,
+            Axle1 INT DEFAULT 0,
+            Axle2 INT DEFAULT 0,
+            Axle3 INT DEFAULT 0,
+            Axle4 INT DEFAULT 0,
+            Axle5 INT DEFAULT 0,
+            Axle6 INT DEFAULT 0,
+            Axle7 INT DEFAULT 0,
+            AxleRemaining INT DEFAULT 0,
+            GrossVehicleWeight INT DEFAULT 0
+        )
+
+        INSERT INTO #T([Date], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight)
+        SELECT 
+            D.[Date],
+            COUNT(AL.StationId) AS TotalVehicle,
+            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle,
+            SUM(AL.Axle1) AS Axle1,
+            SUM(AL.Axle2) AS Axle2,
+            SUM(AL.Axle3) AS Axle3,
+            SUM(AL.Axle4) AS Axle4,
+            SUM(AL.Axle5) AS Axle5,
+            SUM(AL.Axle6) AS Axle6,
+            SUM(AL.Axle7) AS Axle7,
+            SUM(AL.AxleRemaining) AS AxleRemaining,
+            SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
+        FROM @Days D
+        LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
+            AND AL.StationId IN (SELECT StationId FROM @Stations)
+            AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+        GROUP BY D.[Date]
+
+        SELECT *,
+            CAST([Date] AS VARCHAR) AS DateUnitName
+        FROM #T
+        ORDER BY [Date]
+
+        DROP TABLE #T
+        ";
+
+        var parameters = new
+        {
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+        };
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
+
+
     #endregion
     #region Number of Vehicle report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyVehicleReport(ReportParameters reportParameters)

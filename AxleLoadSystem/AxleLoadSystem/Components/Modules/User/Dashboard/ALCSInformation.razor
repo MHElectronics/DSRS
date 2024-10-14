@@ -4,6 +4,7 @@
 @inject IFileService fileService
 @inject IAxleLoadService loadService
 @inject IAppState appState
+@inject IStringLocalizer<Locales.Resource> localizerResource
 
 <div class="card card-primary">
     <div class="card-header">
@@ -69,8 +70,9 @@
                         <div class="col-md-12 col-sm-12">
                             <label class="text"> Data Analysis Chart</label>
                             <div class="col-md-12 btn-group">
-                                <button class="btn @(selectedType == "Today" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Today"))">Today</button>
-                                <button class="btn @(selectedType == "Yesterday" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yesterday"))">Yesterday</button>
+                                <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
+                                <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
+                                <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                             </div>
                             <br/>
                             @if (chartview)
@@ -79,17 +81,28 @@
                                     <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
                                         <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
 
-                                        <ChartPrimaryXAxis Title="@YAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                                        <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
                                             <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                             <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                         </ChartPrimaryXAxis>
 
-                                        <ChartPrimaryYAxis Title="@XAxisTitle">
+                                        <ChartPrimaryYAxis Title="@YAxisTitle">
                                             <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                         </ChartPrimaryYAxis>
 
+                                        <!-- Secondary Y-Axis for Overload Ratio (%) -->
+                                        <ChartAxes>
+                                            <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overload Ratio (%)" LabelFormat="{value}%">
+                                                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+                                                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                                <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                            </ChartAxis>
+                                        </ChartAxes>
+
                                         <ChartSeriesCollection>
-                                            <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                            <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData"
+                                                         XName="DateUnitName" YName="OverloadVehicle" Width="2"
+                                                         Type="ChartSeriesType.Column" EnableTooltip="true">
                                                 <ChartMarker>
                                                     <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                                                         <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -98,7 +111,9 @@
                                                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                             </ChartSeries>
 
-                                            <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                            <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData"
+                                                         XName="DateUnitName" YName="TotalVehicle" Width="2"
+                                                         Type="ChartSeriesType.Column" EnableTooltip="true">
                                                 <ChartMarker>
                                                     <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                                                         <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -106,10 +121,32 @@
                                                 </ChartMarker>
                                                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                             </ChartSeries>
+
+                                            @{
+                                                var ratioData = ChartData.Select(data => new
+                                                {
+                                                    data.DateUnitName,
+                                                    Ratio = data.TotalVehicle > 0 ? (data.OverloadVehicle / (double)data.TotalVehicle) * 100 : 0
+                                                }).ToList();
+                                            }
+
+                                            <!-- Series for Overload Ratio (%) using the secondary Y-Axis -->
+                                            <ChartSeries Name="Overload Ratio (%)"
+                                                         DataSource="@ratioData"
+                                                         XName="DateUnitName"
+                                                         YName="Ratio"
+                                                         Width="2"
+                                                         Type="ChartSeriesType.Line"
+                                                         EnableTooltip="true"
+                                                         YAxisName="SecondaryYAxis">
+                                                <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                            </ChartSeries>
                                         </ChartSeriesCollection>
+
                                         <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                         <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                                     </SfChart>
+
                                 </div>
                                 
                             }
@@ -146,30 +183,19 @@
     private bool chartview { get; set; } = false;
     private bool redrawPaths = true;
     private bool animate = false;
+    private bool isLoading = false;
 
     protected override async Task OnParametersSetAsync()
     {
         files = await fileService.Get(Station.StationId);
         loadCounts = await loadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
-        await TypeChanged("Today");
+        await TypeChanged("Daily");
     }
     private async Task TypeChanged(string type)
     {
-        if (type.ToLower() == "today")
-        {
-            selectedType = type;
-            reportParameters.DateStart = DateTime.Now.Date;
-            reportParameters.DateEnd = DateTime.Now.AddDays(+1);
-
-        }
-        else if (type.ToLower() == "yesterday")
-        {
-            selectedType = type;
-            reportParameters.DateStart = DateTime.Now.AddDays(-1);
-            reportParameters.DateEnd = DateTime.Now;
-        }
+        selectedType = type;
+        isLoading = true;
         await LoadChart();
-        chartview = true;
     }
     private async Task LoadChart()
     {
@@ -177,26 +203,77 @@
         {
             reportParameters.Stations.Add(Station.StationId);
         }
-
-        ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.AddDays(-1).ToString("dd MMM yyy") + " )";
-        XAxisTitle = "Number of Vehicles (Units)";
-        report = await loadService.GetHourlyOverloadedReport(reportParameters);
-        if (report.Item2)
+        if (selectedType == "Monthly")
         {
-            if (report.Item1.Count() > 0)
+            reportParameters.DateStart = DateTime.Now.AddMonths(-12);
+            reportParameters.DateEnd = DateTime.Now;
+            report = await loadService.GetMonthlyOverloadedReport(reportParameters);
+            if (report.Item2)
             {
-                ChartData = report.Item1;
-                YAxisTitle = "Hourly";
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    chartview = false;
+                    Summary = "No value is available";
+                }
             }
             else
             {
-                Summary = "No value is available";
+                Summary = report.Item3;
             }
         }
-        else
+        else if (selectedType == "Weekly")
         {
-            Summary = report.Item3;
+            reportParameters.DateStart = DateTime.Now.AddMonths(-3);
+            reportParameters.DateEnd = DateTime.Now;
+            report = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
         }
-     
+        else if (selectedType == "Daily")
+        {
+            reportParameters.DateStart = DateTime.Now.AddMonths(-1);
+            reportParameters.DateEnd = DateTime.Now;
+            //report = await loadService.GetHourlyOverloadedReport(reportParameters);
+            report = await loadService.GetDailyOverloadedReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
+        YAxisTitle = "Number of Vehicles (Units)";
+        XAxisTitle = selectedType;
+        chartview = true;
+        isLoading = false;
     }
 }
