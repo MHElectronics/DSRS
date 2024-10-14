@@ -42,11 +42,11 @@
                     <div class="form-control">
                         <div class="col-12">
                             <div class="icheck-primary d-inline">
-                                <input type="checkbox" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(async() => await HandleFileTypeChange(1))" />
+                                <input type="radio" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(async() => await HandleFileTypeChange(1))" />
                                 <label for="checkType1">Axle Load Data</label>
                             </div>
                             <div class="icheck-primary d-inline">
-                                <input type="checkbox" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(async() => await HandleFileTypeChange(2))" />
+                                <input type="radio" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(async() => await HandleFileTypeChange(2))" />
                                 <label for="checkType2">Fine Payment Data</label>
                             </div>
                         </div>
@@ -121,6 +121,8 @@
         fileType = selectedFileType;
         showTable = false;
         showHide = false;
+        axleLoadData = null;
+        fineRepaymentData = null;
     }
     private async Task StationChanged(ChangeEventArgs e)
     {
