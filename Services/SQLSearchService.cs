@@ -1,6 +1,11 @@
 ﻿using BOL;
+using Dapper;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Extensions.Configuration;
 using Services.Helpers;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace Services;
 public interface ISQLSearchService
@@ -9,10 +14,10 @@ public interface ISQLSearchService
 }
 public class SQLSearchService : ISQLSearchService
 {
-    private readonly ISqlDataAccess _db;
-    public SQLSearchService(ISqlDataAccess db)
+    private string _connectionString;
+    public SQLSearchService(IConfiguration config)
     {
-        _db = db;
+        _connectionString = config.GetConnectionString("AxleLoadDBDirectQuery");
     }
     public async Task<DataTable> GetSQLSearch(SQLSearch sQLSearch)
     {
@@ -23,28 +28,30 @@ public class SQLSearchService : ISQLSearchService
             throw new ArgumentException("SQL query cannot be null or empty");
         }
 
-        var data = await _db.LoadData<dynamic, dynamic>(sQLSearch.Query, new { });
-        if (data != null)
+        //Open Connection
+        SqlConnection conn = new SqlConnection(_connectionString);
+        SqlCommand cmd = new SqlCommand(sQLSearch.Query, conn);
+        conn.Open();
+
+        // Create data adapter
+        SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+        try
         {
-            foreach (var item in data)
-            {
-                if (dataTable.Columns.Count == 0)
-                {
-                    foreach (var prop in item)
-                    {
-                        dataTable.Columns.Add(prop.Key);
-                    }
-                }
-                var row = dataTable.NewRow();
-                foreach (var prop in item)
-                {
-                    row[prop.Key] = prop.Value ?? DBNull.Value;
-                }
-                dataTable.Rows.Add(row);
-            }
+            // Fill datatabel using data adapter
+            da.Fill(dataTable);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            //Close and dispose connection
+            conn.Close();
+            da.Dispose();
         }
 
         return dataTable;
     }
-
 }
