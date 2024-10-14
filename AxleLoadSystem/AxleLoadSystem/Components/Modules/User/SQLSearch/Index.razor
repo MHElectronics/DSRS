@@ -1,5 +1,6 @@
 ﻿@page "/sqldirectsearch"
 @using System.Data
+@using Microsoft.AspNetCore.Components.QuickGrid
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
 @inject ISQLSearchService sqlSearchService
@@ -21,7 +22,7 @@
                         <label for="sql" class="form-label">SQL Query</label>
                         <input type="text" @bind="@sqlSearch.Query" class="form-control" placeholder="SQL Query" id="sql" min="5" maxlength="300" />
                     </div>
-                    
+
                     @if (!string.IsNullOrEmpty(Summary))
                     {
                         <label class="text-danger">@Summary</label>
@@ -38,27 +39,38 @@
     }
     @if (results != null)
     {
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    @foreach (DataColumn column in results.Columns)
-                    {
-                        <th>@column.ColumnName</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (DataRow row in results.Rows)
-                {
-                    <tr>
-                        @foreach (var item in row.ItemArray)
-                        {
-                            <td>@item</td>
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
+        @* <table class="table table-hover">
+    <thead>
+    <tr>
+    @foreach (DataColumn column in results.Columns)
+    {
+    <th>@column.ColumnName</th>
+    }
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (DataRow row in results.Rows)
+    {
+    <tr>
+    @foreach (var item in row.ItemArray)
+    {
+    <td>@item</td>
+    }
+    </tr>
+    }
+    </tbody>
+    </table> *@
+
+        <QuickGrid TGridItem="DataRow" ItemsProvider="provider" Virtualize="true" ItemSize="35">
+            @foreach (DataColumn column in results.Columns)
+            {
+                <PropertyColumn Property="@(c => c[column.ColumnName])" Sortable="true">
+                    <HeaderTemplate>
+                        @column.ColumnName
+                    </HeaderTemplate>
+                </PropertyColumn>
+            }
+        </QuickGrid>
     }
     else
     {
@@ -69,8 +81,9 @@
 @code {
     private SQLSearch sqlSearch { get; set; } = new();
     private EditContext editContext = default!;
-    private User currentUser{ get; set; }
+    private User currentUser { get; set; }
     private DataTable results;
+    private GridItemsProvider<DataRow>? provider;
 
     private string Summary { get; set; }
 
@@ -86,11 +99,15 @@
         sqlSearch.UserId = currentUser.Id;
         if (await QueryValidation(sqlSearch.Query))
         {
-             results = await sqlSearchService.GetSQLSearch(sqlSearch);
+            results = await sqlSearchService.GetSQLSearch(sqlSearch);
+            var rows = results.AsEnumerable().ToList();
+            var providerResult = GridItemsProviderResult
+                .From<DataRow>(rows, rows.Count);
+            provider = req => ValueTask.FromResult(providerResult);
         }
         else
         {
-            Summary = "Query format is wrong";    
+            Summary = "Query format is wrong";
         }
     }
     private void OnInvalidSubmit()
@@ -107,6 +124,6 @@
         else
         {
             return false;
-        }  
+        }
     }
 }
