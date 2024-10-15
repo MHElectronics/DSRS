@@ -27,7 +27,7 @@
             {
                 <div class="row">
                     <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
+                        <button class="btn @(selectedType == "Hourly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hourly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
                         <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
                         <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                         <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
@@ -156,7 +156,7 @@
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
-    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Bar;
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
 
     public string Width { get; set; } = "90%";
     public string FileName { get; set; } = "Charts";
@@ -166,7 +166,7 @@
     public string YAxisTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
-    private string chartType { get; set; } = "bar";
+    private string chartType { get; set; } = "column";
 
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }

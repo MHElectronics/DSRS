@@ -144,6 +144,9 @@
   <data name="Button.Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="Button.Hourly" xml:space="preserve">
+    <value>Hourly</value>
+  </data>
   <data name="Button.Monthly" xml:space="preserve">
     <value>Monthly</value>
   </data>

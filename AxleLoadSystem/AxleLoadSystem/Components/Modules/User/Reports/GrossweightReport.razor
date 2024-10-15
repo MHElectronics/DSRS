@@ -27,7 +27,7 @@
             {
                 <div class="row">
                     <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
+                        <button class="btn @(selectedType == "Hourly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hourly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
                         <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
                         <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                         <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
@@ -313,7 +313,7 @@
                 Summary = report.Item3;
             }
         }
-        else if (selectedType == "Daily")
+        else if (selectedType == "Hourly")
         {
             report = await loadService.GetHourlyVehicleReport(reportParameters);
             if (report.Item2)

@@ -315,8 +315,6 @@ else
 
         ListClassStatus = await classStatusService.GetClassStatusList();
         configuration = await configurationService.GetConfiguration();
-        reportParameters.DateEnd = DateTime.Today;
-        reportParameters.DateStart = configuration.SystemStartDate;
     }
     private async Task AllStationClicked()
     {

@@ -144,6 +144,9 @@
   <data name="Button.Edit" xml:space="preserve">
     <value>সম্পাদনা করুন</value>
   </data>
+  <data name="Button.Hourly" xml:space="preserve">
+    <value>ঘণ্টায়</value>
+  </data>
   <data name="Button.Monthly" xml:space="preserve">
     <value>মাসিক</value>
   </data>
