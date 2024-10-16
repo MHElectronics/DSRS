@@ -7,6 +7,7 @@ public interface IWIMScaleService
 {
     Task<IEnumerable<WIMScale>> GetAll();
     Task<IEnumerable<WIMScale>> GetByStation(WIMScale obj);
+    Task<IEnumerable<WIMScale>> GetByStationId(int stationId);
     Task<WIMScale> GetById(WIMScale obj);
     Task<bool> Add(WIMScale obj);
     Task<bool> Update(WIMScale obj);
@@ -49,6 +50,11 @@ public class WIMScaleService : IWIMScaleService
         }
 
         return wims;
+    }
+    public async Task<IEnumerable<WIMScale>> GetByStationId(int stationId)
+    {
+        string query = "SELECT * FROM WIMScale WHERE StationId=@stationId";
+        return await _db.LoadData<WIMScale, dynamic>(query, new { stationId });
     }
 
     public async Task<WIMScale> GetById(WIMScale obj)
