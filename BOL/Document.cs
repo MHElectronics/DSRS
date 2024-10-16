@@ -9,5 +9,6 @@ public class Document
     public int UserId { get; set; }
     public int DisplayOrder {  get; set; }
     public DateTime Date { get; set; }
+    public int CategoryId { get; set; }
 }
 

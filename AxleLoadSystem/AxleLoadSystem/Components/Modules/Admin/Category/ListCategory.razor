@@ -1,0 +1,99 @@
+﻿@using System
+@using BOL
+@inject ICategoryService CategoryService
+@inject IAppState appState
+@inject IStringLocalizer<Locales.CommonPages> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+
+<PageTitleComponent Title="@localizer["Tutorial.CategoryList"]">
+    <NavLink class="btn btn-primary pull-right" href="/Category/new" title="Add New">
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
+    </NavLink>
+</PageTitleComponent>
+
+@if (CategoryList is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["Id"]</th>
+                        <th>@localizer["Category.Title"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Category in CategoryList.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@Category.Id</td>
+                            <td><b>@Category.Name</b></td>
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/category/details/" + Category.Id)" title="Details Information">
+                                        <i class="fas fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/category/edit/" + Category.Id)" title="Edit Information">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteCategory(Category))" title="Delete Information">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>    
+}
+<ConfirmDialog @ref="deleteConfirmationCategoryRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedCategory" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
+
+@code {
+    private IEnumerable<Category> CategoryList;
+    protected ConfirmDialog deleteConfirmationCategoryRef { get; set; }
+    private bool deleteClicked { get; set; } = false;
+    private Category SelectedCategory { get; set; } = new();
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCategoryList();
+    }
+    private async Task GetCategoryList()
+    {
+        CategoryList = await CategoryService.GetCategoryList();
+    }
+    private async Task DeleteCategory(Category Category)
+    {
+        deleteClicked = true;
+        SelectedCategory = Category;
+        await deleteConfirmationCategoryRef.Show();
+    }
+    private async Task DeleteConfirmedCategory()
+    {
+        Notification notification = new();
+        if (await CategoryService.DeleteCategory(SelectedCategory.Id))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Category Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Category Deletion";
+        }
+
+        appState.SetNotification(this, notification);
+        await GetCategoryList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
+    }
+}

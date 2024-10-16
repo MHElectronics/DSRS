@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IClassStatusService, ClassStatusService>();
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IConfigurationService, ConfigurationService>();
+        services.AddScoped<ICategoryService, CategoryService>();
 
 
 

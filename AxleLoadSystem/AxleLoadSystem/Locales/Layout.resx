@@ -195,4 +195,7 @@
   <data name="Menu.Users" xml:space="preserve">
     <value>Users</value>
   </data>
+  <data name="Menu.Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
 </root>

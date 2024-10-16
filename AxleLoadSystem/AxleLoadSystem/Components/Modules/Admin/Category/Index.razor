@@ -1,0 +1,48 @@
+﻿@page "/category/{mode?}/{id?}"
+@inject ICategoryService CategoryService
+
+@if (string.IsNullOrEmpty(Mode))
+{
+    <ListCategory/>
+}
+else
+{
+    <FormComponent Category="Category" Mode="SelectedFormMode" />
+}
+
+@code {
+    [Parameter]
+    public string Mode { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    private Category Category { get; set; } = null;
+    private FormMode SelectedFormMode { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Mode))
+        {
+            return;
+        }
+
+        if (Mode.ToLower() == "new")
+        {
+            SelectedFormMode = FormMode.Add;
+            Category = new();
+        }
+        else if (!string.IsNullOrEmpty(Id))
+        {
+            int id = Convert.ToInt32(Id);
+            Category = await CategoryService.GetCategory(id);
+
+            if (Mode.ToLower() == "details")
+            {
+                SelectedFormMode = FormMode.Details;
+            }
+            else if (Mode.ToLower() == "edit")
+            {
+                SelectedFormMode = FormMode.Edit;
+            }
+        }
+    }
+}

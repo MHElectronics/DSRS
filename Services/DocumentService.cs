@@ -39,16 +39,16 @@ public class DocumentService : IDocumentService
 
     public async Task<int> InsertDocument(Document document)
     {
-        string sql = @"INSERT INTO Document(FileName,FileLocation,Description,UserId,DisplayOrder,Date)
+        string sql = @"INSERT INTO Document(FileName,FileLocation,Description,UserId,DisplayOrder,Date,CategoryId)
                         OUTPUT INSERTED.Id
-                        VALUES (@FileName,@FileLocation,@Description,@UserId,@DisplayOrder,@Date)";
+                        VALUES (@FileName,@FileLocation,@Description,@UserId,@DisplayOrder,@Date,@CategoryId)";
         int documentId = await _db.ExecuteScalar<int>(sql, document);
         return documentId;
     }
 
     public async Task<bool> UpdateDocument(Document document)
     {
-        string sql = @"UPDATE Document SET FileName=@FileName, FileLocation=@FileLocation, Description=@Description, UserId=@UserId,DisplayOrder=@DisplayOrder, Date=@Date
+        string sql = @"UPDATE Document SET FileName=@FileName, FileLocation=@FileLocation, Description=@Description, UserId=@UserId,DisplayOrder=@DisplayOrder, Date=@Date, CategoryId=@CategoryId
                        WHERE Id=@Id";
         return await _db.SaveData<Document>(sql, document);
     }
