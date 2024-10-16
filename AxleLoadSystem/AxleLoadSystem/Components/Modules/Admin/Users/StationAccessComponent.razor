@@ -19,18 +19,18 @@
                 <label for="stations" class="form-label">Access for: @users.FirstOrDefault(u => u.Id == userId).Name</label>
             </div>
             <div class="card-body">
-                <div class="form-control">
+                <div class="form-control d-flex flex-wrap">
                     @foreach (Station station in stations)
                     {
                         int value = station.StationId;
                         bool check = selectedStations.Contains(value);
-                        <div class="icheck-primary d-inline">
+                        <div class="icheck-primary d-inline me-3 mb-2">
                             <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
-                            <label for="checkId@(station.StationId)">@station.StationName</label>
+                            <label for="checkId@(station.StationId)">@station.StationName &nbsp;</label>
                         </div>
                     }
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-12 mt-3">
                     <div class="form-group btn btn-group">
                         <button type="submit" class="btn btn-primary">Save</button>
                         <span class="btn btn-primary" @onclick="@(() => userId = 0)">@localizerResource["Button.Cancel"]</span>
