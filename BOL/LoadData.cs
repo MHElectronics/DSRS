@@ -19,9 +19,11 @@ public class LoadData
     public string PlateZone { get; set; } = string.Empty;
     public string PlateSeries { get; set; } = string.Empty;
     public string PlateNumber { get; set; } = string.Empty;
+    public string VehicleId { get; set; } = string.Empty;
     [MinValue(0)]
     [Required]
     public int NumberOfAxle { get; set; }
+
     [MinValue(0)]
     [Required]
     public int Axle1 { get; set; }

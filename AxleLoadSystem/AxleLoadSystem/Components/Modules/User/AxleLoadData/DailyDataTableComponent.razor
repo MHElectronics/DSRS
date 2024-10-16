@@ -32,6 +32,7 @@
                 <PropertyColumn Property="@(l => l.PlateZone)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.PlateSeries)" />
                 <PropertyColumn Property="@(l => l.PlateNumber)" />
+                <PropertyColumn Property="@(l => l.VehicleId)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.NumberOfAxle)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.VehicleSpeed)" />
                 <PropertyColumn Property="@(l => l.Axle1)" Sortable="true" />
@@ -150,6 +151,7 @@
             || load.PlateZone.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || load.PlateSeries.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || load.PlateNumber.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
+            || load.VehicleId.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || load.NumberOfAxle.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || load.VehicleSpeed.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
             || load.Axle1.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
@@ -196,6 +198,7 @@
             fields.Add(("Plate Zone", nameof(loadData.PlateZone), loadData.PlateZone.GetType()));
             fields.Add(("Plate Series", nameof(loadData.PlateSeries), loadData.PlateSeries.GetType()));
             fields.Add(("Plate Number", nameof(loadData.PlateNumber), loadData.PlateNumber.GetType()));
+            fields.Add(("Vehicle Id", nameof(loadData.VehicleId), loadData.VehicleId.GetType()));
             fields.Add(("Number Of Axle", nameof(loadData.NumberOfAxle), loadData.NumberOfAxle.GetType()));
             fields.Add(("Vehicle Speed", nameof(loadData.VehicleSpeed), loadData.VehicleSpeed.GetType()));
             fields.Add(("Axle1", nameof(loadData.Axle1), loadData.Axle1.GetType()));

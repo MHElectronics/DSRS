@@ -232,9 +232,10 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        if(obj.DateTime.Date != DateTime.Today)
+        // Single Datapoint entry is allowed only today's and yesterday's Data
+        if (obj.DateTime.Date != DateTime.Today && obj.DateTime.Date != DateTime.Today.AddDays(-1))
         {
-            return BadRequest("Only today's data is allowed");
+            return BadRequest("Only today's and yesterday's data is allowed");
         }
 
         //Get station id from authentication
@@ -260,9 +261,10 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        if (obj.Any(l => l.DateTime.Date != DateTime.Today))
+        // Multiple Datapoint entry is allowed only today's and yesterday's Data
+        if (obj.Any(l => l.DateTime.Date != DateTime.Today && l.DateTime.Date != DateTime.Today.AddDays(-1)))
         {
-            return BadRequest("Only today's data is allowed");
+            return BadRequest("Only today's and yesterday's data is allowed");
         }
 
         //Check station code
@@ -290,8 +292,8 @@ public class ALCSController : ControllerBase
     private async Task<List<LoadData>> CheckValidData(int stationId, List<LoadData> data)
     {
         //Data check
-        data.RemoveAll(d => d.DateTime.Date != DateTime.Today);
-        
+        data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
+
         //Check lane number
         IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale(){ StationId = stationId });
         data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
@@ -301,7 +303,7 @@ public class ALCSController : ControllerBase
     private async Task<List<FinePayment>> CheckValidFineData(int stationId, List<FinePayment> data)
     {
         //Data check
-        data.RemoveAll(d => d.DateTime.Date != DateTime.Today);
+        data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
 
         //Check lane number
         IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
@@ -317,9 +319,10 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        if (obj.DateTime.Date != DateTime.Today)
+        // Single Datapoint entry is allowed only today's and yesterday's Data
+        if (obj.DateTime.Date != DateTime.Today && obj.DateTime.Date != DateTime.Today.AddDays(-1))
         {
-            return BadRequest("Only today's data is allowed");
+            return BadRequest("Only today's and yesterday's data is allowed");
         }
 
         //Check station code
@@ -344,9 +347,10 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        if (obj.Any(l => l.DateTime.Date != DateTime.Today))
+        // Multiple Datapoint entry is allowed only today's and yesterday's Data
+        if (obj.Any(l => l.DateTime.Date != DateTime.Today && l.DateTime.Date != DateTime.Today.AddDays(-1)))
         {
-            return BadRequest("Only today's data is allowed");
+            return BadRequest("Only today's and yesterday's data is allowed");
         }
 
         //Check station code
