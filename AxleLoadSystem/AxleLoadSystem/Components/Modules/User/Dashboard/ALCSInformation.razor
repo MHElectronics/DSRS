@@ -81,7 +81,7 @@
                                     <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
                                         <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
 
-                                        <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                                        <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
                                             <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                             <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                         </ChartPrimaryXAxis>
@@ -90,7 +90,6 @@
                                             <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                         </ChartPrimaryYAxis>
 
-                                        <!-- Secondary Y-Axis for Overload Ratio (%) -->
                                         <ChartAxes>
                                             <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overload Ratio (%)" LabelFormat="{value}%">
                                                 <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
@@ -130,7 +129,6 @@
                                                 }).ToList();
                                             }
 
-                                            <!-- Series for Overload Ratio (%) using the secondary Y-Axis -->
                                             <ChartSeries Name="Overload Ratio (%)"
                                                          DataSource="@ratioData"
                                                          XName="DateUnitName"
@@ -139,7 +137,7 @@
                                                          Type="ChartSeriesType.Line"
                                                          EnableTooltip="true"
                                                          YAxisName="SecondaryYAxis">
-                                                <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                                <ChartMarker Visible="false" Height="10" Width="10"></ChartMarker>
                                             </ChartSeries>
                                         </ChartSeriesCollection>
 
