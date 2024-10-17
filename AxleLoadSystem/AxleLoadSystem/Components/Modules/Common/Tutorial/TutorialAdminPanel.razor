@@ -3,6 +3,7 @@
 @using Services.Helpers
 @inject IAppState appState
 @inject IDocumentService documentService
+@inject ICategoryService categoryService
 @inject IFileStoreHelper fileStoreHelper
 @inject ICategoryService categoryService
 @inject AuthenticationStateProvider authStateProvider
@@ -68,7 +69,7 @@
         <h3 class="card-title">@localizerCommon["Tutorial.List"]</h3>
     </div>
     <div class="card-body">
-        @if (documents == null)
+        @if (documents == null && categories is null)
         {
             <Loader />
         }
@@ -81,8 +82,9 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Tutorial Description</th>
+                        <th>Category Name</th>
                         <th>File Name</th>
+                        <th>File Description</th>
                         <th>Uploaded Time</th>
                         <th></th>
                     </tr>
@@ -90,9 +92,11 @@
                 <tbody>
                     @foreach (Document document in documents)
                     {
+                        string categoryName = categories.Where(c => c.Id == document.CategoryId).FirstOrDefault()?.Name;
                         <tr>
-                            <td>@document.Description</td>
+                            <td>@categoryName</td>
                             <td>@document.FileName</td>
+                            <td>@document.Description</td>
                             <td>@document.Date</td>
                             <td class="text-right">
                                 <div class="btn-group">

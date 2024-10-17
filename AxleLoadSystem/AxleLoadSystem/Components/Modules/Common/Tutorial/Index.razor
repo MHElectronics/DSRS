@@ -2,6 +2,7 @@
 @using BOL.Models
 @using Services.Helpers
 @inject IDocumentService documentService
+@inject ICategoryService categoryService
 @inject IFileStoreHelper fileStoreHelper
 @inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime jsRuntime
@@ -18,7 +19,7 @@
 </PageTitleComponent>
 <div class="card">
     <div class="card-body card-primary card-outline" id="accordion">
-        @if (documents == null)
+        @if (documents == null && categories is null)
         {
             <Loader />
         }
@@ -31,6 +32,7 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
+                        <th>Category Name</th>
                         <th>File Name</th>
                         <th>File Description</th>
                         <th>Uploaded Time</th>
@@ -40,7 +42,9 @@
                 <tbody>
                     @foreach (Document document in documents.OrderBy(f => f.DisplayOrder))
                     {
+                        string categoryName = categories.Where(c => c.Id == document.CategoryId).FirstOrDefault()?.Name;
                         <tr>
+                            <td>@categoryName</td>
                             <td>@document.FileName</td>
                             <td>@document.Description</td>
                             <td>@document.Date</td>
@@ -62,11 +66,12 @@
 @code {
     private List<Document> documents { get; set; } = null;
     private Document document { get; set; } = new();
-
+    private IEnumerable<Category> categories { get; set; } = null;
     protected override async Task OnInitializedAsync()
     {
         var ListDocument = await documentService.GetDocuments();
         documents = ListDocument.ToList();
+        categories = await categoryService.GetCategoryList();
     }
     private async Task SubmitForDownload(Document document)
     {

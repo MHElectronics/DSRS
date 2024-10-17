@@ -20,7 +20,7 @@
                 <div class="row">
                     <div class="col-md-12 col-sm-12">
                         <label for="sql" class="form-label">SQL Query</label>
-                        <input type="text" @bind="@sqlSearch.Query" class="form-control" placeholder="SQL Query" id="sql" min="5" maxlength="300" />
+                        <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" rows="5" maxlength="300"></textarea>
                     </div>
 
                     @if (!string.IsNullOrEmpty(Summary))
