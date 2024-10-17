@@ -79,18 +79,21 @@ else
                         <div class="form-group">
                             @if (formMode == FormMode.Details)
                             {
-                                <label for="wimHighSpeed" class="form-label">@localizer["WimHighSpeed"]</label>
-                                <label class="form-control" id="wimHighSpeed">@(wimScale.IsHighSpeed ? "High Speed" : "Slow Speed")</label>
+                                WIMType selectedType = (WIMType)Enum.Parse(typeof(WIMType), wimScale.Type.ToString());
+                                <label class="form-label">@localizer["WimType"]</label>
+                                <label class="form-control">@(selectedType.ToDescription())</label>
                             }
                             else
                             {
-                                <label for="chkHighSpeed" class="form-label">@localizer["WimHighSpeed"]</label>
-                                <br />
-                                <div class="icheck-primary d-inline">
-                                    <input type="checkbox" id="chkHighSpeed" @bind="@wimScale.IsHighSpeed" />
-                                    <label for="chkHighSpeed">@localizer["WimHighSpeed"]</label>
-                                </div>
-                                <ValidationMessage For="() => wimScale.IsHighSpeed" />
+                                <label for="Type" class="form-label">@localizer["WimType"]</label>
+                                <select class="form-control" @bind="@wimScale.Type">
+                                    <option value="1">@(((WIMType)Enum.Parse(typeof(WIMType), "1")).ToDescription())</option>
+                                    <option value="2">@(((WIMType)Enum.Parse(typeof(WIMType), "2")).ToDescription())</option>
+                                    <option value="3">@(((WIMType)Enum.Parse(typeof(WIMType), "3")).ToDescription())</option>
+                                    <option value="4">@(((WIMType)Enum.Parse(typeof(WIMType), "4")).ToDescription())</option>
+                                    <option value="5">@(((WIMType)Enum.Parse(typeof(WIMType), "5")).ToDescription())</option>
+                                </select>
+                                <ValidationMessage For="() => wimScale.Type" />
                             }
                         </div>
                     </div>

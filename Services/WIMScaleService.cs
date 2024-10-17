@@ -26,7 +26,7 @@ public class WIMScaleService : IWIMScaleService
     public async Task<IEnumerable<WIMScale>> GetAll()
     {
         // Get the data from database
-        string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale";
+        string query = "SELECT Id,StationId,LaneNumber,Type,EquipmentCode,LaneDirection FROM WIMScale";
         return await _db.LoadData<WIMScale, dynamic>(query, null);
     }
 
@@ -37,7 +37,7 @@ public class WIMScaleService : IWIMScaleService
         if (!_cacheProvider.TryGetValue(cacheKey, out IEnumerable<WIMScale>? wims))
         {
             // Get the data from database
-            string query = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE StationId=@StationId";
+            string query = "SELECT Id,StationId,LaneNumber,Type,EquipmentCode,LaneDirection FROM WIMScale WHERE StationId=@StationId";
             wims = await _db.LoadData<WIMScale, dynamic>(query, new { obj.StationId });
             
             var cacheEntryOptions = new MemoryCacheEntryOptions
@@ -59,7 +59,7 @@ public class WIMScaleService : IWIMScaleService
 
     public async Task<WIMScale> GetById(WIMScale obj)
     {
-        string sql = "SELECT Id,StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection FROM WIMScale WHERE Id=@Id";
+        string sql = "SELECT Id,StationId,LaneNumber,Type,EquipmentCode,LaneDirection FROM WIMScale WHERE Id=@Id";
         return await _db.LoadSingleAsync<WIMScale, dynamic>(sql, new { obj.Id });
     }
 
@@ -68,7 +68,7 @@ public class WIMScaleService : IWIMScaleService
         bool hasDuplicate = await this.CheckDuplicateEntry(obj);
         if (!hasDuplicate)
         {
-            string query = "INSERT INTO WIMScale(StationId,LaneNumber,IsHighSpeed,EquipmentCode,LaneDirection) VALUES(@StationId,@LaneNumber,@IsHighSpeed,@EquipmentCode,@LaneDirection)";
+            string query = "INSERT INTO WIMScale(StationId,LaneNumber,Type,EquipmentCode,LaneDirection) VALUES(@StationId,@LaneNumber,@Type,@EquipmentCode,@LaneDirection)";
             bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
             if(isSuccess)
             {
@@ -81,7 +81,7 @@ public class WIMScaleService : IWIMScaleService
     }
     public async Task<bool> Update(WIMScale obj)
     {
-        string query = "UPDATE WIMScale SET StationId=@StationId,LaneNumber=@LaneNumber,IsHighSpeed=@IsHighSpeed,EquipmentCode=@EquipmentCode,LaneDirection=@LaneDirection WHERE Id=@Id";
+        string query = "UPDATE WIMScale SET StationId=@StationId,LaneNumber=@LaneNumber,Type=@Type,EquipmentCode=@EquipmentCode,LaneDirection=@LaneDirection WHERE Id=@Id";
         bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
         if (isSuccess)
         {
