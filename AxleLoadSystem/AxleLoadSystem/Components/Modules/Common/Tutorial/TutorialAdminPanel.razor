@@ -2,7 +2,7 @@
 @using BOL.Models
 @using Services.Helpers
 @inject IAppState appState
-@inject IDocumentService documentService
+@inject ITutorialService tutorialService
 @inject ICategoryService categoryService
 @inject IFileStoreHelper fileStoreHelper
 @inject ICategoryService categoryService
@@ -14,7 +14,7 @@
 <PageTitleComponent Title="@localizerCommon["Tutorial.AdminPanel"]">
 </PageTitleComponent>
 <div class="card card-primary card-outline">
-    @if (document is not null && categories is not null)
+    @if (tutorial is not null && categories is not null)
     {
         <div class="card-body">
             <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
@@ -23,9 +23,9 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <label for="categorylist" class="form-label">@localizerCommon["Tutorial.CategoryList"]</label>
-                        <select class="form-control" @bind="@document.CategoryId" id="categorylist">
+                        <select class="form-control" @bind="@tutorial.TutorialCategoryId" id="categorylist">
                             <option value="0">-No Category-</option>
-                            @foreach (Category category in categories)
+                            @foreach (TutorialCategory category in categories)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }
@@ -33,12 +33,12 @@
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <label for="description" class="form-label">@localizerCommon["Tutorial.Description"]</label>
-                        <input type="text" @bind="@document.Description" class="form-control" placeholder="Tutorial Description" id="description" min="5" maxlength="300" />
+                        <input type="text" @bind="@tutorial.Description" class="form-control" placeholder="Tutorial Description" id="description" min="5" maxlength="300" />
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             <label for="inputDisplayOrder">@localizerCommon["DisplayOrder"]</label>
-                            <input type="number" class="form-control" @bind="@document.DisplayOrder" min="0" id="inputDisplayOrder" />
+                            <input type="number" class="form-control" @bind="@tutorial.DisplayOrder" min="0" id="inputDisplayOrder" />
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
@@ -69,11 +69,11 @@
         <h3 class="card-title">@localizerCommon["Tutorial.List"]</h3>
     </div>
     <div class="card-body">
-        @if (documents == null && categories is null)
+        @if (tutorials == null && categories is null)
         {
             <Loader />
         }
-        else if (documents.Count() == 0)
+        else if (tutorials.Count() == 0)
         {
             <p>No Data Found</p>
         }
@@ -90,26 +90,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (Document document in documents)
+                    @foreach (Tutorial tutorial in tutorials)
                     {
-                        string categoryName = categories.Where(c => c.Id == document.CategoryId).FirstOrDefault()?.Name;
+                        string categoryName = categories.Where(c => c.Id == tutorial.TutorialCategoryId).FirstOrDefault()?.Name;
                         <tr>
                             <td>@categoryName</td>
-                            <td>@document.FileName</td>
-                            <td>@document.Description</td>
-                            <td>@document.Date</td>
+                            <td>@tutorial.FileName</td>
+                            <td>@tutorial.Description</td>
+                            <td>@tutorial.Date</td>
                             <td class="text-right">
                                 <div class="btn-group">
                                     <span class="btn btn-primary" title="Display Order">
-                                        @document.DisplayOrder 
+                                        @tutorial.DisplayOrder 
                                     </span>
-                                    <span class="btn btn-primary" @onclick="@(() => Edit(document))" title="Edit file">
+                                    <span class="btn btn-primary" @onclick="@(() => Edit(tutorial))" title="Edit file">
                                         <i class="fa fa-edit"></i>
                                     </span>
-                                    <span class="btn btn-primary" @onclick="() => SubmitForDelete(document)" title="Delete file">
+                                    <span class="btn btn-primary" @onclick="() => SubmitForDelete(tutorial)" title="Delete file">
                                         <i class="fa fa-trash"></i>
                                     </span>
-                                    <span class="btn btn-primary" @onclick="() => SubmitForDownload(document)" title="Download file">
+                                    <span class="btn btn-primary" @onclick="() => SubmitForDownload(tutorial)" title="Download file">
                                         <i class="fa fa-download"></i>
                                     </span>
                                 </div>
@@ -126,10 +126,10 @@
 @code
 {
     private EditContext editContext = default!;
-    private List<Document> documents { get; set; } = null;
-    private IEnumerable<Category> categories { get; set; }
-    private Document document { get; set; } = new();
-    private Document tempDocument { get; set; } = new();
+    private List<Tutorial> tutorials { get; set; } = null;
+    private IEnumerable<TutorialCategory> categories { get; set; }
+    private Tutorial tutorial { get; set; } = new();
+    private Tutorial temptutorial { get; set; } = new();
     protected ConfirmDialog deleteConfirmationRef { get; set; }
     private User currentUser { get; set; }
     private string _inputFileId = Guid.NewGuid().ToString();
@@ -140,20 +140,20 @@
     private string Summary;
     protected override async Task OnInitializedAsync()
     {
-        editContext = new EditContext(document);
+        editContext = new EditContext(tutorial);
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
         categories = await categoryService.GetCategoryList();
-        await this.LoadDocuments();
+        await this.Loadtutorials();
     }
-    private async Task LoadDocuments()
+    private async Task Loadtutorials()
     {
-        var ListDocuments = await documentService.GetDocuments();
-        documents = ListDocuments.ToList();
+        var Listtutorials = await tutorialService.GetTutorials();
+        tutorials = Listtutorials.ToList();
     }
-    private void Edit(Document doc)
+    private void Edit(Tutorial doc)
     {
-        document = doc;
+        tutorial = doc;
     }
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
@@ -184,10 +184,10 @@
                     }
                     else
                     {
-                        document.Date = DateTime.Now;
-                        document.FileName = file.Name;
-                        fileStoreHelper.CreateDocumentDirectory(document);
-                        document.FileLocation = fileStoreHelper.GetNewFileLocation(file.Name, document);
+                        tutorial.Date = DateTime.Now;
+                        tutorial.FileName = file.Name;
+                        fileStoreHelper.CreatetutorialDirectory(tutorial);
+                        tutorial.FileLocation = fileStoreHelper.GetNewFileLocation(file.Name, tutorial);
                         int bufferSize = 1024 * 10;
 
                         //decimal progressPercent = 0;
@@ -207,7 +207,7 @@
                             buffer.CopyTo(byteFullFile, totalRead);
                             totalRead += bytesRead;
 
-                            await fileStoreHelper.UploadFileInPartsAsync(buffer, document.FileLocation);
+                            await fileStoreHelper.UploadFileInPartsAsync(buffer, tutorial.FileLocation);
                             //progressPercent = Decimal.Divide(totalRead, file.Size);
                             uploadProgress = Convert.ToInt32((double)totalRead / file.Size * 100);
                             StateHasChanged();
@@ -224,16 +224,16 @@
     private async Task OnValidSubmit(EditContext editContext)
     { 
         //Save file
-        document.UserId = currentUser.Id;
-        document.Date = DateTime.Now;
+        tutorial.UserId = currentUser.Id;
+        tutorial.Date = DateTime.Now;
 
-        int documentId = await documentService.InsertDocument(document);
-        if (documentId > 0)
+        int tutorialId = await tutorialService.InsertTutorial(tutorial);
+        if (tutorialId > 0)
         {
-            document.Id = documentId;
-            documents.Add(document);
+            tutorial.Id = tutorialId;
+            tutorials.Add(tutorial);
         }
-        document = new();
+        tutorial = new();
         _inputFileId = Guid.NewGuid().ToString();
         uploading = false;
         appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
@@ -242,23 +242,23 @@
     {
         appState.SetNotification(this, "Please enter valid values", Notification.NotificationType.Failure);
     }
-    private async Task SubmitForDownload(Document document)
+    private async Task SubmitForDownload(Tutorial tutorial)
     {
-        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(document.FileLocation);
-        await jsRuntime.InvokeVoidAsync("downloadFileFromString", document.FileName, Convert.ToBase64String(fileBytes));
+        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
+        await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
     }
-    private async Task SubmitForDelete(Document document)
+    private async Task SubmitForDelete(Tutorial tutorial)
     {
-        tempDocument = document;
+        temptutorial = tutorial;
         await deleteConfirmationRef.Show();
     }
     private async void DeleteConfirmed()
     {
-        fileStoreHelper.DeleteFile(tempDocument.FileLocation);
-        await documentService.DeleteDocument(tempDocument);
-        documents.Remove(tempDocument);
+        fileStoreHelper.DeleteFile(temptutorial.FileLocation);
+        await tutorialService.DeleteTutorial(temptutorial);
+        tutorials.Remove(temptutorial);
 
-        tempDocument = new Document();
+        temptutorial = new Tutorial();
         this.StateHasChanged();
         appState.SetNotification(this, "Tutorial Delete Successful", Notification.NotificationType.Success);
     }

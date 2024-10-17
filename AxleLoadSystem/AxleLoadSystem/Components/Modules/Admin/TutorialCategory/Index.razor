@@ -15,7 +15,7 @@ else
     public string Mode { get; set; }
     [Parameter]
     public string Id { get; set; }
-    private Category Category { get; set; } = null;
+    private TutorialCategory Category { get; set; } = null;
     private FormMode SelectedFormMode { get; set; }
 
     protected override async Task OnParametersSetAsync()

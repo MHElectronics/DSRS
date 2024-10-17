@@ -23,9 +23,9 @@ public static class DependencyInjection
         services.AddScoped<IFAQService, FAQService>();
         services.AddScoped<IStationAccessService, StationAccessService>();
         services.AddScoped<IClassStatusService, ClassStatusService>();
-        services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<ITutorialService, TutorialService>();
         services.AddScoped<IConfigurationService, ConfigurationService>();
-        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ICategoryService, TutorialCategoryService>();
 
 
 

@@ -19,7 +19,7 @@
 <div class="card card-primary card-outline">
     <div class="card-body">
         <div class="row">
-            @if (stations is not null)
+            @if (stations is not null && configuration is not null)
             {
                 <div class="col-md-3 col-sm-12">
                     <label>@localizerReports["Report.SelectStation"]</label>

@@ -6,11 +6,13 @@
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
 <PageTitleComponent Title="@localizer["Tutorial.CategoryList"]">
-    <NavLink class="btn btn-primary pull-right" href="/Category/new" title="Add New">
+@*     <NavLink class="btn btn-primary pull-right" href="/Category/new" title="Add New">
         <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
-    </NavLink>
+    </NavLink> *@
+   
 </PageTitleComponent>
 
+<FormComponent Category="category" Mode="SelectedFormMode" OnParametersChanged="HandleParametersChanged" />
 @if (CategoryList is null)
 {
     <Loader />
@@ -35,10 +37,7 @@ else
                             <td><b>@Category.Name</b></td>
                             <td>
                                 <div class="btn-group float-right">
-                                    <a class="btn btn-primary" href="@("/category/details/" + Category.Id)" title="Details Information">
-                                        <i class="fas fa-info"></i>
-                                    </a>
-                                    <a class="btn btn-primary" href="@("/category/edit/" + Category.Id)" title="Edit Information">
+                                    <a class="btn btn-primary" @onclick="(() => EditCategory(Category))" title="Edit Information">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a class="btn btn-primary" @onclick="(() => DeleteCategory(Category))" title="Delete Information">
@@ -57,10 +56,12 @@ else
 <ConfirmDialog @ref="deleteConfirmationCategoryRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedCategory" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
 
 @code {
-    private IEnumerable<Category> CategoryList;
+    private IEnumerable<TutorialCategory> CategoryList;
+    private TutorialCategory category { get; set; } = new();
+    private FormMode SelectedFormMode { get; set; } = FormMode.Add;
     protected ConfirmDialog deleteConfirmationCategoryRef { get; set; }
     private bool deleteClicked { get; set; } = false;
-    private Category SelectedCategory { get; set; } = new();
+    private TutorialCategory SelectedCategory { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {
         await GetCategoryList();
@@ -69,7 +70,17 @@ else
     {
         CategoryList = await CategoryService.GetCategoryList();
     }
-    private async Task DeleteCategory(Category Category)
+    private async Task ViewCategory(TutorialCategory category)
+    {
+        this.category = category;
+        SelectedFormMode = FormMode.Details;
+    }
+    private async Task EditCategory(TutorialCategory category)
+    {
+        this.category = category;
+        SelectedFormMode = FormMode.Edit;
+    }
+    private async Task DeleteCategory(TutorialCategory Category)
     {
         deleteClicked = true;
         SelectedCategory = Category;
@@ -81,12 +92,12 @@ else
         if (await CategoryService.DeleteCategory(SelectedCategory.Id))
         {
             notification.Type = Notification.NotificationType.Success;
-            notification.Message = "Category Deletion Successful";
+            notification.Message = "Tutorial Category Deletion Successful";
         }
         else
         {
             notification.Type = Notification.NotificationType.Failure;
-            notification.Message = "Error Category Deletion";
+            notification.Message = "Error: Tutorial Category Deletion";
         }
 
         appState.SetNotification(this, notification);
@@ -95,5 +106,12 @@ else
     private void DeleteDeclined()
     {
         deleteClicked = false;
+    }
+    private async Task HandleParametersChanged(bool parameter)
+    {
+        if (parameter)
+        {
+            await GetCategoryList();
+        }
     }
 }

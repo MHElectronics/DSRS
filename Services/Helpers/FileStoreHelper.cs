@@ -6,15 +6,15 @@ namespace Services.Helpers;
 
 public interface IFileStoreHelper
 {
-    Task<bool> CreateDocumentDirectory(Document document);
+    Task<bool> CreatetutorialDirectory(Tutorial tutorial);
 
-    Task<string> GetImageContentAsync(Document document);
+    Task<string> GetImageContentAsync(Tutorial tutorial);
     Task<byte[]> GetFileContentAsync(string filePath);
-    string GetImageThumb(Document document);
+    string GetImageThumb(Tutorial tutorial);
 
-    string GetNewFileLocation(string fileName, Document document);
+    string GetNewFileLocation(string fileName, Tutorial tutorial);
 
-    Task<string> UploadFile(byte[] fileBytes, string fileName, Document document);
+    Task<string> UploadFile(byte[] fileBytes, string fileName, Tutorial tutorial);
     Task UploadFileInPartsAsync(byte[] fileBytes, string path);
 
     void DeleteFile(string path);
@@ -29,9 +29,9 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
     private readonly string _ftpUser = config.GetSection("FtpAccess:User").Value ?? "";
     private readonly string _ftpPassword = config.GetSection("FtpAccess:Password").Value ?? "";
 
-    public async Task<bool> CreateDocumentDirectory(Document document)
+    public async Task<bool> CreatetutorialDirectory(Tutorial tutorial)
     {
-        string folderPath = this.GetDocumentDirectoryPath(document);
+        string folderPath = this.GettutorialDirectoryPath(tutorial);
 
         if (_isFtpEnabled)
         {
@@ -68,11 +68,11 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", rootFolderPath);
         }
     }
-    private string GetDocumentDirectoryPath(Document document)
+    private string GettutorialDirectoryPath(Tutorial tutorial)
     {
         if (_isFtpEnabled)
         {
-            return document.Date.ToString("yyyy") + "_" + document.Date.ToString("MM") + "/D_" + document.Id;
+            return tutorial.Date.ToString("yyyy") + "_" + tutorial.Date.ToString("MM") + "/D_" + tutorial.Id;
         }
         else
         {
@@ -80,13 +80,13 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         }
     }
 
-    public async Task<string> GetImageContentAsync(Document document)
+    public async Task<string> GetImageContentAsync(Tutorial tutorial)
     {
         if (_isFtpEnabled)
         {
             try
             {
-                string path = document.FileLocation;
+                string path = tutorial.FileLocation;
                 byte[] bytes = await ftpHelper.DownloadFile(path);
                 return "data:image/png;base64, " + Convert.ToBase64String(bytes, 0, bytes.Length);
             }
@@ -98,7 +98,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
         else
         {
             string rootFolderPath = _ftpRootFolder;
-            string referencePath = Path.Combine(rootFolderPath, document.FileLocation);
+            string referencePath = Path.Combine(rootFolderPath, tutorial.FileLocation);
             return referencePath;
         }
     }
@@ -138,13 +138,13 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             }
         }
     }
-    public string GetImageThumb(Document document)
+    public string GetImageThumb(Tutorial tutorial)
     {
         try
         {
             if (_isFtpEnabled)
             {
-                string path = document.FileLocation;
+                string path = tutorial.FileLocation;
                 byte[] bytes = ftpHelper.DownloadImageThumb(path);
                 if (bytes is not null)
                 {
@@ -156,7 +156,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             else
             {
                 string rootFolderPath = _ftpRootFolder;
-                string referencePath = Path.Combine(rootFolderPath, document.FileLocation);
+                string referencePath = Path.Combine(rootFolderPath, tutorial.FileLocation);
                 return referencePath;
             }
         }
@@ -165,7 +165,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
             throw new Exception("Image file corrupted" + ex);
         }  
     }
-    public async Task<string> UploadFile(byte[] fileBytes, string fileName, Document document)
+    public async Task<string> UploadFile(byte[] fileBytes, string fileName, Tutorial tutorial)
     {
         //Generate random file name
         string newFileName = Path.ChangeExtension(
@@ -173,7 +173,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
                 Path.GetExtension(fileName));
 
         //File path
-        string folderPath = this.GetDocumentDirectoryPath(document);
+        string folderPath = this.GettutorialDirectoryPath(tutorial);
         string fileLocation = Path.Combine(folderPath, newFileName);
 
         //Upload file
@@ -192,7 +192,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
 
         return fileLocation;
     }
-    public string GetNewFileLocation(string fileName, Document document)
+    public string GetNewFileLocation(string fileName, Tutorial tutorial)
     {
         //Generate random file name
         string newFileName = Path.ChangeExtension(
@@ -200,7 +200,7 @@ public class FileStoreHelper(IConfiguration config,IFtpHelper ftpHelper) : IFile
                 Path.GetExtension(fileName));
 
         //File path
-        string folderPath = this.GetDocumentDirectoryPath(document);
+        string folderPath = this.GettutorialDirectoryPath(tutorial);
         string fileLocation = Path.Combine(folderPath, newFileName);
 
         return fileLocation;

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,161 +59,155 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="Menu.Counter" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Menu.Counter" xml:space="preserve">
     <value>কাউন্টার</value>
   </data>
-	<data name="Menu.Counter2" xml:space="preserve">
+  <data name="Menu.Counter2" xml:space="preserve">
     <value>কাউন্টার দুই</value>
   </data>
-	<data name="Menu.Map" xml:space="preserve">
+  <data name="Menu.Map" xml:space="preserve">
     <value>ড্যাশবোর্ড</value>
   </data>
-	<data name="Menu.Station" xml:space="preserve">
+  <data name="Menu.Station" xml:space="preserve">
     <value>স্টেশন ব্যবস্থাপনা</value>
   </data>
-	<data name="Menu.UserGroup" xml:space="preserve">
+  <data name="Menu.UserGroup" xml:space="preserve">
     <value>ব্যবহারকারী ব্যবস্থাপনা</value>
   </data>
-	<data name="Menu.UploadedFiles" xml:space="preserve">
+  <data name="Menu.UploadedFiles" xml:space="preserve">
     <value>ডেটা ব্যবস্থাপনা</value>
   </data>
-	<data name="Menu.ChangePassword" xml:space="preserve">
+  <data name="Menu.ChangePassword" xml:space="preserve">
     <value>পাসওয়ার্ড পরিবর্তন করুন</value>
   </data>
-	<data name="Menu.FileUpload" xml:space="preserve">
+  <data name="Menu.FileUpload" xml:space="preserve">
     <value>ফাইল আপলোড</value>
   </data>
-	<data name="Menu.BRTA" xml:space="preserve">
+  <data name="Menu.BRTA" xml:space="preserve">
     <value>বিআরটিএ</value>
   </data>
-	<data name="Menu.Copyright" xml:space="preserve">
+  <data name="Menu.Copyright" xml:space="preserve">
     <value>কপিরাইট</value>
   </data>
-	<data name="Menu.Rights" xml:space="preserve">
+  <data name="Menu.Rights" xml:space="preserve">
     <value>সমস্ত অধিকার সংরক্ষিত.</value>
   </data>
-	<data name="Menu.Versions" xml:space="preserve">
+  <data name="Menu.Versions" xml:space="preserve">
     <value>সংস্করণ</value>
   </data>
-	<data name="Menu.StationAccess" xml:space="preserve">
+  <data name="Menu.StationAccess" xml:space="preserve">
     <value>স্টেশন অ্যাক্সেস</value>
   </data>
-	<data name="Menu.ClassStatus" xml:space="preserve">
+  <data name="Menu.ClassStatus" xml:space="preserve">
     <value>ক্লাস স্ট্যাটাস</value>
   </data>
-	<data name="Menu.Admin" xml:space="preserve">
+  <data name="Menu.Admin" xml:space="preserve">
     <value>প্রশাসন</value>
   </data>
-	<data name="Menu.AxleLoadSystem" xml:space="preserve">
+  <data name="Menu.AxleLoadSystem" xml:space="preserve">
     <value>এক্সেল লোড সিস্টেম</value>
   </data>
-	<data name="Menu.DatabyDate" xml:space="preserve">
+  <data name="Menu.DatabyDate" xml:space="preserve">
     <value>তারিখ অনুসারে ডেটা</value>
   </data>
-	<data name="Menu.FAQ" xml:space="preserve">
+  <data name="Menu.FAQ" xml:space="preserve">
     <value>প্রশ্নাবলী</value>
   </data>
-	<data name="Menu.GrossWeight" xml:space="preserve">
+  <data name="Menu.GrossWeight" xml:space="preserve">
     <value>স্থূল ওজন</value>
   </data>
-	<data name="Menu.Overloaded" xml:space="preserve">
+  <data name="Menu.Overloaded" xml:space="preserve">
     <value>ওভারলোডেড</value>
   </data>
-	<data name="Menu.Overweight" xml:space="preserve">
+  <data name="Menu.Overweight" xml:space="preserve">
     <value>অতিরিক্ত ওজন</value>
   </data>
-	<data name="Menu.Pages" xml:space="preserve">
+  <data name="Menu.Pages" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ (সাধারণ উদ্দেশ্য)</value>
   </data>
-	<data name="Menu.ReportConfig" xml:space="preserve">
+  <data name="Menu.ReportConfig" xml:space="preserve">
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
-	<data name="Menu.Reports" xml:space="preserve">
+  <data name="Menu.Reports" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ (উদ্দেশ্য অনুসারে)</value>
   </data>
-	<data name="Menu.Tutorial" xml:space="preserve">
+  <data name="Menu.Tutorial" xml:space="preserve">
     <value>টিউটোরিয়াল</value>
   </data>
-	<data name="Menu.Users" xml:space="preserve">
+  <data name="Menu.Users" xml:space="preserve">
     <value>ব্যবহারকারী</value>
   </data>
-	<data name="Category.Name" xml:space="preserve">
-		<value>নাম</value>
-	</data>
-	<data name="Category.Title" xml:space="preserve">
-		<value>শিরোনাম</value>
-	</data>
-	<data name="SQLDirectSearch" xml:space="preserve">
-		<value>SQL সরাসরি অনুসন্ধান</value>
-	</data>
-	<data name="Tutorial.Category" xml:space="preserve">
-		<value>শ্রেণী</value>
-	</data>
-	<data name="Tutorial.CategoryList" xml:space="preserve">
-		<value>বিভাগের তালিকা</value>
-	</data>
-	<data name="Menu.Category" xml:space="preserve">
-		<value>শ্রেণী</value>
-	</data>
-	<data name="WIMScale" xml:space="preserve">
-		<value>WIM স্কেল</value>
-	</data>
+  <data name="Category.Name" xml:space="preserve">
+    <value>নাম</value>
+  </data>
+  <data name="Category.Title" xml:space="preserve">
+    <value>শিরোনাম</value>
+  </data>
+  <data name="SQLDirectSearch" xml:space="preserve">
+    <value>SQL সরাসরি অনুসন্ধান</value>
+  </data>
+  <data name="Menu.Category" xml:space="preserve">
+    <value>টিউটোরিয়াল শ্রেণী</value>
+  </data>
+  <data name="WIMScale" xml:space="preserve">
+    <value>WIM স্কেল</value>
+  </data>
 </root>

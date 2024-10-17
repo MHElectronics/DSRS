@@ -1,7 +1,7 @@
 ﻿@page "/tutorial"
 @using BOL.Models
 @using Services.Helpers
-@inject IDocumentService documentService
+@inject ITutorialService tutorialService
 @inject ICategoryService categoryService
 @inject IFileStoreHelper fileStoreHelper
 @inject AuthenticationStateProvider authStateProvider
@@ -19,11 +19,11 @@
 </PageTitleComponent>
 <div class="card">
     <div class="card-body card-primary card-outline" id="accordion">
-        @if (documents == null && categories is null)
+        @if (tutorials == null && categories is null)
         {
             <Loader />
         }
-        else if (documents.Count() == 0)
+        else if (tutorials.Count() == 0)
         {
             <p>No Data Found</p>
         }
@@ -40,17 +40,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (Document document in documents.OrderBy(f => f.DisplayOrder))
+                    @foreach (Tutorial tutorial in tutorials.OrderBy(f => f.DisplayOrder))
                     {
-                        string categoryName = categories.Where(c => c.Id == document.CategoryId).FirstOrDefault()?.Name;
+                        string categoryName = categories.Where(c => c.Id == tutorial.TutorialCategoryId).FirstOrDefault()?.Name;
                         <tr>
                             <td>@categoryName</td>
-                            <td>@document.FileName</td>
-                            <td>@document.Description</td>
-                            <td>@document.Date</td>
+                            <td>@tutorial.FileName</td>
+                            <td>@tutorial.Description</td>
+                            <td>@tutorial.Date</td>
                             <td class="text-right">     
                                 <div class="btn-group">
-                                    <span class="btn btn-primary" @onclick="() => SubmitForDownload(document)" title="Download file">
+                                    <span class="btn btn-primary" @onclick="() => SubmitForDownload(tutorial)" title="Download file">
                                     <i class="fa fa-download"></i>
                                     </span>
                                 </div>
@@ -64,18 +64,18 @@
 </div>
 
 @code {
-    private List<Document> documents { get; set; } = null;
-    private Document document { get; set; } = new();
-    private IEnumerable<Category> categories { get; set; } = null;
+    private List<Tutorial> tutorials { get; set; } = null;
+    private Tutorial tutorial { get; set; } = new();
+    private IEnumerable<TutorialCategory> categories { get; set; } = null;
     protected override async Task OnInitializedAsync()
     {
-        var ListDocument = await documentService.GetDocuments();
-        documents = ListDocument.ToList();
+        var Listtutorial = await tutorialService.GetTutorials();
+        tutorials = Listtutorial.ToList();
         categories = await categoryService.GetCategoryList();
     }
-    private async Task SubmitForDownload(Document document)
+    private async Task SubmitForDownload(Tutorial tutorial)
     {
-        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(document.FileLocation);
-        await jsRuntime.InvokeVoidAsync("downloadFileFromString", document.FileName, Convert.ToBase64String(fileBytes));
+        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
+        await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
     }
 }
