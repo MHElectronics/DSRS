@@ -30,8 +30,8 @@ else
                 <thead>
                     <tr>
                         <th>@localizer["WimLaneNumber"]</th>
+                        <th>@localizer["WimType"]</th>
                         <th>@localizer["WimEquipmentCode"]</th>
-                        <th>@localizer["WimHighSpeed"]</th>
                         <th>@localizer["WimLaneDirection"]</th>
                         <th></th>
                     </tr>
@@ -41,7 +41,7 @@ else
                     {
                         <tr>
                             <td>Lane: @wim.LaneNumber</td>
-                            <td>High Speed: @(wim.IsHighSpeed ? "Yes" : "No")</td>
+                            <td>@(((WIMType)Enum.Parse(typeof(WIMType), wim.Type.ToString())).ToDescription())</td>
                             <td>Eq. Code: @wim.EquipmentCode</td>
                             <td>Direction: @wim.LaneDirection</td>
                             <td>
