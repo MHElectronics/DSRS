@@ -19,21 +19,23 @@
                 <label for="stations" class="form-label">Access for: @users.FirstOrDefault(u => u.Id == userId).Name</label>
             </div>
             <div class="card-body">
-                <div class="form-control d-flex flex-wrap">
+                <div class="checkbox-grid">
                     @foreach (Station station in stations)
                     {
                         int value = station.StationId;
                         bool check = selectedStations.Contains(value);
-                        <div class="icheck-primary d-inline me-3 mb-2">
+                        <div class="icheck-primary d-inline checkbox-item">
                             <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
-                            <label for="checkId@(station.StationId)">@station.StationName &nbsp;</label>
+                            <label for="checkId@(station.StationId)" class="ms-2">&nbsp; @station.StationName </label>
                         </div>
                     }
                 </div>
-                <div class="col-md-12 mt-3">
-                    <div class="form-group btn btn-group">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                        <span class="btn btn-primary" @onclick="@(() => userId = 0)">@localizerResource["Button.Cancel"]</span>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group btn btn-group">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <span class="btn btn-primary" @onclick="@(() => userId = 0)">@localizerResource["Button.Cancel"]</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -78,7 +80,22 @@
         }
     </div>
 </div>
+<style>
+    .checkbox-grid {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 5px;
+        max-width: 100%;
+        box-sizing: border-box; 
+        justify-content: space-between; 
+    }
 
+    .checkbox-item {
+        width: 150px; 
+        margin-bottom: 5px; 
+        box-sizing: border-box; 
+    }
+</style>
 <ConfirmDialog @ref="submitConfirmationStationAccessRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedStationAccess" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Station Access?" />
 
 @code {
