@@ -4,6 +4,8 @@
 @inject IFileService fileService
 @inject IStationService stationService
 @inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IStationAccessService stationAccessService
 @inject IStringLocalizer<Locales.File> localizer
 @rendermode InteractiveServer
 
@@ -15,7 +17,7 @@
         {
             <select class="form-control" @onchange="Search">
                 <option value="0">-Select Station-</option>
-                @foreach (Station item in stations)
+                @foreach (Station item in stations.Where(s => stationAccess.Contains(s.StationId)))
                 {
                     <option value="@item.StationId">@item.StationName</option>
                 }
@@ -102,7 +104,8 @@
     private IEnumerable<UploadedFile> uploadedFiles;
     private IEnumerable<Station> stations;
     private int stationId { get; set; } = 0;
-
+    private List<int> stationAccess { get; set; } = new();
+    private User currentUser { get; set; } = new();
     protected ConfirmDialog deleteConfirmationRef { get; set; }
     private UploadedFile selectedFile { get; set; }
     private bool deleteClicked { get; set; } = false;
@@ -110,6 +113,9 @@
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
     }
 
     private async Task Search(ChangeEventArgs e)

@@ -3,6 +3,8 @@
 @inject IConfigurationService configurationService
 @inject IClassStatusService classStatusService
 @inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IStationAccessService stationAccessService
 @inject IStringLocalizer<Locales.Reports> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResources
 
@@ -22,7 +24,7 @@
         {
             string strIconAll = "fa-square";
             string strColorAll = "btn-primary";
-            if (stations?.Count() == selectedStations?.Count())
+            if (stations.Where(s => stationAccess.Contains(s.StationId))?.Count() == selectedStations?.Count())
             {
                 strIconAll = "fa-check-square";
                 strColorAll = "btn-success";
@@ -33,12 +35,12 @@
             }
             <div class="btn-group-vertical col-md-12" role="group">
 
-                @for (int i = -1; i < stations.Count();)
+                @for (int i = -1; i < stations.Where(s => stationAccess.Contains(s.StationId)).Count();)
                 {
                     <div class="btn-group">
                         @for (int j = 0; j < 6; j++)
                         {
-                            if (i >= stations.Count())
+                            if (i >= stations.Where(s => stationAccess.Contains(s.StationId)).Count())
                             {
                                 break;
                             }
@@ -50,7 +52,8 @@
                             }
                             else
                             {
-                                Station item = stations.OrderBy(s => s.StationName).ElementAt(i);
+                                var filteredStations = stations.Where(s => stationAccess.Contains(s.StationId)).OrderBy(s => s.StationName);
+                                Station item = filteredStations.ElementAt(i);
                                 string strIcon = "fa-square";
                                 string btnClass = "btn-danger";
                                 @if (selectedStations is not null && selectedStations.Any(s => s.StationId == item.StationId))
@@ -73,6 +76,7 @@
         {
             <Loader />
         }
+
         <div class="col-md-6">
             <label>@localizer["Report.DateRange"]</label>
             <SfDateRangePicker TValue="DateTime?" StartDate="@reportParameters.DateStart" EndDate="@reportParameters.DateEnd" Format="dd MMM yy" Min="@configuration.SystemStartDate" Max="DateTime.Now">
@@ -305,6 +309,8 @@ else
 
     private ReportParameters reportParameters { get; set; } = new();
     private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
+    private List<int> stationAccess { get; set; } = new();
+    private User currentUser { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -315,6 +321,10 @@ else
 
         ListClassStatus = await classStatusService.GetClassStatusList();
         configuration = await configurationService.GetConfiguration();
+
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
     }
     private async Task AllStationClicked()
     {

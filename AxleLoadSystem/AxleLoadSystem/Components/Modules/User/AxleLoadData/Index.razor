@@ -8,6 +8,8 @@
 @inject IAxleLoadService loadService
 @inject IConfigurationService configurationService
 @inject IFinePaymentService fineRepaymentService
+@inject AuthenticationStateProvider authStateProvider
+@inject IStationAccessService stationAccessService
 @rendermode InteractiveServer
 @inject IStringLocalizer<Locales.File> localizer
 @inject IStringLocalizer<Locales.Reports> localizerReports
@@ -25,7 +27,7 @@
                     <label>@localizerReports["Report.SelectStation"]</label>
                     <select class="form-control" @onchange="StationChanged">
                         <option value="0">-Select Station-</option>
-                        @foreach (Station item in stations)
+                        @foreach (Station item in stations.Where(s => stationAccess.Contains(s.StationId)))
                         {
                             <option value="@item.StationId">@item.StationName</option>
                         }
@@ -110,11 +112,19 @@
     private string Summary { get; set; }
     private bool showTable { get; set; }
     private bool showHide { get; set; } = false;
+    private List<int> stationAccess { get; set; } = new();
+    private User currentUser { get; set; } = new();
+
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
         configuration = await configurationService.GetConfiguration();
         DateStart = configuration.SystemStartDate;
+
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
+
     }
     private async Task HandleFileTypeChange(int selectedFileType)
     {
