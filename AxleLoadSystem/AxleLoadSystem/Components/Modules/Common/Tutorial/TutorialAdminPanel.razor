@@ -133,10 +133,12 @@
     protected ConfirmDialog deleteConfirmationRef { get; set; }
     private User currentUser { get; set; }
     private string _inputFileId = Guid.NewGuid().ToString();
+    private string previousFileLocation { get; set; } = string.Empty;
     private int uploadProgress = 0;
     private int maxAllowedFiles = 1;
     private int maxFileSizeMB = 300;
     private bool uploading { get; set; } = false;
+    private bool editEnable { get; set; } = false;
     private string Summary;
     protected override async Task OnInitializedAsync()
     {
@@ -151,9 +153,11 @@
         var Listtutorials = await tutorialService.GetTutorials();
         tutorials = Listtutorials.ToList();
     }
-    private void Edit(Tutorial doc)
+    private void Edit(Tutorial obj)
     {
-        tutorial = doc;
+        editEnable = true;
+        previousFileLocation = obj.FileLocation;
+        tutorial = obj;
     }
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
@@ -226,17 +230,31 @@
         //Save file
         tutorial.UserId = currentUser.Id;
         tutorial.Date = DateTime.Now;
-
-        int tutorialId = await tutorialService.InsertTutorial(tutorial);
-        if (tutorialId > 0)
+        if (editEnable && !string.IsNullOrEmpty(previousFileLocation))
         {
-            tutorial.Id = tutorialId;
-            tutorials.Add(tutorial);
+            fileStoreHelper.DeleteFile(previousFileLocation);
+
+            if (await tutorialService.UpdateTutorial(tutorial))
+            {
+                await this.Loadtutorials();
+            }
+            uploading = false;
+            appState.SetNotification(this, "Tutorial Update Successful", Notification.NotificationType.Success);
         }
+        else
+        {
+            int tutorialId = await tutorialService.InsertTutorial(tutorial);
+            if (tutorialId > 0)
+            {
+                tutorial.Id = tutorialId;
+                tutorials.Add(tutorial);
+            }
+            uploading = false;
+            appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
+        } 
         tutorial = new();
+        previousFileLocation = "";
         _inputFileId = Guid.NewGuid().ToString();
-        uploading = false;
-        appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
     }
     private void OnInvalidSubmit()
     {
