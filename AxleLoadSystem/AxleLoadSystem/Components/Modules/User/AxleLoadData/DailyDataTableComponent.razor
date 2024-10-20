@@ -5,18 +5,19 @@
 @inject IExportHelper exportHelper
 @inject IJSRuntime jsRuntime
 
-<div class="grid">
-    <div class="row">
-        <div class="col-md-8 col-sm-12">
-            <input @bind="searchQuery" placeholder="Search..." class="form-control" />
-        </div>
-        <div class="col-md-4 col-sm-12">
-            <div class="btn btn-group">
-                <button class="btn btn-primary" @onclick="ApplyFilter"> <i class="fa fa-filter">&nbsp;</i>Filter</button>
-                <button class="btn btn-primary" @onclick="@(() => Export("csv"))"><i class="fa fa-download">&nbsp;</i>@localizer["Report.CSV"]</button>
-            </div>
+<div class="row">
+    <div class="col-md-8 col-sm-12">
+        <input @bind="searchQuery" placeholder="Search..." class="form-control" />
+    </div>
+    <div class="col-md-4 col-sm-12">
+        <div class="btn btn-group">
+            <button class="btn btn-primary" @onclick="ApplyFilter"> <i class="fa fa-filter">&nbsp;</i>Filter</button>
+            <button class="btn btn-primary" @onclick="@(() => Export("csv"))"><i class="fa fa-download">&nbsp;</i>@localizer["Report.CSV"]</button>
         </div>
     </div>
+</div>
+<div class="grid">
+
     @if (FileType == 1)
     {
         if (AxleLoadData is null)
