@@ -1,6 +1,7 @@
 ﻿@page "/sqldirectsearch"
 @using System.Data
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using System.Text.RegularExpressions;
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
 @inject ISQLSearchService sqlSearchService
@@ -121,13 +122,15 @@
     private async Task<bool> QueryValidation(string query)
     {
         string upperQuery = query.ToUpper();
-        if (upperQuery.Contains("SELECT") && upperQuery.Contains("FROM"))
+        Regex selectRegex = new Regex(@"\bSELECT\b", RegexOptions.IgnoreCase);
+        Regex fromRegex = new Regex(@"\bFROM\b", RegexOptions.IgnoreCase);
+        Regex keywordsRegex = new Regex(@"\b(AXLELOAD|CLASSSTATUS|FINEPAYMENT|STATIONS|WIMSCALE)\b", RegexOptions.IgnoreCase);
+        
+        if (selectRegex.IsMatch(upperQuery) && fromRegex.IsMatch(upperQuery) && keywordsRegex.IsMatch(upperQuery))
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+        
+        return false;
     }
 }
