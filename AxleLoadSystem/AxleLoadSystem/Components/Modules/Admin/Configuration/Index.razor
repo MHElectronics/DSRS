@@ -2,6 +2,8 @@
 @using BOL;
 @using Services;
 @inject IConfigurationService configurationService
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Reports> localizer
 
 <PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
@@ -89,12 +91,15 @@ else
 
 @code {
     public Configuration configuration { get; set; } = new();
+    private User currentUser { get; set; }
     public bool editConfiguration { get; set; } = false;
     public bool trigger { get; set; } = false;
     public string Summary { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         Summary = "";
         configuration = await configurationService.GetConfiguration();
         if (configuration == null)
@@ -119,6 +124,7 @@ else
             if (await configurationService.InsertConfiguration(configuration))
             {
                 Summary = "Configuration added successfully";
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = "Insert" });
             }
             else
             {
@@ -129,6 +135,7 @@ else
         {
             await configurationService.UpdateConfiguration(configuration);
             Summary = "Configuration updated successfully";
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = "Update" });
         }
         editConfiguration = false;
     }

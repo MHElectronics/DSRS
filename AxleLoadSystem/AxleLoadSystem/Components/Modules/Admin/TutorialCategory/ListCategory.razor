@@ -1,5 +1,7 @@
 ﻿@using System
 @using BOL
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject ICategoryService CategoryService
 @inject IAppState appState
 @inject IStringLocalizer<Locales.CommonPages> localizer
@@ -62,8 +64,12 @@ else
     protected ConfirmDialog deleteConfirmationCategoryRef { get; set; }
     private bool deleteClicked { get; set; } = false;
     private TutorialCategory SelectedCategory { get; set; } = new();
+    private User currentUser { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         await GetCategoryList();
     }
     private async Task GetCategoryList()
@@ -93,6 +99,7 @@ else
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Tutorial Category Deletion Successful";
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Delete" });
         }
         else
         {

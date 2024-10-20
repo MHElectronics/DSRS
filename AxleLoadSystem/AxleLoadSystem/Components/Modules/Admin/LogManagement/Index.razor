@@ -1,0 +1,39 @@
+﻿@page "/logmanagement"
+@using BOL;
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Services;
+@inject IUserActivityService userActivityService
+@inject IStringLocalizer<Locales.Reports> localizer
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
+
+@if (userActivities != null)
+{
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+        <QuickGrid Items="@userActivities" Virtualize='true'>
+            <PropertyColumn Property="@(l => l.Id)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
+            <PropertyColumn Property="@(l => l.UserId)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Description)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Activity)" Sortable="true" />
+        </QuickGrid>
+
+        </div>
+    </div>
+}
+else
+{
+    <Loader />
+}
+
+@code {
+    public IQueryable<UserActivity> userActivities { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        IEnumerable<UserActivity> Logs = await userActivityService.GetUserActivities();
+        userActivities = Logs.AsQueryable();
+    }
+
+}

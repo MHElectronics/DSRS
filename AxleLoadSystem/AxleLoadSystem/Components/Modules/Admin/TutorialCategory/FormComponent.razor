@@ -1,5 +1,7 @@
 ﻿@using System
 @using BOL
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject ICategoryService CategoryService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizer
@@ -58,13 +60,15 @@ else
     public FormMode Mode { get; set; } = FormMode.Details;
     [Parameter]
     public EventCallback<bool> OnParametersChanged { get; set; }
-
+    private User currentUser { get; set; }
     private IEnumerable<TutorialCategory>? CategoryList;
     private bool isSuccess { get; set; }
     string ValidationSummary;
 
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         CategoryList = await CategoryService.GetCategoryList();
     }
 
@@ -81,6 +85,7 @@ else
             await CategoryService.UpdateCategory(Category);
             ValidationSummary = "Tutorial Category Updated Successfully";
             isSuccess = true;
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = "Update" });
         }
         else
         {
@@ -88,6 +93,7 @@ else
             if (isSuccess)
             {
                 ValidationSummary = "New Tutorial Category added";
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = "Insert" });
             }
             else
             {

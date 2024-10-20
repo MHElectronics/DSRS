@@ -3,6 +3,8 @@
 @using Services
 @using System.Text.RegularExpressions
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IUserService userService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.User> localizer
@@ -223,7 +225,7 @@ else
 
     [Required]
     private string confirmPassword { get; set; }
-
+    private User currentUser { get; set; }
     private bool saveDisabled { get; set; } = false;
     private User userPassword { get; set; } = new();
     private bool showPassword { get; set; } = false;
@@ -246,6 +248,8 @@ else
     }
     async Task OnValidSubmit(EditContext editContext)
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         validationSummary = "";
         saveDisabled = true;
         Notification notification = new();
@@ -290,6 +294,7 @@ else
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "User Updated Successfully";
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Update" });
                 appState.SetNotification(this, notification);
                 navigation.NavigateTo("user");
             }
@@ -312,6 +317,7 @@ else
                     {
                         notification.Type = Notification.NotificationType.Success;
                         notification.Message = "User Added Successfully";
+                        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Insert" });
                         appState.SetNotification(this, notification);
                         navigation.NavigateTo("user");
                     }
@@ -369,6 +375,7 @@ else
                 {
                     notification.Type = Notification.NotificationType.Success;
                     notification.Message = "Password Changed Successfully";
+                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Update" });
                     appState.SetNotification(this, notification);
                     navigation.NavigateTo("user");
                 }

@@ -4,6 +4,7 @@
 @inject IStationService stationService
 @inject IStationAccessService stationAccessService
 @inject IAppState appState
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Station> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
@@ -170,6 +171,7 @@
             if (await stationAccessService.InsertStationAccess(accessList))
             {
                 appState.SetNotification(this, "Station Access Updated", Notification.NotificationType.Success);
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Station Access Updated", Activity = "Update" });
             }
             else
             {
@@ -179,6 +181,7 @@
         else
         {
             appState.SetNotification(this, "Station Access removed", Notification.NotificationType.Success);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Station Access removed", Activity = "Delete" });
         }
 
 

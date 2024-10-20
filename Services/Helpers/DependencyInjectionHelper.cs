@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ITutorialService, TutorialService>();
         services.AddScoped<IConfigurationService, ConfigurationService>();
         services.AddScoped<ICategoryService, TutorialCategoryService>();
+        services.AddScoped<IUserActivityService, UserActivityService>();
 
 
 

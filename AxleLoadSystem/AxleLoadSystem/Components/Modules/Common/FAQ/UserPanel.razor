@@ -1,6 +1,7 @@
 ﻿@page "/MyFAQ"
 @using Syncfusion.Blazor.RichTextEditor
 @inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IFAQService faqService
 @inject IUserService userService
 @inject IAppState appState
@@ -184,6 +185,7 @@
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "Question updated", Notification.NotificationType.Success);
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Question updated", Activity = "Update" });
             }
             else
             {
@@ -198,6 +200,7 @@
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "Question submitted", Notification.NotificationType.Success);
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Question submitted", Activity = "Insert" });
             }
             else
             {
@@ -231,6 +234,7 @@
         {
             await this.LoadQuestions();
             appState.SetNotification(this, "Question deleted", Notification.NotificationType.Success);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Question deleted", Activity = "Delete" });
         }
         else
         {

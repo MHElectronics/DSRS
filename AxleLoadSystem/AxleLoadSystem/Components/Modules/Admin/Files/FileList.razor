@@ -5,6 +5,7 @@
 @inject IStationService stationService
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStationAccessService stationAccessService
 @inject IStringLocalizer<Locales.File> localizer
 @rendermode InteractiveServer
@@ -142,7 +143,8 @@
     {
         if(await fileService.Delete(selectedFile))
         {
-            appState.SetNotification(this, "File Deleted", Notification.NotificationType.Info);
+            appState.SetNotification(this, "File Deleted", Notification.NotificationType.Success);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = selectedFile.FileName + "File Deleted", Activity = "Delete" });
         }
         else
         {

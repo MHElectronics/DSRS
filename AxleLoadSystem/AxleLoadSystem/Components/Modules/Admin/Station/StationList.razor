@@ -2,11 +2,13 @@
 @using BOL
 @using Services
 @rendermode InteractiveServer
-@inject IStringLocalizer<Locales.Resource> localizerResource
-@inject IStringLocalizer<Locales.Station> localizer
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStationService stationService
 @inject IWIMScaleService wimService
 @inject IAppState appState
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Station> localizer
 
 <PageTitleComponent Title="@localizer["StationList"]">
     <NavLink class="btn btn-primary pull-right" href="/station/new" title="Add New Station">
@@ -87,10 +89,13 @@ else
     private IEnumerable<WIMScale> wims;
     protected ConfirmDialog deleteConfirmationStationRef { get; set; }
     private Station SelectedStation { get; set; }
+    private User currentUser { get; set; }
     private bool deleteClicked { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         await GetStationandWimList();
     }
     private async Task GetStationandWimList()
@@ -112,6 +117,7 @@ else
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Station Deletion Successful";
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Delete" });
         }
         else
         {

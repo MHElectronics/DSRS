@@ -2,6 +2,8 @@
 @using BOL
 @inject IClassStatusService classStatusService
 @inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Reports> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
@@ -61,8 +63,12 @@ else
     protected ConfirmDialog deleteConfirmationClassStatusRef { get; set; }
     private bool deleteClicked { get; set; } = false;
     private ClassStatus SelectedClassStatus { get; set; } = new();
+    private User currentUser { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         await GetClassStatusList();
     }
     private async Task GetClassStatusList()
@@ -82,6 +88,7 @@ else
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Class Status Deletion Successful";
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Delete" });
         }
         else
         {

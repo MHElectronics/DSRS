@@ -5,6 +5,7 @@
 @inject IUserService userService
 @inject IAppState appState
 @inject ILiveNotificationState liveNotificationState
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -240,6 +241,7 @@
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "FAQ updated", Notification.NotificationType.Success);
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ updated", Activity = "Update" });
             }
             else
             {
@@ -254,6 +256,7 @@
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "FAQ submitted", Notification.NotificationType.Success);
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ submitted", Activity = "Insert" });
             }
             else
             {
@@ -275,6 +278,7 @@
         {
             await this.LoadQuestions();
             appState.SetNotification(this, "FAQ deleted", Notification.NotificationType.Success);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ deleted", Activity = "Delete" });
         }
         else
         {

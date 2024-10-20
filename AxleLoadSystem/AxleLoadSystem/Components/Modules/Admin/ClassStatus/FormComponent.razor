@@ -1,6 +1,8 @@
 ﻿@using System
 @using BOL
 @inject IClassStatusService classStatusService
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Reports> localizer
 
@@ -79,11 +81,14 @@ else
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
     private IEnumerable<ClassStatus>? ClassStatusList;
+    private User currentUser { get; set; }
     private bool isSuccess { get; set; }
     string ValidationSummary;
 
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         ClassStatusList = await classStatusService.GetClassStatusList();
     }
 
@@ -99,7 +104,7 @@ else
         {
             await classStatusService.UpdateClassStatus(classStatus);
             ValidationSummary = "Class Status Updated Successfully";
-
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = "Update" });
         }
         else
         {
@@ -107,6 +112,7 @@ else
             if (isSuccess)
             {
                 ValidationSummary = "New Class Status added";
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = "Insert" });
             }
             else
             {

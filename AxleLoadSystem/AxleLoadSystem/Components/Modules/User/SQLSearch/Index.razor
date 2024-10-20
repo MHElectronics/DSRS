@@ -5,6 +5,7 @@
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
 @inject ISQLSearchService sqlSearchService
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -105,6 +106,7 @@
         if (await QueryValidation(sqlSearch.Query))
         {
             results = await sqlSearchService.GetSQLSearch(sqlSearch);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = sqlSearch.Query, Activity = "GET" });
             var rows = results.AsEnumerable().ToList();
             var providerResult = GridItemsProviderResult
                 .From<DataRow>(rows, rows.Count);

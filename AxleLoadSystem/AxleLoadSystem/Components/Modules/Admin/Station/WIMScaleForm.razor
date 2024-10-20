@@ -4,6 +4,8 @@
 @using BOL
 @using Services
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStationService stationService
 @inject IWIMScaleService wimService
 @inject IStringLocalizer<Locales.Resource> localizerResource
@@ -132,6 +134,7 @@ else
     private WIMScale wimScale { get; set; } = null;
     private IEnumerable<Station> stations;
     private IEnumerable<WIMScale> wims;
+    private User currentUser { get; set; }
     private bool laneNumberExists { get; set; } = false;
     private string Summary { get; set; }
     protected override async Task OnParametersSetAsync()
@@ -176,6 +179,7 @@ else
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "WIM Updated Successfully";
                 isSuccess = true;
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Update" });
             }
             else
             {
@@ -198,6 +202,7 @@ else
                     notification.Type = Notification.NotificationType.Success;
                     notification.Message = "WIM Added Successfully";
                     isSuccess = true;
+                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Insert" });
                 }
                 else
                 {

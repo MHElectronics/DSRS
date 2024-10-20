@@ -3,6 +3,8 @@
 @using BOL
 @using Services
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Station> localizer
 @inject IStationService stationService
@@ -84,12 +86,15 @@ else
     private IEnumerable<WIMScale> wims;
     protected ConfirmDialog deleteConfirmationStationRef { get; set; }
     protected ConfirmDialog deleteConfirmationWimRef { get; set; }
+    private User currentUser { get; set; }
     private Station SelectedStation { get; set; }
     private WIMScale SelectedWim { get; set; }
     private bool deleteClicked { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         await GetWimList();
     }
     private async Task GetWimList()
@@ -115,6 +120,7 @@ else
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Wim Scale Deletion Successful";
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Delete" });
         }
         else
         {

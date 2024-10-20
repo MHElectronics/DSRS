@@ -2,6 +2,8 @@
 @using BOL
 @using Services
 @rendermode InteractiveServer
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IStationService stationService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Station> localizer
@@ -141,6 +143,7 @@ else
     public Station station { get; set; } = new();
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
+    private User currentUser { get; set; }
 
     void OnInvalidSubmit()
     {
@@ -149,6 +152,8 @@ else
     }
     async Task OnValidSubmit(EditContext editContext)
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         Notification notification = new();
         bool isSuccess = false;
 
@@ -159,6 +164,7 @@ else
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Updated Successfully";
                 isSuccess = true;
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + notification.Message, Activity = "Update" });
             }
             else
             {
@@ -173,6 +179,7 @@ else
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Added Successfully";
                 isSuccess = true;
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + notification.Message, Activity = "Insert" });
             }
             else
             {

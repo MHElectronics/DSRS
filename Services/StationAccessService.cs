@@ -58,7 +58,6 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
 
         return await _db.SaveData<List<StationAccess>>(sql, stationAccessList);
 
-        return false;
     }
 
     public async Task<bool> CheckDuplicateEntry(StationAccess stationAccess)
