@@ -24,10 +24,12 @@ public interface IAxleLoadService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyVehicleReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyVehicleReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyVehicleReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyVehicleReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverweightReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverweightReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverweightReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverweightReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverweightReport(ReportParameters reportParameters);
 }
 
 public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
@@ -198,6 +200,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
                 CheckWeightCalculation = 1
             });
     }
+    
     #region Over loaded Vehicle report query
     public async Task<(IEnumerable<AxleLoadReport>,bool,string)> GetYearlyOverloadedReport(ReportParameters reportParameters)
     {
@@ -626,10 +629,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
-
-
     #endregion
-    #region Number of Vehicle report query
+
+    #region Number of Vehicle Gross Weight report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
@@ -902,7 +904,80 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyVehicleReport(ReportParameters reportParameters)
+    {
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+    DECLARE @DateStart DATE = @DateStartParam  
+    DECLARE @DateEnd DATE = @DateEndParam  
+    DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
+    DECLARE @Wheelbase INT = @WheelbaseParam           
+    DECLARE @ClassStatus INT = @ClassStatusParam
+    DECLARE @Multiplier DECIMAL(18,2) = 50
+    DECLARE @TotalIteration INT = 10
+
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+    INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+
+    DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+
+    INSERT INTO @Range(GroupId, Minimum, Maximum)
+    SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
+    FROM master..[spt_values] 
+    WHERE number BETWEEN 1 AND @TotalIteration
+
+    SELECT 
+        DAY(AL.DateTime) AS DateUnit,  -- Extract only the day number as INT
+        CONVERT(NVARCHAR, CAST(AL.DateTime AS DATE), 23) AS DateUnitName,  -- Format full date as YYYY-MM-DD string
+        R.GroupId,
+        COUNT(1) AS TotalVehicle,
+        SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+        CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + 
+        CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+    FROM AxleLoad AL
+    INNER JOIN @Stations S ON AL.StationId = S.StationId
+    INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
+    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+        AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+        AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+    GROUP BY 
+        DAY(AL.DateTime),  -- Group by day number
+        CAST(AL.DateTime AS DATE),  -- Group by full date
+        R.GroupId,
+        R.Minimum,  -- Added Minimum to GROUP BY
+        R.Maximum   -- Added Maximum to GROUP BY
+    ORDER BY CAST(AL.DateTime AS DATE), R.GroupId";
+
+        var parameters = new
+        {
+            DateStartParam = reportParameters.DateStart,
+            DateEndParam = reportParameters.DateEnd,
+            NumberOfAxleParam = reportParameters.NumberOfAxle,
+            WheelbaseParam = reportParameters.Wheelbase,
+            ClassStatusParam = reportParameters.ClassStatus
+        };
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
+
+
+
     #endregion
+
     #region Over Weight Vehicle report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverweightReport(ReportParameters reportParameters)
     {
@@ -1148,6 +1223,65 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         DROP TABLE #T
         ";
+
+        var parameters = new
+        {
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+        };
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverweightReport(ReportParameters reportParameters)
+    {
+        string stationIds = "(" + string.Join("),(", reportParameters.Stations) + ")";
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+    DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+
+    INSERT INTO @Stations(StationId) VALUES " + stationIds + @" 
+
+    DECLARE @Days TABLE([Date] DATE)
+    DECLARE @CurrentDate DATE = @DateStart
+
+    WHILE @CurrentDate <= @DateEnd
+    BEGIN
+        INSERT INTO @Days VALUES(@CurrentDate)
+        SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
+    END
+
+    SELECT 
+        DAY(D.[Date]) AS DateUnit,  
+        CONVERT(NVARCHAR, D.[Date], 23) AS DateUnitName, 
+        AL.NumberOfAxle,
+        COUNT(AL.StationId) AS TotalVehicle,
+        SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
+    FROM @Days D
+    LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
+        AND AL.StationId IN (SELECT StationId FROM @Stations)
+        AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+        AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+        AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
+        AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
+    GROUP BY D.[Date], AL.NumberOfAxle
+    ORDER BY D.[Date]";
+
 
         var parameters = new
         {

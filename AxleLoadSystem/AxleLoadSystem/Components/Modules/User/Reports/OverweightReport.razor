@@ -28,6 +28,7 @@
                 <div class="row">
                     <div class="col-md-12 btn-group">
                         <button class="btn @(selectedType == "Hourly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hourly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
                         <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
                         <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                         <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
@@ -71,7 +72,6 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "bar" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("bar"))">@localizer["Report.BarChart"]</button>
                             <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
                             <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
                         </div>
@@ -79,12 +79,12 @@
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
                         @if (!string.IsNullOrEmpty(chartType))
                         {
-                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
                                 <ChartArea>
                                     <ChartAreaBorder Width="0"></ChartAreaBorder>
                                 </ChartArea>
 
-                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1">
+                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                 </ChartPrimaryXAxis>
@@ -157,8 +157,8 @@
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
-
-    public string Width { get; set; } = "90%";
+    public string Height { get; set; } = "100%";
+    public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
@@ -230,10 +230,7 @@
         {
             chartSeriesType = ChartSeriesType.StackingColumn;
         }
-        else if (type.ToLower() == "bar")
-        {
-            chartSeriesType = ChartSeriesType.Bar;
-        }
+        
         chartType = type;
     }
     private async Task HandleParametersChanged(bool parameters)
@@ -323,6 +320,26 @@
         else if (selectedType == "Yearly")
         {
             report = await loadService.GetYearlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Daily")
+        {
+            report = await loadService.GetDailyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
