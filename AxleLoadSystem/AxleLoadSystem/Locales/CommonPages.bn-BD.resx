@@ -198,4 +198,7 @@
   <data name="WIMScale" xml:space="preserve">
     <value>WIM স্কেল</value>
   </data>
+  <data name="LogManagement.Title" xml:space="preserve">
+    <value>লগ ম্যানেজমেন্ট</value>
+  </data>
 </root>

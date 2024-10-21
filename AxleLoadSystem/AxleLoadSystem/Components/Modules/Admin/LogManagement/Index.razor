@@ -3,9 +3,9 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Services;
 @inject IUserActivityService userActivityService
-@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.CommonPages> localizer
 
-<PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
+<PageTitleComponent Title="@localizer["LogManagement.Title"]"></PageTitleComponent>
 
 @if (userActivities != null)
 {
