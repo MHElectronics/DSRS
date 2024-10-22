@@ -56,7 +56,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
             FROM AxleLoad
             WHERE StationId IN @StationIds
-            AND DateTime BETWEEN @DateStart AND @DateEnd";
+            AND DATEDIFF(Day,DateTime,@DateStart)<=0
+            AND DATEDIFF(Day,DateTime,@DateEnd)>=0";
 
         var parameters = new
         {
