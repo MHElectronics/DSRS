@@ -6,6 +6,8 @@
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IAxleLoadService loadService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
@@ -100,7 +102,7 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
 
-                                        <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartSeries Name="Total Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                                                     <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -167,7 +169,7 @@
     private string selectedType { get; set; } = "";
     private string chartType { get; set; } = "column";
     private string Summary { get; set; } = "";
-
+    private User currentUser { get; set; }
     private bool showReportGroupSelection { get; set; } = false;
     private bool Chartview { get; set; }
     private bool isLoading = false;
@@ -176,6 +178,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         ReportParameters reportParameters = await appState.GetReportParameters();
         showReportGroupSelection = reportParameters is not null;
     }
@@ -195,6 +199,7 @@
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Excel report Downloaded", Activity = "Download" });
         }
         else if (type == "csv")
         {
@@ -202,10 +207,12 @@
             
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded CSV report Downloaded", Activity = "Download" });
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Excel Graph Downloaded", Activity = "Download" });
         }
         else if (type == "pdf")
         {
@@ -217,6 +224,7 @@
             MemoryStream stream = exportHelper.CreatePdfFromHtml(html);
             byte[] bytes = stream.ToArray();
             await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Pdf report Downloaded", Activity = "Download" });
         }
     }
 

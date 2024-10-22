@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Services;
 @inject IUserActivityService userActivityService
+@inject IUserService userService
 @inject IStringLocalizer<Locales.CommonPages> localizer
 
 <PageTitleComponent Title="@localizer["LogManagement.Title"]"></PageTitleComponent>
@@ -13,10 +14,10 @@
         <div class="card-body">
         <QuickGrid Items="@userActivities" Virtualize='true'>
             <PropertyColumn Property="@(l => l.Id)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy-MM-dd" Sortable="true" />
-            <PropertyColumn Property="@(l => l.UserId)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Description)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Activity)" Sortable="true" />
+            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy/MM/dd HH:mm:ss tt" Title="Date Time" Sortable="true" />
+            <PropertyColumn Property="@(l => GetUserName(l.UserId))" Title="User Name" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Description)" Title="Description" Sortable="true" />
+            <PropertyColumn Property="@(l => l.Activity)" Title="Activity" Sortable="true" />
         </QuickGrid>
 
         </div>
@@ -29,11 +30,18 @@ else
 
 @code {
     public IQueryable<UserActivity> userActivities { get; set; }
-    
+    public IEnumerable<User> users { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         IEnumerable<UserActivity> Logs = await userActivityService.GetUserActivities();
         userActivities = Logs.AsQueryable();
+        users = await userService.GetUsers();
+    }
+    private string GetUserName(int userId)
+    {
+        var user = users.FirstOrDefault(u => u.Id == userId);
+        return user != null ? user.Name : "Unknown";
     }
 
 }

@@ -2,6 +2,8 @@
 @using System.Linq.Expressions
 @using Services.Helpers
 @inject IStringLocalizer<Locales.Reports> localizer
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IExportHelper exportHelper
 @inject IJSRuntime jsRuntime
 
@@ -105,10 +107,14 @@
 
     private IQueryable<LoadData> filteredAxleLoadData { get; set;} 
     private IQueryable<FinePayment> filteredFineRepaymentData { get; set; }
+    private User currentUser { get; set; }
     private string searchQuery = string.Empty;
 
     protected override async Task OnInitializedAsync()
-    {   if (FileType == 1)
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        if (FileType == 1)
         {
             filteredAxleLoadData = AxleLoadData;
         }
@@ -262,6 +268,7 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Data by Date CSV Data Downloaded", Activity = "Download" });
         }
         
     }

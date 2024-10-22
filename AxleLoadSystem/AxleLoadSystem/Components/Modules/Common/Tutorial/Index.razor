@@ -5,6 +5,7 @@
 @inject ICategoryService categoryService
 @inject IFileStoreHelper fileStoreHelper
 @inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IJSRuntime jsRuntime
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -67,15 +68,21 @@
     private List<Tutorial> tutorials { get; set; } = null;
     private Tutorial tutorial { get; set; } = new();
     private IEnumerable<TutorialCategory> categories { get; set; } = null;
+    private User currentUser { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var Listtutorial = await tutorialService.GetTutorials();
         tutorials = Listtutorial.ToList();
         categories = await categoryService.GetCategoryList();
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+
     }
     private async Task SubmitForDownload(Tutorial tutorial)
     {
         byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
         await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
+        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Download Successful", Activity = "Download" });
     }
 }

@@ -1,5 +1,6 @@
 ﻿@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
+@inject IUserActivityService userActivityService
 @inject IJSRuntime JS
 @rendermode InteractiveServer
 
@@ -71,6 +72,7 @@
     }
     private async Task Logout()
     {
+        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = currentUser.Name + " Logout Successfully", Activity = "Logout" });
         CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
         await stateProvide.UpdateAuthenticationState(null);
         navigationManager.NavigateTo("/login", true);

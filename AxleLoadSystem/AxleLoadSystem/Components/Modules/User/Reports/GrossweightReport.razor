@@ -6,6 +6,8 @@
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
 @inject IAxleLoadService loadService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
@@ -185,7 +187,7 @@
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
     private string chartType { get; set; } = "column";
-
+    private User currentUser { get; set; }
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
     private bool isLoading = false;
@@ -194,6 +196,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         ReportParameters reportParameters = await appState.GetReportParameters();
         showReportGroupSelection = reportParameters is not null;
     }
@@ -213,6 +217,7 @@
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Excel report Downloaded", Activity = "Download" });
         }
         else if (type == "csv")
         {
@@ -220,10 +225,12 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight CSV report Downloaded", Activity = "Download" });
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Graph report Downloaded", Activity = "Download" });
         }
         else if (type == "pdf")
         {
@@ -231,6 +238,7 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Pdf report Downloaded", Activity = "Download" });
         }
     }
 

@@ -5,6 +5,7 @@
 @inject Microsoft.JSInterop.IJSRuntime JSRuntime
 @inject NavigationManager navigationManager
 @inject IUserService userService
+@inject IUserActivityService userActivityService
 @inject AuthenticationStateProvider authStateProvider
 @attribute [StreamRendering]
 @rendermode InteractiveServer
@@ -67,7 +68,7 @@
                 {
                     CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
                     await stateProvide.UpdateAuthenticationState(user);
-
+                    await userActivityService.InsertUserActivity(new UserActivity { UserId = user.Id, DateTime = DateTime.Now, Description = user.Name + " Login Successfully", Activity = "Login" });
                     if (user.HasRole("Admin"))
                     {
                         navigationManager.NavigateTo("", true);
