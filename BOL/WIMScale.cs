@@ -7,4 +7,5 @@ public class WIMScale
     public int Type {  get; set; }
     public string EquipmentCode { get; set; }
     public string LaneDirection { get; set; }
+    public bool IsUpbound { get; set; }
 }

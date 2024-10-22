@@ -31,7 +31,7 @@ public class StationService : IStationService
         if (!_cacheProvider.TryGetValue(CacheKeys.Stations, out IEnumerable<Station> stations))
         {
             // Get the data from database
-            string query = "SELECT StationId,StationName,Address,AuthKey,MapX,MapY,IsUpbound FROM Stations";
+            string query = "SELECT StationId,StationName,Address,AuthKey,MapX,MapY FROM Stations";
             stations = await _db.LoadData<Station, dynamic>(query, null);
 
             var cacheEntryOptions = new MemoryCacheEntryOptions
@@ -52,7 +52,7 @@ public class StationService : IStationService
             return stations.FirstOrDefault(s => s.StationId == obj.StationId);
         }
 
-        string sql = "SELECT StationId,StationName,Address,AuthKey,MapX,MapY,IsUpbound FROM Stations WHERE StationId=@StationId";
+        string sql = "SELECT StationId,StationName,Address,AuthKey,MapX,MapY FROM Stations WHERE StationId=@StationId";
         Station station = await _db.LoadSingleAsync<Station, dynamic>(sql, new { obj.StationId });
 
         return station;
@@ -63,7 +63,7 @@ public class StationService : IStationService
         bool hasDuplicate = await this.CheckDuplicateEntry(obj);
         if (!hasDuplicate)
         {
-            string query = "INSERT INTO Stations(StationName,Address,AuthKey,MapX,MapY,IsUpbound) VALUES(@StationName,@Address,@AuthKey,@MapX,@MapY,@IsUpbound)";
+            string query = "INSERT INTO Stations(StationName,Address,AuthKey,MapX,MapY) VALUES(@StationName,@Address,@AuthKey,@MapX,@MapY)";
             bool isSuccess = await _db.SaveData<Station>(query, obj);
 
             if (isSuccess)
@@ -77,7 +77,7 @@ public class StationService : IStationService
     }
     public async Task<bool> Update(Station obj)
     {
-        string query = "UPDATE Stations SET StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY,IsUpbound=@IsUpbound WHERE StationId=@StationId";
+        string query = "UPDATE Stations SET StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
         bool isSuccess = await _db.SaveData<Station>(query, obj);
 
         if (isSuccess)

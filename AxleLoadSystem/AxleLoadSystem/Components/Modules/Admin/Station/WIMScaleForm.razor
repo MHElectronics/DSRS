@@ -62,7 +62,7 @@ else
                             }
                         </div>
                     </div>
-                    <div class="col-md-8 col-sm-12">
+                    <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             @if (formMode == FormMode.Details)
                             {
@@ -97,6 +97,18 @@ else
                                 </select>
                                 <ValidationMessage For="() => wimScale.Type" />
                             }
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="chkUpbound" class="form-label">Upbound/Downbound</label>
+                            <div class="form-control">
+                                <div class="icheck-primary d-inline">
+                                    @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
+                                    <input type="checkbox" id="chkUpbound" checked="@wimScale.IsUpbound" @onchange="@(() => wimScale.IsUpbound = !wimScale.IsUpbound)" />
+                                    <label for="chkUpbound">Is Upbound?</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @if (!string.IsNullOrEmpty(Summary))
@@ -168,6 +180,8 @@ else
     }
     async Task OnValidSubmit(EditContext editContext)
     {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
         Notification notification = new();
         Summary = "";
         bool isSuccess = false;

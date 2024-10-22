@@ -1,7 +1,9 @@
 ﻿@page "/map"
+@using static System.Runtime.InteropServices.JavaScript.JSType
 @inherits BasePageComponent
 @inject Microsoft.JSInterop.IJSRuntime JSRuntime
 @inject IStationService stationService
+@inject IWIMScaleService wimScaleService
 @rendermode InteractiveServer
 
 <div class="row">
@@ -31,23 +33,41 @@
                         <feComposite operator="over" in="SourceGraphic" />
                     </filter>
                 </defs>
-                @if (stations is not null)
-                {
+                @if (stations is not null && wimScales is not null)
+                {                   
                     foreach (Station item in stations.Where(s => !string.IsNullOrEmpty(s.MapX)))
                     {
-                        <g class="alcs" transform="matrix(1 0 0 1 @item.MapX @item.MapY)" 
-                            data-id="@item.StationId" data-name="@item.StationName"
+                        var stationWIMScales = wimScales.Where(w => w.StationId == item.StationId);
+                        var hasUpbound = stationWIMScales.Any(w => w.IsUpbound);
+                        var hasDownbound = stationWIMScales.Any(w => !w.IsUpbound);
+
+                        <g class="alcs" transform="matrix(1 0 0 1 @item.MapX @item.MapY)"
+                           data-id="@item.StationId" data-name="@item.StationName"
                            @onclick="(() => MapClicked(item))">
-                            @if (item.IsUpbound)
-                            {
-                                <circle r="20" cx="20" cy="20" fill="red" />
-                            }
-                            else
+
+                            @if (hasDownbound)
                             {
                                 <polygon points="30,0 10,40 50,40" style="fill:green;stroke:purple;stroke-width:3" />
                             }
-                            @* <rect width="180" height="50" style="fill:rgba(0,0,255,0.5);stroke-width:0;stroke:rgb(0,0,0)" rx="10" ry="10" /> *@
-                            <text filter="url(#rounded-corners)" x="40" y="15" style="font-size:16pt;fill:white;margin-right:20px;">@item.StationName</text>
+
+                            @if (hasUpbound)
+                            {
+                                <circle r="20" cx="30" cy="70" fill="red" />
+                            }
+
+                            <text filter="url(#rounded-corners)" x="40" y="50" style="font-size:12pt;fill:white;">
+                                <tspan x="40" dy="1.2em">@item.StationName</tspan>
+
+                                @if (hasDownbound)
+                                {
+                                    <tspan x="40" dy="1.2em">Lane No: @string.Join(", ", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber)) (Downbound)</tspan>
+                                }
+
+                                @if (hasUpbound)
+                                {
+                                    <tspan x="40" dy="1.2em">Lane No: @string.Join(", ", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber)) (Upbound)</tspan>
+                                }
+                            </text>
                         </g>
                     }
                 }
@@ -90,25 +110,26 @@
     }
 </style>
 
-        @code {
-        private IEnumerable<Station> stations { get; set; }
-        private Station station { get; set; }
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+@code {
+    private IEnumerable<Station> stations { get; set; }
+    private IEnumerable<WIMScale> wimScales { get; set; }
+    private Station station { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Initialize the dialog events the first time th ecomponent is rendered
+        if (firstRender)
         {
-            // Initialize the dialog events the first time th ecomponent is rendered
-            if (firstRender)
-            {
-                // IJSObjectReference module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/map.js");
-                // await module.InvokeVoidAsync("InitMap");
-            }
+            // IJSObjectReference module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/map.js");
+            // await module.InvokeVoidAsync("InitMap");
         }
-        protected override async Task OnInitializedAsync()
-        {
-            stations = await stationService.Get();
-
-        }
-        private void MapClicked(Station item)
-        {
-            station = item;
-        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        stations = await stationService.Get();
+        wimScales = await wimScaleService.GetAll();
+    }
+    private void MapClicked(Station item)
+    {
+        station = item;
+    }
 }
