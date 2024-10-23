@@ -85,13 +85,13 @@
         </div>
         <div class="col-md-6">
             <label>@localizer["Report.WimScale"]</label>
-            @if (wims is not null && wims.Count() > 0)
+            @if (selectedWIMScales is not null && wims is not null)
             {
-                <select class="form-control" @bind="@reportParameters.WIMScaleId">
-                    <option value="0">-Select WIM-</option>
+                <select class="form-control" @bind="@selectedWIMScales" multiple>
+                    @* <option value="0">-Select WIM-</option> *@
                     @foreach (WIMScale item in wims)
                     {
-                        <option value="@item.Id">@item.LaneNumber - @item.LaneDirection</option>
+                        <option value="@item.Id">@item.LaneNumber - @item.LaneDirection :@(item.IsUpbound ? "(Upbound)" : "(Downbound)")</option>
                     }
                 </select>
             }
@@ -215,9 +215,25 @@ else
                 {
                     <span class="badge bg-success"> @item.StationName</span>
                 }
-                @if (reportParameters.WIMScaleId > 0)
+                @if (reportParameters.WIMScales is not null)
                 {
-                    <label>, WIM Scale <span class="badge bg-success">@reportParameters.WIMScaleId</span></label>
+                    <label>
+                        , WIM Scale:
+                        @if (reportParameters.WIMScales.Any(w => w.IsUpbound))
+                        {
+                            <span class="badge bg-success">
+                                Upbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber))
+                            </span>
+                        }
+
+                        @if (reportParameters.WIMScales.Any(w => !w.IsUpbound))
+                        {
+                            <span class="badge bg-success">
+                                Downbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber))
+                            </span>
+                        }
+                    </label>
+
                 }
             </div>
             <div class="col-md-6">
@@ -300,13 +316,14 @@ else
 
     private IEnumerable<Station>? stations;
     private List<Station>? selectedStations;
+    private int[] selectedWIMScales { get; set; } = new int[100];
     private IEnumerable<ClassStatus> ListClassStatus { get; set; }
     private IEnumerable<WIMScale>? wims;
     private bool selectionEnabled { get; set; } = false;
     private int wimId { get; set; } = 0;
     private string selectedType { get; set; } = "Daily";
     public Configuration configuration { get; set; }
-
+    private int i { get; set; } = 0;
     private ReportParameters reportParameters { get; set; } = new();
     private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
     private List<int> stationAccess { get; set; } = new();
@@ -315,17 +332,24 @@ else
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
-
-        reportParameters = await appState.GetReportParameters();
         selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
-
         ListClassStatus = await classStatusService.GetClassStatusList();
         configuration = await configurationService.GetConfiguration();
 
+        reportParameters = await appState.GetReportParameters();
+        if (reportParameters.WIMScales is not null)
+        {
+            foreach (WIMScale item in reportParameters.WIMScales)
+            {
+                selectedWIMScales[i] = item.Id;
+                i++;
+            }
+        }
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
         stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
     }
+
     private async Task AllStationClicked()
     {
         if (stations?.Count() == selectedStations?.Count())
@@ -358,13 +382,13 @@ else
             wims = await wimService.GetByStation(new WIMScale() { StationId = selectedStations.FirstOrDefault().StationId });
             if (wims is not null && wims.Count() == 1)
             {
-                wimId = wims.FirstOrDefault().Id;
+                selectedWIMScales[i] = wims.FirstOrDefault().Id;
             }
         }
         else
         {
             wims = null;
-            reportParameters.WIMScaleId = 0;
+            reportParameters.WIMScales = new();
         }
     }
     private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
@@ -391,13 +415,15 @@ else
             appState.SetNotification(this, "Maximum Wheelbase Number " + configuration.WheelBaseMaximum, Notification.NotificationType.Warning);
             return;
         }
-
         reportParameters.Stations = new();
+        var matchingWIMScales = wims.Where(w => selectedWIMScales.Contains(w.Id)).ToList();
+        reportParameters.WIMScales = new();
+        reportParameters.WIMScales.AddRange(matchingWIMScales);
         if (selectedStations is not null && selectedStations.Any())
         {
             reportParameters.Stations = selectedStations.Select(s => s.StationId).ToList();
         }
-
+        
         await appState.SetReportParameters(reportParameters);
         selectionEnabled = false;
         await OnParametersChanged.InvokeAsync(selectionEnabled);
