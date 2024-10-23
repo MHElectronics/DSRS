@@ -254,7 +254,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             FROM @Years Y
             LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
                 AND AL.StationId IN (SELECT StationId FROM @Stations)
-                AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+                AND DATEDIFF(Day,AL.DateTime,@DateStart)<=0
+                AND DATEDIFF(Day,AL.DateTime,@DateEnd)>=0
                 AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
                 AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
                 AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -419,7 +420,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         SUM(GrossVehicleWeight) AS GrossVehicleWeight
     FROM AxleLoad AL
     INNER JOIN @Stations S ON AL.StationId = S.StationId
-    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+    WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+        AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
         AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
         AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
         AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -501,7 +503,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -594,7 +597,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Days D
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -667,7 +671,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -735,7 +740,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     FROM AxleLoad AL
     INNER JOIN @Stations S ON AL.StationId = S.StationId
     INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+    WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+        AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
         AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
         AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
         AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -803,7 +809,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -871,7 +878,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     FROM AxleLoad AL
     INNER JOIN @Stations S ON AL.StationId = S.StationId
     INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+    WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+        AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
         AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
         AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
         AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -940,7 +948,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     FROM AxleLoad AL
     INNER JOIN @Stations S ON AL.StationId = S.StationId
     INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-    WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+    WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+        AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
         AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
         AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
         AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -974,9 +983,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         }
         return (null, isSuccess, message);
     }
-
-
-
     #endregion
 
     #region Over Weight Vehicle report query
@@ -1008,7 +1014,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Years Y
         LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
@@ -1074,7 +1081,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Months M
         LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
@@ -1131,7 +1139,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
@@ -1207,7 +1216,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             NumberOfAxle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE AL.DateTime BETWEEN @DateStart AND @DateEnd
+        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
@@ -1276,7 +1286,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     FROM @Days D
     LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
         AND AL.StationId IN (SELECT StationId FROM @Stations)
-        AND AL.DateTime BETWEEN @DateStart AND @DateEnd
+        AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
+        AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
         AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
         AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
         AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
