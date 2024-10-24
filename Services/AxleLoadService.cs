@@ -212,10 +212,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Years TABLE([Year] INT)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
@@ -257,9 +255,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
         FROM @Years Y
         LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
+            AND AL.StationId IN (SELECT StationId FROM @Stations)";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
             AND DATEDIFF(Day, AL.DateTime, @DateEnd) >= 0
             AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
@@ -304,9 +306,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
             DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1),StationId INT)
-            DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
             
-            INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
             INSERT INTO @Stations(StationId) VALUES " + stationIds +
                 @" CREATE TABLE #T(TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,Axle1 INT DEFAULT 0,Axle2 INT DEFAULT 0,Axle3 INT DEFAULT 0,Axle4 INT DEFAULT 0,Axle5 INT DEFAULT 0,Axle6 INT DEFAULT 0,Axle7 INT DEFAULT 0,AxleRemaining INT DEFAULT 0,GrossVehicleWeight INT DEFAULT 0)
             
@@ -319,42 +319,46 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             ,SUM(AxleRemaining) AS AxleRemaining,SUM(GrossVehicleWeight) AS GrossVehicleWeight
             FROM AxleLoad AL INNER JOIN @Stations S ON AL.StationId=S.StationId
             WHERE DATEDIFF(DAY,DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-            GROUP BY 
-            DATEPART(MONTH,DateTime)
+            AND DATEDIFF(DAY,DateTime,@DateEnd) >= 0";
+
+            if(!string.IsNullOrEmpty(laneNumbers))
+            {
+                query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+            }
+            query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+                AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+                AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
+                GROUP BY 
+                DATEPART(MONTH,DateTime)
 
     
-            DECLARE @DateParts TABLE(MonthNumber INT)
+                DECLARE @DateParts TABLE(MonthNumber INT)
 
-            DECLARE @Min INT,@Max INT
-            SELECT @Min=DATEPART(MONTH,@DateStart),@Max=DATEPART(MONTH,@DateEnd)
+                DECLARE @Min INT,@Max INT
+                SELECT @Min=DATEPART(MONTH,@DateStart),@Max=DATEPART(MONTH,@DateEnd)
 
-            INSERT INTO @DateParts
-            SELECT N.number
-            FROM master..spt_values as N
-            WHERE N.number between @Min AND @Max
-            AND N.type ='P'
-            AND N.number>0
+                INSERT INTO @DateParts
+                SELECT N.number
+                FROM master..spt_values as N
+                WHERE N.number between @Min AND @Max
+                AND N.type ='P'
+                AND N.number>0
 
-            INSERT INTO #T(DateUnit)
-            SELECT MonthNumber
-            FROM @DateParts
-            WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
-
-
-
-            SELECT OverloadVehicle,TotalVehicle - OverloadVehicle TotalVehicle,DateUnit,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight
-            ,DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
-            FROM #T
-            ORDER BY DateUnit
+                INSERT INTO #T(DateUnit)
+                SELECT MonthNumber
+                FROM @DateParts
+                WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
 
 
-            DROP TABLE #T
-            ";
+
+                SELECT OverloadVehicle,TotalVehicle - OverloadVehicle TotalVehicle,DateUnit,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight
+                ,DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
+                FROM #T
+                ORDER BY DateUnit
+
+
+                DROP TABLE #T
+                ";
 
         var parameters = new
         {
@@ -387,10 +391,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -433,9 +435,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY DATEPART(WEEKDAY, AL.DateTime)
@@ -488,10 +494,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -520,9 +524,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY DATEPART(HOUR, AL.DateTime)
@@ -571,10 +579,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Days TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -618,9 +624,14 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
             AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+            
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY D.[Date]
@@ -674,10 +685,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
 
@@ -697,9 +706,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY 
@@ -748,10 +761,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
 
@@ -771,9 +782,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY 
@@ -822,10 +837,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
 
@@ -845,9 +858,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY 
@@ -896,10 +913,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
 
@@ -919,9 +934,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY 
@@ -970,10 +989,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
 
@@ -994,9 +1011,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY 
@@ -1040,10 +1061,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Years TABLE([Year] INT)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
@@ -1064,9 +1083,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
             AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY Y.[Year], AL.NumberOfAxle
@@ -1105,10 +1128,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Months TABLE([Month] INT, [MonthName] NVARCHAR(50))
         DECLARE @CurrentMonth INT = MONTH(@DateStart)
@@ -1135,9 +1156,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
             AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY M.[Month], M.[MonthName], AL.NumberOfAxle
@@ -1175,10 +1200,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -1197,9 +1220,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
@@ -1246,10 +1273,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -1278,9 +1303,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
             AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
             AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
         GROUP BY DATEPART(HOUR, AL.DateTime), NumberOfAxle
@@ -1328,10 +1357,8 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string message = "";
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        DECLARE @Lanes TABLE(AutoId INT IDENTITY(1,1), LaneNumber INT)
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @" 
-        INSERT INTO @Lanes(LaneNumber) VALUES " + laneNumbers + @"
 
         DECLARE @Days TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -1352,9 +1379,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
             AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0
-            AND AL.LaneNumber IN (SELECT LaneNumber FROM @Lanes)
-            AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
             AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
             AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY D.[Date], AL.NumberOfAxle

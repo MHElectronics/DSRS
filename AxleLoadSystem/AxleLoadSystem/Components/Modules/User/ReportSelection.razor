@@ -215,7 +215,7 @@ else
                 {
                     <span class="badge bg-success"> @item.StationName</span>
                 }
-                @if (reportParameters.WIMScales is not null)
+                @if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
                 {
                     <label>
                         , WIM Scale:
@@ -416,9 +416,17 @@ else
             return;
         }
         reportParameters.Stations = new();
-        var matchingWIMScales = wims.Where(w => selectedWIMScales.Contains(w.Id)).ToList();
         reportParameters.WIMScales = new();
-        reportParameters.WIMScales.AddRange(matchingWIMScales);
+        if (wims is not null && wims.Any(w => selectedWIMScales.Contains(w.Id)))
+        {
+            var matchingWIMScales = wims.Where(w => selectedWIMScales.Contains(w.Id)).ToList();
+
+            if (matchingWIMScales is not null)
+            {
+                reportParameters.WIMScales.AddRange(matchingWIMScales);
+            }
+        }
+
         if (selectedStations is not null && selectedStations.Any())
         {
             reportParameters.Stations = selectedStations.Select(s => s.StationId).ToList();
