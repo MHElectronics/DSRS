@@ -3,6 +3,7 @@
 @inject IStationService stationService
 @inject IFileService fileService
 @inject IAxleLoadService loadService
+@inject IWIMScaleService wimScaleService
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
@@ -200,6 +201,8 @@
         if (Station.StationId > 0 && !reportParameters.Stations.Contains(Station.StationId))
         {
             reportParameters.Stations.Add(Station.StationId);
+            IEnumerable<WIMScale> wimScales = await wimScaleService.GetByStationId(Station.StationId);
+            reportParameters.WIMScales = wimScales.ToList();
         }
         if (selectedType == "Monthly")
         {
@@ -250,6 +253,7 @@
             reportParameters.DateStart = DateTime.Now.AddMonths(-1);
             reportParameters.DateEnd = DateTime.Now;
             //report = await loadService.GetHourlyOverloadedReport(reportParameters);
+            
             report = await loadService.GetDailyOverloadedReport(reportParameters);
             if (report.Item2)
             {
