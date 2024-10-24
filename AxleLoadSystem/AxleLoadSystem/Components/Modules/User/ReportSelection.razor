@@ -348,6 +348,7 @@ else
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
         stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
+        stations = stations.Where(s => stationAccess.Contains(s.StationId));
     }
 
     private async Task AllStationClicked()
