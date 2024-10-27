@@ -172,13 +172,13 @@
     <value>FAQ</value>
   </data>
   <data name="Menu.GrossWeight" xml:space="preserve">
-    <value>Gross Weight</value>
+    <value>Overloaded (Histogram)</value>
   </data>
   <data name="Menu.Overloaded" xml:space="preserve">
-    <value>Overloaded</value>
+    <value>Overloaded (Time series)</value>
   </data>
   <data name="Menu.Overweight" xml:space="preserve">
-    <value>Overweight</value>
+    <value>Overloaded (Number of axles)</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
     <value>Data analysis (General purpose)</value>
@@ -209,5 +209,8 @@
   </data>
   <data name="WIMScale" xml:space="preserve">
     <value>WIM Scale</value>
+  </data>
+  <data name="Menu.OverloadedRatio" xml:space="preserve">
+    <value>Overloaded ratio</value>
   </data>
 </root>

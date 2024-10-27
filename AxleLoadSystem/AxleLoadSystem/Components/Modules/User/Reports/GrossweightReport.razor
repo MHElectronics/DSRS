@@ -95,6 +95,14 @@
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                 </ChartPrimaryYAxis>
+                                
+                                <ChartAxes>
+                                    <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloading Ratio (%)" LabelFormat="{value}%">
+                                        <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+                                        <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                        <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                    </ChartAxis>
+                                </ChartAxes>
 
                                 <ChartSeriesCollection>
                                     @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
@@ -124,7 +132,7 @@
                                         }).ToList();
 
                                     }
-                                    <ChartSeries Name="Average Vehicles"
+                                    <ChartSeries Name="Overloading Ratio (%)"
                                                  ColumnWidth="0.5"
                                                  DataSource="@averageData"
                                                  XName="GrossVehicleWeightRange"

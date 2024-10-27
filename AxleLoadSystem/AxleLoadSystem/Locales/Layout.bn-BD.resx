@@ -210,4 +210,7 @@
   <data name="WIMScale" xml:space="preserve">
     <value>WIM স্কেল</value>
   </data>
+  <data name="Menu.OverloadedRatio" xml:space="preserve">
+    <value>ওভারলোড অনুপাত</value>
+  </data>
 </root>
