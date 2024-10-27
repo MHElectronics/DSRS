@@ -340,7 +340,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
                 INSERT INTO @DateParts
                 SELECT N.number
                 FROM master..spt_values as N
-                WHERE N.number between @Min AND @Max
+                WHERE N.number >= @Min AND N.number <= @Max
                 AND N.type ='P'
                 AND N.number>0
 
@@ -681,7 +681,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
-        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
@@ -693,7 +693,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
         FROM master..[spt_values] 
-        WHERE number BETWEEN 1 AND @TotalIteration
+        WHERE number >= 1 AND number <= @TotalIteration
 
         SELECT 
             DATEPART(YEAR, AL.DateTime) AS DateUnit,
@@ -757,7 +757,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
-        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
@@ -769,7 +769,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
         FROM master..[spt_values] 
-        WHERE number BETWEEN 1 AND @TotalIteration
+        WHERE number >= 1 AND number <= @TotalIteration
 
         SELECT 
             DATEPART(MONTH, AL.DateTime) AS DateUnit,
@@ -833,7 +833,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
-        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
@@ -845,7 +845,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
         FROM master..[spt_values] 
-        WHERE number BETWEEN 1 AND @TotalIteration
+        WHERE number >= 1 AND number <= @TotalIteration
 
         SELECT 
             DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
@@ -909,7 +909,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
-        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
@@ -921,7 +921,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
         FROM master..[spt_values] 
-        WHERE number BETWEEN 1 AND @TotalIteration
+        WHERE number >= 1 AND number <= @TotalIteration
 
         SELECT 
             DATEPART(HOUR, AL.DateTime) AS DateUnit,
@@ -985,7 +985,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
-        DECLARE @Multiplier DECIMAL(18,2) = 50
+        DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 10
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
@@ -997,7 +997,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
         FROM master..[spt_values] 
-        WHERE number BETWEEN 1 AND @TotalIteration
+        WHERE number >= 1 AND number <= @TotalIteration
 
         SELECT 
             DAY(AL.DateTime) AS DateUnit,  -- Extract only the day number as INT

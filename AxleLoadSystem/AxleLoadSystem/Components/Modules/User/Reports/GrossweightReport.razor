@@ -91,11 +91,11 @@
                                     <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                 </ChartPrimaryXAxis>
 
-                                <ChartPrimaryYAxis Title="@YAxisTitle">
+                                <ChartPrimaryYAxis Title="@YAxisTitle" LabelFormat="{value}">
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                 </ChartPrimaryYAxis>
-                                
+
                                 <ChartAxes>
                                     <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloading Ratio (%)" LabelFormat="{value}%">
                                         <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
@@ -112,6 +112,7 @@
                                                      DataSource="@dayGroup"
                                                      XName="GrossVehicleWeightRange"
                                                      YName="TotalVehicle"
+                                                     YAxisName="PrimaryYAxis"
                                                      Type="chartSeriesType"
                                                      EnableTooltip="true">
                                             <ChartMarker>
@@ -122,21 +123,24 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
                                     }
+
+                                    @* Calculate the Overloading Ratio *@
                                     @{
-                                        var averageData = ChartData
+                                        var overloadingRatioData = ChartData
                                         .GroupBy(x => x.GrossVehicleWeightRange)
                                         .Select(g => new
                                         {
                                             GrossVehicleWeightRange = g.Key,
-                                            AverageVehicle = g.Sum(x => x.TotalVehicle) / g.Select(x => x.DateUnit).Distinct().Count()
+                                            OverloadingRatio = (g.Sum(x => x.OverloadVehicle) / (double)g.Sum(x => x.TotalVehicle)) * 100
                                         }).ToList();
-
                                     }
+
                                     <ChartSeries Name="Overloading Ratio (%)"
                                                  ColumnWidth="0.5"
-                                                 DataSource="@averageData"
+                                                 DataSource="@overloadingRatioData"
                                                  XName="GrossVehicleWeightRange"
-                                                 YName="AverageVehicle"
+                                                 YName="OverloadingRatio"
+                                                 YAxisName="SecondaryYAxis"
                                                  Type="ChartSeriesType.Line"
                                                  Width="2"
                                                  Opacity="0.6"
@@ -144,9 +148,11 @@
                                         <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
                                     </ChartSeries>
                                 </ChartSeriesCollection>
+
                                 <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                 <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                             </SfChart>
+
 
                         }
                     </div>
