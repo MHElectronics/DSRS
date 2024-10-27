@@ -1,0 +1,377 @@
+﻿@page "/overloadedratio"
+@using BOL.Helpers
+@using Services
+@using Services.Helpers
+@using Syncfusion.Blazor
+@using Syncfusion.PdfExport;
+@using Syncfusion.Blazor.Charts
+@using System.Globalization
+@inject AuthenticationStateProvider authStateProvider
+@inject IUserActivityService userActivityService
+@inject IAxleLoadService loadService
+@inject NavigationManager NavigationManager
+@inject IAppState appState
+@inject IJSRuntime jsRuntime
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IExportHelper exportHelper
+
+<PageTitleComponent Title="@localizer["ReportTitle.OverloadedRatio"]"></PageTitleComponent>
+
+<div class="card card-primary card-outline">
+    <div class="card-body">
+        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+    </div>
+    @if (!selectionEnabled)
+    {
+        <div class="card-footer">
+            @if (appState is not null && showReportGroupSelection)
+            {
+                <div class="row">
+                    <div class="col-md-12 btn-group">
+                        <button class="btn @(selectedType == "Hourly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hourly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
+                        <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
+                        <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
+                        <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
+                        <button class="btn @(selectedType == "Yearly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Yearly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Summary))
+            {
+                <label class="text-danger">@Summary</label>
+            }
+        </div>
+    }  
+</div>
+@if (Chartview && ChartData is not null)
+{
+    <div class="card card-primary">
+        <div class="card-header">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill" href="#tab_graph" role="tab" aria-selected="true">@localizer["Report.Graph"]</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">@localizer["Report.Table"]</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        @localizer["Report.Export"]
+                    </span>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
+                        <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">@localizer["Report.CSV"]</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">@localizer["Report.Graph"]</span></li>
+                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_graph">
+                    <div class="row">
+                        <div class="col-md-12 btn-group">
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
+                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
+                        @if (!string.IsNullOrEmpty(chartType))
+                        {
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
+                                <ChartArea>
+                                    <ChartAreaBorder Width="0"></ChartAreaBorder>
+                                </ChartArea>
+
+                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
+                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                    <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                </ChartPrimaryXAxis>
+
+                                <ChartPrimaryYAxis Name="SecondaryYAxis" Title="@YAxisTitle" LabelFormat="{value}%">
+                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                    <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                                </ChartPrimaryYAxis>
+
+                                <ChartSeriesCollection>
+                                    @* Calculate Overloading Ratio *@
+                                    @{
+                                        var overloadingRatioData = ChartData
+                                        .GroupBy(x => x.NumberofAxle)
+                                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
+                                        .Select(group => new
+                                        {
+                                            NumberofAxle = group.Key,
+                                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                                        : 0
+                                        })
+                                        .ToList();
+                                    }
+
+                                    <ChartSeries Name="Overloading Ratio (%)"
+                                                 DataSource="@overloadingRatioData"
+                                                 XName="NumberofAxle"
+                                                 YName="OverloadingRatio"
+                                                 YAxisName="SecondaryYAxis"
+                                                 Type="chartSeriesType"
+                                                 EnableTooltip="true">
+                                        <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                    </ChartSeries>
+                                </ChartSeriesCollection>
+
+                                <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                                <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                            </SfChart>
+
+                        }
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_table">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>@selectedType</th>
+                                <th class="text-right">Number of Axle</th>
+                                <th class="text-right">Overloaded Vehicle</th>
+                                <th class="text-right">Total Vehicle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (AxleLoadReport item in ChartData)
+                            {
+                                <tr>
+                                    <td>@item.DateUnitName</td>
+                                    <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
+                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Theme Theme { get; set; } = 0;
+    private SfChart chartInstance;
+    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
+
+    public IEnumerable<AxleLoadReport> ChartData { get; set; }
+    public IQueryable<List<LoadData>> listLoadData { get; set; }
+    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
+    public string Height { get; set; } = "100%";
+    public string Width { get; set; } = "100%";
+    public string FileName { get; set; } = "Charts";
+    public string Format { get; set; } = "{value} GW";
+    public string ChartTitle { get; set; } = "";
+    public string XAxisTitle { get; set; } = "";
+    public string YAxisTitle { get; set; } = "";
+    private string selectedType { get; set; } = "";
+    private string Summary { get; set; } = "";
+    private string chartType { get; set; } = "column";
+    private User currentUser { get; set; }
+    private bool showReportGroupSelection { get; set; } = false;    
+    private bool Chartview { get; set; }
+    private bool isLoading = false;
+    private bool selectionEnabled = false;
+    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        ReportParameters reportParameters = await appState.GetReportParameters();
+        showReportGroupSelection = reportParameters is not null;
+    }
+
+    private async Task Export(string type)
+    {
+        List<(string Header, string FieldName, Type FieldType)> fields = new();
+        fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
+        fields.Add(("Number of Axle", nameof(AxleLoadReport.NumberofAxle), new AxleLoadReport().NumberofAxle.GetType()));
+        fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
+
+        if (type == "excel")
+        {
+            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+
+            MemoryStream ms = new MemoryStream(fileByte);
+
+            using var streamRef = new DotNetStreamReference(ms);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Excel report Downloaded", Activity = "Download" });
+        }
+        else if (type == "csv")
+        {
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
+            
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight CSV report Downloaded", Activity = "Download" });
+        }
+        else if (type == "chart")
+        {
+            await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Graph report Downloaded", Activity = "Download" });
+        }
+        else if (type == "pdf")
+        {
+            MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+
+            using var streamRef = new DotNetStreamReference(stream);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Pdf report Downloaded", Activity = "Download" });
+        }
+    }
+
+    public void ExportComplete(ExportEventArgs exportEventArgs)
+    {
+        string base64 = exportEventArgs.Base64;
+    }
+    private async Task ChartChanged(string type)
+    {
+        if (type.ToLower() == "line")
+        {
+            chartSeriesType = ChartSeriesType.Line;
+        }
+        else if (type.ToLower() == "column")
+        {
+            chartSeriesType = ChartSeriesType.Column;
+        }
+        
+        chartType = type;
+    }
+    private async Task HandleParametersChanged(bool parameters)
+    {
+        selectionEnabled = parameters;
+    }
+    private async Task TypeChanged(string type)
+    {
+        selectedType = type;
+        isLoading = true;
+        ReportParameters reportParameters = await appState.GetReportParameters();
+        if (reportParameters.Stations is not null)
+        {
+            await LoadChart();
+        }
+        isLoading = false;
+    }
+    private async Task LoadChart()
+    {
+        ReportParameters reportParameters = await appState.GetReportParameters();
+
+        ChartTitle = "Overloaded vehicle percentage for each vehicle type " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
+        XAxisTitle = "Number of Axle ";
+        YAxisTitle = "Overloading Ratio (%)";
+        Chartview = true;
+
+        if (selectedType == "Monthly")
+        {
+            report = await loadService.GetMonthlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else 
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;    
+            }
+        }
+        else if (selectedType == "Weekly")
+        {
+            report = await loadService.GetWeeklyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Hourly")
+        {
+            report = await loadService.GetHourlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Yearly")
+        {
+            report = await loadService.GetYearlyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+        else if (selectedType == "Daily")
+        {
+            report = await loadService.GetDailyOverweightReport(reportParameters);
+            if (report.Item2)
+            {
+                if (report.Item1.Count() > 0)
+                {
+                    ChartData = report.Item1;
+                }
+                else
+                {
+                    Chartview = false;
+                    Summary = "No value is available";
+                }
+            }
+            else
+            {
+                Summary = report.Item3;
+            }
+        }
+    }
+}
