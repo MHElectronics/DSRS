@@ -1074,27 +1074,29 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         END
 
         SELECT 
-            Y.[Year] AS DateUnit,  
-            CAST(Y.[Year] AS VARCHAR) AS DateUnitName,  
+            Y.[Year] AS DateUnit,  -- Year as DateUnit
+            CAST(Y.[Year] AS VARCHAR) AS DateUnitName,  -- Year name
             AL.NumberOfAxle,
-            COUNT(AL.StationId) AS TotalVehicle,
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
+            ISNULL(COUNT(1), 0) AS TotalVehicle,  -- Total number of vehicles (overloaded + non-overloaded)
+            ISNULL(SUM(CAST(AL.IsOverloaded AS INT)), 0) AS OverloadVehicle  -- Overloaded vehicle count
         FROM @Years Y
         LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7
+            AND DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
+            AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
+        if (!string.IsNullOrEmpty(laneNumbers))
         {
             query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
         }
+
         query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-            AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-            AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
+        AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
+        AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY Y.[Year], AL.NumberOfAxle
         ORDER BY Y.[Year]
-    ";
+        ";
 
         var parameters = new
         {
@@ -1147,24 +1149,27 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         END
 
         SELECT 
-            M.[Month] AS DateUnit,
-            M.[MonthName] AS DateUnitName,
+            M.[Month] AS DateUnit,  
+            M.[MonthName] AS DateUnitName, 
             AL.NumberOfAxle,
-            COUNT(AL.StationId) AS TotalVehicle,
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
+            COUNT(1) AS TotalVehicle, 
+            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle 
         FROM @Months M
         LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7
+            AND DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
+            AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
+        if (!string.IsNullOrEmpty(laneNumbers))
         {
             query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
         }
-        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-            AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-            AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
+
+        query += @"
+        AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+        AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
+        AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY M.[Month], M.[MonthName], AL.NumberOfAxle
         ORDER BY M.[Month]
         ";
@@ -1213,22 +1218,26 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         END
 
         SELECT 
-            DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
-            DATENAME(WEEKDAY, AL.DateTime) AS DateUnitName,
+            DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,  -- Numeric representation of the day (1-7)
+            DATENAME(WEEKDAY, AL.DateTime) AS DateUnitName,  -- Name of the day (e.g., Sunday)
+            COUNT(1) AS TotalVehicle,  -- Total number of vehicles (overloaded + non-overloaded)
             AL.NumberOfAxle,
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
+            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle  -- Overloaded vehicle count
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        WHERE DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
+          AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0
+          AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-            AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-            AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
+                if (!string.IsNullOrEmpty(laneNumbers))
+                {
+                    query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+                }
+
+                query += @"
+          AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+          AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
+          AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
         GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
         ORDER BY 
             CASE 
@@ -1274,7 +1283,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         string query = @"
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
 
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+        INSERT INTO @Stations(StationId) VALUES " + stationIds + @" 
 
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
@@ -1290,33 +1299,40 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23)
 
         CREATE TABLE #T(
+            DateUnit INT,
+            TotalVehicle INT DEFAULT 0,
             OverloadVehicle INT DEFAULT 0,
-            [DateUnit] INT,
-            NumberOfAxle INT DEFAULT 0  
+            NumberOfAxle INT DEFAULT 0
         )
 
-        INSERT INTO #T([DateUnit], OverloadVehicle, NumberOfAxle)
+        -- Insert total and overloaded vehicle counts along with the hour (DateUnit) and NumberOfAxle
+        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, NumberOfAxle)
         SELECT
             DATEPART(HOUR, AL.DateTime) AS DateUnit,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            NumberOfAxle
+            COUNT(1) AS TotalVehicle,  -- Total vehicles count (overloaded and non-overloaded)
+            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle,  -- Overloaded vehicles count
+            AL.NumberOfAxle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        WHERE DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
+          AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0
+          AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY DATEPART(HOUR, AL.DateTime), NumberOfAxle
+                if (!string.IsNullOrEmpty(laneNumbers))
+                {
+                    query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
+                }
+
+                query += @" 
+          AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
+          AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
+          AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
+        GROUP BY DATEPART(HOUR, AL.DateTime), AL.NumberOfAxle
 
         SELECT 
             AH.Hour AS DateUnit,
-            ISNULL(T.OverloadVehicle, 0) AS OverloadVehicle,
+            ISNULL(T.TotalVehicle, 0) AS TotalVehicle,  -- Total vehicle count
+            ISNULL(T.OverloadVehicle, 0) AS OverloadVehicle,  -- Overloaded vehicle count
             ISNULL(T.NumberOfAxle, 0) AS NumberOfAxle,
             FORMAT(AH.Hour, '00') AS DateUnitName
         FROM @AllHours AH
@@ -1378,6 +1394,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Days D
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
+            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7
             AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
             AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
 

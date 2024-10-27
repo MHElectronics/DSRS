@@ -92,6 +92,14 @@
                                         <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                     </ChartPrimaryYAxis>
 
+                                    <ChartAxes>
+                                        <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloading Ratio (%)" LabelFormat="{value}%">
+                                            <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+                                            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                            <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                        </ChartAxis>
+                                    </ChartAxes>
+
                                     <ChartSeriesCollection>
                                         <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
@@ -102,7 +110,7 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
 
-                                        <ChartSeries Name="Total number of mesured Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartSeries Name="Total number of measured Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="true" Position="LabelPosition.Top">
                                                     <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -111,12 +119,20 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
 
-                                        @if(average is not null)
-                                        {
-                                            <ChartSeries Name="Average" ColumnWidth="0.5" DataSource="@average" XName="UnitName" YName="Average" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
-                                            </ChartSeries>
+                                        @* Calculate Overloading Ratio *@
+                                        @{
+                                            var overloadingRatioData = ChartData.Select(x => new
+                                            {
+                                                x.DateUnitName,
+                                                OverloadingRatio = (x.OverloadVehicle / (double)x.TotalVehicle) * 100
+                                            }).ToList();
                                         }
+
+                                        <ChartSeries Name="Overloading Ratio (%)" DataSource="@overloadingRatioData" XName="DateUnitName" YName="OverloadingRatio" YAxisName="SecondaryYAxis" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
+                                            <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                        </ChartSeries>
                                     </ChartSeriesCollection>
+
                                     <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                     <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                                 </SfChart>

@@ -96,31 +96,65 @@
                                     <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                 </ChartPrimaryYAxis>
 
+                                <ChartAxes>
+                                    <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloading Ratio (%)" LabelFormat="{value}%">
+                                        <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+                                        <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                        <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                    </ChartAxis>
+                                </ChartAxes>
+
                                 <ChartSeriesCollection>
                                     @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
                                     {
-                                        <ChartSeries Name="@dayGroup.First().DateUnitName"
-                                                     ColumnWidth="0.5"
-                                                     DataSource="@dayGroup"
-                                                     XName="NumberofAxle"
-                                                     YName="OverloadVehicle"
-                                                     Type="chartSeriesType"
-                                                     EnableTooltip="true">
-
-                                            <ChartMarker>
-                                                <ChartDataLabel Visible="true" Position="LabelPosition.Top">
-                                                    <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                                </ChartDataLabel>
-                                            </ChartMarker>
-
-                                            <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                                        </ChartSeries>
+                                        if (dayGroup.Any(x => x.NumberofAxle != 0))
+                                        {
+                                            <ChartSeries Name="@dayGroup.First().DateUnitName"
+                                                         ColumnWidth="0.5"
+                                                         DataSource="@dayGroup.Where(x => x.NumberofAxle != 0)" 
+                                                         XName="NumberofAxle"
+                                                         YName="OverloadVehicle"
+                                                         Type="chartSeriesType"
+                                                         EnableTooltip="true">
+                                                <ChartMarker>
+                                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                        <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                                    </ChartDataLabel>
+                                                </ChartMarker>
+                                                <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
+                                            </ChartSeries>
+                                        }
                                     }
+                                    @* Calculate Overloading Ratio *@
+                                    @{
+                                        var overloadingRatioData = ChartData
+                                        .GroupBy(x => x.NumberofAxle)
+                                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
+                                        .Select(group => new
+                                        {
+                                            NumberofAxle = group.Key,
+                                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                                        : 0
+                                        })
+                                        .ToList();
+                                    }
+
+                                    <ChartSeries Name="Overloading Ratio (%)"
+                                                 DataSource="@overloadingRatioData"
+                                                 XName="NumberofAxle"
+                                                 YName="OverloadingRatio"
+                                                 YAxisName="SecondaryYAxis"
+                                                 Type="ChartSeriesType.Line"
+                                                 EnableTooltip="true">
+                                        <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                    </ChartSeries>
                                 </ChartSeriesCollection>
 
                                 <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                 <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                             </SfChart>
+
                         }
                     </div>
                 </div>
@@ -131,6 +165,7 @@
                                 <th>@selectedType</th>
                                 <th class="text-right">Number of Axle</th>
                                 <th class="text-right">Overloaded Vehicle</th>
+                                <th class="text-right">Total Vehicle</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -140,6 +175,7 @@
                                     <td>@item.DateUnitName</td>
                                     <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
                                 </tr>
                             }
                         </tbody>
