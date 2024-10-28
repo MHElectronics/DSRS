@@ -104,9 +104,18 @@ else
                             <label for="chkUpbound" class="form-label">Upbound/Downbound</label>
                             <div class="form-control">
                                 <div class="icheck-primary d-inline">
-                                    @* <input type="checkbox" id="checkboxPrimary1" checked=""> *@
-                                    <input type="checkbox" id="chkUpbound" checked="@wimScale.IsUpbound" @onchange="@(() => wimScale.IsUpbound = !wimScale.IsUpbound)" />
-                                    <label for="chkUpbound">Is Upbound?</label>
+                                    <input type="radio" id="radioUpbound" name="upbound" value="true"
+                                           checked="@wimScale.IsUpbound"
+                                           @onchange="@(e => OnBoundChanged(true))"
+                                           disabled="@(formMode == FormMode.Details)" />
+                                    <label for="radioUpbound">Upbound</label>
+                                </div>
+                                <div class="icheck-primary d-inline">
+                                    <input type="radio" id="radioDownbound" name="upbound" value="false"
+                                           checked="@(!wimScale.IsUpbound)"
+                                           @onchange="@(e => OnBoundChanged(false))"
+                                           disabled="@(formMode == FormMode.Details)" />
+                                    <label for="radioDownbound">Downbound</label>
                                 </div>
                             </div>
                         </div>
@@ -233,5 +242,12 @@ else
     private void Edit()
     {
         formMode = FormMode.Edit;
+    }
+    private void OnBoundChanged(bool isUpbound)
+    {
+        if (formMode != FormMode.Details)
+        {
+            wimScale.IsUpbound = isUpbound;
+        }
     }
 }
