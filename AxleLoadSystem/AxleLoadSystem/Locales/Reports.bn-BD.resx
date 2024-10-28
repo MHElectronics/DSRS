@@ -202,13 +202,13 @@
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
   <data name="ReportTitle.GrossWeight" xml:space="preserve">
-    <value>মোট ওজন রিপোর্ট</value>
+    <value>ওভারলোড (হিস্টোগ্রাম)</value>
   </data>
   <data name="ReportTitle.Overloaded" xml:space="preserve">
-    <value>ওভারলোডেড রিপোর্ট</value>
+    <value>ওভারলোড (টাইম সিরিজ)</value>
   </data>
   <data name="ReportTitle.Overweight" xml:space="preserve">
-    <value>অতিরিক্ত ওজন রিপোর্ট</value>
+    <value>ওভারলোড (অ্যাক্সেলের সংখ্যা)</value>
   </data>
   <data name="SystemStartDate" xml:space="preserve">
     <value>সিস্টেম শুরুর তারিখ</value>

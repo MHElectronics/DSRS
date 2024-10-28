@@ -202,13 +202,13 @@
     <value>Report Configuration</value>
   </data>
   <data name="ReportTitle.GrossWeight" xml:space="preserve">
-    <value>Gross Weight Report</value>
+    <value>Overloaded (Histogram)</value>
   </data>
   <data name="ReportTitle.Overloaded" xml:space="preserve">
-    <value>Overloaded Report</value>
+    <value>Overloaded (Time series)</value>
   </data>
   <data name="ReportTitle.Overweight" xml:space="preserve">
-    <value>Overweight Report</value>
+    <value>Overloaded (Number of axles)</value>
   </data>
   <data name="SystemStartDate" xml:space="preserve">
     <value>System Start Date</value>

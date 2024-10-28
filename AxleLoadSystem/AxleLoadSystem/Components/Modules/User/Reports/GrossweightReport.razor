@@ -293,9 +293,9 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
 
-        ChartTitle = "Number of Gross Weight Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
-        XAxisTitle = "Gross Weight (TON)";
-        YAxisTitle = "Number of Vehicles (Units)";
+        ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
+        XAxisTitle = "Histogram (1t increments)";
+        YAxisTitle = "Number of vehicles";
         Chartview = true;
 
         if (selectedType == "Monthly")

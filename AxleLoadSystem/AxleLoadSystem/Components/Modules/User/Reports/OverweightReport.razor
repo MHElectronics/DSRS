@@ -296,9 +296,9 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
 
-        ChartTitle = "Number of Overweight Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )" + " Data Analysis";
-        XAxisTitle = "Number of Axle ";
-        YAxisTitle = "Number of Overload Vehicles (Units)";
+        ChartTitle = "Number of overloaded vehicles (main) for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
+        XAxisTitle = "Number of axles";
+        YAxisTitle = "Number of units";
         Chartview = true;
 
         if (selectedType == "Monthly")
