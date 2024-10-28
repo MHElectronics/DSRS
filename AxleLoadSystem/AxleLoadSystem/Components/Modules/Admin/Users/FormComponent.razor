@@ -137,9 +137,9 @@ else
                             </div>
                         </div>
                     }
-                    @if (!string.IsNullOrEmpty(RolevalidationSummary))
+                    @if (!string.IsNullOrEmpty(Summary))
                     {
-                        <label class="text-danger">@RolevalidationSummary</label>
+                        <label class="text-danger">@Summary</label>
                     }
                 </div>
             </div>
@@ -231,7 +231,7 @@ else
     private bool showPassword { get; set; } = false;
     string PasswordMatch, NewPasswordInput;
     string validationSummary { get; set; } = "";
-    string RolevalidationSummary { get; set; }
+    string Summary { get; set; }
     protected override void OnParametersSet()
     {
         if (user is not null && !string.IsNullOrEmpty(user.Role))
@@ -258,7 +258,7 @@ else
         int count = selectedRoles.Count();
         if (count == 0)
         {
-            RolevalidationSummary = "Select atleast one role";
+            Summary = "Select atleast one role";
             saveDisabled = false;
             return;
         }
@@ -280,9 +280,17 @@ else
             validationSummary = "Name can only contain alphabets";
             return;
         }*/
-        if (user.Name.Any(c => !char.IsLetter(c) && c != ' '))
+        
+        if (user.Name.Trim().Count(char.IsLetter) < 5)
         {
-            validationSummary = "Name can only contain alphabets";
+            Summary = "Name must contain at least 5 characters";
+            saveDisabled = false;
+            return;
+        }
+        if (user.Name.Trim().Any(c => !char.IsLetter(c) && c != ' '))
+        {
+            Summary = "Name can only contain alphabets";
+            saveDisabled = false;
             return;
         }
 
