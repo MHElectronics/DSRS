@@ -117,7 +117,7 @@
                                                          Type="chartSeriesType"
                                                          EnableTooltip="true">
                                                 <ChartMarker>
-                                                    <ChartDataLabel Visible="true" Position="LabelPosition.Top">
+                                                    <ChartDataLabel Visible="false" Position="LabelPosition.Top">
                                                         <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
                                                     </ChartDataLabel>
                                                 </ChartMarker>
@@ -296,7 +296,7 @@
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
 
-        ChartTitle = "Number of overloaded vehicles (main) for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
+        ChartTitle = "Number of overloaded vehicles for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
         XAxisTitle = "Number of axles";
         YAxisTitle = "Number of units";
         Chartview = true;
