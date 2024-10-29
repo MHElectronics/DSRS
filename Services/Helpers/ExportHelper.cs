@@ -195,16 +195,6 @@ public class ExportHelper : IExportHelper
             dataRow += classStatus.Name + ",";
         }
 
-        headerRow += "Overloaded only,";
-        if (reportParamete.IsOverloaded)
-        {
-            dataRow += "Yes,";
-        }
-        else
-        {
-            dataRow += "No,";
-        }
-
         if (reportParamete.Wheelbase > 0)
         {
             headerRow += "Wheelbase,";

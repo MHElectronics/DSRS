@@ -135,14 +135,14 @@
             <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="@configuration.WheelBaseMaximum" />
         </div>
         <div class="col-md-3">
-            <label class="form-label">&nbsp;</label>
+            @* <label class="form-label">&nbsp;</label>
             <div class="form-check">
                 <div class="icheck-primary d-inline">
                     <input type="checkbox" @bind="reportParameters.IsOverloaded" id="chkIsOverloaded" />
                     <label for="chkIsOverloaded"></label>
                 </div>
                 <label class="form-check-label" for="chkIsOverloaded">@localizer["Report.Overload"]</label>
-            </div>
+            </div> *@
         </div>
 
         <div class="col-md-3">
@@ -250,12 +250,6 @@ else
                 string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
                 <div class="col-md-3">
                     <label>, Class Status:<span class="badge bg-success">@name</span></label>
-                </div>
-            }
-            @if (reportParameters.IsOverloaded)
-            {
-                <div class="col-md-3">
-                    <label>, <span class="badge bg-success">Overloaded only</span></label>
                 </div>
             }
             @if (reportParameters.Wheelbase > 0)
