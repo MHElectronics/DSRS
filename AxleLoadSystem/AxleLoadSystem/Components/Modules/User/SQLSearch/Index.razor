@@ -32,7 +32,6 @@
                     <div class="col-md-12 col-sm-12">
                         <div class="btn btn-group">
                             <button type="submit" class="btn btn-primary">@localizerResource["Button.Save"]</button>
-                            <NavLink class="btn btn-primary" href="/tutorial">@localizerResource["Button.Cancel"]</NavLink>
                         </div>
                     </div>
                 </div>
@@ -101,6 +100,7 @@
     }
     private async Task OnValidSubmit(EditContext editContext)
     {
+        Summary = "";
         sqlSearch.Date = DateTime.Now;
         sqlSearch.UserId = currentUser.Id;
         if (await QueryValidation(sqlSearch.Query))
