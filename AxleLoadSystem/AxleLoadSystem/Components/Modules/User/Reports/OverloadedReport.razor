@@ -145,8 +145,8 @@
                         <thead>
                             <tr>
                                 <th>@selectedType</th>
-                                <th class="text-right">Total Vehicle</th>
                                 <th class="text-right">Overloaded Vehicle</th>
+                                <th class="text-right">Total Vehicle</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -154,8 +154,8 @@
                             {
                                 <tr>
                                     <td>@item.DateUnitName</td>
-                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
                                 </tr>
                             }
                         </tbody>
@@ -174,7 +174,7 @@
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
-    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
+    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Column;
     public string Height { get; set; } = "100%";
     public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
@@ -256,7 +256,7 @@
         }
         else if (type.ToLower() == "column")
         {
-            chartSeriesType = ChartSeriesType.StackingColumn;
+            chartSeriesType = ChartSeriesType.Column;
         }       
         chartType = type;
     }
@@ -316,7 +316,7 @@
             if (report.Item1.Count() > 0)
             {
                 ChartData = report.Item1;
-                XAxisTitle = selectedType;
+                XAxisTitle = dataTypeTitle2();
 
                 average=new();
                 foreach(var item in ChartData.Select(d => d.DateUnitName).Distinct())
@@ -342,21 +342,25 @@
     }
     private string dataTypeTitle2()
     {
-        if (selectedType == "Month")
+        if (selectedType == "Monthly")
         {
             return "Month";
         }
-        else if (selectedType == "Day")
+        else if (selectedType == "Daily")
         {
             return "Day";
         }
-        else if (selectedType == "Hour")
+        else if (selectedType == "Hourly")
         {
             return "Hour";
         }
-        else if (selectedType == "Year")
+        else if (selectedType == "Yearly")
         {
             return "Year";
+        }
+        else if (selectedType == "Weekly")
+        {
+            return "Day-of-week";
         }
 
         return "";

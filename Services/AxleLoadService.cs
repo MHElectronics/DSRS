@@ -682,7 +682,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 10
+        DECLARE @TotalIteration INT = 50
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
 
@@ -758,7 +758,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 10
+        DECLARE @TotalIteration INT = 50
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
 
@@ -834,7 +834,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 10
+        DECLARE @TotalIteration INT = 50
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
 
@@ -910,7 +910,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 10
+        DECLARE @TotalIteration INT = 50
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
 
@@ -986,7 +986,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         DECLARE @Wheelbase INT = @WheelbaseParam           
         DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 10
+        DECLARE @TotalIteration INT = 50
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
 

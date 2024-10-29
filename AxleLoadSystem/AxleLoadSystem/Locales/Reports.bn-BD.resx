@@ -237,4 +237,7 @@
   <data name="ReportTitle.OverloadedRatio" xml:space="preserve">
     <value>ওভারলোড অনুপাত</value>
   </data>
+  <data name="Report.StackingColumnChart" xml:space="preserve">
+    <value>স্ট্যাকিং কলাম চার্ট</value>
+  </data>
 </root>

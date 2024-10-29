@@ -75,7 +75,7 @@
                     <div class="row">
                         <div class="col-md-12 btn-group">
                             <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
-                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
+                            <button class="btn @(chartType == "stackingcolumn" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("stackingcolumn"))">@localizer["Report.StackingColumnChart"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
@@ -111,7 +111,7 @@
                                         {
                                             <ChartSeries Name="@dayGroup.First().DateUnitName"
                                                          ColumnWidth="0.5"
-                                                         DataSource="@dayGroup.Where(x => x.NumberofAxle != 0)" 
+                                                         DataSource="@dayGroup.Where(x => x.NumberofAxle != 0).OrderBy(x => x.NumberofAxle)"
                                                          XName="NumberofAxle"
                                                          YName="OverloadVehicle"
                                                          Type="chartSeriesType"
@@ -204,7 +204,7 @@
     public string YAxisTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
-    private string chartType { get; set; } = "column";
+    private string chartType { get; set; } = "stackingcolumn";
     private User currentUser { get; set; }
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
@@ -270,7 +270,7 @@
         {
             chartSeriesType = ChartSeriesType.Line;
         }
-        else if (type.ToLower() == "column")
+        else if (type.ToLower() == "stackingcolumn")
         {
             chartSeriesType = ChartSeriesType.StackingColumn;
         }
