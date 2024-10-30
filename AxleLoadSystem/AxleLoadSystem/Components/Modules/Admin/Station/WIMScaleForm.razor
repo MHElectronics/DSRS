@@ -200,14 +200,14 @@ else
             if (await wimService.Update(wimScale))
             {
                 notification.Type = Notification.NotificationType.Success;
-                notification.Message = "WIM Updated Successfully";
+                notification.Message = "WIM Scale Updated Successfully";
                 isSuccess = true;
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Update" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Lane " + wimScale.LaneNumber + " " + notification.Message, Activity = "Update" });
             }
             else
             {
                 notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "WIM Update Failed";
+                notification.Message = "WIM Scale Update Failed";
             }
         }
         else
@@ -223,14 +223,14 @@ else
                 if (await wimService.Add(wimScale))
                 {
                     notification.Type = Notification.NotificationType.Success;
-                    notification.Message = "WIM Added Successfully";
+                    notification.Message = "WIM Scale Added Successfully";
                     isSuccess = true;
-                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Insert" });
+                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Lane " + wimScale.LaneNumber + " " + notification.Message, Activity = "Insert" });
                 }
                 else
                 {
                     notification.Type = Notification.NotificationType.Failure;
-                    notification.Message = "WIM Add Failed";
+                    notification.Message = "WIM Scale Add Failed";
                 }
             }
         }

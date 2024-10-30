@@ -243,7 +243,7 @@
             }
             uploading = false;
             appState.SetNotification(this, "Tutorial Update Successful", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Tutorial Update Successful", Activity = "Update" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Update Successful", Activity = "Update" });
         }
         else
         {
@@ -255,7 +255,7 @@
             }
             uploading = false;
             appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Tutorial Upload Successful", Activity = "Insert" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Upload Successful", Activity = "Insert" });
         } 
         tutorial = new();
         previousFileLocation = "";
@@ -282,9 +282,9 @@
         await tutorialService.DeleteTutorial(temptutorial);
         tutorials.Remove(temptutorial);
 
+        appState.SetNotification(this, "Tutorial Delete Successful", Notification.NotificationType.Success);
+        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = temptutorial.FileName + " Tutorial Delete Successful", Activity = "Delete" });
         temptutorial = new Tutorial();
         this.StateHasChanged();
-        appState.SetNotification(this, "Tutorial Delete Successful", Notification.NotificationType.Success);
-        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Tutorial Delete Successful", Activity = "Delete" });
     }
 }
