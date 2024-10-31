@@ -189,4 +189,10 @@
   <data name="WIMScale" xml:space="preserve">
     <value>WIM স্কেল</value>
   </data>
+  <data name="Button.FinePaymentData" xml:space="preserve">
+    <value>ফাইন পেমেন্ট ডেটা</value>
+  </data>
+  <data name="Button.LoadData" xml:space="preserve">
+    <value>লোড ডেটা</value>
+  </data>
 </root>

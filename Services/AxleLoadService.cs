@@ -7,7 +7,7 @@ namespace Services;
 
 public interface IAxleLoadService
 {
-    Task<IEnumerable<LoadData>> Get(ReportParameters reportParameters);
+    Task<(IEnumerable<LoadData>, bool, string)>  Get(ReportParameters reportParameters);
     Task<IEnumerable<LoadData>> Get(LoadData obj);
     Task<(bool, string)> Add(LoadData obj);
     Task<(bool,string)> Add(List<LoadData> obj);
@@ -46,8 +46,12 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         return await _db.LoadData<LoadData, object>(query, obj);
     }
-    public async Task<IEnumerable<LoadData>> Get(ReportParameters reportParameters)
+    public async Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters)
     {
+        bool isSuccess = false;
+        string message = "";
+        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         string query = @"SELECT TransactionNumber,LaneNumber,DateTime 
         ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
         ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
@@ -55,8 +59,13 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
             FROM AxleLoad
-            WHERE StationId IN @StationIds
-            AND DATEDIFF(Day,DateTime,@DateStart)<=0
+            WHERE StationId IN @StationIds";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND DATEDIFF(Day,DateTime,@DateStart)<=0
             AND DATEDIFF(Day,DateTime,@DateEnd)>=0";
 
         var parameters = new
@@ -66,7 +75,18 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             DateEnd = reportParameters.DateEnd
         };
 
-        return await _db.LoadData<LoadData, object>(query, parameters);
+        try
+        {
+            IEnumerable<LoadData> reports = await _db.LoadData<LoadData, object>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
     }
 
     public async Task<(bool, string)> Add(LoadData obj)

@@ -14,76 +14,37 @@
 @inject IStringLocalizer<Locales.File> localizer
 @inject IStringLocalizer<Locales.Reports> localizerReports
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
+@inject IStringLocalizer<Locales.Resource> localizerResource
 
 <PageTitleComponent Title="@localizerCommon["DataByDate"]">
 </PageTitleComponent>
 
 <div class="card card-primary card-outline">
     <div class="card-body">
-        <div class="row">
-            @if (stations is not null && configuration is not null)
-            {
-                <div class="col-md-3 col-sm-12">
-                    <label>@localizerReports["Report.SelectStation"]</label>
-                    <select class="form-control" @onchange="StationChanged">
-                        <option value="0">-Select Station-</option>
-                        @foreach (Station item in stations.Where(s => stationAccess.Contains(s.StationId)))
-                        {
-                            <option value="@item.StationId">@item.StationName</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <label>@localizerReports["Report.DateRange"]</label>
-                    <SfDateRangePicker TValue="DateTime?" StartDate="@DateStart" EndDate="@DateEnd" Format="dd MMM yy" Min="@configuration.SystemStartDate" Max="DateTime.Now">
-                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
-                    </SfDateRangePicker>
-                </div>
-                <div class="col-md-5 col-sm-12">
-                    <label>@localizerReports["Report.FileType"]</label>
-                    <div class="form-control">
-                        <div class="col-12">
-                            <div class="icheck-primary d-inline">
-                                <input type="radio" id="checkType1" name="fileType" checked="@(fileType == 1)" @onchange="@(async() => await HandleFileTypeChange(1))" />
-                                <label for="checkType1">Axle Load Data</label>
-                            </div>
-                            <div class="icheck-primary d-inline">
-                                <input type="radio" id="checkType2" name="fileType" checked="@(fileType == 2)" @onchange="@(async() => await HandleFileTypeChange(2))" />
-                                <label for="checkType2">Fine Payment Data</label>
-                            </div>
-                        </div>
-                    </div>
+        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+    </div>
+    @if (!selectionEnabled)
+    {
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-md-12 btn-group">
+                    <button class="btn @(selectedType == "loaddata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("loaddata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.LoadData"]</button>
+                    <button class="btn @(selectedType == "finepaymentdata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("finepaymentdata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.FinePaymentData"]</button>
                 </div>
 
-                <div class="col align-self-end">
-                    <div class="form-group float-right align-bottom">
-                        <label class="form-label">&nbsp;</label>
-                        <button @onclick="Search" class="btn btn-primary">Search</button>
-                    </div>
-                </div>
                 @if (!string.IsNullOrEmpty(Summary))
                 {
                     <label class="text-danger">@Summary</label>
                 }
-            }
-            else
-            {
-                <Loader />
-            }
+            </div>
         </div>
-    </div>
-    @if (station is null)
-    {
-        <p>No station is selected</p>
-    }
-    else
-    {
-        if (showHide)
+        
+        @if (showHide)
         {
             <div class="card-header card-primary card-outline">
                 <h3 class="card-title">@localizerCommon["DailyData"]</h3>
             </div>
-            if (axleLoadData is null && fineRepaymentData is null)
+            if ((axleLoadData is null || axleLoadData.Count() == 0) && (finePaymentData is null || finePaymentData.Count() == 0))
             {
                 <Loader />
             }
@@ -91,111 +52,98 @@
             {
                 <div class="card-body">
                     <div class="data-table-container">
-                        <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@fineRepaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
+                        <DailyDataTableComponent AxleLoadData="@axleLoadData" Station="@station" FineRepaymentData="@finePaymentData" FileType="@fileType" @rendermode="InteractiveServer" />
                     </div>
                 </div>
             }
         }
-    }
+    }   
 </div>
 
 @code {
-    private IEnumerable<Station> stations;
+    private (IEnumerable<LoadData>, bool, string) report { get; set; }
+    private (IEnumerable<FinePayment>, bool, string) reportFinePayment { get; set; }
     private Station? station { get; set; } = null;
     private int fileType { get; set; } = 1;
-    private DateTime DateStart { get; set; } 
-    private DateTime DateEnd { get; set; } = DateTime.Today;
-    private Configuration configuration { get; set; }
     private ReportParameters reportParameters { get; set; } = new();
-    private IQueryable<LoadData> axleLoadData { get; set; }
-    private IQueryable<FinePayment> fineRepaymentData { get; set; }
+    private IQueryable<LoadData> axleLoadData { get; set; } = null;
+    private IQueryable<FinePayment> finePaymentData { get; set; } = null;
+    private string selectedType { get; set; } = "";
     private string Summary { get; set; }
     private bool showTable { get; set; }
     private bool showHide { get; set; } = false;
+    private bool isLoading { get; set; } = false;
     private List<int> stationAccess { get; set; } = new();
     private User currentUser { get; set; } = new();
+    private bool selectionEnabled = false;
 
     protected override async Task OnInitializedAsync()
     {
-        stations = await stationService.Get();
-        configuration = await configurationService.GetConfiguration();
-        DateStart = configuration.SystemStartDate;
-
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
-        stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
-
+        //await TypeChanged("loaddata");
     }
-    private async Task HandleFileTypeChange(int selectedFileType)
+    private async Task TypeChanged(string type)
     {
-        fileType = selectedFileType;
-        showTable = false;
-        showHide = false;
+        selectedType = type;
+        isLoading = showHide = true;
         axleLoadData = null;
-        fineRepaymentData = null;
-    }
-    private async Task StationChanged(ChangeEventArgs e)
-    {
-        int stationId = Convert.ToInt32(e.Value);
-        if (stationId == 0)
-        {
-            station = null;
-        }
-        else
-        {
-            station = stations.FirstOrDefault(s => s.StationId == stationId);
-        }
-    }
-    private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
-    {
-        DateStart = args.StartDate ?? DateTime.Now;
-        DateEnd = args.EndDate ?? DateTime.Now;
-    }
-    private async Task Search()
-    {
+        finePaymentData = null;
+        showTable = false;
         Summary = "";
-        if (station is not null && station.StationId > 0)
+        ReportParameters reportParameters = await appState.GetReportParameters();
+        StateHasChanged();
+        if (reportParameters.Stations is not null)
         {
-            showHide = true;
-            if (fileType == 1)
+            if (selectedType.ToLower() == "loaddata")
             {
-                reportParameters.Stations.Add(station.StationId);
-                reportParameters.DateStart = DateStart;
-                reportParameters.DateEnd = DateEnd;
-
-                IEnumerable<LoadData> items = await loadService.Get(reportParameters);
-
-                axleLoadData = items.AsQueryable();
-                showTable = true;
-                if (axleLoadData is null)
+                fileType = 1;
+                report = await loadService.Get(reportParameters);
+                if (report.Item2)
                 {
-                    showTable = false;
-                    Summary = "No load data found";
+                    if (report.Item1.Count() > 0)
+                    {
+                        axleLoadData = report.Item1.AsQueryable();
+                        showTable = true;
+                    }
+                    else
+                    {
+                        showHide = showTable = false;
+                        Summary = "No value is available";
+                    }
+                }
+                else
+                {
+                    Summary = report.Item3;
                 }
             }
-            else if (fileType == 2)
+            else if (selectedType.ToLower() == "finepaymentdata")
             {
-                reportParameters.Stations.Add(station.StationId);
-                reportParameters.DateStart = DateStart;
-                reportParameters.DateEnd = DateEnd;
-
-                IEnumerable<FinePayment> items = await fineRepaymentService.Get(reportParameters);
-
-                fineRepaymentData = items.AsQueryable();
-                showTable = true;
-                if (fineRepaymentData is null)
+                fileType = 2;
+                reportFinePayment = await fineRepaymentService.Get(reportParameters);
+                if (reportFinePayment.Item2)
                 {
-                    showTable = false;
-                    Summary = "No Fine Payment data found";
+                    if (reportFinePayment.Item1.Count() > 0)
+                    {
+                        finePaymentData = reportFinePayment.Item1.AsQueryable();
+                        showTable = true;
+                    }
+                    else
+                    {
+                        showHide = showTable = false;
+                        Summary = "No value is available";
+                    }
+                }
+                else
+                {
+                    Summary = report.Item3;
                 }
             }
-            reportParameters = new();
-            StateHasChanged();
         }
-        else
-        {
-            showHide = false;
-            Summary = "Please Select Station";
-        }
+        isLoading = false;
+    }
+    private async Task HandleParametersChanged(bool parameters)
+    {
+        selectionEnabled = parameters;
     }
 }

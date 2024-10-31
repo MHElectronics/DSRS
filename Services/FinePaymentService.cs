@@ -8,7 +8,7 @@ namespace Services;
 public interface IFinePaymentService
 {
     Task<IEnumerable<FinePayment>> Get(FinePayment obj);
-    Task<IEnumerable<FinePayment>> Get(ReportParameters reportParameters);
+    Task<(IEnumerable<FinePayment>, bool, string)> Get(ReportParameters reportParameters);
     Task<(bool,string)> Add(FinePayment obj);
     Task<(bool,string)> Add(List<FinePayment> obj);
     Task<bool> Delete(UploadedFile file);
@@ -26,14 +26,24 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 
         return await _db.LoadData<FinePayment, object>(query, obj);
     }
-    public async Task<IEnumerable<FinePayment>> Get(ReportParameters reportParameters)
+    public async Task<(IEnumerable<FinePayment>, bool, string)> Get(ReportParameters reportParameters)
     {
+        bool isSuccess = false;
+        string message = "";
+        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         string query = @"SELECT TransactionNumber,LaneNumber,PaymentTransactionId 
         ,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber 
         ,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation 
         FROM FinePayment
-        WHERE StationId IN @StationIds
-        AND DateTime BETWEEN @DateStart AND @DateEnd";
+        WHERE StationId IN @StationIds";
+
+        if(!string.IsNullOrEmpty(laneNumbers))
+        {
+            query += " AND LaneNumber IN (" + laneNumbers + ")";
+        }
+        query += @" AND DATEDIFF(Day,DateTime,@DateStart)<=0
+            AND DATEDIFF(Day,DateTime,@DateEnd)>=0";
 
         var parameters = new
         {
@@ -42,7 +52,18 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
             DateEnd = reportParameters.DateEnd
         };
 
-        return await _db.LoadData<FinePayment, object>(query, parameters);
+        try
+        {
+            IEnumerable<FinePayment> reports = await _db.LoadData<FinePayment, object>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
     }
 
     public async Task<(bool,string)> Add(FinePayment obj)

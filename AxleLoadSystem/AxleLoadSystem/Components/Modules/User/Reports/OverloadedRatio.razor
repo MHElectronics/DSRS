@@ -242,7 +242,7 @@
         else if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
-            
+
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
             await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight CSV report Downloaded", Activity = "Download" });
@@ -266,7 +266,7 @@
     {
         string base64 = exportEventArgs.Base64;
     }
-    private async Task ChartChanged(string type)
+    private void ChartChanged(string type)
     {
         if (type.ToLower() == "line")
         {
@@ -278,13 +278,14 @@
         }
         chartType = type;
     }
-    private async Task HandleParametersChanged(bool parameters)
+    private void HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;
     }
     private async Task TypeChanged(string type)
     {
         selectedType = type;
+        ChartChanged("column");
         isLoading = true;
         ReportParameters reportParameters = await appState.GetReportParameters();
         if (reportParameters.Stations is not null)
