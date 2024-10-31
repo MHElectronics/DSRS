@@ -26,6 +26,10 @@
                             <td>@Station.StationName</td>
                         </tr>
                         <tr>
+                            <td>Upbound/Downbound</td>
+                            <td>@(IsUpbound ? "Upbound" : "Downbound")</td>
+                        </tr>
+                        <tr>
                             <td>Address</td>
                             <td>@Station.Address</td>
                         </tr>
@@ -160,6 +164,8 @@
 @code {
     [Parameter]
     public Station Station { get; set; }
+    [Parameter]
+    public bool IsUpbound { get; set; }
 
     private IEnumerable<UploadedFile> files { get; set; }
     private IEnumerable<AxleLoadCount> loadCounts { get; set; } = null;
