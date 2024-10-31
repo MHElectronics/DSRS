@@ -76,11 +76,11 @@
                         <div class="col-md-12 btn-group">
                             <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
                             <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
-                            @* <button class="btn @(chartType == "heatmap" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("heatmap"))">@localizer["Report.HeatMapChart"]</button> *@
+                            <button class="btn @(chartType == "pie" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("pie"))">@localizer["Report.PieChart"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
-                        @if (!string.IsNullOrEmpty(chartType))
+                        @if (!string.IsNullOrEmpty(chartType) && chartType.ToLower() != "pie" )
                         {
                             <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
                                 <ChartArea>
@@ -127,6 +127,36 @@
                                 <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                 <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                             </SfChart>
+                        }
+                        else
+                        {
+                            <SfAccumulationChart Title="Overloading Ratio by Axle">
+                                <AccumulationChartSeriesCollection>
+                                    @* Calculate Overloading Ratio *@
+                                    @{
+                                        var overloadingRatioData = ChartData
+                                        .GroupBy(x => x.NumberofAxle)
+                                        .Where(group => group.Key != 0)
+                                        .Select(group => new
+                                        {
+                                            NumberofAxle = group.Key,
+                                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                                        : 0
+                                        })
+                                        .ToList();
+                                    }
+
+                                    <AccumulationChartSeries DataSource="@overloadingRatioData.OrderBy(x => x.NumberofAxle)"
+                                                             XName="NumberofAxle"
+                                                             YName="OverloadingRatio"
+                                                             Name="Overloading Ratio (%)">
+                                        <AccumulationDataLabelSettings Visible="true" Name="Text"></AccumulationDataLabelSettings>
+                                    </AccumulationChartSeries>
+                                </AccumulationChartSeriesCollection>
+
+                                <AccumulationChartLegendSettings Visible="true"></AccumulationChartLegendSettings>
+                            </SfAccumulationChart>
                         }
                     </div>
                 </div>

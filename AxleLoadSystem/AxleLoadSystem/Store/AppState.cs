@@ -64,13 +64,18 @@ public class AppState : IAppState
     }
     public async Task<ReportParameters> GetReportParameters()
     {
-        if (await _storage.ContainKeyAsync("ReportSelection"))
-        {
-            _reportParameters = await _storage.GetItemAsync<ReportParameters>("ReportSelection") ?? new();
-            return _reportParameters;
-        }
+        try {
+            if (await _storage.ContainKeyAsync("ReportSelection"))
+            {
+                _reportParameters = await _storage.GetItemAsync<ReportParameters>("ReportSelection") ?? new();
+                return _reportParameters;
+            }
 
-        return new();
+            return new();
+        }
+        catch (Exception ex){
+            throw ex;
+        } 
     }
     #endregion
 }
