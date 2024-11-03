@@ -37,36 +37,41 @@
                 {                   
                     foreach (Station item in stations.Where(s => !string.IsNullOrEmpty(s.MapX)))
                     {
-                        var stationWIMScales = wimScales.Where(w => w.StationId == item.StationId);
-                        var hasUpbound = stationWIMScales.Any(w => w.IsUpbound);
-                        var hasDownbound = stationWIMScales.Any(w => !w.IsUpbound);
+                        List<WIMScale> stationWIMScales = wimScales.Where(w => w.StationId == item.StationId).ToList();
+                        bool hasUpbound = stationWIMScales.Any(w => w.IsUpbound);
+                        bool hasDownbound = stationWIMScales.Any(w => !w.IsUpbound);
 
                         <g class="alcs" transform="matrix(1 0 0 1 @item.MapX @item.MapY)"
-                           data-id="@item.StationId" data-name="@item.StationName"
-                           @onclick="(() => MapClicked(item))">
+                           data-id="@item.StationId" data-name="@item.StationName">
 
                             @if (hasDownbound)
                             {
-                                <polygon points="30,0 10,40 50,40" style="fill:green;stroke:purple;stroke-width:3" />
+                                <g transform="matrix(1 0 0 1 -10 50)" role="button">
+                                    <polygon points="30,0 15,30 45,30" style="fill:green;stroke:purple;stroke-width:3" @onclick="(() => MapClicked(item, false))" />
+                                    @* <path d="M12 10 L5 30 L20 30 Z" style="fill:green;stroke:green;stroke-width:3" @onclick="(() => MapClicked(item, false))"/> *@
+                                    <title>Downbound - Lane: @string.Join(",", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber))</title>
+                                </g>
                             }
 
                             @if (hasUpbound)
                             {
-                                <circle r="20" cx="30" cy="70" fill="red" />
+                                <circle r="15" cx="@(hasDownbound ? "-10" : "15")" cy="65" fill="red" @onclick="(() => MapClicked(item, true))" role="button">
+                                    <title>Upbound - Lane: @string.Join(",", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber))</title>
+                                </circle>
                             }
 
                             <text filter="url(#rounded-corners)" x="40" y="50" style="font-size:12pt;fill:white;">
                                 <tspan x="40" dy="1.2em">@item.StationName</tspan>
 
-                                @if (hasDownbound)
+                                @* @if (hasDownbound)
                                 {
-                                    <tspan x="40" dy="1.2em">Lane No: @string.Join(", ", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber)) (Downbound)</tspan>
+                                    <tspan x="40" dy="1.2em" @onclick="(() => MapClicked(item, false))">Lane No: @string.Join(", ", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber)) (Downbound)</tspan>
                                 }
 
                                 @if (hasUpbound)
                                 {
-                                    <tspan x="40" dy="1.2em">Lane No: @string.Join(", ", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber)) (Upbound)</tspan>
-                                }
+                                    <tspan x="40" dy="1.2em" @onclick="(() => MapClicked(item, true))">Lane No: @string.Join(", ", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber)) (Upbound)</tspan>
+                                } *@
                             </text>
                         </g>
                     }
@@ -77,7 +82,7 @@
     <div class="col">
         @if(station is not null)
         {
-            <ALCSInformation Station="@station" @rendermode="InteractiveServer"></ALCSInformation>
+            <ALCSInformation Station="@station" IsUpbound="@isUpbound" @rendermode="InteractiveServer"></ALCSInformation>
         }
         else
         {
@@ -114,6 +119,7 @@
     private IEnumerable<Station> stations { get; set; }
     private IEnumerable<WIMScale> wimScales { get; set; }
     private Station station { get; set; }
+    private bool isUpbound{ get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Initialize the dialog events the first time th ecomponent is rendered
@@ -128,8 +134,9 @@
         stations = await stationService.Get();
         wimScales = await wimScaleService.GetAll();
     }
-    private void MapClicked(Station item)
+    private void MapClicked(Station item, bool isUpboundSelected)
     {
         station = item;
+        isUpbound = isUpboundSelected;
     }
 }

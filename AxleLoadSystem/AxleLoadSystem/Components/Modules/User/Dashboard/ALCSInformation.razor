@@ -29,26 +29,15 @@
                             <td>Address</td>
                             <td>@Station.Address</td>
                         </tr>
-                        @if (files is not null && files.Any())
+                        <tr>
+                            <td>Upbound/Downbound</td>
+                            <td>@(IsUpbound ? "Upbound" : "Downbound")</td>
+                        </tr>
+                        @if (wims is not null && wims.Any())
                         {
                             <tr>
-                                <td>Last file uploaded</td>
-                                <td>@files.Max(f => f.Date).ToString("dd MMM yy")</td>
-                            </tr>
-                            <tr>
-                                <td>Total Files uploaded</td>
-                                <td>@files.Count().ToString("N0")</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            <tr>
-                                <td>Last file uploaded</td>
-                                <td>NA</td>
-                            </tr>
-                            <tr>
-                                <td>Total Files uploaded</td>
-                                <td>0</td>
+                                <td>Lane(s)</td>
+                                <td>@(String.Join(",", wims.Where(w => w.IsUpbound == IsUpbound).Select(w => w.LaneNumber)))</td>
                             </tr>
                         }
                     </table>
@@ -160,8 +149,10 @@
 @code {
     [Parameter]
     public Station Station { get; set; }
+    [Parameter]
+    public bool IsUpbound { get; set; }
 
-    private IEnumerable<UploadedFile> files { get; set; }
+    private IEnumerable<WIMScale> wims { get; set; }
     private IEnumerable<AxleLoadCount> loadCounts { get; set; } = null;
 
     private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; }
@@ -186,7 +177,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        files = await fileService.Get(Station.StationId);
+        wims = await wimScaleService.GetByStation(new WIMScale() { StationId = this.Station.StationId });
         loadCounts = await loadService.GetDateWiseCount(Station, DateTime.Today.AddMonths(-1), DateTime.Today.AddDays(-1));
         await TypeChanged("Daily");
     }
@@ -198,12 +189,14 @@
     }
     private async Task LoadChart()
     {
-        if (Station.StationId > 0 && !reportParameters.Stations.Contains(Station.StationId))
+        if (Station.StationId > 0)
         {
+            reportParameters.Stations = new();
+            reportParameters.WIMScales = new();
             reportParameters.Stations.Add(Station.StationId);
-            IEnumerable<WIMScale> wimScales = await wimScaleService.GetByStationId(Station.StationId);
-            reportParameters.WIMScales = wimScales.ToList();
+            reportParameters.WIMScales.AddRange(wims.Where(w => w.IsUpbound == IsUpbound).ToList());
         }
+
         if (selectedType == "Monthly")
         {
             reportParameters.DateStart = DateTime.Now.AddMonths(-12);
