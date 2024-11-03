@@ -46,19 +46,24 @@
 
                             @if (hasDownbound)
                             {
-                                @* <polygon points="30,0 10,40 50,40" style="fill:green;stroke:purple;stroke-width:3" /> *@
-                                <path d="M12 10 L5 30 L20 30 Z" style="fill:green;stroke:green;stroke-width:3" @onclick="(() => MapClicked(item, false))" />
+                                <g transform="matrix(1 0 0 1 -10 50)" role="button">
+                                    <polygon points="30,0 15,30 45,30" style="fill:green;stroke:purple;stroke-width:3" @onclick="(() => MapClicked(item, false))" />
+                                    @* <path d="M12 10 L5 30 L20 30 Z" style="fill:green;stroke:green;stroke-width:3" @onclick="(() => MapClicked(item, false))"/> *@
+                                    <title>Downbound - Lane: @string.Join(",", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber))</title>
+                                </g>
                             }
 
                             @if (hasUpbound)
                             {
-                                <circle r="15" cx="15" cy="70" fill="red" @onclick="(() => MapClicked(item, true))" />
+                                <circle r="15" cx="@(hasDownbound ? "-10" : "15")" cy="65" fill="red" @onclick="(() => MapClicked(item, true))" role="button">
+                                    <title>Upbound - Lane: @string.Join(",", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber))</title>
+                                </circle>
                             }
 
                             <text filter="url(#rounded-corners)" x="40" y="50" style="font-size:12pt;fill:white;">
                                 <tspan x="40" dy="1.2em">@item.StationName</tspan>
 
-                                @if (hasDownbound)
+                                @* @if (hasDownbound)
                                 {
                                     <tspan x="40" dy="1.2em" @onclick="(() => MapClicked(item, false))">Lane No: @string.Join(", ", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber)) (Downbound)</tspan>
                                 }
@@ -66,7 +71,7 @@
                                 @if (hasUpbound)
                                 {
                                     <tspan x="40" dy="1.2em" @onclick="(() => MapClicked(item, true))">Lane No: @string.Join(", ", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber)) (Upbound)</tspan>
-                                }
+                                } *@
                             </text>
                         </g>
                     }
