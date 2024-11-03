@@ -116,7 +116,7 @@ namespace Services.Helpers
             //Get response
             try
             {
-                using FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
+                FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
             }
             catch (WebException ex)
             {
@@ -172,11 +172,19 @@ namespace Services.Helpers
 
         public async Task DeleteFile(string path)
         {
-            OpenConnection(WebRequestMethods.Ftp.DeleteFile, path);
+            try 
+            {
+                OpenConnection(WebRequestMethods.Ftp.DeleteFile, path);
 
-            FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
+                FtpWebResponse response = (FtpWebResponse)await _ftpRequest.GetResponseAsync();
 
-            response.Close();
+                response.Close();
+            } 
+            catch (Exception ex) 
+            {
+                throw ex; 
+            }
+
         }
         #endregion
 

@@ -144,7 +144,7 @@
         if(await fileService.Delete(selectedFile))
         {
             appState.SetNotification(this, "File Deleted", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = selectedFile.FileName + "File Deleted", Activity = "Delete" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = selectedFile.FileName + " File Deleted", Activity = "Delete" });
         }
         else
         {

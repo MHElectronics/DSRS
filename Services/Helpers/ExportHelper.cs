@@ -183,7 +183,7 @@ public class ExportHelper : IExportHelper
         headerRow += "Date Range,";
         dataRow += reportParamete.DateStart.ToString("dd MMM yy") + " to " + reportParamete.DateEnd.ToString("dd MMM yy") + ",";
 
-        if (reportParamete.NumberOfAxle > 0)
+        if (reportParamete.NumberOfAxle is not null)
         {
             headerRow += "No of Axle,";
             dataRow += reportParamete.NumberOfAxle + ",";

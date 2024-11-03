@@ -5,7 +5,7 @@ public class ReportParameters
     public List<WIMScale> WIMScales { get; set; } 
     public DateTime DateStart { get; set; } = DateTime.Today.AddMonths(-1);
     public DateTime DateEnd { get; set; } = DateTime.Today;
-    public int NumberOfAxle { get; set; }
+    public List<int> NumberOfAxle { get; set; }
     public int ClassStatus { get; set; }
     public int Wheelbase { get; set; }
     public string WeightFilterColumn { get; set; } = String.Empty;
@@ -15,4 +15,9 @@ public class ReportParameters
     public int ChartType { get; set; }
     public int Multiplier { get; set; }
     public int FileType { get; set; }
+}
+public class AxleData
+{
+    public string Id { get; set; }
+    public string AxleText { get; set; }
 }

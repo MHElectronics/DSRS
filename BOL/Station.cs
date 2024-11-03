@@ -7,4 +7,5 @@ public class Station
     public string AuthKey { get; set; }
     public string MapX { get; set; }
     public string MapY { get; set; }
+    public bool HasChild { get; set; } = false;
 }
