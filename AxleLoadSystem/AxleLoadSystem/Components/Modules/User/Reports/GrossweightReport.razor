@@ -292,7 +292,7 @@
     private async Task LoadChart()
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
-
+        Summary = "";
         ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
         XAxisTitle = "Histogram (1t increments)";
         YAxisTitle = "Number of vehicles";

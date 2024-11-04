@@ -66,7 +66,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             query += " AND LaneNumber IN (" + laneNumbers + ")";
         }
         query += @" AND DATEDIFF(Day,DateTime,@DateStart)<=0
-            AND DATEDIFF(Day,DateTime,@DateEnd)>=0";
+            AND DATEDIFF(Day,DateTime,@DateEnd)>=0
+            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
+            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)";
 
         var parameters = new
         {

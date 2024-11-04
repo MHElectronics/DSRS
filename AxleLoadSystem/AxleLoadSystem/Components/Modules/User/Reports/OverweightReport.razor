@@ -240,7 +240,7 @@
         else if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
-            
+
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
             await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight CSV report Downloaded", Activity = "Download" });
@@ -274,7 +274,7 @@
         {
             chartSeriesType = ChartSeriesType.StackingColumn;
         }
-        
+
         chartType = type;
     }
     private async Task HandleParametersChanged(bool parameters)
@@ -295,7 +295,7 @@
     private async Task LoadChart()
     {
         ReportParameters reportParameters = await appState.GetReportParameters();
-
+        Summary = "";
         ChartTitle = "Number of overloaded vehicles for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
         XAxisTitle = "Number of axles";
         YAxisTitle = "Number of units";
