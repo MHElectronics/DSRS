@@ -106,14 +106,14 @@
 
 
         <div class="col-md-6">
-            <div style="padding-top:20px">
-                <SfDropDownTree @ref="sfDropDownTree"
-                            TItem="AxleData" TValue="string" Placeholder="Select Axles" Width="500px" ShowCheckBox ShowSelectAll
-                                ValueChanged="OnAxleSelectionChanged">
-                    <DropDownTreeField TItem="AxleData" DataSource="AxleDataSource" ID="Id" Text="AxleText"></DropDownTreeField>
-                </SfDropDownTree>
-                </div>
-            </div>
+            <label>@localizer["Report.NumberofAxle"]</label>
+            <SfDropDownTree @ref="sfDropDownTree"
+                        TItem="AxleData" TValue="string" Placeholder="Select Axles" Width="500px" ShowCheckBox ShowSelectAll
+                            ValueChanged="OnAxleSelectionChanged"
+                             Value="SelectedAxleData">
+                <DropDownTreeField TItem="AxleData" DataSource="AxleDataSource" ID="Id" Text="AxleText"></DropDownTreeField>
+            </SfDropDownTree>
+        </div>
 
         <div class="col-md-3">
             <label>@localizer["Report.ClassStatus"]</label>
@@ -294,10 +294,11 @@ else
     private List<int> stationAccess { get; set; } = new();
     private User currentUser { get; set; } = new();
     private Station CurrentStation { get; set; }
-    
+
     // Dropdown Tree Number of Axle
     SfDropDownTree<string, AxleData>? sfDropDownTree;
     List<AxleData> AxleDataSource = new List<AxleData>();
+    List<string> SelectedAxleData = new List<string>();
     List<int> selectedAxles = new List<int>();
 
     protected override async Task OnInitializedAsync()
@@ -325,8 +326,15 @@ else
         {
             AxleDataSource.Add(new AxleData { Id = i.ToString(), AxleText = "Axle " + i });
         }
+        if (reportParameters.NumberOfAxle is not null)
+        {
+            foreach (int item in reportParameters.NumberOfAxle)
+            {
+                SelectedAxleData.Add("Axle " + item);        
+            }
+        }
     }
-    
+
     private async Task OnAxleSelectionChanged(List<string> selectedValues)
     {
         selectedAxles = selectedValues.Select(x => int.Parse(x)).ToList();
@@ -382,6 +390,14 @@ else
     {
         reportParameters = await appState.GetReportParameters();
         selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+        if (reportParameters.NumberOfAxle is not null)
+        {
+            SelectedAxleData = new();
+            foreach (int item in reportParameters.NumberOfAxle)
+            {
+                SelectedAxleData.Add("Axle " + item);
+            }
+        }
         selectionEnabled = true;
         await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
