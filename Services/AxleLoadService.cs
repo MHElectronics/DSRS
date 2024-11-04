@@ -50,31 +50,27 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     {
         bool isSuccess = false;
         string message = "";
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
+        //string StationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         string query = @"SELECT TransactionNumber,LaneNumber,DateTime 
         ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
         ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
         ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
         ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
-            FROM AxleLoad
-            WHERE StationId IN @StationIds";
+            FROM AxleLoad AS AL";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND DATEDIFF(Day,DateTime,@DateStart)<=0
-            AND DATEDIFF(Day,DateTime,@DateEnd)>=0
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)";
+        query += this.GetFilterClause(reportParameters);
+        query += " AND StationId IN @StationIds";
 
         var parameters = new
         {
             StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
-            DateEnd = reportParameters.DateEnd
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation
         };
 
         try
@@ -315,7 +311,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -331,18 +326,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             ,SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
             ,SUM(Axle1) AS Axle1,SUM(Axle2) AS Axle2,SUM(Axle3) AS Axle3,SUM(Axle4) AS Axle4,SUM(Axle5) AS Axle5,SUM(Axle6) AS Axle6,SUM(Axle7) AS Axle7
             ,SUM(AxleRemaining) AS AxleRemaining,SUM(GrossVehicleWeight) AS GrossVehicleWeight
-            FROM AxleLoad AL INNER JOIN @Stations S ON AL.StationId=S.StationId
-            WHERE DATEDIFF(DAY,DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,DateTime,@DateEnd) >= 0";
+            FROM AxleLoad AL LEFT JOIN @Stations S ON AL.StationId=S.StationId";
 
-            if(!string.IsNullOrEmpty(laneNumbers))
-            {
-                query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-            }
-            query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-                AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-                AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-                GROUP BY 
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY 
                 DATEPART(MONTH,DateTime)
 
     
@@ -362,8 +350,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
                 SELECT MonthNumber
                 FROM @DateParts
                 WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
-
-
 
                 SELECT OverloadVehicle,TotalVehicle - OverloadVehicle TotalVehicle,DateUnit,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight
                 ,DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
@@ -400,7 +386,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -447,18 +432,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SUM(AxleRemaining) AS AxleRemaining,
             SUM(GrossVehicleWeight) AS GrossVehicleWeight
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Stations S ON AL.StationId = S.StationId";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY DATEPART(WEEKDAY, AL.DateTime)
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY DATEPART(WEEKDAY, AL.DateTime)
 
         SELECT *,
             DATENAME(WEEKDAY, DATEADD(DAY, DateUnit - 1, 0)) AS DateUnitName
@@ -503,7 +481,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -536,18 +513,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Stations S ON AL.StationId = S.StationId";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY DATEPART(HOUR, AL.DateTime)
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY DATEPART(HOUR, AL.DateTime)
 
         SELECT 
             AH.Hour AS DateUnit,
@@ -588,7 +558,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -636,19 +605,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
         FROM @Days D
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+            AND AL.StationId IN (SELECT StationId FROM @Stations)";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-            
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY D.[Date]
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY D.[Date]
 
         SELECT *,
             CAST([Date] AS VARCHAR) AS DateUnitName
@@ -686,7 +647,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -718,18 +678,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY 
             DATEPART(YEAR, AL.DateTime),
             DATENAME(YEAR, AL.DateTime),
             R.GroupId,
@@ -762,7 +715,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -794,18 +746,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY 
             DATEPART(MONTH, AL.DateTime),
             DATENAME(MONTH, AL.DateTime),
             R.GroupId,
@@ -838,7 +783,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -870,18 +814,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY 
             DATEPART(WEEKDAY, AL.DateTime),
             DATENAME(WEEKDAY, DATEADD(DAY, DATEPART(WEEKDAY, AL.DateTime) - 1, 0)),
             R.GroupId,
@@ -914,7 +851,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -946,18 +882,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY 
             DATEPART(HOUR, AL.DateTime),
             CAST(DATEPART(HOUR, AL.DateTime) AS VARCHAR),
             R.GroupId,
@@ -990,7 +919,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyVehicleReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -1023,18 +951,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)
-        WHERE DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN NumberOfAxle ELSE @NumberOfAxle END)
-            AND Wheelbase = (CASE WHEN @Wheelbase = 0 THEN Wheelbase ELSE @Wheelbase END)
-            AND ClassStatus = (CASE WHEN @ClassStatus = 0 THEN ClassStatus ELSE @ClassStatus END)
-        GROUP BY 
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY 
             DAY(AL.DateTime),  -- Group by day number
             CAST(AL.DateTime AS DATE),  -- Group by full date
             R.GroupId,
@@ -1070,7 +991,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverweightReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -1096,19 +1016,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Years Y
         LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7
-            AND DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
-            AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0";
+            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-        if (!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
+        query += this.GetFilterClause(reportParameters);
 
-        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-        AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-        AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
-        GROUP BY Y.[Year], AL.NumberOfAxle
+        query += @" GROUP BY Y.[Year], AL.NumberOfAxle
         ORDER BY Y.[Year]
         ";
 
@@ -1139,7 +1051,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverweightReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -1171,20 +1082,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Months M
         LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7
-            AND DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
-            AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0";
+            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-        if (!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
+        query += this.GetFilterClause(reportParameters);
 
-        query += @"
-        AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-        AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-        AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
-        GROUP BY M.[Month], M.[MonthName], AL.NumberOfAxle
+        query += @" GROUP BY M.[Month], M.[MonthName], AL.NumberOfAxle
         ORDER BY M.[Month]
         ";
 
@@ -1214,7 +1116,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverweightReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -1239,20 +1140,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle  -- Overloaded vehicle count
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
-          AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0
-          AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-                if (!string.IsNullOrEmpty(laneNumbers))
-                {
-                    query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-                }
+        query += this.GetFilterClause(reportParameters);
 
-                query += @"
-          AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-          AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-          AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
-        GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
+        query += @" GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
         ORDER BY 
             CASE 
                 WHEN DATEPART(WEEKDAY, AL.DateTime) = 7 THEN 1  -- Saturday
@@ -1291,7 +1183,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverweightReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -1328,20 +1219,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             AL.NumberOfAxle
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
-        WHERE DATEDIFF(DAY, AL.DateTime, @DateStart) <= 0
-          AND DATEDIFF(DAY, AL.DateTime, @DateEnd) >= 0
-          AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-                if (!string.IsNullOrEmpty(laneNumbers))
-                {
-                    query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-                }
+        query += this.GetFilterClause(reportParameters);
 
-                query += @" 
-          AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-          AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-          AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
-        GROUP BY DATEPART(HOUR, AL.DateTime), AL.NumberOfAxle
+        query += @" GROUP BY DATEPART(HOUR, AL.DateTime), AL.NumberOfAxle
 
         SELECT 
             AH.Hour AS DateUnit,
@@ -1382,7 +1264,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverweightReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
         bool isSuccess = false;
         string message = "";
         string query = @"
@@ -1408,18 +1289,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         FROM @Days D
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
             AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7
-            AND DATEDIFF(DAY,AL.DateTime,@DateStart) <= 0
-            AND DATEDIFF(DAY,AL.DateTime,@DateEnd) >= 0";
+            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND AL.LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND AL.NumberOfAxle = (CASE WHEN @NumberOfAxle = 0 THEN AL.NumberOfAxle ELSE @NumberOfAxle END)
-            AND AL.Wheelbase = (CASE WHEN @Wheelbase = 0 THEN AL.Wheelbase ELSE @Wheelbase END)
-            AND AL.ClassStatus = (CASE WHEN @ClassStatus = 0 THEN AL.ClassStatus ELSE @ClassStatus END)
-        GROUP BY D.[Date], AL.NumberOfAxle
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY D.[Date], AL.NumberOfAxle
         ORDER BY D.[Date]";
 
 
