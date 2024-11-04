@@ -30,26 +30,31 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
     {
         bool isSuccess = false;
         string message = "";
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")"));
-        string query = @"SELECT TransactionNumber,LaneNumber,PaymentTransactionId 
-        ,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber 
-        ,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation 
-        FROM FinePayment
-        WHERE StationId IN @StationIds";
 
-        if(!string.IsNullOrEmpty(laneNumbers))
-        {
-            query += " AND LaneNumber IN (" + laneNumbers + ")";
-        }
-        query += @" AND DATEDIFF(Day,DateTime,@DateStart)<=0
-            AND DATEDIFF(Day,DateTime,@DateEnd)>=0";
+        string stationIds = string.Join(",", reportParameters.Stations);
+        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => ws.LaneNumber));
+
+        string query = @"SELECT FP.TransactionNumber, FP.LaneNumber, FP.PaymentTransactionId, FP.DateTime, FP.IsPaid,
+                            FP.FineAmount, FP.PaymentMethod, FP.ReceiptNumber, FP.BillNumber,
+                            FP.WarehouseCharge, FP.DriversLicenseNumber, FP.TransportAgencyInformation
+                     FROM FinePayment FP
+                     WHERE FP.TransactionNumber IN (
+                        SELECT AL.TransactionNumber 
+                        FROM AxleLoad AL";
+
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" AND AL.StationId IN @StationIds)";
 
         var parameters = new
         {
             StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
-            DateEnd = reportParameters.DateEnd
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation
         };
 
         try
@@ -63,8 +68,10 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
             isSuccess = false;
             message = "Error: " + ex.Message;
         }
+
         return (null, isSuccess, message);
     }
+
 
     public async Task<(bool,string)> Add(FinePayment obj)
     {
@@ -125,5 +132,41 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
             DELETE FROM FinePayment WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@Date)=0";
 
         return await _db.SaveData(query, new { FileId=file.Id, file.StationId, file.Date });
+    }
+    private string GetFilterClause(ReportParameters reportParameters)
+    {
+        string query = @" WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
+            AND DATEDIFF(Day, AL.DateTime, @DateEnd) >= 0";
+        if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
+        {
+            if (reportParameters.WIMScales.Count() == 1)
+            {
+                query += " AND AL.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
+            }
+            else
+            {
+                query += " AND AL.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
+            }
+        }
+        if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
+        {
+            if (reportParameters.NumberOfAxle.Count() == 1)
+            {
+                query += " AND AL.NumberOfAxle = " + reportParameters.NumberOfAxle.FirstOrDefault();
+            }
+            else
+            {
+                query += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
+            }
+        }
+        if (reportParameters.Wheelbase > 0)
+        {
+            query += " AND Wheelbase = @Wheelbase";
+        }
+        if (reportParameters.ClassStatus > 0)
+        {
+            query += " AND ClassStatus = @ClassStatus";
+        }
+        return query;
     }
 }
