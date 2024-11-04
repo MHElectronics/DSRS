@@ -1448,7 +1448,7 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
     private string GetFilterClause(ReportParameters reportParameters)
     {
-        string query = @"WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
+        string query = @" WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
             AND DATEDIFF(Day, AL.DateTime, @DateEnd) >= 0";
         if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
         {
