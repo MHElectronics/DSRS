@@ -107,7 +107,7 @@
 
         <div class="col-md-6">
             <label>@localizer["Report.NumberofAxle"]</label>
-            <SfDropDownTree @ref="sfDropDownTree"
+            <SfDropDownTree @ref="sfDropDownTree" CssClass="form-control"
                         TItem="AxleData" TValue="string" Placeholder="Select Axles" Width="500px" ShowCheckBox ShowSelectAll
                             ValueChanged="OnAxleSelectionChanged"
                              Value="SelectedAxleData">
@@ -330,7 +330,7 @@ else
         {
             foreach (int item in reportParameters.NumberOfAxle)
             {
-                SelectedAxleData.Add("Axle " + item);        
+                SelectedAxleData.Add(item.ToString());        
             }
         }
     }
@@ -395,7 +395,7 @@ else
             SelectedAxleData = new();
             foreach (int item in reportParameters.NumberOfAxle)
             {
-                SelectedAxleData.Add("Axle " + item);
+                SelectedAxleData.Add(item.ToString());
             }
         }
         selectionEnabled = true;
