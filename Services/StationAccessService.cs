@@ -5,7 +5,7 @@ namespace Services;
 
 public interface IStationAccessService
 {
-    Task<List<int>> GetStationAccessByUserId(int userId);
+    Task<IEnumerable<Station>> GetStationAccessByUserId(int userId);
     Task<IEnumerable<StationAccess>> GetStationAccessByStationId(int stationId);
     Task<IEnumerable<StationAccess>> GetStationAccesses();
     Task<bool> InsertStationAccess(StationAccess stationAccess);
@@ -24,10 +24,10 @@ public class StationAccessService(ISqlDataAccess _db) : IStationAccessService
         return count > 0;
     }
 
-    public async Task<List<int>> GetStationAccessByUserId(int userId)
+    public async Task<IEnumerable<Station>> GetStationAccessByUserId(int userId)
     {
-        string sql = "SELECT StationId FROM StationAccess WHERE UserId=@UserId";
-        return (List<int>)await _db.LoadData<int, dynamic>(sql, new { UserId = userId });
+        string sql = "SELECT S.* FROM Stations S INNER JOIN StationAccess SA ON S.StationId=SA.StationId WHERE UserId=@UserId";
+        return await _db.LoadData<Station, object>(sql, new { UserId = userId });
     }
 
     public async Task<IEnumerable<StationAccess>> GetStationAccessByStationId(int stationId)

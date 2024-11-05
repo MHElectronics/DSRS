@@ -24,7 +24,7 @@
                     @foreach (Station station in stations)
                     {
                         int value = station.StationId;
-                        bool check = selectedStations.Contains(value);
+                        bool check = selectedStations.Any(s => s.StationId == value);
                         <div class="icheck-primary d-inline checkbox-item">
                             <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
                             <label for="checkId@(station.StationId)" class="ms-2">&nbsp; @station.StationName </label>
@@ -112,7 +112,7 @@
     public int userId { get; set; } = 0;
     private int stationId { get; set; }
     private bool approve { get; set; }
-    private List<int> selectedStations = new();
+    private List<Station> selectedStations;
 
     protected override async Task OnInitializedAsync()
     {
@@ -137,7 +137,8 @@
     private async Task Edit(int selectedUserId)
     {
         userId = selectedUserId;
-        selectedStations = await stationAccessService.GetStationAccessByUserId(userId);
+        IEnumerable<Station> permittedStations = await stationAccessService.GetStationAccessByUserId(userId);
+        selectedStations = permittedStations.ToList();
     }
     private async Task OnValidSubmit(EditContext editContext)
     {
@@ -154,13 +155,13 @@
 
         List<StationAccess> accessList = new();
 
-        foreach (int stationId in selectedStations)
+        foreach (Station item in selectedStations)
         {
             StationAccess access = new StationAccess();
             access.UserId = userId;
             access.EntryTime = DateTime.Now;
             access.EntryBy = currentUser.Id;
-            access.StationId = stationId;
+            access.StationId = item.StationId;
             accessList.Add(access);
         }
 
@@ -205,16 +206,16 @@
     {
         if ((bool)aChecked)
         {
-            if (!selectedStations.Contains(aSelectedId))
+            if (!selectedStations.Any(s=>s.StationId == aSelectedId))
             {
-                selectedStations.Add(aSelectedId);
+                selectedStations.Add(stations.FirstOrDefault(s=>s.StationId == aSelectedId));
             }
         }
         else
         {
-            if (selectedStations.Contains(aSelectedId))
+            if (selectedStations.Any(s=> s.StationId == aSelectedId))
             {
-                selectedStations.Remove(aSelectedId);
+                selectedStations.Remove(selectedStations.FirstOrDefault(s => s.StationId == aSelectedId));
             }
         }
     }

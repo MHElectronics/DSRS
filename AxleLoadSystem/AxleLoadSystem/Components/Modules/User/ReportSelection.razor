@@ -26,7 +26,7 @@
         {
             string strIconAll = "fa-square";
             string strColorAll = "btn-primary";
-            if (stations.Where(s => stationAccess.Contains(s.StationId))?.Count() == selectedStations?.Count())
+            if (stations.Count() == selectedStations?.Count())
             {
                 strIconAll = "fa-check-square";
                 strColorAll = "btn-success";
@@ -37,12 +37,12 @@
             }
             <div class="btn-group-vertical col-md-12" role="group">
 
-                @for (int i = -1; i < stations.Where(s => stationAccess.Contains(s.StationId)).Count();)
+                @for (int i = -1; i < stations.Count();)
                 {
                     <div class="btn-group">
                         @for (int j = 0; j < 6; j++)
                         {
-                            if (i >= stations.Where(s => stationAccess.Contains(s.StationId)).Count())
+                            if (i >= stations.Count())
                             {
                                 break;
                             }
@@ -54,7 +54,7 @@
                             }
                             else
                             {
-                                var filteredStations = stations.Where(s => stationAccess.Contains(s.StationId)).OrderBy(s => s.StationName);
+                                var filteredStations = stations.OrderBy(s => s.StationName);
                                 Station item = filteredStations.ElementAt(i);
                                 string strIcon = "fa-square";
                                 string btnClass = "btn-danger";
@@ -101,13 +101,44 @@
             <label>@localizer["Report.WimScale"]</label>
             @if (selectedWIMScales is not null && wims is not null)
             {
-                <select class="form-control" @bind="@selectedWIMScales" multiple>
-                    @* <option value="0">-Select WIM-</option> *@
-                    @foreach (WIMScale item in wims)
-                    {
-                        <option value="@item.Id">@item.LaneNumber - @item.LaneDirection :@(item.IsUpbound ? "(Upbound)" : "(Downbound)")</option>
-                    }
-                </select>
+                @* <select class="form-control" @bind="@selectedWIMScales" multiple>
+        <option value="0">-Select WIM-</option>
+        @foreach (WIMScale item in wims)
+        {
+        <option value="@item.Id">@item.LaneNumber - @item.LaneDirection :@(item.IsUpbound ? "(Upbound)" : "(Downbound)")</option>
+        }
+        </select> *@
+                @if (wims.Any(w => w.IsUpbound))
+                {
+                    List<WIMScale> wimsUpbound = wims.Where(w => w.IsUpbound).ToList();
+                    string allIcon = wims.Count(w => w.IsUpbound) == wimsUpbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
+                    <div class="btn-group form-control">
+                        <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllLaneClicked(true))"><i class="fa @allIcon"></i> Upbound: </span>
+                        @foreach (WIMScale item in wimsUpbound)
+                        {
+                            string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
+                            <span class="btn btn-sm btn-primary text-left" @onclick="@(()=>LaneClicked(item.LaneNumber))">
+                                <i class="fa @icon"></i>
+                                @item.LaneNumber
+                            </span>
+                        }
+                    </div>
+                }
+                @if (wims.Any(w => !w.IsUpbound))
+                {
+                    List<WIMScale> wimsDownbound = wims.Where(w => !w.IsUpbound).ToList();
+                    string allIcon = wims.Count(w => !w.IsUpbound) == wimsDownbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
+                    <div class="btn-group form-control">
+                        <span class="btn btn-sm btn-secondary text-left" @onclick="@(() => AllLaneClicked(false))"><i class="fa @allIcon"></i> Upbound: </span>
+                        @foreach (WIMScale item in wimsDownbound)
+                        {
+                            string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
+                            <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=>LaneClicked(item.LaneNumber))">
+                                <i class="fa @icon"></i> @item.LaneNumber
+                            </span>
+                        }
+                    </div>
+                }
             }
             else
             {
@@ -118,12 +149,27 @@
 
         <div class="col-md-6">
             <label>@localizer["Report.NumberofAxle"]</label>
-            <SfDropDownTree @ref="sfDropDownTree" CssClass="form-control"
-                        TItem="AxleData" TValue="string" Placeholder="Select Axles" Width="500px" ShowCheckBox ShowSelectAll
-                            ValueChanged="OnAxleSelectionChanged"
-                             Value="SelectedAxleData">
-                <DropDownTreeField TItem="AxleData" DataSource="AxleDataSource" ID="Id" Text="AxleText"></DropDownTreeField>
-            </SfDropDownTree>
+            @* <SfDropDownTree @ref="sfDropDownTree" CssClass="form-control"
+        TItem="AxleData" TValue="string" Placeholder="Select Axles" Width="500px" ShowCheckBox ShowSelectAll
+        ValueChanged="OnAxleSelectionChanged"
+        Value="SelectedAxleData">
+        <DropDownTreeField TItem="AxleData" DataSource="AxleDataSource" ID="Id" Text="AxleText"></DropDownTreeField>
+        </SfDropDownTree> *@
+
+            @if (configuration is not null)
+            {
+                string allIcon = selectedNoOfAxle.Count() == (configuration.NumberOfAxle - 1) ? "fa-check-square" : "fa-square";
+                <div class="btn-group form-control">
+                    <span class="btn btn-sm btn-primary text-left" @onclick="AllNofAxleClicked"><i class="fa @allIcon"></i> All: </span>
+                    @foreach (int i in listOfNoOfAxle.OrderBy(a=>a))
+                    {
+                        string icon = selectedNoOfAxle.Contains(i) ? "fa-check-square" : "fa-square";
+                        <span class="btn btn-sm btn-primary text-left" @onclick="@(()=>NofAxleClicked(i))">
+                            <i class="fa @icon"></i> @i
+                        </span>
+                    }
+                </div>
+            }
         </div>
 
         <div class="col-md-3">
@@ -139,6 +185,9 @@
         <div class="col-md-3">
             <label for="wheelBase">@localizer["Report.WheelBase"]</label>
             <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="@configuration.WheelBaseMaximum" />
+        </div>
+        <div class="col-md-6">
+
         </div>
 
         <div class="col-md-3">
@@ -204,7 +253,7 @@ else
                 @if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
                 {
                     <label>
-                        , WIM Scale:
+                        , Lane No. (WIM Scale):
                         @if (reportParameters.WIMScales.Any(w => w.IsUpbound))
                         {
                             <span class="badge bg-success">
@@ -227,14 +276,10 @@ else
             </div>
             @if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
             {
+                string strNoOfAxle = String.Join(",", reportParameters.NumberOfAxle.OrderBy(a => a));
                 <div class="col-md-3">
                     <label>Axle: </label>
-                    <span class="badge bg-success">
-                        @for (int i = 0; i < reportParameters.NumberOfAxle.Count; i++)
-                        {
-                            @reportParameters.NumberOfAxle[i] @((i < reportParameters.NumberOfAxle.Count - 1) ? "," : "")
-                        }
-                    </span>
+                    <span class="badge bg-success">@strNoOfAxle</span>
                 </div>
             }
             @if (reportParameters.ClassStatus > 0)
@@ -283,7 +328,7 @@ else
                 </div>
             </div>
         }
-    </div>    
+    </div>
 }
 
 @code {
@@ -292,66 +337,60 @@ else
 
     private IEnumerable<Station>? stations;
     private List<Station>? selectedStations;
-    private int[] selectedWIMScales { get; set; } = new int[100];
+    private List<int> selectedWIMScales { get; set; } = new();
+    private List<int> listOfNoOfAxle { get; set; } = new();
+    private List<int> selectedNoOfAxle { get; set; } = new();
     private IEnumerable<ClassStatus> ListClassStatus { get; set; }
     private IEnumerable<WIMScale>? wims;
     private bool selectionEnabled { get; set; } = false;
-    private int wimId { get; set; } = 0;
     private string selectedType { get; set; } = "Daily";
     public Configuration configuration { get; set; }
-    private int i { get; set; } = 0;
     private ReportParameters reportParameters { get; set; } = new();
     private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
-    private List<int> stationAccess { get; set; } = new();
     private User currentUser { get; set; } = new();
-    private Station CurrentStation { get; set; }
-
-    // Dropdown Tree Number of Axle
-    SfDropDownTree<string, AxleData>? sfDropDownTree;
-    List<AxleData> AxleDataSource = new List<AxleData>();
-    List<string> SelectedAxleData = new List<string>();
-    List<int> selectedAxles = new List<int>();
 
     protected override async Task OnInitializedAsync()
     {
         stations = await stationService.Get();
-        selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+        //selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
         ListClassStatus = await classStatusService.GetClassStatusList();
         configuration = await configurationService.GetConfiguration();
+
+        for (int i = 2; i <= configuration.NumberOfAxle; i++)
+        {
+            listOfNoOfAxle.Add(i);
+        }
 
         reportParameters = await appState.GetReportParameters();
         if (reportParameters.WIMScales is not null)
         {
-            foreach (WIMScale item in reportParameters.WIMScales)
-            {
-                selectedWIMScales[i] = item.Id;
-                i++;
-            }
-        }
-        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        currentUser = await customStateProvider.GetAuthorizedUser();
-        stationAccess = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
-        stations = stations.Where(s => stationAccess.Contains(s.StationId)).ToList();
-
-        for (int i = 2; i <= configuration.NumberOfAxle; i++)
-        {
-            AxleDataSource.Add(new AxleData { Id = i.ToString(), AxleText = "Axle " + i });
+            selectedWIMScales = reportParameters.WIMScales.Select(w => w.LaneNumber).ToList();
         }
         if (reportParameters.NumberOfAxle is not null)
         {
-            foreach (int item in reportParameters.NumberOfAxle)
-            {
-                SelectedAxleData.Add(item.ToString());        
-            }
+            selectedNoOfAxle = reportParameters.NumberOfAxle;
         }
+
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        stations = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
+    }
+    private async Task EnableChange()
+    {
+        reportParameters = await appState.GetReportParameters();
+        selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+        if (reportParameters.NumberOfAxle is not null)
+        {
+            selectedNoOfAxle = reportParameters.NumberOfAxle;
+        }
+        selectionEnabled = true;
+
+        await LoadWIMScales();
+
+        await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
 
-    private async Task OnAxleSelectionChanged(List<string> selectedValues)
-    {
-        selectedAxles = selectedValues.Select(x => int.Parse(x)).ToList();
-        reportParameters.NumberOfAxle = selectedAxles; 
-    }
-    private async Task AllStationClicked()
+    private void AllStationClicked()
     {
         if (stations?.Count() == selectedStations?.Count())
         {
@@ -362,6 +401,8 @@ else
             selectedStations = new();
             selectedStations.AddRange(stations);
         }
+
+        selectedWIMScales = new();
     }
     private async Task StationClicked(Station item)
     {
@@ -378,12 +419,19 @@ else
             selectedStations.Add(item);
         }
 
+        selectedWIMScales = new();
+        
+        await LoadWIMScales();
+    }
+    private async Task LoadWIMScales()
+    {
         if (selectedStations.Count() == 1)
         {
             wims = await wimService.GetByStation(new WIMScale() { StationId = selectedStations.FirstOrDefault().StationId });
             if (wims is not null && wims.Count() == 1)
             {
-                selectedWIMScales[i] = wims.FirstOrDefault().Id;
+                selectedWIMScales = new();
+                selectedWIMScales.Add(wims.FirstOrDefault().LaneNumber);
             }
         }
         else
@@ -392,25 +440,10 @@ else
             reportParameters.WIMScales = new();
         }
     }
-    private async Task OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
+    private void OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
     {
         reportParameters.DateStart = args.StartDate ?? DateTime.Now;
         reportParameters.DateEnd = args.EndDate ?? DateTime.Now;
-    }
-    private async Task EnableChange()
-    {
-        reportParameters = await appState.GetReportParameters();
-        selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
-        if (reportParameters.NumberOfAxle is not null)
-        {
-            SelectedAxleData = new();
-            foreach (int item in reportParameters.NumberOfAxle)
-            {
-                SelectedAxleData.Add(item.ToString());
-            }
-        }
-        selectionEnabled = true;
-        await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
     private async Task SelectionComplete()
     {
@@ -424,11 +457,17 @@ else
             appState.SetNotification(this, "Maximum Wheelbase Number " + configuration.WheelBaseMaximum, Notification.NotificationType.Warning);
             return;
         }
+        
         reportParameters.Stations = new();
-        reportParameters.WIMScales = new();
-        if (wims is not null && wims.Any(w => selectedWIMScales.Contains(w.Id)))
+        if (selectedStations is not null && selectedStations.Any())
         {
-            var matchingWIMScales = wims.Where(w => selectedWIMScales.Contains(w.Id)).ToList();
+            reportParameters.Stations = selectedStations.Select(s => s.StationId).ToList();
+        }
+
+        reportParameters.WIMScales = new();
+        if (wims is not null && wims.Any(w => selectedWIMScales.Contains(w.LaneNumber)))
+        {
+            var matchingWIMScales = wims.Where(w => selectedWIMScales.Contains(w.LaneNumber)).ToList();
 
             if (matchingWIMScales is not null)
             {
@@ -436,11 +475,8 @@ else
             }
         }
 
-        if (selectedStations is not null && selectedStations.Any())
-        {
-            reportParameters.Stations = selectedStations.Select(s => s.StationId).ToList();
-        }
-        
+        reportParameters.NumberOfAxle = selectedNoOfAxle;
+
         await appState.SetReportParameters(reportParameters);
         selectionEnabled = false;
         await OnParametersChanged.InvokeAsync(selectionEnabled);
@@ -454,5 +490,62 @@ else
     private void TypeChanged(string type)
     {
         selectedType = type;
+    }
+
+    private void LaneClicked(int laneNumber)
+    {
+        if (selectedWIMScales.Contains(laneNumber))
+        {
+            selectedWIMScales.Remove(laneNumber);
+        }
+        else
+        {
+            selectedWIMScales.Add(laneNumber);
+        }
+    }
+    private void AllLaneClicked(bool isUpbound)
+    {
+        List<WIMScale> shortlist = wims.Where(w => w.IsUpbound == isUpbound).ToList();
+        if (shortlist.Count() == shortlist.Count(w => selectedWIMScales.Contains(w.LaneNumber)))
+        {
+            foreach (WIMScale item in shortlist)
+            {
+                selectedWIMScales.Remove(item.LaneNumber);
+            }
+        }
+        else
+        {
+            foreach (WIMScale item in shortlist.Where(w => !selectedWIMScales.Contains(w.LaneNumber)))
+            {
+                selectedWIMScales.Add(item.LaneNumber);
+            }
+        }
+    }
+
+    private void NofAxleClicked(int noOfAxle)
+    {
+        if (selectedNoOfAxle.Contains(noOfAxle))
+        {
+            selectedNoOfAxle.Remove(noOfAxle);
+        }
+        else
+        {
+            selectedNoOfAxle.Add(noOfAxle);
+        }
+    }
+    private void AllNofAxleClicked()
+    {
+        if (selectedNoOfAxle.Count() == (configuration.NumberOfAxle - 1))
+        {
+            selectedNoOfAxle = new();
+        }
+        else
+        {
+            selectedNoOfAxle = new();
+            for (int i = 2; i <= configuration.NumberOfAxle; i++)
+            {
+                selectedNoOfAxle.Add(i);
+            }
+        }
     }
 }
