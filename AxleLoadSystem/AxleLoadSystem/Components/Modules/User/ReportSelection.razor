@@ -85,6 +85,17 @@
                 <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
             </SfDateRangePicker>
         </div>
+        <div class="col-md-3">
+            <label>@localizer["Report.StartTime"]</label>
+            <SfTimePicker TValue="DateTime?" Placeholder="Select Start Time" Value="@reportParameters.TimeStart" Min="DateTime.Today" Max="DateTime.Today.AddHours(23).AddMinutes(59)" CssClass="form-control">
+            </SfTimePicker>
+        </div>
+
+        <div class="col-md-3">
+            <label>@localizer["Report.EndTime"]</label>
+            <SfTimePicker TValue="DateTime?" Placeholder="Select End Time" Value="@reportParameters.TimeEnd" Min="DateTime.Today" Max="DateTime.Today.AddHours(23).AddMinutes(59)" CssClass="form-control">
+            </SfTimePicker>
+        </div>
 
         <div class="col-md-6">
             <label>@localizer["Report.WimScale"]</label>
