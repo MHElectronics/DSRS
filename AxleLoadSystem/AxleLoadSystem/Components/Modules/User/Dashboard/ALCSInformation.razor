@@ -51,13 +51,11 @@
                     {
                         <Loader />
                     }
-                    else if (loadCounts.Count() == 0)
-                    {
-                        <p>No Data Found</p>
-                    }
                     else
                     {
-                        <div class="col-md-12 col-sm-12">
+                        @if (chartview)
+                        {
+                            <div class="col-md-12 col-sm-12">
                             <label class="text"> Data Analysis Chart</label>
                             <div class="col-md-12 btn-group">
                                 <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
@@ -65,8 +63,7 @@
                                 <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                             </div>
                             <br/>
-                            @if (chartview)
-                            {
+
                                 <div class="col-md-12 col-sm-12">
                                     <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme">
                                         <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
@@ -112,23 +109,27 @@
                                             </ChartSeries>
 
                                             @{
-                                                var ratioData = ChartData.Select(data => new
+                                                if (ChartData is not null)
                                                 {
-                                                    data.DateUnitName,
-                                                    Ratio = data.TotalVehicle > 0 ? (data.OverloadVehicle / (double)data.TotalVehicle) * 100 : 0
-                                                }).ToList();
+                                                    var ratioData = ChartData.Select(data => new
+                                                    {
+                                                        data.DateUnitName,
+                                                        Ratio = data.TotalVehicle > 0 ? (data.OverloadVehicle / (double)data.TotalVehicle) * 100 : 0
+                                                    }).ToList();
+                                                    <ChartSeries Name="Overload Ratio (%)"
+                                                                 DataSource="@ratioData"
+                                                                 XName="DateUnitName"
+                                                                 YName="Ratio"
+                                                                 Width="2"
+                                                                 Type="ChartSeriesType.Line"
+                                                                 EnableTooltip="true"
+                                                                 YAxisName="SecondaryYAxis">
+                                                        <ChartMarker Visible="false" Height="10" Width="10"></ChartMarker>
+                                                    </ChartSeries>
+                                                }  
                                             }
 
-                                            <ChartSeries Name="Overload Ratio (%)"
-                                                         DataSource="@ratioData"
-                                                         XName="DateUnitName"
-                                                         YName="Ratio"
-                                                         Width="2"
-                                                         Type="ChartSeriesType.Line"
-                                                         EnableTooltip="true"
-                                                         YAxisName="SecondaryYAxis">
-                                                <ChartMarker Visible="false" Height="10" Width="10"></ChartMarker>
-                                            </ChartSeries>
+                                            
                                         </ChartSeriesCollection>
 
                                         <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
@@ -137,8 +138,9 @@
 
                                 </div>
                                 
-                            }
+                            
                         </div>
+                        }
                     }
                 </div>              
             </div>
@@ -189,6 +191,7 @@
     }
     private async Task LoadChart()
     {
+        Summary = "";
         if (Station.StationId > 0)
         {
             reportParameters.Stations = new();
@@ -206,6 +209,7 @@
             {
                 if (report.Item1.Count() > 0)
                 {
+                    chartview = true;
                     ChartData = report.Item1;
                 }
                 else
@@ -228,6 +232,7 @@
             {
                 if (report.Item1.Count() > 0)
                 {
+                    chartview = true;
                     ChartData = report.Item1;
                 }
                 else
@@ -252,6 +257,7 @@
             {
                 if (report.Item1.Count() > 0)
                 {
+                    chartview = true;
                     ChartData = report.Item1;
                 }
                 else
@@ -268,7 +274,6 @@
         ChartTitle = "Number of Overloaded Vehicle " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
         YAxisTitle = "Number of Vehicles (Units)";
         XAxisTitle = selectedType;
-        chartview = true;
         isLoading = false;
     }
 }
