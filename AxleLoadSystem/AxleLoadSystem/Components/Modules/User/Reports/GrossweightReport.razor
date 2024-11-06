@@ -109,7 +109,7 @@
                                     {
                                         <ChartSeries Name="@dayGroup.First().DateUnitName"
                                                      ColumnWidth="0.5"
-                                                     DataSource="@dayGroup.OrderBy(x => x.GrossVehicleWeightRange)"
+                                                     DataSource="@dayGroup.OrderBy(x => Convert.ToDecimal(x.GrossVehicleWeightRange.Split('-')[0]))"
                                                      XName="GrossVehicleWeightRange"
                                                      YName="TotalVehicle"
                                                      YAxisName="PrimaryYAxis"
@@ -137,7 +137,7 @@
 
                                     <ChartSeries Name="Overloading Ratio (%)"
                                                  ColumnWidth="0.5"
-                                                 DataSource="@overloadingRatioData.OrderBy(x =>x.GrossVehicleWeightRange)"
+                                                 DataSource="@overloadingRatioData.OrderBy(x => Convert.ToDecimal(x.GrossVehicleWeightRange.Split('-')[0]))"
                                                  XName="GrossVehicleWeightRange"
                                                  YName="OverloadingRatio"
                                                  YAxisName="SecondaryYAxis"
