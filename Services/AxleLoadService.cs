@@ -290,12 +290,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
         try
         {
@@ -364,12 +367,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -459,12 +465,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -536,12 +545,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -623,12 +635,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
         try
         {
@@ -652,11 +667,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         bool isSuccess = false;
         string message = "";
         string query = @"
-        DECLARE @DateStart DATE = @DateStartParam  
-        DECLARE @DateEnd DATE = @DateEndParam  
-        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
-        DECLARE @Wheelbase INT = @WheelbaseParam           
-        DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -694,11 +704,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
-            DateStartParam = reportParameters.DateStart,
-            DateEndParam = reportParameters.DateEnd,
-            NumberOfAxleParam = reportParameters.NumberOfAxle,
-            WheelbaseParam = reportParameters.Wheelbase,
-            ClassStatusParam = reportParameters.ClassStatus
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -720,11 +734,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         bool isSuccess = false;
         string message = "";
         string query = @"
-        DECLARE @DateStart DATE = @DateStartParam  
-        DECLARE @DateEnd DATE = @DateEndParam  
-        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
-        DECLARE @Wheelbase INT = @WheelbaseParam           
-        DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -762,11 +771,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
-            DateStartParam = reportParameters.DateStart,
-            DateEndParam = reportParameters.DateEnd,
-            NumberOfAxleParam = reportParameters.NumberOfAxle,
-            WheelbaseParam = reportParameters.Wheelbase,
-            ClassStatusParam = reportParameters.ClassStatus
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -788,11 +801,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         bool isSuccess = false;
         string message = "";
         string query = @"
-        DECLARE @DateStart DATE = @DateStartParam  
-        DECLARE @DateEnd DATE = @DateEndParam  
-        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
-        DECLARE @Wheelbase INT = @WheelbaseParam           
-        DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -830,11 +838,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
-            DateStartParam = reportParameters.DateStart,
-            DateEndParam = reportParameters.DateEnd,
-            NumberOfAxleParam = reportParameters.NumberOfAxle,
-            WheelbaseParam = reportParameters.Wheelbase,
-            ClassStatusParam = reportParameters.ClassStatus
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -856,11 +868,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         bool isSuccess = false;
         string message = "";
         string query = @"
-        DECLARE @DateStart DATE = @DateStartParam  
-        DECLARE @DateEnd DATE = @DateEndParam  
-        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
-        DECLARE @Wheelbase INT = @WheelbaseParam           
-        DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -898,11 +905,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
-            DateStartParam = reportParameters.DateStart,
-            DateEndParam = reportParameters.DateEnd,
-            NumberOfAxleParam = reportParameters.NumberOfAxle,
-            WheelbaseParam = reportParameters.Wheelbase,
-            ClassStatusParam = reportParameters.ClassStatus
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -924,11 +935,6 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
         bool isSuccess = false;
         string message = "";
         string query = @"
-        DECLARE @DateStart DATE = @DateStartParam  
-        DECLARE @DateEnd DATE = @DateEndParam  
-        DECLARE @NumberOfAxle INT = @NumberOfAxleParam      
-        DECLARE @Wheelbase INT = @WheelbaseParam           
-        DECLARE @ClassStatus INT = @ClassStatusParam
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -967,11 +973,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
-            DateStartParam = reportParameters.DateStart,
-            DateEndParam = reportParameters.DateEnd,
-            NumberOfAxleParam = reportParameters.NumberOfAxle,
-            WheelbaseParam = reportParameters.Wheelbase,
-            ClassStatusParam = reportParameters.ClassStatus
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -1028,12 +1038,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -1094,12 +1107,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -1161,12 +1177,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -1242,12 +1261,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -1301,12 +1323,15 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
 
         var parameters = new
         {
+            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
