@@ -101,18 +101,11 @@
             <label>@localizer["Report.WimScale"]</label>
             @if (selectedWIMScales is not null && wims is not null)
             {
-                @* <select class="form-control" @bind="@selectedWIMScales" multiple>
-        <option value="0">-Select WIM-</option>
-        @foreach (WIMScale item in wims)
-        {
-        <option value="@item.Id">@item.LaneNumber - @item.LaneDirection :@(item.IsUpbound ? "(Upbound)" : "(Downbound)")</option>
-        }
-        </select> *@
                 @if (wims.Any(w => w.IsUpbound))
                 {
                     List<WIMScale> wimsUpbound = wims.Where(w => w.IsUpbound).ToList();
                     string allIcon = wims.Count(w => w.IsUpbound) == wimsUpbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
-                    <div class="btn-group form-control">
+                    <div class="btn-group form-control p-0">
                         <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllLaneClicked(true))"><i class="fa @allIcon"></i> Upbound: </span>
                         @foreach (WIMScale item in wimsUpbound)
                         {
@@ -128,8 +121,8 @@
                 {
                     List<WIMScale> wimsDownbound = wims.Where(w => !w.IsUpbound).ToList();
                     string allIcon = wims.Count(w => !w.IsUpbound) == wimsDownbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
-                    <div class="btn-group form-control">
-                        <span class="btn btn-sm btn-secondary text-left" @onclick="@(() => AllLaneClicked(false))"><i class="fa @allIcon"></i> Upbound: </span>
+                    <div class="btn-group form-control p-0">
+                        <span class="btn btn-sm btn-secondary text-left" @onclick="@(() => AllLaneClicked(false))"><i class="fa @allIcon"></i> Downbound: </span>
                         @foreach (WIMScale item in wimsDownbound)
                         {
                             string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
@@ -149,17 +142,10 @@
 
         <div class="col-md-6">
             <label>@localizer["Report.NumberofAxle"]</label>
-            @* <SfDropDownTree @ref="sfDropDownTree" CssClass="form-control"
-        TItem="AxleData" TValue="string" Placeholder="Select Axles" Width="500px" ShowCheckBox ShowSelectAll
-        ValueChanged="OnAxleSelectionChanged"
-        Value="SelectedAxleData">
-        <DropDownTreeField TItem="AxleData" DataSource="AxleDataSource" ID="Id" Text="AxleText"></DropDownTreeField>
-        </SfDropDownTree> *@
-
             @if (configuration is not null)
             {
                 string allIcon = selectedNoOfAxle.Count() == (configuration.NumberOfAxle - 1) ? "fa-check-square" : "fa-square";
-                <div class="btn-group form-control">
+                <div class="btn-group form-control p-0">
                     <span class="btn btn-sm btn-primary text-left" @onclick="AllNofAxleClicked"><i class="fa @allIcon"></i> All: </span>
                     @foreach (int i in listOfNoOfAxle.OrderBy(a=>a))
                     {
