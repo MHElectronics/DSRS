@@ -195,4 +195,7 @@
   <data name="Button.LoadData" xml:space="preserve">
     <value>লোড ডেটা</value>
   </data>
+  <data name="Button.Execute" xml:space="preserve">
+    <value>চালান</value>
+  </data>
 </root>
