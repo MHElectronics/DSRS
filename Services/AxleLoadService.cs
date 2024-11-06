@@ -70,7 +70,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
 
         try
@@ -1326,6 +1328,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
     {
         string query = @" WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
             AND DATEDIFF(Day, AL.DateTime, @DateEnd) >= 0";
+        if(reportParameters.TimeStart != reportParameters.TimeEnd)
+        {
+            query += " AND CAST(AL.DateTime AS TIME) >= @TimeStart AND CAST(AL.DateTime AS TIME) <=@TimeEnd";
+        }
         if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
         {
             if (reportParameters.WIMScales.Count() == 1)

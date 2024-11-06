@@ -87,13 +87,16 @@
         </div>
         <div class="col-md-3">
             <label>@localizer["Report.StartTime"]</label>
-            <SfTimePicker TValue="DateTime?" Placeholder="Select Start Time" Value="@reportParameters.TimeStart" Min="DateTime.Today" Max="DateTime.Today.AddHours(23).AddMinutes(59)" CssClass="form-control">
+            <SfTimePicker TValue="TimeOnly" Placeholder="Select Start Time" Value="@reportParameters.TimeStart" Format="HH:mm" CssClass="form-control">
+                <TimePickerEvents TValue="TimeOnly" ValueChange="@onTimeStartChange"></TimePickerEvents>
             </SfTimePicker>
         </div>
 
+
         <div class="col-md-3">
             <label>@localizer["Report.EndTime"]</label>
-            <SfTimePicker TValue="DateTime?" Placeholder="Select End Time" Value="@reportParameters.TimeEnd" Min="DateTime.Today" Max="DateTime.Today.AddHours(23).AddMinutes(59)" CssClass="form-control">
+            <SfTimePicker TValue="TimeOnly" Placeholder="Select End Time" Value="@reportParameters.TimeEnd" Format="HH:mm" CssClass="form-control">
+                <TimePickerEvents TValue="TimeOnly" ValueChange="@onTimeEndChange"></TimePickerEvents>
             </SfTimePicker>
         </div>
 
@@ -274,6 +277,12 @@ else
             <div class="col-md-6">
                 <label>Date: <span class="badge bg-success">@reportParameters.DateStart.ToString("dd MMM yy, dddd")</span> to <span class="badge bg-success">@reportParameters.DateEnd.ToString("dd MMM yy, dddd")</span></label>
             </div>
+            @if (reportParameters.TimeStart != reportParameters.TimeEnd)
+            {
+                <div class="col-md-3">
+                    <label>Time Range: <span class="badge bg-success">@reportParameters.TimeStart</span> to <span class="badge bg-success">@reportParameters.TimeEnd</span></label>
+                </div>
+            }
             @if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
             {
                 string strNoOfAxle = String.Join(",", reportParameters.NumberOfAxle.OrderBy(a => a));
@@ -389,7 +398,16 @@ else
 
         await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
-
+    private void onTimeStartChange(Syncfusion.Blazor.Calendars.ChangeEventArgs<TimeOnly> args)
+    {
+        reportParameters.TimeStart = args.Value;
+        StateHasChanged();
+    }
+    private void onTimeEndChange(Syncfusion.Blazor.Calendars.ChangeEventArgs<TimeOnly> args)
+    {
+        reportParameters.TimeEnd = args.Value;
+        StateHasChanged();
+    }
     private void AllStationClicked()
     {
         if (stations?.Count() == selectedStations?.Count())

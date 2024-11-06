@@ -5,8 +5,8 @@ public class ReportParameters
     public List<WIMScale> WIMScales { get; set; } 
     public DateTime DateStart { get; set; } = DateTime.Today.AddMonths(-1);
     public DateTime DateEnd { get; set; } = DateTime.Today;
-    public DateTime TimeStart { get; set; }
-    public DateTime TimeEnd { get; set; }
+    public TimeOnly TimeStart { get; set; } 
+    public TimeOnly TimeEnd { get; set; } 
     public List<int> NumberOfAxle { get; set; }
     public int ClassStatus { get; set; }
     public int Wheelbase { get; set; }
