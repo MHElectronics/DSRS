@@ -48,7 +48,6 @@
                             {
                                 <g transform="matrix(1 0 0 1 -10 50)" role="button">
                                     <polygon points="30,0 15,30 45,30" style="fill:green;stroke:purple;stroke-width:3" @onclick="(() => MapClicked(item, false))" />
-                                    @* <path d="M12 10 L5 30 L20 30 Z" style="fill:green;stroke:green;stroke-width:3" @onclick="(() => MapClicked(item, false))"/> *@
                                     <title>Downbound - Lane: @string.Join(",", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber))</title>
                                 </g>
                             }
@@ -62,17 +61,21 @@
 
                             <text filter="url(#rounded-corners)" x="40" y="50" style="font-size:12pt;fill:white;">
                                 <tspan x="40" dy="1.2em">@item.StationName</tspan>
-
-                                @* @if (hasDownbound)
-                                {
-                                    <tspan x="40" dy="1.2em" @onclick="(() => MapClicked(item, false))">Lane No: @string.Join(", ", stationWIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber)) (Downbound)</tspan>
-                                }
-
-                                @if (hasUpbound)
-                                {
-                                    <tspan x="40" dy="1.2em" @onclick="(() => MapClicked(item, true))">Lane No: @string.Join(", ", stationWIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber)) (Upbound)</tspan>
-                                } *@
                             </text>
+                        </g>
+
+                        <g transform="matrix(1 0 0 1 1150 250)">
+                            <polygon points="30,0 15,30 45,30" style="fill:green;stroke:purple;stroke-width:3" />
+                            <text x="60" y="0" style="font-size:14pt;fill:black;">
+                                <tspan x="60" dy="1.2em" >Downbound</tspan>
+                            </text>
+
+                            <circle r="15" cx="30" cy="65" fill="red" />
+                            <text x="60" y="50" style="font-size:14pt;fill:black;">
+                                <tspan x="60" dy="1.2em">Upbound</tspan>
+                            </text>
+
+                            <title>Legend</title>
                         </g>
                     }
                 }
