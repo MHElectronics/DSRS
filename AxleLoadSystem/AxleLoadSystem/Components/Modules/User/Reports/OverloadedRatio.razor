@@ -141,17 +141,18 @@
                                         {
                                             NumberofAxle = group.Key,
                                             OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle))
                                         : 0
                                         })
                                         .ToList();
                                     }
 
                                     <AccumulationChartSeries DataSource="@overloadingRatioData.OrderBy(x => x.NumberofAxle)"
-                                                             XName="NumberofAxle"
-                                                             YName="OverloadingRatio"
-                                                             Name="Overloading Ratio (%)">
-                                        <AccumulationDataLabelSettings Visible="true" Name="Text"></AccumulationDataLabelSettings>
+                                                                      XName="NumberofAxle"
+                                                                      YName="OverloadingRatio"
+                                                                      Name="Overloading Ratio (%)">
+                                        <AccumulationDataLabelSettings Visible="true" Name="Text" Format="P2">
+                                        </AccumulationDataLabelSettings>
                                     </AccumulationChartSeries>
                                 </AccumulationChartSeriesCollection>
 
