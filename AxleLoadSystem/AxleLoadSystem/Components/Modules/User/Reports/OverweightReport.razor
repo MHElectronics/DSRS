@@ -141,7 +141,7 @@
                                     }
 
                                     <ChartSeries Name="Overloading Ratio (%)"
-                                                 DataSource="@overloadingRatioData"
+                                                 DataSource="@overloadingRatioData.OrderBy(x=>x.NumberofAxle)"
                                                  XName="NumberofAxle"
                                                  YName="OverloadingRatio"
                                                  YAxisName="SecondaryYAxis"

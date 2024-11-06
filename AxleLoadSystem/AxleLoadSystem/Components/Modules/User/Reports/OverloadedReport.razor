@@ -101,7 +101,7 @@
                                     </ChartAxes>
 
                                     <ChartSeriesCollection>
-                                        <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartSeries Name="Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="OverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="false" Position="LabelPosition.Top">
                                                     <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -110,7 +110,7 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
 
-                                        <ChartSeries Name="Total number of measured Vehicles" ColumnWidth="0.5" DataSource="@ChartData" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartSeries Name="Total number of measured Vehicles" ColumnWidth="0.5" DataSource="@ChartData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="false" Position="LabelPosition.Top">
                                                     <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -123,12 +123,13 @@
                                         @{
                                             var overloadingRatioData = ChartData.Select(x => new
                                             {
+                                                x.DateUnit,
                                                 x.DateUnitName,
                                                 OverloadingRatio = (x.OverloadVehicle / (double)x.TotalVehicle) * 100
                                             }).ToList();
                                         }
 
-                                        <ChartSeries Name="Overloading Ratio (%)" DataSource="@overloadingRatioData" XName="DateUnitName" YName="OverloadingRatio" YAxisName="SecondaryYAxis" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
+                                        <ChartSeries Name="Overloading Ratio (%)" DataSource="@overloadingRatioData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="OverloadingRatio" YAxisName="SecondaryYAxis" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
                                             <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
                                         </ChartSeries>
                                     </ChartSeriesCollection>
