@@ -162,6 +162,19 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab_table">
+                    @{
+                        var overloadingRatioData = ChartData
+                        .GroupBy(x => x.NumberofAxle)
+                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
+                        .Select(group => new
+                        {
+                            NumberofAxle = group.Key,
+                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                        : 0
+                        })
+                        .ToDictionary(x => x.NumberofAxle, x => x.OverloadingRatio); // Create a dictionary for easy lookup
+                    }
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
@@ -169,6 +182,7 @@
                                 <th class="text-right">Number of Axle</th>
                                 <th class="text-right">Overloaded Vehicle</th>
                                 <th class="text-right">Total Vehicle</th>
+                                <th class="text-right">Overloading Ratio by Axle</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -179,6 +193,15 @@
                                     <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
                                     <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
+                                    <td class="text-right">
+                                        @{
+                                            // Lookup the overloading ratio for the current item's NumberofAxle
+                                            item.OverloadingRatio = overloadingRatioData.ContainsKey(item.NumberofAxle)
+                                            ? overloadingRatioData[item.NumberofAxle]
+                                            : 0;
+                                        }
+                                        @($"{item.OverloadingRatio:N2}%")
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -229,6 +252,8 @@
         fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
         fields.Add(("Number of Axle", nameof(AxleLoadReport.NumberofAxle), new AxleLoadReport().NumberofAxle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
+        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
+        fields.Add(("Overloaded Ratio by Axle", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
 
         if (type == "excel")
         {
