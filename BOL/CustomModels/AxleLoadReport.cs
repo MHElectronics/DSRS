@@ -18,7 +18,8 @@ public class AxleLoadReport
     public int Axle6 { get; set; }
     public int Axle7 { get; set; }
     public int AxleRemaining { get; set; }
-    public int GrossVehicleWeight { get; set; }
+    public string GrossVehicleWeightMinimum { get; set; }
+    public string GrossVehicleWeightMaximum { get; set; }
     public string GrossVehicleWeightRange { get; set; } = string.Empty;
     public double OverloadingRatio { get; set; }
 }

@@ -687,20 +687,24 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" GROUP BY 
+                query += @" GROUP BY 
             DATEPART(YEAR, AL.DateTime),
             DATENAME(YEAR, AL.DateTime),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
-        ORDER BY DATEPART(YEAR, AL.DateTime), R.GroupId
-        ";
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(YEAR, AL.DateTime), R.GroupId";
+
 
         var parameters = new
         {
@@ -754,7 +758,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -765,9 +771,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             DATEPART(MONTH, AL.DateTime),
             DATENAME(MONTH, AL.DateTime),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
-        ORDER BY DATEPART(MONTH, AL.DateTime), R.GroupId
-        ";
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(MONTH, AL.DateTime), R.GroupId";
 
         var parameters = new
         {
@@ -821,7 +828,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -832,9 +841,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             DATEPART(WEEKDAY, AL.DateTime),
             DATENAME(WEEKDAY, DATEADD(DAY, DATEPART(WEEKDAY, AL.DateTime) - 1, 0)),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
-        ORDER BY DATEPART(WEEKDAY, AL.DateTime), R.GroupId
-        ";
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(WEEKDAY, AL.DateTime), R.GroupId";
 
         var parameters = new
         {
@@ -888,7 +898,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -899,9 +911,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             DATEPART(HOUR, AL.DateTime),
             CAST(DATEPART(HOUR, AL.DateTime) AS VARCHAR),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
-        ORDER BY DATEPART(HOUR, AL.DateTime), R.GroupId
-        ";
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(HOUR, AL.DateTime), R.GroupId";
 
         var parameters = new
         {
@@ -955,8 +968,9 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + 
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -967,9 +981,10 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             DAY(AL.DateTime),  -- Group by day number
             CAST(AL.DateTime AS DATE),  -- Group by full date
             R.GroupId,
-            R.Minimum,  -- Added Minimum to GROUP BY
-            R.Maximum   -- Added Maximum to GROUP BY
-        ORDER BY CAST(AL.DateTime AS DATE), R.GroupId";
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+        ORDER BY DATEPART(AL.DateTime, AL.DateTime), R.GroupId";
 
         var parameters = new
         {
