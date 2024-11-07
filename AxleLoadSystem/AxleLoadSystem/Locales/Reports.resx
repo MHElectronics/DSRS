@@ -243,10 +243,10 @@
   <data name="Report.PieChart" xml:space="preserve">
     <value>Pie Chart</value>
   </data>
-  <data name="Report.TimeEnd" xml:space="preserve">
+  <data name="Report.EndTime" xml:space="preserve">
     <value>End Time</value>
   </data>
-  <data name="Report.TimeStart" xml:space="preserve">
+  <data name="Report.StartTime" xml:space="preserve">
     <value>Start Time</value>
   </data>
 </root>

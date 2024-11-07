@@ -148,6 +148,7 @@
                                 <th>@selectedType</th>
                                 <th class="text-right">Overloaded Vehicle</th>
                                 <th class="text-right">Total Vehicle</th>
+                                <th class="text-right">Overloading Ratio</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -157,6 +158,15 @@
                                     <td>@item.DateUnitName</td>
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
                                     <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
+                                    <td class="text-right">
+                                        @{
+                                            // Calculate overloading ratio for the current item
+                                            item.OverloadingRatio = item.TotalVehicle > 0
+                                            ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100
+                                            : 0;
+                                        }
+                                        @($"{item.OverloadingRatio:N2}%")
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -205,9 +215,9 @@
     {
         List<(string Header, string FieldName, Type FieldType)> fields = new();
         fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
-        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
-
+        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
+        fields.Add(("Overloaded Ratio", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
         if (type == "excel")
         {
             byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());

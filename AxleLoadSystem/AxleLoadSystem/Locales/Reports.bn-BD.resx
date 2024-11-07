@@ -243,10 +243,10 @@
   <data name="Report.PieChart" xml:space="preserve">
     <value>পাই চার্ট</value>
   </data>
-  <data name="Report.TimeEnd" xml:space="preserve">
+  <data name="Report.EndTime" xml:space="preserve">
     <value>শেষ সময়</value>
   </data>
-  <data name="Report.TimeStart" xml:space="preserve">
+  <data name="Report.StartTime" xml:space="preserve">
     <value>শুরুর সময়</value>
   </data>
 </root>
