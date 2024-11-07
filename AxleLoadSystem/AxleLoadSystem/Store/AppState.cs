@@ -73,9 +73,11 @@ public class AppState : IAppState
 
             return new();
         }
-        catch (Exception ex){
-            throw ex;
-        } 
+        catch (Exception ex)
+        {
+            return new();
+            //throw ex;
+        }
     }
     #endregion
 }
