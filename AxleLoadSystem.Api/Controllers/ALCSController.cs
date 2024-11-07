@@ -15,14 +15,16 @@ public class ALCSController : ControllerBase
     private readonly IAxleLoadService _axleLoadService;
     private readonly IFinePaymentService _finePaymentService;
     private readonly IWIMScaleService _wimScaleService;
+    private readonly ILogger<ALCSController> _logger;
     private (bool, string) isSuccess;
 
-    public ALCSController(IFileService fileService, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService, IWIMScaleService wimScaleService)
+    public ALCSController(IFileService fileService, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService, IWIMScaleService wimScaleService, ILogger<ALCSController> logger)
     {
         _fileService = fileService;
         _axleLoadService = axleLoadService;
         _finePaymentService = finePaymentService;
         _wimScaleService = wimScaleService;
+        _logger = logger;
     }
 
     [HttpGet("[action]")]
@@ -41,9 +43,16 @@ public class ALCSController : ControllerBase
             FileType = (int)UploadedFileType.LoadData
         };
 
-        bool exists = await _fileService.FileExists(file);
-        
-        return Ok(exists);
+        try
+        {
+            bool exists = await _fileService.FileExists(file);
+            return Ok(exists);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "LoadDataFileExists");
+            return BadRequest("Error occured");
+        }
     }
     [HttpGet("[action]/{date}")]
     public async Task<IActionResult> FineDataFileExists(DateTime date)
@@ -55,9 +64,16 @@ public class ALCSController : ControllerBase
             FileType = (int)UploadedFileType.FineData
         };
 
-        bool exists = await _fileService.FileExists(file);
-
-        return Ok(exists);
+        try
+        {
+            bool exists = await _fileService.FileExists(file);
+            return Ok(exists);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "LoadDataFileExists");
+            return BadRequest("Error occured");
+        }
     }
 
     #region CSV File Upload
@@ -130,6 +146,7 @@ public class ALCSController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "UploadLoadData");
             return BadRequest(ex.Message);
         }
 
@@ -205,6 +222,7 @@ public class ALCSController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "UploadFineData");
             return BadRequest(ex.Message);
         }
 
@@ -249,9 +267,12 @@ public class ALCSController : ControllerBase
             {
                 return Ok("Axle load data insert successful");
             }
+
+            _logger.LogError("Station " + obj.StationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2);
         }
 
+        _logger.LogError("Error: Axle load data validation failed");
         return BadRequest("Error: Axle load data validation failed");
     }
     [HttpPost("[action]")]
@@ -284,9 +305,12 @@ public class ALCSController : ControllerBase
             {
                 return Ok("Axle load multiple data insert successful");
             }
+            
+            _logger.LogError("Station " + stationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2);
         }
 
+        _logger.LogError("Error: Axle load multiple data validation failed");
         return BadRequest("Error: Axle load multiple data validation failed");
     }
     private async Task<List<LoadData>> CheckValidData(int stationId, List<LoadData> data)
@@ -296,6 +320,10 @@ public class ALCSController : ControllerBase
 
         //Check lane number
         IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale(){ StationId = stationId });
+        if(data.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
+        {
+            _logger.LogInformation("Wrong Lane Number for station " + stationId);
+        }
         data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
 
         return data;
@@ -335,9 +363,12 @@ public class ALCSController : ControllerBase
             {
                 return Ok("Fine payment data insert successful");
             }
+
+            _logger.LogError("FinePayment - Station " + obj.StationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2);
         }
 
+        _logger.LogError("Error: Fine payment validation failed");
         return BadRequest("Error: Fine payment validation failed");
     }
     [HttpPost("[action]")]
@@ -369,8 +400,12 @@ public class ALCSController : ControllerBase
             {
                 return Ok("Fine payment multiple data insert successful");
             }
+
+            _logger.LogError("FinePayment - Station " + stationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2);
         }
+
+        _logger.LogError("Error: Fine payment multiple validation failed");
         return BadRequest("Error: Fine payment multiple validation failed");
     }
 }
