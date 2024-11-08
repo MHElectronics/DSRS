@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IUserActivityService userActivityService
 @inject IAxleLoadService loadService
+@inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
@@ -325,7 +326,7 @@
 
         if (selectedType == "Month")
         {
-            report = await loadService.GetMonthlyVehicleReport(reportParameters);
+            report = await reportService.GetMonthlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -345,7 +346,7 @@
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await loadService.GetWeeklyVehicleReport(reportParameters);
+            report = await reportService.GetWeeklyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -365,7 +366,7 @@
         }
         else if (selectedType == "Hour")
         {
-            report = await loadService.GetHourlyVehicleReport(reportParameters);
+            report = await reportService.GetHourlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -385,7 +386,7 @@
         }
         else if (selectedType == "Year")
         {
-            report = await loadService.GetYearlyVehicleReport(reportParameters);
+            report = await reportService.GetYearlyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -405,7 +406,7 @@
         }
         else if (selectedType == "Day")
         {
-            report = await loadService.GetDailyVehicleReport(reportParameters);
+            report = await reportService.GetDailyVehicleReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)

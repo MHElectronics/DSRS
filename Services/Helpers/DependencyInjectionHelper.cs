@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Services.Reports;
 
 namespace Services.Helpers;
 public static class DependencyInjection
@@ -28,7 +29,8 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, TutorialCategoryService>();
         services.AddScoped<IUserActivityService, UserActivityService>();
 
-
+        //Reports
+        services.AddScoped<IOverloadReportService, OverloadReportService>();
 
         return services;
     }

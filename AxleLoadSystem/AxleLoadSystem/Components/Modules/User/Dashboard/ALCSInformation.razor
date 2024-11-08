@@ -3,6 +3,7 @@
 @inject IStationService stationService
 @inject IFileService fileService
 @inject IAxleLoadService loadService
+@inject IOverloadReportService reportService
 @inject IWIMScaleService wimScaleService
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Resource> localizerResource
@@ -204,7 +205,7 @@
         {
             reportParameters.DateStart = DateTime.Now.AddMonths(-12);
             reportParameters.DateEnd = DateTime.Now;
-            report = await loadService.GetMonthlyOverloadedReport(reportParameters);
+            report = await reportService.GetMonthlyOverloadedReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -227,7 +228,7 @@
         {
             reportParameters.DateStart = DateTime.Now.AddMonths(-3);
             reportParameters.DateEnd = DateTime.Now;
-            report = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            report = await reportService.GetWeeklyOverloadedReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -252,7 +253,7 @@
             reportParameters.DateEnd = DateTime.Now;
             //report = await loadService.GetHourlyOverloadedReport(reportParameters);
             
-            report = await loadService.GetDailyOverloadedReport(reportParameters);
+            report = await reportService.GetDailyOverloadedReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)

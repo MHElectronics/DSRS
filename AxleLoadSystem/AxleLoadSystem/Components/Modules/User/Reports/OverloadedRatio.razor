@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IUserActivityService userActivityService
 @inject IAxleLoadService loadService
+@inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
@@ -134,7 +135,7 @@
                                 <AccumulationChartSeriesCollection>
                                     @* Calculate Overloading Ratio *@
                                     @{
-                                        var overloadingRatioData = ChartData
+                                        var overloadingRatioData2 = ChartData
                                         .GroupBy(x => x.NumberofAxle)
                                         .Where(group => group.Key != 0)
                                         .Select(group => new
@@ -147,7 +148,7 @@
                                         .ToList();
                                     }
 
-                                    <AccumulationChartSeries DataSource="@overloadingRatioData.OrderBy(x => x.NumberofAxle)"
+                                    <AccumulationChartSeries DataSource="@overloadingRatioData2.OrderBy(x => x.NumberofAxle)"
                                                                       XName="NumberofAxle"
                                                                       YName="OverloadingRatio"
                                                                       Name="Overloading Ratio (%)">
@@ -163,7 +164,7 @@
                 </div>
                 <div class="tab-pane" id="tab_table">
                     @{
-                        var overloadingRatioData = ChartData
+                        var overloadingRatioData3 = ChartData
                         .GroupBy(x => x.NumberofAxle)
                         .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
                         .Select(group => new
@@ -196,8 +197,8 @@
                                     <td class="text-right">
                                         @{
                                             // Lookup the overloading ratio for the current item's NumberofAxle
-                                            item.OverloadingRatio = overloadingRatioData.ContainsKey(item.NumberofAxle)
-                                            ? overloadingRatioData[item.NumberofAxle]
+                                            item.OverloadingRatio = overloadingRatioData3.ContainsKey(item.NumberofAxle)
+                                            ? overloadingRatioData3[item.NumberofAxle]
                                             : 0;
                                         }
                                         @($"{item.OverloadingRatio:N2}%")
@@ -331,7 +332,7 @@
 
         if (selectedType == "Month")
         {
-            report = await loadService.GetMonthlyOverweightReport(reportParameters);
+            report = await reportService.GetMonthlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -351,7 +352,7 @@
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await loadService.GetWeeklyOverweightReport(reportParameters);
+            report = await reportService.GetWeeklyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -371,7 +372,7 @@
         }
         else if (selectedType == "Hour")
         {
-            report = await loadService.GetHourlyOverweightReport(reportParameters);
+            report = await reportService.GetHourlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -391,7 +392,7 @@
         }
         else if (selectedType == "Year")
         {
-            report = await loadService.GetYearlyOverweightReport(reportParameters);
+            report = await reportService.GetYearlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -411,7 +412,7 @@
         }
         else if (selectedType == "Day")
         {
-            report = await loadService.GetDailyOverweightReport(reportParameters);
+            report = await reportService.GetDailyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
