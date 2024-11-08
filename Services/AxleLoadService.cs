@@ -984,11 +984,11 @@ public class AxleLoadService(ISqlDataAccess _db) : IAxleLoadService
             CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
             CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
             CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
-        ORDER BY DATEPART(AL.DateTime, AL.DateTime), R.GroupId";
+        ORDER BY DATEPART(DAY, AL.DateTime), R.GroupId";
 
         var parameters = new
         {
-            StationIds = reportParameters.Stations,
+            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
