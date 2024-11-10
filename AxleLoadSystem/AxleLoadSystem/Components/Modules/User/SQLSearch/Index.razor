@@ -27,7 +27,9 @@
 
                     @if (!string.IsNullOrEmpty(Summary))
                     {
-                        <label class="text-danger">@Summary</label>
+                        <div class="col-md-12">
+                            <label class="text-danger">@Summary</label>
+                        </div>
                     }
                     <div class="col-md-12 col-sm-12">
                         <div class="btn btn-group">
@@ -77,19 +79,26 @@
         Summary = "";
         sqlSearch.Date = DateTime.Now;
         sqlSearch.UserId = currentUser.Id;
-        if (await QueryValidation(sqlSearch.Query))
+        //if (await QueryValidation(sqlSearch.Query))
         {
-            results = await sqlSearchService.GetSQLSearch(sqlSearch);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = sqlSearch.Query, Activity = "GET" });
-            var rows = results.AsEnumerable().ToList();
-            var providerResult = GridItemsProviderResult
-                .From<DataRow>(rows, rows.Count);
-            provider = req => ValueTask.FromResult(providerResult);
+            try
+            {
+                results = await sqlSearchService.GetSQLSearch(sqlSearch);
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = sqlSearch.Query, Activity = "GET" });
+                var rows = results.AsEnumerable().ToList();
+                var providerResult = GridItemsProviderResult
+                    .From<DataRow>(rows, rows.Count);
+                provider = req => ValueTask.FromResult(providerResult);
+            }
+            catch (Exception ex)
+            {
+                Summary = "Error: " + ex.Message;
+            }
         }
-        else
-        {
-            Summary = "Query format is wrong";
-        }
+        // else
+        // {
+        //     Summary = "Query format is wrong";
+        // }
     }
     private void OnInvalidSubmit()
     {
