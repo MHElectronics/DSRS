@@ -213,4 +213,7 @@
   <data name="Dashboard.LaneNumber" xml:space="preserve">
     <value>Lane Number</value>
   </data>
+  <data name="Dashboard.DataAnalysisChart" xml:space="preserve">
+    <value>Data Analysis Chart</value>
+  </data>
 </root>

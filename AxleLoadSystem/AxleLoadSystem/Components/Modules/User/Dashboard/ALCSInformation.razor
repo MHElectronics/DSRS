@@ -62,7 +62,7 @@
                         @if (chartview)
                         {
                             <div class="col-md-12 col-sm-12">
-                            <label class="text"> Data Analysis Chart</label>
+                                <label class="text">@localizerCommon["Dashboard.DataAnalysisChart"] </label>
                             <div class="col-md-12 btn-group">
                                 <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
                                 <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
