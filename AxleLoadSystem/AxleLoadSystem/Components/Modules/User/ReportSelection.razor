@@ -279,10 +279,15 @@ else
             }
             @if (reportParameters.ClassStatus > 0)
             {
-                string name = ListClassStatus.Where(l => l.Id == reportParameters.ClassStatus).FirstOrDefault().Name.ToString();
-                <div class="col-md-3">
-                    <label>, Class Status:<span class="badge bg-success">@name</span></label>
-                </div>
+                var classStatus = ListClassStatus.FirstOrDefault(l => l.Id == reportParameters.ClassStatus);
+                string name = classStatus?.Name ?? ""; 
+
+                @if (!string.IsNullOrEmpty(name))
+                {
+                    <div class="col-md-3">
+                        <label>, Class Status:<span class="badge bg-success">@name</span></label>
+                    </div>
+                }
             }
             @if (reportParameters.Wheelbase > 0)
             {
