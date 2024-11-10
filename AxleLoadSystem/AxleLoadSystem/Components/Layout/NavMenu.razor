@@ -129,14 +129,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="sqldirectsearch" Match="NavLinkMatch.All">
-                            <i class="nav-icon fas fa-filter"></i>
-                            <p>
-                                SQL Direct Search
-                            </p>
-                        </NavLink>
-                    </li>
+                    
                 </ul>
             </li>
         </Authorized>
@@ -166,7 +159,16 @@
             </li>
         </Authorized>
     </AuthorizeView>
-
+    <AuthorizeView Roles="Admin,AdvancedUser">
+        <li class="nav-item">
+            <NavLink class="nav-link" href="sqldirectsearch" Match="NavLinkMatch.All">
+                <i class="nav-icon fas fa-filter"></i>
+                <p>
+                    @localizer["Menu.SQLDirectSearch"]
+                </p>
+            </NavLink>
+        </li>
+    </AuthorizeView>
     <AuthorizeView Roles="Admin">
         <Authorized>
             <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">

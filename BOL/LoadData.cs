@@ -81,4 +81,8 @@ public class LoadData
     public DateTime? Axle7Time { get; set; }
 
     public DateTime EntryTime { get; set; }
+
+    //Additional properties
+    public string DateString { get { return this.DateTime.ToString("dd MMM yy"); } }
+    public string TimeString { get { return this.DateTime.ToString("HH:mm:ss"); } }
 }

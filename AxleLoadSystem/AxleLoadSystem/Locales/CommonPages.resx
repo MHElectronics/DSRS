@@ -201,4 +201,16 @@
   <data name="LogManagement.Title" xml:space="preserve">
     <value>Log Management</value>
   </data>
+  <data name="Dashboard.Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Dashboard.ALCSName" xml:space="preserve">
+    <value>ALCS Name</value>
+  </data>
+  <data name="Dashboard.DrivingDirection" xml:space="preserve">
+    <value>Driving Direction</value>
+  </data>
+  <data name="Dashboard.LaneNumber" xml:space="preserve">
+    <value>Lane Number</value>
+  </data>
 </root>

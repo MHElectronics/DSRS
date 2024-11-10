@@ -31,4 +31,7 @@ public class FinePayment
     public string DriversLicenseNumber { get; set; } = string.Empty;
     public string TransportAgencyInformation { get; set; } = string.Empty;
     public DateTime EntryTime { get; set; }
+    //Additional properties
+    public string DateString { get { return this.DateTime.ToString("dd MMM yy"); } }
+    public string TimeString { get { return this.DateTime.ToString("HH:mm:ss"); } }
 }

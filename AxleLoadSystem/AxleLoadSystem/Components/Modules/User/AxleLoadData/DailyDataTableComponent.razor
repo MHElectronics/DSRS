@@ -29,9 +29,10 @@
         else
         {
             <QuickGrid Items="@filteredAxleLoadData" Virtualize="true">
-                <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction Number" />
-                <PropertyColumn Property="@(l => l.LaneNumber)" Title="Lane Number" Sortable="true" />
-                <PropertyColumn Property="@(l => l.DateTime)" Title="Date Time" Format="yyyy/MM/dd HH:mm:ss tt"/>
+                <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction No" />
+                <PropertyColumn Property="@(l => l.LaneNumber)" Title="Lane No" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DateString)" Title="Date"/>
+                <PropertyColumn Property="@(l => l.TimeString)" Title="Time" />
                 <PropertyColumn Property="@(l => l.PlateZone)" Title="Plate Zone" Sortable="true" />
                 <PropertyColumn Property="@(l => l.PlateSeries)" Title="Plate Series" />
                 <PropertyColumn Property="@(l => l.PlateNumber)" Title="Plate Number" />
@@ -78,10 +79,11 @@
         else
         {
             <QuickGrid Items="@filteredFineRepaymentData" Virtualize='true'>
-                <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction Number"/>
-                <PropertyColumn Property="@(l => l.LaneNumber)" Title="Lane Number" Sortable="true"/>
+                <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction No"/>
+                <PropertyColumn Property="@(l => l.LaneNumber)" Title="Lane No" Sortable="true"/>
                 <PropertyColumn Property="@(l => l.PaymentTransactionId)" Title="Payment Transaction ID" Sortable="true" />
-                <PropertyColumn Property="@(l => l.DateTime)" Title="Date Time" Format="yyyy/MM/dd HH:mm:ss tt" />
+                <PropertyColumn Property="@(l => l.DateString)" Title="Date" />
+                <PropertyColumn Property="@(l => l.TimeString)" Title="Time" />
                 <PropertyColumn Property="@(l => l.IsPaid)" Title="Is Paid" Sortable="true" />
                 <PropertyColumn Property="@(l => l.FineAmount)" Title="Fine Amount (Tk)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.PaymentMethod)" Title="Payment Method" Sortable="true" />
@@ -201,7 +203,8 @@
             LoadData loadData = new();
             fields.Add(("Transaction Number", nameof(loadData.TransactionNumber), loadData.TransactionNumber.GetType()));
             fields.Add(("Lane Number", nameof(loadData.LaneNumber), loadData.LaneNumber.GetType()));
-            fields.Add(("Date Time", nameof(loadData.DateTime), loadData.DateTime.GetType()));
+            fields.Add(("Date", nameof(loadData.DateString), typeof(string)));
+            fields.Add(("Time", nameof(loadData.TimeString), typeof(string)));
             fields.Add(("Plate Zone", nameof(loadData.PlateZone), loadData.PlateZone.GetType()));
             fields.Add(("Plate Series", nameof(loadData.PlateSeries), loadData.PlateSeries.GetType()));
             fields.Add(("Plate Number", nameof(loadData.PlateNumber), loadData.PlateNumber.GetType()));
@@ -242,7 +245,8 @@
             fields.Add(("Transaction Number", nameof(finePayment.TransactionNumber), finePayment.TransactionNumber.GetType()));
             fields.Add(("Lane Number", nameof(finePayment.LaneNumber), finePayment.LaneNumber.GetType()));
             fields.Add(("Payment Transaction Id", nameof(finePayment.PaymentTransactionId), finePayment.PaymentTransactionId.GetType()));
-            fields.Add(("Date Time", nameof(finePayment.DateTime), finePayment.DateTime.GetType()));
+            fields.Add(("Date", nameof(finePayment.DateString), typeof(string)));
+            fields.Add(("Time", nameof(finePayment.TimeString), typeof(string)));
             fields.Add(("IsPaid", nameof(finePayment.IsPaid), finePayment.IsPaid.GetType()));
             fields.Add(("Fine Amount", nameof(finePayment.FineAmount), finePayment.FineAmount.GetType()));
             fields.Add(("Payment Method", nameof(finePayment.PaymentMethod), finePayment.PaymentMethod.GetType()));
@@ -259,7 +263,7 @@
             MemoryStream stream = new();
             if (FileType == 1)
             {
-                stream = await exportHelper.GenerateCSVStream<LoadData>(fields, filteredAxleLoadData.ToList(), null);
+                stream = await exportHelper.GenerateCSVStream(fields, filteredAxleLoadData.ToList(), null);
             }
             else if (FileType == 2)
             {

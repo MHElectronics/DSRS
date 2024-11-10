@@ -213,4 +213,7 @@
   <data name="Menu.OverloadedRatio" xml:space="preserve">
     <value>Overloaded ratio</value>
   </data>
+  <data name="Menu.SQLDirectSearch" xml:space="preserve">
+    <value>SQL Direct Search</value>
+  </data>
 </root>

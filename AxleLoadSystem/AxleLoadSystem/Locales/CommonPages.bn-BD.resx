@@ -201,4 +201,16 @@
   <data name="LogManagement.Title" xml:space="preserve">
     <value>লগ ম্যানেজমেন্ট</value>
   </data>
+  <data name="Dashboard.Address" xml:space="preserve">
+    <value>ঠিকানা</value>
+  </data>
+  <data name="Dashboard.ALCSName" xml:space="preserve">
+    <value>ALCS নাম</value>
+  </data>
+  <data name="Dashboard.DrivingDirection" xml:space="preserve">
+    <value>ড্রাইভিং দিক</value>
+  </data>
+  <data name="Dashboard.LaneNumber" xml:space="preserve">
+    <value>লেন সংখ্যা</value>
+  </data>
 </root>

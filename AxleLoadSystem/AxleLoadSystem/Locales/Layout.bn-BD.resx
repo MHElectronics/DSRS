@@ -213,4 +213,7 @@
   <data name="Menu.OverloadedRatio" xml:space="preserve">
     <value>ওভারলোড অনুপাত</value>
   </data>
+  <data name="Menu.SQLDirectSearch" xml:space="preserve">
+    <value>SQL সরাসরি অনুসন্ধান</value>
+  </data>
 </root>

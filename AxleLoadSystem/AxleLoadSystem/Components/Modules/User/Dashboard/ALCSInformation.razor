@@ -7,6 +7,7 @@
 @inject IWIMScaleService wimScaleService
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
 <div class="card card-primary">
     <div class="card-header">
@@ -23,22 +24,26 @@
                 <div class="col-12">
                     <table class="table">
                         <tr>
-                            <td>ALCS</td>
+                            <td>@localizerCommon["Dashboard.ALCSName"]</td>
                             <td>@Station.StationName</td>
                         </tr>
                         <tr>
-                            <td>Address</td>
+                            <td>@localizerCommon["Dashboard.Address"]</td>
                             <td>@Station.Address</td>
                         </tr>
                         <tr>
-                            <td>Upbound/Downbound</td>
+                            <td>@localizerCommon["Dashboard.DrivingDirection"]</td>
                             <td>@(IsUpbound ? "Upbound" : "Downbound")</td>
                         </tr>
                         @if (wims is not null && wims.Any())
                         {
                             <tr>
-                                <td>Lane(s)</td>
-                                <td>@(String.Join(",", wims.Where(w => w.IsUpbound == IsUpbound).Select(w => w.LaneNumber)))</td>
+                                <td>@localizerCommon["Dashboard.LaneNumber"]</td>
+                                <td>
+                                    @(String.Join(",", wims.Where(w => w.IsUpbound == IsUpbound)
+                                        .OrderBy(w => w.LaneNumber)
+                                        .Select(w => w.LaneNumber)))
+                                </td>
                             </tr>
                         }
                     </table>

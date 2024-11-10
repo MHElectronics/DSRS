@@ -40,28 +40,6 @@
     }
     @if (results != null)
     {
-        @* <table class="table table-hover">
-    <thead>
-    <tr>
-    @foreach (DataColumn column in results.Columns)
-    {
-    <th>@column.ColumnName</th>
-    }
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (DataRow row in results.Rows)
-    {
-    <tr>
-    @foreach (var item in row.ItemArray)
-    {
-    <td>@item</td>
-    }
-    </tr>
-    }
-    </tbody>
-    </table> *@
-
         <div class="card-body">
             <div class="data-table-container">
                 <QuickGrid TGridItem="DataRow" ItemsProvider="provider" Virtualize="true" ItemSize="35">
@@ -76,10 +54,6 @@
                 </QuickGrid>
             </div>
         </div>
-    }
-    else
-    {
-        <p>No results to show.</p>
     }
 </div>
 
