@@ -277,7 +277,7 @@ else
                     <span class="badge bg-success">@strNoOfAxle</span>
                 </div>
             }
-            @if (reportParameters.ClassStatus > 0)
+            @if (reportParameters.ClassStatus > 0 && ListClassStatus is not null)
             {
                 var classStatus = ListClassStatus.FirstOrDefault(l => l.Id == reportParameters.ClassStatus);
                 string name = classStatus?.Name ?? ""; 
