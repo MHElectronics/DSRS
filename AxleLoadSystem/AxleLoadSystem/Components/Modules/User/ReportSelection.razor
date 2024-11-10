@@ -14,7 +14,7 @@
 @using Syncfusion.Blazor.Navigations
 @rendermode InteractiveServer
 
-@if (appState is null)
+@if (appState is null || stations is null)
 {
     return;
 }
@@ -373,7 +373,10 @@ else
     private async Task EnableChange()
     {
         reportParameters = await appState.GetReportParameters();
-        selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+        if (stations is not null && stations.Any(s => reportParameters.Stations.Contains(s.StationId)))
+        {
+            selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
+        }
         if (reportParameters.NumberOfAxle is not null)
         {
             selectedNoOfAxle = reportParameters.NumberOfAxle;
@@ -429,7 +432,7 @@ else
     }
     private async Task LoadWIMScales()
     {
-        if (selectedStations.Count() == 1)
+        if (selectedStations?.Count() == 1)
         {
             wims = await wimService.GetByStation(new WIMScale() { StationId = selectedStations.FirstOrDefault().StationId });
             if (wims is not null && wims.Count() == 1)

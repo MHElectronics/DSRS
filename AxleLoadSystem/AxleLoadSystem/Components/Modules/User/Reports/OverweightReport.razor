@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IUserActivityService userActivityService
 @inject IAxleLoadService loadService
+@inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
@@ -327,7 +328,7 @@
 
         if (selectedType == "Month")
         {
-            report = await loadService.GetMonthlyOverweightReport(reportParameters);
+            report = await reportService.GetMonthlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -347,7 +348,7 @@
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await loadService.GetWeeklyOverweightReport(reportParameters);
+            report = await reportService.GetWeeklyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -367,7 +368,7 @@
         }
         else if (selectedType == "Hour")
         {
-            report = await loadService.GetHourlyOverweightReport(reportParameters);
+            report = await reportService.GetHourlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -387,7 +388,7 @@
         }
         else if (selectedType == "Year")
         {
-            report = await loadService.GetYearlyOverweightReport(reportParameters);
+            report = await reportService.GetYearlyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -407,7 +408,7 @@
         }
         else if (selectedType == "Day")
         {
-            report = await loadService.GetDailyOverweightReport(reportParameters);
+            report = await reportService.GetDailyOverweightReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)

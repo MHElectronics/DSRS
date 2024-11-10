@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IUserActivityService userActivityService
 @inject IAxleLoadService loadService
+@inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
@@ -303,23 +304,23 @@
         Chartview = true;
         if (selectedType == "Month")
         {
-            report = await loadService.GetMonthlyOverloadedReport(reportParameters);
+            report = await reportService.GetMonthlyOverloadedReport(reportParameters);
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await loadService.GetWeeklyOverloadedReport(reportParameters);
+            report = await reportService.GetWeeklyOverloadedReport(reportParameters);
         }
         else if (selectedType == "Hour")
         {
-            report = await loadService.GetHourlyOverloadedReport(reportParameters);
+            report = await reportService.GetHourlyOverloadedReport(reportParameters);
         }
         else if (selectedType == "Year")
         {
-            report = await loadService.GetYearlyOverloadedReport(reportParameters);
+            report = await reportService.GetYearlyOverloadedReport(reportParameters);
         }
         else if (selectedType == "Day")
         {
-            report = await loadService.GetDailyOverloadedReport(reportParameters);
+            report = await reportService.GetDailyOverloadedReport(reportParameters);
         }
 
         if (report.Item2)

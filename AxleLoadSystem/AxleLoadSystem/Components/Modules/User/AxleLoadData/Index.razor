@@ -5,7 +5,7 @@
 @inject IFileService fileService
 @inject IStationService stationService
 @inject IAppState appState
-@inject IAxleLoadService loadService
+@inject IOverloadReportService reportService
 @inject IConfigurationService configurationService
 @inject IFinePaymentService fineRepaymentService
 @inject AuthenticationStateProvider authStateProvider
@@ -98,7 +98,7 @@
             if (selectedType.ToLower() == "loaddata")
             {
                 fileType = 1;
-                report = await loadService.Get(reportParameters);
+                report = await reportService.Get(reportParameters);
                 if (report.Item2)
                 {
                     if (report.Item1.Count() > 0)
