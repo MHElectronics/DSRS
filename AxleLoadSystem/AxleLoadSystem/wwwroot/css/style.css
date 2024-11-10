@@ -148,3 +148,14 @@ input:-webkit-autofill:active {
 .dark-mode .slider-primary::-webkit-slider-thumb{
     background: #3f6791;
 }
+
+
+/*Quickgrid text wraping*/
+.quickgrid[theme=default] {
+    --col-gap: 0rem !important;
+}
+    .quickgrid[theme=default] td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
