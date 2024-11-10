@@ -41,9 +41,7 @@
         
         @if (showHide)
         {
-            <div class="card-header card-primary card-outline">
-                <h3 class="card-title">@localizerCommon["DailyData"]</h3>
-            </div>
+            <hr />
             if ((axleLoadData is null || axleLoadData.Count() == 0) && (finePaymentData is null || finePaymentData.Count() == 0))
             {
                 <Loader />
