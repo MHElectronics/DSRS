@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.QuickGrid
-@using Syncfusion.Blazor.Grids
+@* @using Syncfusion.Blazor.Grids *@
 @using BOL
 
 <div class="grid">
@@ -88,18 +88,18 @@
     [Parameter]
     public IQueryable<FinePayment> FineRepaymentData { get; set; }
 
-    private SfGrid<FinePayment> FinePaymentGrid;
+    // private SfGrid<FinePayment> FinePaymentGrid;
 
-    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
-    {
-        if (args.Item.Id == "Grid_excelexport") //Id is combination of Grid's ID and itemname
-        {
-            ExcelExportProperties ExportProperties = new ExcelExportProperties();
-            ExportProperties.IncludeHiddenColumn = true;
-            await this.FinePaymentGrid.ExcelExport(ExportProperties);
-            // PdfExportProperties pdfExportProperties = new PdfExportProperties();
-            // pdfExportProperties.AllowHorizontalOverflow = true;
-            // await this.FinePaymentGrid.ExportToPdfAsync(pdfExportProperties);
-        }
-    }
+    // public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    // {
+    //     if (args.Item.Id == "Grid_excelexport") //Id is combination of Grid's ID and itemname
+    //     {
+    //         ExcelExportProperties ExportProperties = new ExcelExportProperties();
+    //         ExportProperties.IncludeHiddenColumn = true;
+    //         await this.FinePaymentGrid.ExcelExport(ExportProperties);
+    //         // PdfExportProperties pdfExportProperties = new PdfExportProperties();
+    //         // pdfExportProperties.AllowHorizontalOverflow = true;
+    //         // await this.FinePaymentGrid.ExportToPdfAsync(pdfExportProperties);
+    //     }
+    // }
 }

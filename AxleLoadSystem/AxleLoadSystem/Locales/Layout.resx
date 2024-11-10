@@ -186,7 +186,7 @@
   <data name="Menu.ReportConfig" xml:space="preserve">
     <value>Report Configuration</value>
   </data>
-  <data name="Menu.Reports" xml:space="preserve">
+  <data name="Menu.Pages2" xml:space="preserve">
     <value>Data analysis (By purpose)</value>
   </data>
   <data name="Menu.Tutorial" xml:space="preserve">
@@ -215,5 +215,11 @@
   </data>
   <data name="Menu.SQLDirectSearch" xml:space="preserve">
     <value>SQL Direct Search</value>
+  </data>
+  <data name="Menu.LogManagement" xml:space="preserve">
+    <value>Log Management</value>
+  </data>
+  <data name="Menu.Reports" xml:space="preserve">
+    <value>Reports</value>
   </data>
 </root>

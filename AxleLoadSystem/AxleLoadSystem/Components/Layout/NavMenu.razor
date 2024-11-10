@@ -80,17 +80,17 @@
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("dataAnalysisByPurpose"))'>
                     <i class="nav-icon fas fa-th"></i>
                     <p>
-                        @localizer["Menu.Reports"]
+                        @localizer["Menu.Pages2"]
                         <i class="fas fa-angle-left right"></i>
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
 
-                    <li class="nav-item @(selectedGroups.Contains("reports") ? " menu-is-opening menu-open" : "")">
-                        <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("reports"))'>
+                    <li class="nav-item @(selectedGroups.Contains("Reports") ? " menu-is-opening menu-open" : "")">
+                        <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("Reports"))'>
                             <i class="nav-icon fas fa-th"></i>
                             <p>
-                                Reports
+                                @localizer["Menu.Reports"]
                                 <i class="fas fa-angle-left right"></i>
                             </p>
                         </a>
@@ -251,7 +251,7 @@
                         <NavLink class="nav-link" href="logmanagement" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-file"></i>
                             <p>
-                                Log Management
+                                @localizer["Menu.LogManagement"]
                             </p>
                         </NavLink>
                     </li>

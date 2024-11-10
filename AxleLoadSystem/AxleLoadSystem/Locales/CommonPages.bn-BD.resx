@@ -213,4 +213,7 @@
   <data name="Dashboard.LaneNumber" xml:space="preserve">
     <value>লেন সংখ্যা</value>
   </data>
+  <data name="Dashboard.DataAnalysisChart" xml:space="preserve">
+    <value>ডেটা বিশ্লেষণ চার্ট</value>
+  </data>
 </root>

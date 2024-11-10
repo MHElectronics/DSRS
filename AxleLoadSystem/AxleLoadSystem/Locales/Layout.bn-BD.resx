@@ -172,13 +172,13 @@
     <value>প্রশ্নাবলী</value>
   </data>
   <data name="Menu.GrossWeight" xml:space="preserve">
-    <value>স্থূল ওজন</value>
+    <value>ওভারলোডেড হিস্টোগ্রাম</value>
   </data>
   <data name="Menu.Overloaded" xml:space="preserve">
-    <value>ওভারলোডেড</value>
+    <value>ওভারলোডেড টাইম সিরিজ</value>
   </data>
   <data name="Menu.Overweight" xml:space="preserve">
-    <value>অতিরিক্ত ওজন</value>
+    <value>ওভারলোডেড এক্সেল সংখ্যা</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ (সাধারণ উদ্দেশ্য)</value>
@@ -186,7 +186,7 @@
   <data name="Menu.ReportConfig" xml:space="preserve">
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
-  <data name="Menu.Reports" xml:space="preserve">
+  <data name="Menu.Pages2" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ (উদ্দেশ্য অনুসারে)</value>
   </data>
   <data name="Menu.Tutorial" xml:space="preserve">
@@ -215,5 +215,11 @@
   </data>
   <data name="Menu.SQLDirectSearch" xml:space="preserve">
     <value>SQL সরাসরি অনুসন্ধান</value>
+  </data>
+  <data name="Menu.LogManagement" xml:space="preserve">
+    <value>লগ ম্যানেজমেন্ট</value>
+  </data>
+  <data name="Menu.Reports" xml:space="preserve">
+    <value>রিপোর্ট</value>
   </data>
 </root>
