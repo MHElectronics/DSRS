@@ -355,7 +355,7 @@
 
         if (selectedType == "Month")
         {
-            report = await reportService.GetMonthlyVehicleReport(reportParameters);
+            report = await reportService.GetMonthlyOverloadeHistogramReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -375,7 +375,7 @@
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await reportService.GetWeeklyVehicleReport(reportParameters);
+            report = await reportService.GetWeeklyOverloadeHistogramReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -395,7 +395,7 @@
         }
         else if (selectedType == "Hour")
         {
-            report = await reportService.GetHourlyVehicleReport(reportParameters);
+            report = await reportService.GetHourlyOverloadeHistogramReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -415,7 +415,7 @@
         }
         else if (selectedType == "Year")
         {
-            report = await reportService.GetYearlyVehicleReport(reportParameters);
+            report = await reportService.GetYearlyOverloadeHistogramReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -435,7 +435,7 @@
         }
         else if (selectedType == "Day")
         {
-            report = await reportService.GetDailyVehicleReport(reportParameters);
+            report = await reportService.GetDailyOverloadeHistogramReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)

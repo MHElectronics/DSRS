@@ -328,7 +328,7 @@
 
         if (selectedType == "Month")
         {
-            report = await reportService.GetMonthlyOverweightReport(reportParameters);
+            report = await reportService.GetMonthlyOverloadedNumberOfAxlesReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -348,7 +348,7 @@
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await reportService.GetWeeklyOverweightReport(reportParameters);
+            report = await reportService.GetWeeklyOverloadedNumberOfAxlesReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -368,7 +368,7 @@
         }
         else if (selectedType == "Hour")
         {
-            report = await reportService.GetHourlyOverweightReport(reportParameters);
+            report = await reportService.GetHourlyOverloadedNumberOfAxlesReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -388,7 +388,7 @@
         }
         else if (selectedType == "Year")
         {
-            report = await reportService.GetYearlyOverweightReport(reportParameters);
+            report = await reportService.GetYearlyOverloadedNumberOfAxlesReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
@@ -408,7 +408,7 @@
         }
         else if (selectedType == "Day")
         {
-            report = await reportService.GetDailyOverweightReport(reportParameters);
+            report = await reportService.GetDailyOverloadedNumberOfAxlesReport(reportParameters);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)

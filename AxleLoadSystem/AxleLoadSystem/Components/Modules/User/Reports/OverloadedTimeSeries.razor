@@ -304,23 +304,23 @@
         Chartview = true;
         if (selectedType == "Month")
         {
-            report = await reportService.GetMonthlyOverloadedReport(reportParameters);
+            report = await reportService.GetMonthlyOverloadedTimeSeriesReport(reportParameters);
         }
         else if (selectedType == "Day-of-week")
         {
-            report = await reportService.GetWeeklyOverloadedReport(reportParameters);
+            report = await reportService.GetWeeklyOverloadedTimeSeriesReport(reportParameters);
         }
         else if (selectedType == "Hour")
         {
-            report = await reportService.GetHourlyOverloadedReport(reportParameters);
+            report = await reportService.GetHourlyOverloadedTimeSeriesReport(reportParameters);
         }
         else if (selectedType == "Year")
         {
-            report = await reportService.GetYearlyOverloadedReport(reportParameters);
+            report = await reportService.GetYearlyOverloadedTimeSeriesReport(reportParameters);
         }
         else if (selectedType == "Day")
         {
-            report = await reportService.GetDailyOverloadedReport(reportParameters);
+            report = await reportService.GetDailyOverloadedTimeSeriesReport(reportParameters);
         }
 
         if (report.Item2)
