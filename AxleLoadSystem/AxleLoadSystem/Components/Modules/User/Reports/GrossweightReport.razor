@@ -105,24 +105,46 @@
                                 </ChartAxes>
 
                                 <ChartSeriesCollection>
-                                    @foreach (var dayGroup in ChartData.OrderBy(x => Convert.ToDecimal(x.GrossVehicleWeightRange.Split('-')[0])).GroupBy(x => x.DateUnit))
-                                    {
-                                        <ChartSeries Name="@dayGroup.First().DateUnitName"
-                                                     ColumnWidth="0.5"
-                                                     DataSource="@dayGroup"
-                                                     XName="GrossVehicleWeightRange"
-                                                     YName="TotalVehicle"
-                                                     YAxisName="PrimaryYAxis"
-                                                     Type="chartSeriesType"
-                                                     EnableTooltip="true">
-                                            <ChartMarker>
-                                                <ChartDataLabel Visible="false" Position="LabelPosition.Top">
-                                                    <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
-                                                </ChartDataLabel>
-                                            </ChartMarker>
-                                            <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
-                                        </ChartSeries>
-                                    }
+                                @{
+                                    var allGrossWeightRanges = ChartData
+                                    .GroupBy(x => x.GrossVehicleWeightRange)
+                                    .OrderBy(g => Convert.ToDecimal(g.Key.Split('-')[0])) 
+                                    .Select(g => g.Key)
+                                    .ToList();
+                                }
+
+                                @{
+                                    var groupedByDateUnit = ChartData
+                                    .GroupBy(x => x.DateUnit)
+                                    .OrderBy(g => g.Key) 
+                                    .ToList();
+                                }
+
+                                @foreach (var dayGroup in groupedByDateUnit)
+                                {
+                                    var dateUnitName = dayGroup.First().DateUnitName;
+
+                                    <ChartSeries Name="@dateUnitName"
+                                                    ColumnWidth="0.5"
+                                                    DataSource="@allGrossWeightRanges.Select(gr => new {
+                                                                GrossVehicleWeightRange = gr,
+                                                                TotalVehicle = dayGroup
+                                                                    .Where(x => x.GrossVehicleWeightRange == gr)
+                                                                    .Sum(x => x.TotalVehicle)
+                                                            }).ToList()"
+                                                    XName="GrossVehicleWeightRange"
+                                                    YName="TotalVehicle"
+                                                    YAxisName="PrimaryYAxis"
+                                                    Type="ChartSeriesType.StackingColumn"
+                                                    EnableTooltip="true">
+                                        <ChartMarker>
+                                            <ChartDataLabel Visible="false" Position="LabelPosition.Top">
+                                                <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
+                                            </ChartDataLabel>
+                                        </ChartMarker>
+                                        <ChartSeriesBorder Width="1"></ChartSeriesBorder>
+                                    </ChartSeries>
+                                }
 
                                     @* Calculate the Overloading Ratio *@
                                     @{
@@ -137,7 +159,13 @@
 
                                     <ChartSeries Name="Overloading Ratio (%)"
                                                  ColumnWidth="0.5"
-                                                 DataSource="@overloadingRatioData.OrderBy(x => Convert.ToDecimal(x.GrossVehicleWeightRange.Split('-')[0]))"
+                                                 DataSource="@allGrossWeightRanges.Select(gr => new {
+                                                             GrossVehicleWeightRange = gr,
+                                                             OverloadingRatio = overloadingRatioData
+                                                                 .Where(x => x.GrossVehicleWeightRange == gr)
+                                                                 .Select(x => x.OverloadingRatio)
+                                                                 .FirstOrDefault()
+                                                         }).ToList()"
                                                  XName="GrossVehicleWeightRange"
                                                  YName="OverloadingRatio"
                                                  YAxisName="SecondaryYAxis"
@@ -148,6 +176,7 @@
                                         <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
                                     </ChartSeries>
                                 </ChartSeriesCollection>
+
 
                                 <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                 <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
