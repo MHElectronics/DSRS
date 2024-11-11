@@ -204,4 +204,19 @@
   <data name="Menu.Category" xml:space="preserve">
     <value>Category</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Downbound" xml:space="preserve">
+    <value>Downbound</value>
+  </data>
+  <data name="DrivingDirection" xml:space="preserve">
+    <value>Driving Direction</value>
+  </data>
+  <data name="Upbound" xml:space="preserve">
+    <value>Upbound</value>
+  </data>
+  <data name="WIMScaleList" xml:space="preserve">
+    <value>WIM Scale List</value>
+  </data>
 </root>

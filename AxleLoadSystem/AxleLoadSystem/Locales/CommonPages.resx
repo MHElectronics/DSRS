@@ -216,4 +216,22 @@
   <data name="Dashboard.DataAnalysisChart" xml:space="preserve">
     <value>Data Analysis Chart</value>
   </data>
+  <data name="Dashboard.ALCSInformation" xml:space="preserve">
+    <value>ALCS Information</value>
+  </data>
+  <data name="Tutorial.CategoryName" xml:space="preserve">
+    <value>Category Name</value>
+  </data>
+  <data name="Tutorial.FileDescription" xml:space="preserve">
+    <value>File Description</value>
+  </data>
+  <data name="Tutorial.FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Tutorial.UploadedTime" xml:space="preserve">
+    <value>Uploaded Time</value>
+  </data>
+  <data name="Category.Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
 </root>

@@ -216,4 +216,22 @@
   <data name="Dashboard.DataAnalysisChart" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ চার্ট</value>
   </data>
+  <data name="Category.Id" xml:space="preserve">
+    <value>আইডি</value>
+  </data>
+  <data name="Dashboard.ALCSInformation" xml:space="preserve">
+    <value>ALCS তথ্য</value>
+  </data>
+  <data name="Tutorial.CategoryName" xml:space="preserve">
+    <value>ক্যাটাগরির নাম</value>
+  </data>
+  <data name="Tutorial.FileDescription" xml:space="preserve">
+    <value>ফাইল বিবরণ</value>
+  </data>
+  <data name="Tutorial.FileName" xml:space="preserve">
+    <value>ফাইলের নাম</value>
+  </data>
+  <data name="Tutorial.UploadedTime" xml:space="preserve">
+    <value>আপলোডের সময়</value>
+  </data>
 </root>

@@ -101,21 +101,21 @@ else
                     </div>
                     <div class="col-md-4 col-sm-4">
                         <div class="form-group">
-                            <label for="chkUpbound" class="form-label">Upbound/Downbound</label>
+                            <label for="chkUpbound" class="form-label">@localizer["DrivingDirection"]</label>
                             <div class="form-control">
                                 <div class="icheck-primary d-inline">
                                     <input type="radio" id="radioUpbound" name="upbound" value="true"
                                            checked="@wimScale.IsUpbound"
                                            @onchange="@(e => OnBoundChanged(true))"
                                            disabled="@(formMode == FormMode.Details)" />
-                                    <label for="radioUpbound">Upbound</label>
+                                    <label for="radioUpbound">@localizer["Upbound"]</label>
                                 </div>
                                 <div class="icheck-primary d-inline">
                                     <input type="radio" id="radioDownbound" name="upbound" value="false"
                                            checked="@(!wimScale.IsUpbound)"
                                            @onchange="@(e => OnBoundChanged(false))"
                                            disabled="@(formMode == FormMode.Details)" />
-                                    <label for="radioDownbound">Downbound</label>
+                                    <label for="radioDownbound">@localizer["Downbound"]</label>
                                 </div>
                             </div>
                         </div>

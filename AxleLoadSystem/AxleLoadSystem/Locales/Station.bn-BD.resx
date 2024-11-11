@@ -204,4 +204,19 @@
   <data name="WIMScale" xml:space="preserve">
     <value>WIM স্কেল</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>ইমেইল</value>
+  </data>
+  <data name="Downbound" xml:space="preserve">
+    <value>ডাউনবাউন্ড</value>
+  </data>
+  <data name="DrivingDirection" xml:space="preserve">
+    <value>ড্রাইভিং দিক</value>
+  </data>
+  <data name="Upbound" xml:space="preserve">
+    <value>আপবাউন্ড</value>
+  </data>
+  <data name="WIMScaleList" xml:space="preserve">
+    <value>WIM স্কেল তালিকা</value>
+  </data>
 </root>
