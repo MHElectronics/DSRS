@@ -1236,6 +1236,10 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
                 query += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
             }
         }
+        if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
+        {
+            query += " AND (AL." + reportParameters.WeightFilterColumn + ">=" + reportParameters.WeightMin + " AND AL." + reportParameters.WeightFilterColumn + "<=" + reportParameters.WeightMax + ")";
+        }
         if (reportParameters.Wheelbase > 0)
         {
             query += " AND Wheelbase = @Wheelbase";
