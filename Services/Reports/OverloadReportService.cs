@@ -424,7 +424,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         DECLARE @EquivalentAxleLoad2 DECIMAL(18,5) = 8.16
 
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 50
+        DECLARE @TotalIteration INT = 200
 
         DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
@@ -466,7 +466,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
