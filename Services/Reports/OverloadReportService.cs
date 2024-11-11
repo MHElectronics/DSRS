@@ -9,19 +9,20 @@ public interface IOverloadReportService
     Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadeHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedHistogramReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadeHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedHistogramReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadeHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedHistogramReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadeHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedHistogramReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadeHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedHistogramReport(ReportParameters reportParameters);
 }
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
@@ -52,7 +53,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             ClassStatus = reportParameters.ClassStatus,
             CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
-            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan(),
         };
 
         try
@@ -69,7 +70,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         return (null, isSuccess, message);
     }
     #region Overloaded Histogram report query
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadeHistogramReport(ReportParameters reportParameters)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
@@ -139,7 +140,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadeHistogramReport(ReportParameters reportParameters)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
@@ -209,7 +210,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadeHistogramReport(ReportParameters reportParameters)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedHistogramReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
@@ -279,7 +280,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadeHistogramReport(ReportParameters reportParameters)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedHistogramReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
@@ -349,7 +350,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadeHistogramReport(ReportParameters reportParameters)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
         string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
@@ -419,7 +420,81 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-    
+
+    #endregion
+
+
+    #region Overloaded Histogram Part 2 report query
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedHistogramReport(ReportParameters reportParameters)
+    {
+        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+        bool isSuccess = false;
+        string message = "";
+        string query = @"
+        DECLARE @EquivalentAxleLoad DECIMAL(18,5) = 10
+        DECLARE @EquivalentAxleLoad2 DECIMAL(18,5) = 8.16
+
+        DECLARE @Multiplier DECIMAL(18,2) = 1000
+        DECLARE @TotalIteration INT = 50
+
+        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
+
+        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,2), Maximum DECIMAL(18,2), MediumWeight DECIMAL(18,2))
+
+        INSERT INTO @Range(GroupId, Minimum, Maximum, MediumWeight)
+        SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier,
+               ((number-1)*@Multiplier + number*@Multiplier)/2
+        FROM master..[spt_values]
+        WHERE number >= 1 AND number <= @TotalIteration
+
+        SELECT 
+            R.GroupId, 
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
+            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
+            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum,
+            R.MediumWeight, 
+            SUM(AL.NumberOfAxle) AS TotalNumberOfAxles,
+            POWER(R.MediumWeight, 4) AS MediumWeight4,
+            SUM(AL.NumberOfAxle) * POWER(R.MediumWeight, 4)/1000 AS Influence,
+            POWER(R.MediumWeight / @EquivalentAxleLoad, 4)/1000 AS MediumWeight4_2,
+            SUM(AL.NumberOfAxle) * POWER(R.MediumWeight / @EquivalentAxleLoad, 4)/1000 AS Influence_2,
+            POWER(R.MediumWeight / @EquivalentAxleLoad2, 4)/1000 AS MediumWeight4_3,
+            SUM(AL.NumberOfAxle) * POWER(R.MediumWeight / @EquivalentAxleLoad2, 4)/1000 AS Influence_3
+        FROM AxleLoad AL
+        INNER JOIN @Stations S ON AL.StationId = S.StationId
+        INNER JOIN @Range R ON (AL.GrossVehicleWeight >= R.Minimum AND AL.GrossVehicleWeight < R.Maximum)";
+
+        query += this.GetFilterClause(reportParameters);
+
+        query += @" GROUP BY R.GroupId, R.Minimum, R.Maximum, R.MediumWeight
+        ORDER BY R.GroupId";
+
+        var parameters = new
+        {
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
+        };
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
     #endregion
     #region Overloaded Time Series report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedTimeSeriesReport(ReportParameters reportParameters)

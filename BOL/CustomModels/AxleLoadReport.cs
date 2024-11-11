@@ -22,4 +22,15 @@ public class AxleLoadReport
     public string GrossVehicleWeightMaximum { get; set; }
     public string GrossVehicleWeightRange { get; set; } = string.Empty;
     public double OverloadingRatio { get; set; }
+
+    // Additional Property for Overloaded Histogram for Influence Degree and Cumilative Number of Axles
+    public int TotalNumberOfAxles { get; set; }
+    public double MediumWeight { get; set; }
+    public double MediumWeight4 { get; set; }
+    public double MediumWeight4_2 { get; set; }
+    public double MediumWeight4_3 { get; set; }
+    public double Influence { get; set; }
+    public double Influence_2 { get; set; }
+    public double Influence_3 { get; set; }
+
 }
