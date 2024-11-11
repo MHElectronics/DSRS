@@ -13,13 +13,5 @@ public class ReportParameters
     public string WeightFilterColumn { get; set; } = String.Empty;
     public int WeightMin { get; set; }
     public int WeightMax { get; set; }
-    public bool CheckWeightCalculation { get; set; }
-    public int ChartType { get; set; }
     public int Multiplier { get; set; }
-    public int FileType { get; set; }
-}
-public class AxleData
-{
-    public string Id { get; set; }
-    public string AxleText { get; set; }
 }

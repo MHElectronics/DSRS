@@ -54,7 +54,6 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation
         };
 
         try

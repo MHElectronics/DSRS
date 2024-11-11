@@ -161,7 +161,7 @@
             }
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label>@localizer["Report.ClassStatus"]</label>
             <select class="form-control" @bind="@reportParameters.ClassStatus">
                 <option value="0">-No Filter-</option>
@@ -171,15 +171,14 @@
                 }
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label for="wheelBase">@localizer["Report.WheelBase"]</label>
             <input type="number" @bind="@reportParameters.Wheelbase" class="form-control" placeholder="Wheel Base" id="wheelBase" min="0" max="@configuration.WheelBaseMaximum" />
         </div>
-        <div class="col-md-6">
+        @* <div class="col-md-6">
 
-        </div>
-
-        <div class="col-md-3">
+        </div>*@
+        <div class="col-md-2">
             <label>@localizer["Report.FilterByWeight"]</label>
             <select class="form-control" @bind="@reportParameters.WeightFilterColumn">
                 <option value="">-No Filter-</option>
@@ -196,13 +195,13 @@
         </div>
         @if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
         {
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="WeightMin">@localizer["Report.WeightMin"]</label>
                     <input type="number" @bind="@reportParameters.WeightMin" class="form-control" placeholder="Weight Minimum" id="WeightMin" min="0" max="@(reportParameters.WeightMax-1)" />
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="WeightMax">@localizer["Report.WeightMax"]</label>
                     <input type="number" @bind="@reportParameters.WeightMax" class="form-control" placeholder="Weight Maximum" id="WeightMax" min="100000" />
@@ -210,10 +209,10 @@
             </div>
         }
 
-        <div class="col align-self-end">
-            <div class="form-group float-right align-bottom">
+        <div class="col-md-2">
+            <div class="form-group">
                 <label class="form-label">&nbsp;</label>
-                <div class="btn-group">
+                <div class="form-control btn-group p-0">
                     @if (selectedStations is not null && selectedStations.Any())
                     {
                         <button class="btn btn-primary" @onclick="SelectionComplete">@localizerResources["Button.SaveSelection"]</button>
@@ -299,14 +298,8 @@ else
             {
                 string message = "";
 
-                @if (reportParameters.WeightMin > 0)
-                {
-                    message += "Min: " + reportParameters.WeightMin.ToString("N0");
-                }
-                @if (reportParameters.WeightMax > 0)
-                {
-                    message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
-                }
+                message += "Min: " + reportParameters.WeightMin.ToString("N0");
+                message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
                 message = System.Text.RegularExpressions.Regex.Replace(reportParameters.WeightFilterColumn, "(\\B[A-Z0-9])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim()
                 + " (" + message + ")";
 
@@ -315,12 +308,6 @@ else
                 </div>
             }
 
-            @if (reportParameters.CheckWeightCalculation)
-            {
-                <div class="col-md-3">
-                    <label>, <span class="badge bg-success">Check Weight Calculation</span> selected.</label>
-                </div>
-            }
             <div class="col align-self-end">
                 <div class="form-group float-right align-bottom">
                     <label class="form-label">&nbsp;</label>

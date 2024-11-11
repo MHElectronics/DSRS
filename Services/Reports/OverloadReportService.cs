@@ -51,7 +51,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan(),
         };
@@ -116,13 +115,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -186,13 +183,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -256,13 +251,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -326,13 +319,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -396,13 +387,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -564,13 +553,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -641,13 +628,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -739,13 +724,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -829,13 +812,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -907,13 +888,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -971,13 +950,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -1040,13 +1017,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -1110,13 +1085,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -1171,13 +1144,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -1255,13 +1226,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         var parameters = new
         {
-            //StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
             Wheelbase = reportParameters.Wheelbase,
             ClassStatus = reportParameters.ClassStatus,
-            CheckWeightCalculation = reportParameters.CheckWeightCalculation,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };
@@ -1310,6 +1279,10 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             {
                 query += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
             }
+        }
+        if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
+        {
+            query += " AND (AL." + reportParameters.WeightFilterColumn + ">=" + reportParameters.WeightMin + " AND AL." + reportParameters.WeightFilterColumn + "<=" + reportParameters.WeightMax + ")";
         }
         if (reportParameters.Wheelbase > 0)
         {

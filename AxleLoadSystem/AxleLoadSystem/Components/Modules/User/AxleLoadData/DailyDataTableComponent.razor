@@ -8,6 +8,9 @@
 @inject IJSRuntime jsRuntime
 
 <div class="row">
+    <div class="col-md-12">
+        <h6>Total items found: @count.ToString("N0")</h6>
+    </div>
     <div class="col-md-8 col-sm-12">
         <input @bind="searchQuery" placeholder="Search..." class="form-control" />
     </div>
@@ -111,6 +114,7 @@
     private IQueryable<FinePayment> filteredFineRepaymentData { get; set; }
     private User currentUser { get; set; }
     private string searchQuery = string.Empty;
+    private int count { get; set; } = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,10 +123,12 @@
         if (FileType == 1)
         {
             filteredAxleLoadData = AxleLoadData;
+            count = AxleLoadData.Count();
         }
         else if (FileType == 2)
         {
             filteredFineRepaymentData = FineRepaymentData;
+            count = FineRepaymentData.Count();
         }
     }
     private async Task ApplyFilter()
