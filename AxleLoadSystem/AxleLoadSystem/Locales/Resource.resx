@@ -198,4 +198,7 @@
   <data name="Button.Execute" xml:space="preserve">
     <value>Execute</value>
   </data>
+  <data name="Button.Show" xml:space="preserve">
+    <value>Show</value>
+  </data>
 </root>

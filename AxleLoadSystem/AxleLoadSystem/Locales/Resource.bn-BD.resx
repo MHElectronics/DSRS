@@ -198,4 +198,7 @@
   <data name="Button.Execute" xml:space="preserve">
     <value>চালান</value>
   </data>
+  <data name="Button.Show" xml:space="preserve">
+    <value>দেখান</value>
+  </data>
 </root>

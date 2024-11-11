@@ -29,13 +29,17 @@
             @if (appState is not null && showReportGroupSelection)
             {
                 <div class="row">
-                    <div class="col-md-12 btn-group">
+@*                     <div class="col-md-12 btn-group">
                         <button class="btn @(selectedType == "Hour" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hour"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
                         <button class="btn @(selectedType == "Day" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
                         <button class="btn @(selectedType == "Day-of-week" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day-of-week"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
                         <button class="btn @(selectedType == "Month" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Month"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                         <button class="btn @(selectedType == "Year" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Year"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
+                    </div> *@
+                    <div class="col-md-4">
+                        <button class="btn @(selectedType == "Show" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Show"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
                     </div>
+                    
                 </div>
             }
             @if (!string.IsNullOrEmpty(Summary))
@@ -179,7 +183,7 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>@selectedType</th>
+                                @* <th>@selectedType</th> *@
                                 <th class="text-right">Number of Axle</th>
                                 <th class="text-right">Overloaded Vehicle</th>
                                 <th class="text-right">Total Vehicle</th>
@@ -187,24 +191,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (AxleLoadReport item in ChartData)
+                            @foreach (var group in ChartData.OrderBy(x=>x.NumberofAxle).GroupBy(x => x.NumberofAxle))
                             {
+                                // Calculate the sum of overloaded and total vehicles for the current axle group
+                                var overloadedSum = group.Sum(x => x.OverloadVehicle);
+                                var totalVehicleSum = group.Sum(x => x.TotalVehicle);
+                                var overloadingRatio = overloadingRatioData3.ContainsKey(group.Key)
+                                ? overloadingRatioData3[group.Key]
+                                : 0;
+
                                 <tr>
-                                    <td>@item.DateUnitName</td>
-                                    <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
-                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
-                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
-                                    <td class="text-right">
-                                        @{
-                                            // Lookup the overloading ratio for the current item's NumberofAxle
-                                            item.OverloadingRatio = overloadingRatioData3.ContainsKey(item.NumberofAxle)
-                                            ? overloadingRatioData3[item.NumberofAxle]
-                                            : 0;
-                                        }
-                                        @($"{item.OverloadingRatio:N2}%")
-                                    </td>
+                                    <td class="text-right">@group.Key.ToString("N0")</td> 
+                                    <td class="text-right">@overloadedSum.ToString("N0")</td> 
+                                    <td class="text-right">@totalVehicleSum.ToString("N0")</td> 
+                                    <td class="text-right">@($"{overloadingRatio:N2}%")</td> 
                                 </tr>
                             }
+
                         </tbody>
                     </table>
                 </div>
@@ -330,27 +333,8 @@
         YAxisTitle = "Overloading Ratio (%)";
         Chartview = true;
 
-        if (selectedType == "Month")
-        {
-            report = await reportService.GetMonthlyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else 
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;    
-            }
-        }
-        else if (selectedType == "Day-of-week")
+        
+        if (selectedType == "Show")
         {
             report = await reportService.GetWeeklyOverloadedNumberOfAxlesReport(reportParameters);
             if (report.Item2)
@@ -370,65 +354,85 @@
                 Summary = report.Item3;
             }
         }
-        else if (selectedType == "Hour")
-        {
-            report = await reportService.GetHourlyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
-        }
-        else if (selectedType == "Year")
-        {
-            report = await reportService.GetYearlyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
-        }
-        else if (selectedType == "Day")
-        {
-            report = await reportService.GetDailyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
-        }
+        // else if (selectedType == "Hour")
+        // {
+        //     report = await reportService.GetHourlyOverloadedNumberOfAxlesReport(reportParameters);
+        //     if (report.Item2)
+        //     {
+        //         if (report.Item1.Count() > 0)
+        //         {
+        //             ChartData = report.Item1;
+        //         }
+        //         else
+        //         {
+        //             Chartview = false;
+        //             Summary = "No value is available";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Summary = report.Item3;
+        //     }
+        // }
+        // else if (selectedType == "Year")
+        // {
+        //     report = await reportService.GetYearlyOverloadedNumberOfAxlesReport(reportParameters);
+        //     if (report.Item2)
+        //     {
+        //         if (report.Item1.Count() > 0)
+        //         {
+        //             ChartData = report.Item1;
+        //         }
+        //         else
+        //         {
+        //             Chartview = false;
+        //             Summary = "No value is available";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Summary = report.Item3;
+        //     }
+        // }
+        // else if (selectedType == "Day")
+        // {
+        //     report = await reportService.GetDailyOverloadedNumberOfAxlesReport(reportParameters);
+        //     if (report.Item2)
+        //     {
+        //         if (report.Item1.Count() > 0)
+        //         {
+        //             ChartData = report.Item1;
+        //         }
+        //         else
+        //         {
+        //             Chartview = false;
+        //             Summary = "No value is available";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Summary = report.Item3;
+        //     }
+        // }
+        // else if (selectedType == "Month")
+        // {
+        //     report = await reportService.GetMonthlyOverloadedNumberOfAxlesReport(reportParameters);
+        //     if (report.Item2)
+        //     {
+        //         if (report.Item1.Count() > 0)
+        //         {
+        //             ChartData = report.Item1;
+        //         }
+        //         else
+        //         {
+        //             Chartview = false;
+        //             Summary = "No value is available";
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Summary = report.Item3;
+        //     }
+        // }
     }
 }

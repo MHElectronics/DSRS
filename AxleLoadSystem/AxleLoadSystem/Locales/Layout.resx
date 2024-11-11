@@ -211,7 +211,7 @@
     <value>WIM Scale</value>
   </data>
   <data name="Menu.OverloadedRatio" xml:space="preserve">
-    <value>Overloaded ratio</value>
+    <value>Overloaded Ratio</value>
   </data>
   <data name="Menu.SQLDirectSearch" xml:space="preserve">
     <value>SQL Direct Search</value>
