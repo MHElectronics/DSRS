@@ -298,14 +298,8 @@ else
             {
                 string message = "";
 
-                @if (reportParameters.WeightMin > 0)
-                {
-                    message += "Min: " + reportParameters.WeightMin.ToString("N0");
-                }
-                @if (reportParameters.WeightMax > 0)
-                {
-                    message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
-                }
+                message += "Min: " + reportParameters.WeightMin.ToString("N0");
+                message += (string.IsNullOrEmpty(message) ? "" : " - ") + "Max: " + reportParameters.WeightMax.ToString("N0");
                 message = System.Text.RegularExpressions.Regex.Replace(reportParameters.WeightFilterColumn, "(\\B[A-Z0-9])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim()
                 + " (" + message + ")";
 

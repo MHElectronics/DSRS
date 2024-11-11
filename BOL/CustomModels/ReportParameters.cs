@@ -13,7 +13,5 @@ public class ReportParameters
     public string WeightFilterColumn { get; set; } = String.Empty;
     public int WeightMin { get; set; }
     public int WeightMax { get; set; }
-    public int ChartType { get; set; }
     public int Multiplier { get; set; }
-    public int FileType { get; set; }
 }
