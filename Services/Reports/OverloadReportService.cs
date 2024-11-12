@@ -82,7 +82,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
-        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+        DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
@@ -95,9 +95,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -108,9 +106,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATEPART(YEAR, AL.DateTime),
             DATENAME(YEAR, AL.DateTime),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100))
         ORDER BY DATEPART(YEAR, AL.DateTime), R.GroupId";
 
         var parameters = new
@@ -150,7 +146,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
-        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+        DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
@@ -163,9 +159,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -176,9 +170,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATEPART(MONTH, AL.DateTime),
             DATENAME(MONTH, AL.DateTime),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100))
         ORDER BY DATEPART(MONTH, AL.DateTime), R.GroupId";
 
         var parameters = new
@@ -218,7 +210,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
-        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+        DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
@@ -231,9 +223,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -244,9 +234,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATEPART(WEEKDAY, AL.DateTime),
             DATENAME(WEEKDAY, DATEADD(DAY, DATEPART(WEEKDAY, AL.DateTime) - 1, 0)),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100))
         ORDER BY DATEPART(WEEKDAY, AL.DateTime), R.GroupId";
 
         var parameters = new
@@ -286,7 +274,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
-        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+        DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
@@ -299,9 +287,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -312,9 +298,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DAY(AL.DateTime),  -- Group by day number
             CAST(AL.DateTime AS DATE),  -- Group by full date
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100))
         ORDER BY DATEPART(DAY, AL.DateTime), R.GroupId";
 
         var parameters = new
@@ -354,7 +338,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
-        DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,5), Maximum DECIMAL(18,5))
+        DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
         INSERT INTO @Range(GroupId, Minimum, Maximum)
         SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier
@@ -367,9 +351,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             R.GroupId,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightRange,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMinimum,
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) AS GrossVehicleWeightMaximum
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
         INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
@@ -380,9 +362,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATEPART(HOUR, AL.DateTime),
             CAST(DATEPART(HOUR, AL.DateTime) AS VARCHAR),
             R.GroupId,
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)) + '-' + CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Minimum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100)),
-            CAST(CAST((R.Maximum / 1000) AS DECIMAL(18,2)) AS VARCHAR(100))
+            CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100))
         ORDER BY DATEPART(HOUR, AL.DateTime), R.GroupId";
 
         var parameters = new
@@ -409,7 +389,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-
     #endregion
 
 
