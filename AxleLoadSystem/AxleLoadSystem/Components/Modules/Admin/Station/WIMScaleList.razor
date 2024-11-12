@@ -120,7 +120,7 @@ else
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Wim Scale Deletion Successful";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Lane " + SelectedWim.LaneNumber + " " + notification.Message, Activity = "Delete" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Lane " + SelectedWim.LaneNumber + " " + notification.Message, Activity = LogActivity.Delete });
         }
         else
         {

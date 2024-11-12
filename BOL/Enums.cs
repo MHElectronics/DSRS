@@ -14,6 +14,16 @@ public enum UserRole
     User,
     AdvancedUser
 }
+public enum LogActivity
+{ 
+    Login = 1,
+    Logout = 2,
+    Insert = 3, 
+    Update = 4, 
+    Delete = 5,
+    Download = 6,
+    Get = 7
+}
 
 public enum UploadedFileType
 {

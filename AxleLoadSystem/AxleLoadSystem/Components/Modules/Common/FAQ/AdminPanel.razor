@@ -241,7 +241,7 @@
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "FAQ updated", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ updated", Activity = "Update" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ updated", Activity = LogActivity.Update });
             }
             else
             {
@@ -256,7 +256,7 @@
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "FAQ submitted", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ submitted", Activity = "Insert" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ submitted", Activity = LogActivity.Insert });
             }
             else
             {
@@ -278,7 +278,7 @@
         {
             await this.LoadQuestions();
             appState.SetNotification(this, "FAQ deleted", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ deleted", Activity = "Delete" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ deleted", Activity = LogActivity.Delete });
         }
         else
         {

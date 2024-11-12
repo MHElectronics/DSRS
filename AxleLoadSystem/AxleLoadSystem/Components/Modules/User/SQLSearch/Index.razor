@@ -84,7 +84,7 @@
             try
             {
                 results = await sqlSearchService.GetSQLSearch(sqlSearch);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = sqlSearch.Query, Activity = "GET" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = sqlSearch.Query, Activity = LogActivity.Get });
                 var rows = results.AsEnumerable().ToList();
                 var providerResult = GridItemsProviderResult
                     .From<DataRow>(rows, rows.Count);

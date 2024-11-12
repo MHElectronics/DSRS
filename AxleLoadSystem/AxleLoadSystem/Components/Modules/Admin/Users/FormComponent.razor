@@ -302,7 +302,7 @@ else
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "User Updated Successfully";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Update" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Update });
                 appState.SetNotification(this, notification);
                 navigation.NavigateTo("user");
             }
@@ -325,7 +325,7 @@ else
                     {
                         notification.Type = Notification.NotificationType.Success;
                         notification.Message = "User Added Successfully";
-                        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Insert" });
+                        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Insert });
                         appState.SetNotification(this, notification);
                         navigation.NavigateTo("user");
                     }
@@ -383,7 +383,7 @@ else
                 {
                     notification.Type = Notification.NotificationType.Success;
                     notification.Message = "Password Changed Successfully";
-                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Update" });
+                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Update });
                     appState.SetNotification(this, notification);
                     navigation.NavigateTo("user");
                 }

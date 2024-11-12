@@ -104,7 +104,7 @@ else
         {
             await classStatusService.UpdateClassStatus(classStatus);
             ValidationSummary = "Class Status Updated Successfully";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = "Update" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = LogActivity.Update });
         }
         else
         {
@@ -112,7 +112,7 @@ else
             if (isSuccess)
             {
                 ValidationSummary = "New Class Status added";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = "Insert" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = LogActivity.Insert });
             }
             else
             {

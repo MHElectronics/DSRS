@@ -85,7 +85,7 @@ else
             await CategoryService.UpdateCategory(Category);
             ValidationSummary = "Tutorial Category Updated Successfully";
             isSuccess = true;
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Category.Name + " " + ValidationSummary, Activity = "Update" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Category.Name + " " + ValidationSummary, Activity = LogActivity.Update});
         }
         else
         {
@@ -93,7 +93,7 @@ else
             if (isSuccess)
             {
                 ValidationSummary = "New Tutorial Category added";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Category.Name + " " + ValidationSummary, Activity = "Insert" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Category.Name + " " + ValidationSummary, Activity = LogActivity.Insert});
             }
             else
             {

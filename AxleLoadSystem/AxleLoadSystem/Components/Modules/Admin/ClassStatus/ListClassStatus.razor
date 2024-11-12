@@ -88,7 +88,7 @@ else
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Class Status Deletion Successful";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = "Delete" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Delete });
         }
         else
         {

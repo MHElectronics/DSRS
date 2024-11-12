@@ -227,7 +227,7 @@
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Excel report Downloaded", Activity = "Download" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Excel report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "csv")
         {
@@ -235,12 +235,12 @@
             
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded CSV report Downloaded", Activity = "Download" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded CSV report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Excel Graph Downloaded", Activity = "Download" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Excel Graph Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "pdf")
         {
@@ -252,7 +252,7 @@
             MemoryStream stream = exportHelper.CreatePdfFromHtml(html);
             byte[] bytes = stream.ToArray();
             await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Pdf report Downloaded", Activity = "Download" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over loaded Pdf report Downloaded", Activity = LogActivity.Download });
         }
     }
 

@@ -243,7 +243,7 @@
             }
             uploading = false;
             appState.SetNotification(this, "Tutorial Update Successful", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Update Successful", Activity = "Update" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Update Successful", Activity = LogActivity.Update });
         }
         else
         {
@@ -255,7 +255,7 @@
             }
             uploading = false;
             appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Upload Successful", Activity = "Insert" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Upload Successful", Activity = LogActivity.Insert });
         } 
         tutorial = new();
         previousFileLocation = "";
@@ -269,7 +269,7 @@
     {
         byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
         await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
-        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Download Successful", Activity = "Download" });
+        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Download Successful", Activity = LogActivity.Download });
     }
     private async Task SubmitForDelete(Tutorial tutorial)
     {
@@ -283,7 +283,7 @@
         tutorials.Remove(temptutorial);
 
         appState.SetNotification(this, "Tutorial Delete Successful", Notification.NotificationType.Success);
-        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = temptutorial.FileName + " Tutorial Delete Successful", Activity = "Delete" });
+        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = temptutorial.FileName + " Tutorial Delete Successful", Activity = LogActivity.Delete });
         temptutorial = new Tutorial();
         this.StateHasChanged();
     }

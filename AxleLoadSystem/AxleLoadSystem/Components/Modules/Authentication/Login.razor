@@ -68,7 +68,7 @@
                 {
                     CustomAuthenticationStateProvider stateProvide = (CustomAuthenticationStateProvider)authStateProvider;
                     await stateProvide.UpdateAuthenticationState(user);
-                    await userActivityService.InsertUserActivity(new UserActivity { UserId = user.Id, DateTime = DateTime.Now, Description = user.Name + " Login Successfully", Activity = "Login" });
+                    await userActivityService.InsertUserActivity(new UserActivity { UserId = user.Id, DateTime = DateTime.Now, Description = user.Name + " Login Successfully", Activity = LogActivity.Login });
                     if (user.HasRole("Admin"))
                     {
                         navigationManager.NavigateTo("", true);

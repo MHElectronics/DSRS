@@ -124,7 +124,7 @@ else
             if (await configurationService.InsertConfiguration(configuration))
             {
                 Summary = "Configuration added successfully";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = "Insert" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = LogActivity.Insert });
             }
             else
             {
@@ -135,7 +135,7 @@ else
         {
             await configurationService.UpdateConfiguration(configuration);
             Summary = "Configuration updated successfully";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = "Update" });
+            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = LogActivity.Update });
         }
         editConfiguration = false;
     }

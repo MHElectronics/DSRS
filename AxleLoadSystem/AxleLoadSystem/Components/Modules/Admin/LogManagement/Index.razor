@@ -2,40 +2,71 @@
 @using BOL;
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Services;
+@using Syncfusion.Blazor.Calendars
+@inject IConfigurationService configurationService
 @inject IUserActivityService userActivityService
 @inject IUserService userService
 @inject IStringLocalizer<Locales.CommonPages> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResources
 
 <PageTitleComponent Title="@localizer["LogManagement.Title"]"></PageTitleComponent>
 
-@if (userActivities != null)
-{
-    <div class="card card-primary card-outline">
-        <div class="card-body">
-        <QuickGrid Items="@userActivities" Virtualize='true'>
-            <PropertyColumn Property="@(l => l.Id)" Sortable="true" />
-            <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy/MM/dd HH:mm:ss tt" Title="Date Time" Sortable="true" />
-            <PropertyColumn Property="@(l => GetUserName(l.UserId))" Title="User Name" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Description)" Title="Description" Sortable="true" />
-            <PropertyColumn Property="@(l => l.Activity)" Title="Activity" Sortable="true" />
-        </QuickGrid>
 
+<div class="card card-primary card-outline">
+    <div class="card-body">
+        <div class="row">
+            @if (configuration is not null)
+            {
+                <div class="col-md-6">
+                     <label>Date Range</label>
+                    <SfDateRangePicker TValue="DateTime?" StartDate="@activity.DateStart" EndDate="@activity.DateEnd" Min="@configuration.SystemStartDate" Max="DateTime.Now">
+                        <DateRangePickerEvents TValue="DateTime?" ValueChange="@OnDateRangeChanged"></DateRangePickerEvents>
+                    </SfDateRangePicker>
+                </div>
+            }
+
+            <div class="col-md-3">
+                <label>Activity</label> 
+                <select class="form-control" @bind="@activity.Activity">
+                    <option value="0">-No Filter-</option>
+                    @foreach (var item in Enum.GetValues(typeof(LogActivity)))
+                    {
+                        <option value="@item">@item.ToString()</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <div class="form-control p-0">
+                    <button class="btn btn-primary col-12" @onclick="LogFilter">Search</button>
+                </div>
+            </div>
         </div>
     </div>
-}
-else
-{
-    <Loader />
-}
+    @if (userActivities is not null)
+    {
+        <div class="card-footer">
+            <QuickGrid Items="@userActivities" Virtualize='true'>
+                <PropertyColumn Property="@(l => l.Id)" Sortable="true" />
+                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy/MM/dd HH:mm:ss tt" Title="Date Time" Sortable="true" />
+                <PropertyColumn Property="@(l => GetUserName(l.UserId))" Title="User Name" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Description)" Title="Description" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Activity)" Title="Activity" Sortable="true" />
+            </QuickGrid>
+        </div>
+    }
+</div>
+
 
 @code {
     public IQueryable<UserActivity> userActivities { get; set; }
+    public UserActivity activity { get; set; } = new();
     public IEnumerable<User> users { get; set; }
+    public Configuration configuration { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IEnumerable<UserActivity> Logs = await userActivityService.GetUserActivities();
-        userActivities = Logs.AsQueryable();
+        configuration = await configurationService.GetConfiguration();
         users = await userService.GetUsers();
     }
     private string GetUserName(int userId)
@@ -43,5 +74,14 @@ else
         var user = users.FirstOrDefault(u => u.Id == userId);
         return user != null ? user.Name : "Unknown";
     }
-
+    private void OnDateRangeChanged(RangePickerEventArgs<DateTime?> args)
+    {
+        activity.DateStart = args.StartDate ?? DateTime.Now;
+        activity.DateEnd = args.EndDate ?? DateTime.Now;
+    }
+    private async Task LogFilter()
+    {
+        IEnumerable<UserActivity> Logs = await userActivityService.GetUserActivitiesByFilter(activity);
+        userActivities = Logs.AsQueryable();
+    }
 }

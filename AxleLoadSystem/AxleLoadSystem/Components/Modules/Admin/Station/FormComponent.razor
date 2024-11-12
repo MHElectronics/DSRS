@@ -152,7 +152,7 @@ else
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Updated Successfully";
                 isSuccess = true;
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName +" "+ notification.Message, Activity = "Update" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + " " + notification.Message, Activity = LogActivity.Update});
             }
             else
             {
@@ -167,7 +167,7 @@ else
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Added Successfully";
                 isSuccess = true;
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + " " + notification.Message, Activity = "Insert" });
+                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + " " + notification.Message, Activity = LogActivity.Insert });
             }
             else
             {
