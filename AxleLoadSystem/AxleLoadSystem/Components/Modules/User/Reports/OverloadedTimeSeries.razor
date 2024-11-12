@@ -300,7 +300,7 @@
         ReportParameters reportParameters = await appState.GetReportParameters();
 
         ChartTitle = "Number of vehicles measured for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
-        YAxisTitle = "Number of units";
+        YAxisTitle = "Number of vehicles";
         Chartview = true;
         if (selectedType == "Month")
         {

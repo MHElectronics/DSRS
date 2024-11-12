@@ -83,6 +83,6 @@ public class LoadData
     public DateTime EntryTime { get; set; }
 
     //Additional properties
-    public string DateString { get { return this.DateTime.ToString("dd MMM yy"); } }
+    public string DateString { get { return this.DateTime.ToString("yyyy/MM/dd"); } }
     public string TimeString { get { return this.DateTime.ToString("HH:mm:ss"); } }
 }
