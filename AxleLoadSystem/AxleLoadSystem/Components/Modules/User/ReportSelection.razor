@@ -110,7 +110,7 @@
                     string allIcon = wims.Count(w => w.IsUpbound) == wimsUpbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
                     <div class="btn-group form-control p-0">
                         <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllLaneClicked(true))"><i class="fa @allIcon"></i> Upbound: </span>
-                        @foreach (WIMScale item in wimsUpbound)
+                        @foreach (WIMScale item in wimsUpbound.OrderBy(w => w.LaneNumber))
                         {
                             string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
                             <span class="btn btn-sm btn-primary text-left" @onclick="@(()=>LaneClicked(item.LaneNumber))">
@@ -126,7 +126,7 @@
                     string allIcon = wims.Count(w => !w.IsUpbound) == wimsDownbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
                     <div class="btn-group form-control p-0">
                         <span class="btn btn-sm btn-secondary text-left" @onclick="@(() => AllLaneClicked(false))"><i class="fa @allIcon"></i> Downbound: </span>
-                        @foreach (WIMScale item in wimsDownbound)
+                        @foreach (WIMScale item in wimsDownbound.OrderBy(w => w.LaneNumber))
                         {
                             string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
                             <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=>LaneClicked(item.LaneNumber))">
@@ -245,14 +245,14 @@ else
                         @if (reportParameters.WIMScales.Any(w => w.IsUpbound))
                         {
                             <span class="badge bg-success">
-                                Upbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => w.IsUpbound).Select(w => w.LaneNumber))
+                                Upbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => w.IsUpbound).OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber))
                             </span>
                         }
 
                         @if (reportParameters.WIMScales.Any(w => !w.IsUpbound))
                         {
                             <span class="badge bg-success">
-                                Downbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => !w.IsUpbound).Select(w => w.LaneNumber))
+                                Downbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => !w.IsUpbound).OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber))
                             </span>
                         }
                     </label>
