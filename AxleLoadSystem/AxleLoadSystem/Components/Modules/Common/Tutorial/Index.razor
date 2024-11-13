@@ -83,6 +83,5 @@
     {
         byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
         await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
-        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Download Successful", Activity = LogActivity.Download });
     }
 }

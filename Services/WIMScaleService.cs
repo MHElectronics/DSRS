@@ -9,18 +9,20 @@ public interface IWIMScaleService
     Task<IEnumerable<WIMScale>> GetByStation(WIMScale obj);
     Task<IEnumerable<WIMScale>> GetByStationId(int stationId);
     Task<WIMScale> GetById(WIMScale obj);
-    Task<bool> Add(WIMScale obj);
-    Task<bool> Update(WIMScale obj);
-    Task<bool> Delete(WIMScale obj);
+    Task<bool> Add(WIMScale obj, User user);
+    Task<bool> Update(WIMScale obj, User user);
+    Task<bool> Delete(WIMScale obj, User user);
 }
 public class WIMScaleService : IWIMScaleService
 {
     private IMemoryCache _cacheProvider { get; set; }
     private ISqlDataAccess _db { get; set; }
-    public WIMScaleService(ISqlDataAccess db, IMemoryCache cacheProvider)
+    private readonly IUserActivityService _userActivityService;
+    public WIMScaleService(ISqlDataAccess db, IMemoryCache cacheProvider, IUserActivityService userActivityService)
     {
         _db = db;
         _cacheProvider = cacheProvider;
+        _userActivityService = userActivityService;
     }
 
     public async Task<IEnumerable<WIMScale>> GetAll()
@@ -63,7 +65,7 @@ public class WIMScaleService : IWIMScaleService
         return await _db.LoadSingleAsync<WIMScale, dynamic>(sql, new { obj.Id });
     }
 
-    public async Task<bool> Add(WIMScale obj)
+    public async Task<bool> Add(WIMScale obj, User user)
     {
         bool hasDuplicate = await this.CheckDuplicateEntry(obj);
         if (!hasDuplicate)
@@ -74,12 +76,15 @@ public class WIMScaleService : IWIMScaleService
             {
                 string cacheKey = "WIMS_S_" + obj.StationId;
                 _cacheProvider.Remove(cacheKey);
+
+                UserActivity log = new UserActivity(user.Id, "Station:" + obj.StationId + " Lane: " + obj.LaneNumber +" Added", LogActivity.Insert);
+                await _userActivityService.InsertUserActivity(log);
             }
             return isSuccess;
         }
         return false;
     }
-    public async Task<bool> Update(WIMScale obj)
+    public async Task<bool> Update(WIMScale obj, User user)
     {
         string query = "UPDATE WIMScale SET StationId=@StationId,LaneNumber=@LaneNumber,Type=@Type,EquipmentCode=@EquipmentCode,LaneDirection=@LaneDirection,IsUpbound=@IsUpbound WHERE Id=@Id";
         bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
@@ -87,10 +92,13 @@ public class WIMScaleService : IWIMScaleService
         {
             string cacheKey = "WIMS_S_" + obj.StationId;
             _cacheProvider.Remove(cacheKey);
+
+            UserActivity log = new UserActivity(user.Id, "Station:" + obj.StationId + " Lane: " + obj.LaneNumber + " Updated", LogActivity.Update);
+            await _userActivityService.InsertUserActivity(log);
         }
         return isSuccess;
     }
-    public async Task<bool> Delete(WIMScale obj)
+    public async Task<bool> Delete(WIMScale obj, User user)
     {
         string query = "DELETE FROM WIMScale WHERE Id=@Id";
         int count = await _db.DeleteData<WIMScale, object>(query, new { obj.Id });
@@ -98,6 +106,10 @@ public class WIMScaleService : IWIMScaleService
         {
             string cacheKey = "WIMS_S_" + obj.StationId;
             _cacheProvider.Remove(cacheKey);
+
+            UserActivity log = new UserActivity(user.Id, "Station:" + obj.StationId + " Lane: " + obj.LaneNumber + " Deleted", LogActivity.Delete);
+            await _userActivityService.InsertUserActivity(log);
+
             return true;
         }
 

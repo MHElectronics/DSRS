@@ -4,7 +4,6 @@
 @inject IFileService fileService
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IStationAccessService stationAccessService
 @inject IStringLocalizer<Locales.File> localizer
 @rendermode InteractiveServer
@@ -138,10 +137,9 @@
     }
     private async Task DeleteConfirmed()
     {
-        if(await fileService.Delete(selectedFile))
+        if(await fileService.Delete(selectedFile, currentUser))
         {
             appState.SetNotification(this, "File Deleted", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = selectedFile.FileName + " File Deleted", Activity = LogActivity.Delete });
         }
         else
         {

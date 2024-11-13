@@ -1,7 +1,6 @@
 ﻿@using System
 @using BOL
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject ICategoryService CategoryService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizer
@@ -82,18 +81,16 @@ else
 
         if (Mode == FormMode.Edit)
         {
-            await CategoryService.UpdateCategory(Category);
+            await CategoryService.UpdateCategory(Category, currentUser);
             ValidationSummary = "Tutorial Category Updated Successfully";
             isSuccess = true;
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Category.Name + " " + ValidationSummary, Activity = LogActivity.Update});
         }
         else
         {
-            isSuccess = await CategoryService.InsertCategory(Category);
+            isSuccess = await CategoryService.InsertCategory(Category, currentUser);
             if (isSuccess)
             {
                 ValidationSummary = "New Tutorial Category added";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Category.Name + " " + ValidationSummary, Activity = LogActivity.Insert});
             }
             else
             {

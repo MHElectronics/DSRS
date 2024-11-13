@@ -2,7 +2,6 @@
 @using BOL
 @inject IClassStatusService classStatusService
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Reports> localizer
 
@@ -80,7 +79,6 @@ else
     public ClassStatus classStatus { get; set; } = new();
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
-    private IEnumerable<ClassStatus>? ClassStatusList;
     private User currentUser { get; set; }
     private bool isSuccess { get; set; }
     string ValidationSummary;
@@ -89,7 +87,6 @@ else
     {
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
-        ClassStatusList = await classStatusService.GetClassStatusList();
     }
 
     void OnInvalidSubmit()
@@ -102,23 +99,20 @@ else
 
         if (Mode == FormMode.Edit)
         {
-            await classStatusService.UpdateClassStatus(classStatus);
+            await classStatusService.UpdateClassStatus(classStatus, currentUser);
             ValidationSummary = "Class Status Updated Successfully";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = LogActivity.Update });
         }
         else
         {
-            isSuccess = await classStatusService.InsertClassStatus(classStatus);
+            isSuccess = await classStatusService.InsertClassStatus(classStatus, currentUser);
             if (isSuccess)
             {
                 ValidationSummary = "New Class Status added";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = ValidationSummary, Activity = LogActivity.Insert });
             }
             else
             {
                 ValidationSummary = "New Class Status added failed";
             }
-
         }
     }
 }

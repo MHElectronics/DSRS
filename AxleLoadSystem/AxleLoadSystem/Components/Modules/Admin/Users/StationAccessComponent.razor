@@ -165,14 +165,13 @@
             accessList.Add(access);
         }
 
-        await stationAccessService.DeleteStationAccessByUserId(userId);
+        await stationAccessService.DeleteStationAccessByUserId(userId, currentUser);
 
         if (accessList.Any())
         {
-            if (await stationAccessService.InsertStationAccess(accessList))
+            if (await stationAccessService.InsertStationAccess(accessList, currentUser))
             {
                 appState.SetNotification(this, "Station Access Updated", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Station Access Updated", Activity = LogActivity.Update });
             }
             else
             {
@@ -182,15 +181,13 @@
         else
         {
             appState.SetNotification(this, "Station Access removed", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Station Access removed", Activity = LogActivity.Delete });
         }
 
+        // if (selectedStations.Count() == 0 && userId > 0)
+        // {
+        //     await stationAccessService.DeleteStationAccessByUserId(userId, currentUser);
+        // }
 
-
-        if (selectedStations.Count() == 0 && userId > 0)
-        {
-            await stationAccessService.DeleteStationAccessByUserId(userId);
-        }
         await this.LoadStationAccess();
         stationAccess = new();
     }

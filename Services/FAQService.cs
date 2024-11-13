@@ -1,4 +1,5 @@
 ﻿using BOL;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Services.Helpers;
 
 namespace Services;
@@ -9,19 +10,20 @@ public interface IFAQService
     Task<IEnumerable<FAQ>> GetByUser(User user);
     Task<int> GetUnansweredFAQCount();
 
-    Task<bool> InsertFAQ(FAQ faq);
-    Task<bool> UpdateFAQ(FAQ faq);
-    Task<bool> DeleteFAQ(FAQ faq);
-    Task<bool> UpdateQuestion(FAQ faq);
+    Task<bool> InsertFAQ(FAQ faq, User user);
+    Task<bool> UpdateFAQ(FAQ faq, User user);
+    Task<bool> DeleteFAQ(FAQ faq, User user);
+    Task<bool> UpdateQuestion(FAQ faq, User user);
 }
 
 public class FAQService : IFAQService
 {
     private readonly ISqlDataAccess _db;
-
-    public FAQService(ISqlDataAccess db)
+    private readonly IUserActivityService _userActivityService;
+    public FAQService(ISqlDataAccess db, IUserActivityService userActivityService)
     {
         _db = db;
+        _userActivityService = userActivityService;
     }
 
     public async Task<IEnumerable<FAQ>> GetFAQs(bool onlyPublished = false)
@@ -54,29 +56,59 @@ public class FAQService : IFAQService
         return await _db.LoadSingleAsync<int, dynamic>(sql, null);
     }
 
-    public async Task<bool> InsertFAQ(FAQ faq)
+    public async Task<bool> InsertFAQ(FAQ faq, User user)
     {
         faq.EntryTime = DateTime.Now;
         string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,IsPublished,DisplayOrder,EntryTime)
             VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder,@EntryTime)";
-        return await _db.SaveData<FAQ>(sql, faq);
+        bool isSuccess = await _db.SaveData<FAQ>(sql, faq);
+
+        if (isSuccess)
+        {
+            UserActivity log = new UserActivity(user.Id, "FAQ Added", LogActivity.Insert);
+            await _userActivityService.InsertUserActivity(log);
+        }
+
+        return isSuccess;
     }
-    public async Task<bool> UpdateFAQ(FAQ faq)
+    public async Task<bool> UpdateFAQ(FAQ faq, User user)
     {
         string sql = @"UPDATE FAQ SET Question=@Question, Answer=@Answer, QuestionUserId=@QuestionUserId, AnswerUserId=@AnswerUserId, IsPublished=@IsPublished, DisplayOrder=@DisplayOrder
                        WHERE Id=@Id";
-        return await _db.SaveData<FAQ>(sql, faq);
+        bool isSuccess = await _db.SaveData<FAQ>(sql, faq);
+
+        if (isSuccess)
+        {
+            UserActivity log = new UserActivity(user.Id, "FAQ Updated. FAQ Id: " + faq.Id , LogActivity.Update);
+            await _userActivityService.InsertUserActivity(log);
+        }
+
+        return isSuccess;
     }
-    public async Task<bool> DeleteFAQ(FAQ faq)
+    public async Task<bool> UpdateQuestion(FAQ faq, User user)
+    {
+        string sql = @"UPDATE FAQ SET Question=@Question, QuestionUserId=@QuestionUserId WHERE Id=@Id AND (AnswerUserId=0 OR AnswerUserId IS NULL)";
+        bool isSuccess = await _db.SaveData<FAQ>(sql, faq);
+
+        if (isSuccess)
+        {
+            UserActivity log = new UserActivity(user.Id, "FAQ Question Updated. FAQ Id: " + faq.Id, LogActivity.Update);
+            await _userActivityService.InsertUserActivity(log);
+        }
+
+        return isSuccess;
+    }
+    public async Task<bool> DeleteFAQ(FAQ faq, User user)
     {
         string sql = "DELETE FROM FAQ WHERE Id=@Id";
         int count = await _db.DeleteData<FAQ, object>(sql, new { faq.Id });
+        
+        if (count > 0)
+        {
+            UserActivity log = new UserActivity(user.Id, "FAQ Deleted. FAQ Id: " + faq.Id, LogActivity.Delete);
+            await _userActivityService.InsertUserActivity(log);
+        }
+
         return count > 0;
     }
-    public async Task<bool> UpdateQuestion(FAQ faq)
-    {
-        string sql = @"UPDATE FAQ SET Question=@Question, QuestionUserId=@QuestionUserId WHERE Id=@Id AND (AnswerUserId=0 OR AnswerUserId IS NULL)";
-        return await _db.SaveData<FAQ>(sql, faq);
-    }
-    
 }

@@ -6,8 +6,8 @@
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
-@inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
+@* @inject AuthenticationStateProvider authStateProvider *@
+@* @inject IUserActivityService userActivityService *@
 @inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
@@ -229,7 +229,7 @@
     private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
     private string chartType { get; set; } = "stackingcolumn";
-    private User currentUser { get; set; }
+    // private User currentUser { get; set; }
     private bool showReportGroupSelection { get; set; } = false;    
     private bool Chartview { get; set; }
     private bool isLoading = false;
@@ -238,8 +238,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        currentUser = await customStateProvider.GetAuthorizedUser();
+        // var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        // currentUser = await customStateProvider.GetAuthorizedUser();
         ReportParameters reportParameters = await appState.GetReportParameters();
         showReportGroupSelection = reportParameters is not null;
     }
@@ -260,7 +260,7 @@
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Excel report Downloaded", Activity = LogActivity.Download });
+            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Excel report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "csv")
         {
@@ -268,12 +268,12 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight CSV report Downloaded", Activity = LogActivity.Download });
+            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight CSV report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Graph report Downloaded", Activity = LogActivity.Download});
+            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Graph report Downloaded", Activity = LogActivity.Download});
         }
         else if (type == "pdf")
         {
@@ -281,7 +281,7 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Pdf report Downloaded", Activity = LogActivity.Download });
+            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Pdf report Downloaded", Activity = LogActivity.Download });
         }
     }
 

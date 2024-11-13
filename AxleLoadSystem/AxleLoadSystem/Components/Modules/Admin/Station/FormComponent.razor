@@ -147,12 +147,11 @@ else
 
         if (Mode == FormMode.Edit)
         {
-            if (await stationService.Update(station))
+            if (await stationService.Update(station, currentUser))
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Updated Successfully";
                 isSuccess = true;
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + " " + notification.Message, Activity = LogActivity.Update});
             }
             else
             {
@@ -162,12 +161,11 @@ else
         }
         else
         {
-            if (await stationService.Add(station))
+            if (await stationService.Add(station, currentUser))
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "Station Added Successfully";
                 isSuccess = true;
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = station.StationName + " " + notification.Message, Activity = LogActivity.Insert });
             }
             else
             {

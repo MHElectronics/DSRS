@@ -7,7 +7,6 @@
 @inject IFileStoreHelper fileStoreHelper
 @inject ICategoryService categoryService
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IJSRuntime jsRuntime
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
@@ -237,17 +236,16 @@
             {
                 fileStoreHelper.DeleteFile(previousFileLocation);
             }
-            if (await tutorialService.UpdateTutorial(tutorial))
+            if (await tutorialService.UpdateTutorial(tutorial, currentUser))
             {
                 await this.Loadtutorials();
             }
             uploading = false;
             appState.SetNotification(this, "Tutorial Update Successful", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Update Successful", Activity = LogActivity.Update });
         }
         else
         {
-            int tutorialId = await tutorialService.InsertTutorial(tutorial);
+            int tutorialId = await tutorialService.InsertTutorial(tutorial, currentUser);
             if (tutorialId > 0)
             {
                 tutorial.Id = tutorialId;
@@ -255,7 +253,6 @@
             }
             uploading = false;
             appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Upload Successful", Activity = LogActivity.Insert });
         } 
         tutorial = new();
         previousFileLocation = "";
@@ -269,7 +266,6 @@
     {
         byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
         await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
-        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = tutorial.FileName + " Tutorial Download Successful", Activity = LogActivity.Download });
     }
     private async Task SubmitForDelete(Tutorial tutorial)
     {
@@ -279,11 +275,10 @@
     private async void DeleteConfirmed()
     {
         fileStoreHelper.DeleteFile(temptutorial.FileLocation);
-        await tutorialService.DeleteTutorial(temptutorial);
+        await tutorialService.DeleteTutorial(temptutorial, currentUser);
         tutorials.Remove(temptutorial);
 
         appState.SetNotification(this, "Tutorial Delete Successful", Notification.NotificationType.Success);
-        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = temptutorial.FileName + " Tutorial Delete Successful", Activity = LogActivity.Delete });
         temptutorial = new Tutorial();
         this.StateHasChanged();
     }

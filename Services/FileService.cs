@@ -12,7 +12,7 @@ public interface IFileService
     Task<bool> Add(UploadedFile obj);
     Task<UploadedFile> Upload(byte[] fileBytes, UploadedFile file);
     Task<bool> Update(UploadedFile obj);
-    Task<bool> Delete(UploadedFile file);
+    Task<bool> Delete(UploadedFile file, User user);
 }
 public class FileService : IFileService
 {
@@ -21,13 +21,15 @@ public class FileService : IFileService
     private readonly ICsvHelper _csvHelper;
     private readonly IAxleLoadService _axleLoadService;
     private readonly IFinePaymentService _finePaymentService;
-    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper, ICsvHelper csvHelper, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService)
+    private readonly IUserActivityService _userActivityService;
+    public FileService(ISqlDataAccess db, IFtpHelper ftpHelper, ICsvHelper csvHelper, IAxleLoadService axleLoadService, IFinePaymentService finePaymentService, IUserActivityService userActivityService)
     {
         _db = db;
         _ftpHelper = ftpHelper;
         _csvHelper = csvHelper;
         _axleLoadService = axleLoadService;
         _finePaymentService = finePaymentService;
+        _userActivityService = userActivityService;
     }
 
     public async Task<IEnumerable<UploadedFile>> Get(int stationId = 0, DateTime? date = null)
@@ -162,18 +164,21 @@ public class FileService : IFileService
     public async Task<IEnumerable<UploadedFile>> GetUploadedFiles(UploadedFile file) =>
         await _db.LoadData<UploadedFile, dynamic>("SELECT * FROM UploadedFiles WHERE StationId=@StationId", new { file.StationId });
 
-    public async Task<bool> Delete(UploadedFile file)
+    public async Task<bool> Delete(UploadedFile file, User user)
     {
+        string descrtiption = "";
         //Delete Data
-        if(file.FileType == 1)
+        if (file.FileType == 1)
         {
             await _axleLoadService.Delete(file);
+            descrtiption = "Load data file deleted";
         }
         else
         {
             await _finePaymentService.Delete(file);
+            descrtiption = "Fine payment file deleted";
         }
-        
+
         string path = GetFiledName(file);
         string folderName = file.Date.ToString("yyyyMM");
 
@@ -185,6 +190,14 @@ public class FileService : IFileService
 
         //Delete uploaded file
         string query = @"DELETE FROM UploadedFiles WHERE Id=@Id";
-        return await _db.SaveData(query, new { file.Id});
+        bool isSuccess = await _db.SaveData(query, new { file.Id});
+
+        if(isSuccess)
+        {
+            descrtiption += " StationId:" + file.StationId + " Date:" + file.Date.ToString("dd MMM yyyy");
+            await _userActivityService.InsertUserActivity(new UserActivity(user.Id, descrtiption, LogActivity.Delete));
+        }
+
+        return isSuccess;
     }
 }

@@ -3,7 +3,6 @@
 @inject IClassStatusService classStatusService
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Reports> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
@@ -84,11 +83,10 @@ else
     private async Task DeleteConfirmedClassStatus()
     {
         Notification notification = new();
-        if (await classStatusService.DeleteClassStatus(SelectedClassStatus.Id))
+        if (await classStatusService.DeleteClassStatus(SelectedClassStatus.Id, currentUser))
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Class Status Deletion Successful";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Delete });
         }
         else
         {

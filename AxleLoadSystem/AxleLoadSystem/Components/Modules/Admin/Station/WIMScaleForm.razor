@@ -197,12 +197,11 @@ else
 
         if (formMode == FormMode.Edit)
         {
-            if (await wimService.Update(wimScale))
+            if (await wimService.Update(wimScale, currentUser))
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "WIM Scale Updated Successfully";
                 isSuccess = true;
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Lane " + wimScale.LaneNumber + " " + notification.Message, Activity = LogActivity.Update });
             }
             else
             {
@@ -220,12 +219,11 @@ else
             }
             else
             {
-                if (await wimService.Add(wimScale))
+                if (await wimService.Add(wimScale, currentUser))
                 {
                     notification.Type = Notification.NotificationType.Success;
                     notification.Message = "WIM Scale Added Successfully";
                     isSuccess = true;
-                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Lane " + wimScale.LaneNumber + " " + notification.Message, Activity = LogActivity.Insert });
                 }
                 else
                 {

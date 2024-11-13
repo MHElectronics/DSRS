@@ -113,11 +113,10 @@ else
     private async Task DeleteConfirmedStation()
     {
         Notification notification = new();
-        if (await stationService.Delete(SelectedStation))
+        if (await stationService.Delete(SelectedStation, currentUser))
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Station Deletion Successful";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = SelectedStation.StationName + " " + notification.Message, Activity = LogActivity.Delete });
         }
         else
         {

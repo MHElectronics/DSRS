@@ -3,7 +3,6 @@
 @using Services;
 @inject IConfigurationService configurationService
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Reports> localizer
 
 <PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
@@ -121,10 +120,9 @@ else
 
         if (editConfiguration && trigger)
         {
-            if (await configurationService.InsertConfiguration(configuration))
+            if (await configurationService.InsertConfiguration(configuration, currentUser))
             {
                 Summary = "Configuration added successfully";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = LogActivity.Insert });
             }
             else
             {
@@ -133,9 +131,8 @@ else
         }
         else
         {
-            await configurationService.UpdateConfiguration(configuration);
+            await configurationService.UpdateConfiguration(configuration, currentUser);
             Summary = "Configuration updated successfully";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = Summary, Activity = LogActivity.Update });
         }
         editConfiguration = false;
     }

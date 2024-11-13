@@ -1,6 +1,7 @@
 ﻿@using System
 @using BOL
 @using Services
+@inject AuthenticationStateProvider authStateProvider
 @inject IUserService userService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.User> localizer
@@ -84,7 +85,10 @@ else
     }
     private async Task DeleteConfirmed()
     {
-        await userService.Delete(SelectedUser);
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        User currentUser = await customStateProvider.GetAuthorizedUser();
+
+        await userService.Delete(SelectedUser, currentUser);
         await GetUserList();
     }
     private void DeleteDeclined()

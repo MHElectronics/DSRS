@@ -5,7 +5,6 @@
 @inject IUserService userService
 @inject IAppState appState
 @inject ILiveNotificationState liveNotificationState
-@inject IUserActivityService userActivityService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -235,13 +234,12 @@
     {
         if (newQuestion.Id > 0)
         {
-            if (await faqService.UpdateFAQ(newQuestion))
+            if (await faqService.UpdateFAQ(newQuestion, currentUser))
             {
                 newQuestion = new FAQ();
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "FAQ updated", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ updated", Activity = LogActivity.Update });
             }
             else
             {
@@ -250,13 +248,12 @@
         }
         else
         {
-            if (await faqService.InsertFAQ(newQuestion))
+            if (await faqService.InsertFAQ(newQuestion, currentUser))
             {
                 newQuestion = new FAQ();
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "FAQ submitted", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ submitted", Activity = LogActivity.Insert });
             }
             else
             {
@@ -274,11 +271,10 @@
     }
     private async Task DeleteConfirmedFAQ()
     {
-        if (await faqService.DeleteFAQ(newQuestion))
+        if (await faqService.DeleteFAQ(newQuestion, currentUser))
         {
             await this.LoadQuestions();
             appState.SetNotification(this, "FAQ deleted", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "FAQ deleted", Activity = LogActivity.Delete });
         }
         else
         {

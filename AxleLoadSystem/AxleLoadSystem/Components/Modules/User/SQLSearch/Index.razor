@@ -16,13 +16,13 @@
     @if (sqlSearch is not null)
     {
         <div class="card-body">
-            <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
+            @* <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="row">
                     <div class="col-md-12 col-sm-12">
                         <label for="sql" class="form-label">SQL Query</label>
-                        <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" rows="5" maxlength="300"></textarea>
+                        <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
                     </div>
 
                     @if (!string.IsNullOrEmpty(Summary))
@@ -33,14 +33,36 @@
                     }
                     <div class="col-md-12 col-sm-12">
                         <div class="btn btn-group">
-                            <button type="submit" class="btn btn-primary">@localizerResource["Button.Execute"]</button>
+                            <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)">@localizerResource["Button.Execute"]</button>
                         </div>
                     </div>
                 </div>
-            </EditForm>
+            </EditForm> *@
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <label for="sql" class="form-label">SQL Query</label>
+                    <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Summary))
+                {
+                    <div class="col-md-12">
+                        <label class="text-danger">@Summary</label>
+                    </div>
+                }
+                <div class="col-md-12 col-sm-12">
+                    <div class="btn btn-group">
+                        <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="Save">@localizerResource["Button.Execute"]</button>
+                    </div>
+                </div>
+            </div>
         </div>
     }
-    @if (results != null)
+    @if (showLoading)
+    {
+        <Loader/>
+    }
+    else if (results != null)
     {
         <div class="card-body">
             <div class="data-table-container">
@@ -66,6 +88,7 @@
     private DataTable results;
     private GridItemsProvider<DataRow>? provider;
 
+    private bool showLoading { get; set; } = false;
     private string Summary { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -76,46 +99,71 @@
     }
     private async Task OnValidSubmit(EditContext editContext)
     {
+        showLoading = true;
         Summary = "";
-        sqlSearch.Date = DateTime.Now;
-        sqlSearch.UserId = currentUser.Id;
-        //if (await QueryValidation(sqlSearch.Query))
+        // sqlSearch.Date = DateTime.Now;
+        // sqlSearch.UserId = currentUser.Id;
+        try
         {
-            try
-            {
-                results = await sqlSearchService.GetSQLSearch(sqlSearch);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = sqlSearch.Query, Activity = LogActivity.Get });
-                var rows = results.AsEnumerable().ToList();
-                var providerResult = GridItemsProviderResult
-                    .From<DataRow>(rows, rows.Count);
-                provider = req => ValueTask.FromResult(providerResult);
-            }
-            catch (Exception ex)
-            {
-                Summary = "Error: " + ex.Message;
-            }
+            await this.LoadData();
         }
-        // else
-        // {
-        //     Summary = "Query format is wrong";
-        // }
+        catch (Exception ex)
+        {
+            Summary = "Error: " + ex.Message;
+        }
+        finally
+        {
+            showLoading = false;
+        }
+    }
+    private async Task Save()
+    {
+        Summary = "";
+        // sqlSearch.Date = DateTime.Now;
+        // sqlSearch.UserId = currentUser.Id;
+        if (string.IsNullOrEmpty(sqlSearch.Query))
+        {
+            Summary = "Please enter query";
+            return;
+        }
+        try
+        {
+            showLoading = true;
+            await this.LoadData();
+        }
+        catch (Exception ex)
+        {
+            Summary = "Error: " + ex.Message;
+        }
+        finally
+        {
+            showLoading = false;
+        }
+    }
+    private async Task LoadData()
+    {
+        results = await sqlSearchService.GetSQLSearch(sqlSearch);
+        var rows = results.AsEnumerable().ToList();
+        var providerResult = GridItemsProviderResult
+            .From<DataRow>(rows, rows.Count);
+        provider = req => ValueTask.FromResult(providerResult);
     }
     private void OnInvalidSubmit()
     {
         appState.SetNotification(this, "Please enter valid values", Notification.NotificationType.Failure);
     }
-    private async Task<bool> QueryValidation(string query)
-    {
-        string upperQuery = query.ToUpper();
-        Regex selectRegex = new Regex(@"\bSELECT\b", RegexOptions.IgnoreCase);
-        Regex fromRegex = new Regex(@"\bFROM\b", RegexOptions.IgnoreCase);
-        Regex keywordsRegex = new Regex(@"\b(AXLELOAD|CLASSSTATUS|FINEPAYMENT|STATIONS|WIMSCALE)\b", RegexOptions.IgnoreCase);
-        
-        if (selectRegex.IsMatch(upperQuery) && fromRegex.IsMatch(upperQuery) && keywordsRegex.IsMatch(upperQuery))
-        {
-            return true;
-        }
-        
-        return false;
-    }
+    // private async Task<bool> QueryValidation(string query)
+    // {
+    //     string upperQuery = query.ToUpper();
+    //     Regex selectRegex = new Regex(@"\bSELECT\b", RegexOptions.IgnoreCase);
+    //     Regex fromRegex = new Regex(@"\bFROM\b", RegexOptions.IgnoreCase);
+    //     Regex keywordsRegex = new Regex(@"\b(AXLELOAD|CLASSSTATUS|FINEPAYMENT|STATIONS|WIMSCALE)\b", RegexOptions.IgnoreCase);
+
+    //     if (selectRegex.IsMatch(upperQuery) && fromRegex.IsMatch(upperQuery) && keywordsRegex.IsMatch(upperQuery))
+    //     {
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
 }

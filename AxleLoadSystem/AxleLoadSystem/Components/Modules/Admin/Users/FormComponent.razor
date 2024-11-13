@@ -4,7 +4,6 @@
 @using System.Text.RegularExpressions
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IUserService userService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.User> localizer
@@ -232,12 +231,15 @@ else
     string PasswordMatch, NewPasswordInput;
     string validationSummary { get; set; } = "";
     string Summary { get; set; }
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (user is not null && !string.IsNullOrEmpty(user.Role))
         {
             selectedRoles = user.Role.Split(',').ToList();
         }
+
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
     }
 
     void OnInvalidSubmit()
@@ -248,8 +250,7 @@ else
     }
     async Task OnValidSubmit(EditContext editContext)
     {
-        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        currentUser = await customStateProvider.GetAuthorizedUser();
+        
         validationSummary = "";
         saveDisabled = true;
         Notification notification = new();
@@ -297,12 +298,11 @@ else
 
         if (Mode == FormMode.Edit)
         {
-            User currentUser = await userService.UpdateUser(user);
-            if (currentUser is not null)
+            User updatedUser = await userService.UpdateUser(user, currentUser);
+            if (updatedUser is not null)
             {
                 notification.Type = Notification.NotificationType.Success;
                 notification.Message = "User Updated Successfully";
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Update });
                 appState.SetNotification(this, notification);
                 navigation.NavigateTo("user");
             }
@@ -320,12 +320,11 @@ else
             {
                 if (confirmPassword.Contains(user.Password))
                 {
-                    User currentUser = await userService.InsertUser(user);
-                    if (currentUser is not null)
+                    User updatedUser = await userService.InsertUser(user, currentUser);
+                    if (updatedUser is not null)
                     {
                         notification.Type = Notification.NotificationType.Success;
                         notification.Message = "User Added Successfully";
-                        await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Insert });
                         appState.SetNotification(this, notification);
                         navigation.NavigateTo("user");
                     }
@@ -379,11 +378,10 @@ else
             {
                 userPassword.Id = user.Id;
                 userPassword.Password = PasswordMatch;
-                if (await userService.ChangePassword(userPassword))
+                if (await userService.ChangePassword(userPassword, currentUser))
                 {
                     notification.Type = Notification.NotificationType.Success;
                     notification.Message = "Password Changed Successfully";
-                    await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = notification.Message, Activity = LogActivity.Update });
                     appState.SetNotification(this, notification);
                     navigation.NavigateTo("user");
                 }

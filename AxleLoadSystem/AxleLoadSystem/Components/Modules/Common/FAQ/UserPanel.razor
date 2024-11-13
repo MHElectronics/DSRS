@@ -1,7 +1,6 @@
 ﻿@page "/MyFAQ"
 @using Syncfusion.Blazor.RichTextEditor
 @inject AuthenticationStateProvider authStateProvider
-@inject IUserActivityService userActivityService
 @inject IFAQService faqService
 @inject IUserService userService
 @inject IAppState appState
@@ -179,13 +178,12 @@
     {
         if (newQuestion.Id > 0)
         {
-            if (await faqService.UpdateQuestion(newQuestion))
+            if (await faqService.UpdateQuestion(newQuestion, currentUser))
             {
                 newQuestion.Question = string.Empty;
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "Question updated", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Question updated", Activity = LogActivity.Update });
             }
             else
             {
@@ -194,13 +192,12 @@
         }
         else
         {
-            if (await faqService.InsertFAQ(newQuestion))
+            if (await faqService.InsertFAQ(newQuestion, currentUser))
             {
                 newQuestion.Question = string.Empty;
                 await this.LoadQuestions();
 
                 appState.SetNotification(this, "Question submitted", Notification.NotificationType.Success);
-                await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Question submitted", Activity = LogActivity.Insert });
             }
             else
             {
@@ -230,11 +227,10 @@
     }
     private async Task DeleteConfirmedQuestion()
     {
-        if (await faqService.DeleteFAQ(newQuestion))
+        if (await faqService.DeleteFAQ(newQuestion, currentUser))
         {
             await this.LoadQuestions();
             appState.SetNotification(this, "Question deleted", Notification.NotificationType.Success);
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Question deleted", Activity = LogActivity.Delete });
         }
         else
         {

@@ -95,11 +95,10 @@ else
     private async Task DeleteConfirmedCategory()
     {
         Notification notification = new();
-        if (await CategoryService.DeleteCategory(SelectedCategory.Id))
+        if (await CategoryService.DeleteCategory(SelectedCategory, currentUser))
         {
             notification.Type = Notification.NotificationType.Success;
             notification.Message = "Tutorial Category Deletion Successful";
-            await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = SelectedCategory.Name + " " + notification.Message, Activity = LogActivity.Delete });
         }
         else
         {

@@ -34,6 +34,7 @@ public class UserActivityService : IUserActivityService
 
     public async Task<bool> InsertUserActivity(UserActivity userActivity)
     {
+        userActivity.DateTime = DateTime.Now;
         string sql = @"INSERT INTO UserActivity(UserId,DateTime,Description,Activity) VALUES(@UserId,@DateTime,@Description,@Activity)";
         try
         {

@@ -1,4 +1,5 @@
 ﻿using BOL;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Services.Helpers;
@@ -8,9 +9,9 @@ public interface IStationService
 {
     Task<IEnumerable<Station>> Get();
     Task<Station> GetById(Station obj);
-    Task<bool> Add(Station obj);
-    Task<bool> Update(Station obj);
-    Task<bool> Delete(Station obj);
+    Task<bool> Add(Station obj, User user);
+    Task<bool> Update(Station obj, User user);
+    Task<bool> Delete(Station obj, User user);
     string GenerateKey();
 }
 public class StationService : IStationService
@@ -19,11 +20,13 @@ public class StationService : IStationService
     private ISqlDataAccess _db { get; set; }
     private IConfiguration _configuration { get; set; }
     private IMemoryCache _cacheProvider { get; set; }
-    public StationService(ISqlDataAccess db, IConfiguration configuration, IMemoryCache cacheProvider)
+    private readonly IUserActivityService _userActivityService;
+    public StationService(ISqlDataAccess db, IConfiguration configuration, IMemoryCache cacheProvider, IUserActivityService userActivityService)
     {
         _db = db;
         _configuration = configuration;
         _cacheProvider = cacheProvider;
+        _userActivityService = userActivityService;
     }
 
     public async Task<IEnumerable<Station>> Get()
@@ -58,7 +61,7 @@ public class StationService : IStationService
         return station;
     }
 
-    public async Task<bool> Add(Station obj)
+    public async Task<bool> Add(Station obj, User user)
     {
         bool hasDuplicate = await this.CheckDuplicateEntry(obj);
         if (!hasDuplicate)
@@ -69,13 +72,16 @@ public class StationService : IStationService
             if (isSuccess)
             {
                 _cacheProvider.Remove(CacheKeys.Stations);
+
+                UserActivity log = new UserActivity(user.Id, "Station " + obj.StationName + " Added", LogActivity.Insert);
+                await _userActivityService.InsertUserActivity(log);
             }
 
             return isSuccess;
         }
         return false;
     }
-    public async Task<bool> Update(Station obj)
+    public async Task<bool> Update(Station obj, User user)
     {
         string query = "UPDATE Stations SET StationName=@StationName,Address=@Address,AuthKey=@AuthKey,MapX=@MapX,MapY=@MapY WHERE StationId=@StationId";
         bool isSuccess = await _db.SaveData<Station>(query, obj);
@@ -83,11 +89,14 @@ public class StationService : IStationService
         if (isSuccess)
         {
             _cacheProvider.Remove(CacheKeys.Stations);
+
+            UserActivity log = new UserActivity(user.Id, "Station " + obj.StationName + " Added", LogActivity.Update);
+            await _userActivityService.InsertUserActivity(log);
         }
 
         return isSuccess;
     }
-    public async Task<bool> Delete(Station obj)
+    public async Task<bool> Delete(Station obj, User user)
     {
         string query = "DELETE FROM WIMScale WHERE StationId=@StationId " +
                        "DELETE FROM Stations WHERE StationId=@StationId";
@@ -97,6 +106,9 @@ public class StationService : IStationService
         if (count > 0)
         {
             _cacheProvider.Remove(CacheKeys.Stations);
+
+            UserActivity log = new UserActivity(user.Id, "Station " + obj.StationName + " Deleted", LogActivity.Delete);
+            await _userActivityService.InsertUserActivity(log);
         }
 
         return count > 0;
