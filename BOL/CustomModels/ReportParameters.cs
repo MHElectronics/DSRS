@@ -2,7 +2,9 @@
 public class ReportParameters
 {
     public List<int> Stations { get; set; } = new();
-    public List<WIMScale> WIMScales { get; set; } 
+    public List<WIMScale> WIMScales { get; set; }
+    public bool UpboundDirection { get; set; }
+    public bool DownboundDirection { get; set; }
     public DateTime DateStart { get; set; } = DateTime.Today.AddMonths(-1);
     public DateTime DateEnd { get; set; } = DateTime.Today;
     public TimeOnly TimeStart { get; set; } 

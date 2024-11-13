@@ -31,18 +31,21 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        //string StationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string query = @"SELECT TransactionNumber,LaneNumber,DateTime 
+        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+        string query = @"DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+
+        INSERT INTO @Stations(StationId) VALUES " + stationIds +
+        @" 
+        SELECT TransactionNumber,LaneNumber,DateTime 
         ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
         ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
         ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
         ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
-            FROM AxleLoad AS AL";
+        FROM AxleLoad AS AL";
 
         query += this.GetFilterClause(reportParameters);
-        query += " AND StationId IN @StationIds";
-
+        
         var parameters = new
         {
             StationIds = reportParameters.Stations,
@@ -68,6 +71,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
+    
     #region Overloaded Histogram report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
@@ -97,7 +101,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -161,7 +164,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -225,7 +227,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -289,7 +290,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -353,7 +353,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -429,9 +428,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(AL.NumberOfAxle) * POWER(R.MediumWeight / @EquivalentAxleLoad, 4)/1000 AS Influence_2,
             POWER(R.MediumWeight / @EquivalentAxleLoad2, 4)/1000 AS MediumWeight4_3,
             SUM(AL.NumberOfAxle) * POWER(R.MediumWeight / @EquivalentAxleLoad2, 4)/1000 AS Influence_3
-        FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
-        INNER JOIN @Range R ON (AL.GrossVehicleWeight >= R.Minimum AND AL.GrossVehicleWeight < R.Maximum)";
+        FROM AxleLoad AL INNER JOIN @Range R ON (AL.GrossVehicleWeight >= R.Minimum AND AL.GrossVehicleWeight < R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
 
@@ -463,6 +460,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         return (null, isSuccess, message);
     }
     #endregion
+
     #region Overloaded Time Series report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedTimeSeriesReport(ReportParameters reportParameters)
     {
@@ -513,9 +511,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(AL.Axle7) AS Axle7,
             SUM(AL.AxleRemaining) AS AxleRemaining,
             SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
-        FROM @Years Y
-        LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)";
+        FROM @Years Y LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
+        ";
 
         query += this.GetFilterClause(reportParameters);
 
@@ -570,7 +567,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             ,SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
             ,SUM(Axle1) AS Axle1,SUM(Axle2) AS Axle2,SUM(Axle3) AS Axle3,SUM(Axle4) AS Axle4,SUM(Axle5) AS Axle5,SUM(Axle6) AS Axle6,SUM(Axle7) AS Axle7
             ,SUM(AxleRemaining) AS AxleRemaining,SUM(GrossVehicleWeight) AS GrossVehicleWeight
-            FROM AxleLoad AL LEFT JOIN @Stations S ON AL.StationId=S.StationId";
+            FROM AxleLoad AL ";
 
         query += this.GetFilterClause(reportParameters);
 
@@ -677,7 +674,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(AxleRemaining) AS AxleRemaining,
             SUM(GrossVehicleWeight) AS GrossVehicleWeight
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId";
+        ";
 
         query += this.GetFilterClause(reportParameters);
 
@@ -772,9 +769,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(AL.Axle7) AS Axle7,
             SUM(AL.AxleRemaining) AS AxleRemaining,
             SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
-        FROM @Days D
-        LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)";
+        FROM @Days D LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
+        ";
 
         query += this.GetFilterClause(reportParameters);
 
@@ -846,7 +842,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId";
+        ";
 
         query += this.GetFilterClause(reportParameters);
 
@@ -889,6 +885,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         return (null, isSuccess, message);
     }    
     #endregion
+    
     #region Overloaded Number of Axles report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters)
     {
@@ -915,13 +912,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             AL.NumberOfAxle,
             ISNULL(COUNT(1), 0) AS TotalVehicle,  -- Total number of vehicles (overloaded + non-overloaded)
             ISNULL(SUM(CAST(AL.IsOverloaded AS INT)), 0) AS OverloadVehicle  -- Overloaded vehicle count
-        FROM @Years Y
-        LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        FROM @Years Y LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
+            ";
 
         query += this.GetFilterClause(reportParameters);
-
+        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
         query += @" GROUP BY Y.[Year], AL.NumberOfAxle
         ORDER BY Y.[Year]
         ";
@@ -982,13 +977,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             AL.NumberOfAxle,
             COUNT(1) AS TotalVehicle, 
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle 
-        FROM @Months M
-        LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        FROM @Months M LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
+        ";
 
         query += this.GetFilterClause(reportParameters);
-
+        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
         query += @" GROUP BY M.[Month], M.[MonthName], AL.NumberOfAxle
         ORDER BY M.[Month]
         ";
@@ -1043,11 +1036,10 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             AL.NumberOfAxle,
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle  -- Overloaded vehicle count
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
-        AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        ";
 
         query += this.GetFilterClause(reportParameters);
-
+        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
         query += @" GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
         ORDER BY 
             CASE 
@@ -1112,13 +1104,12 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
         FROM @Days D
         LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
-            AND AL.StationId IN (SELECT StationId FROM @Stations)
-            AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+            ";
 
         query += this.GetFilterClause(reportParameters);
-
+        query += @" AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
         query += @" GROUP BY D.[Date], AL.NumberOfAxle
-        ORDER BY D.[Date]";
+        ORDER BY AL.NumberOfAxle";
 
         var parameters = new
         {
@@ -1182,11 +1173,10 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle,  -- Overloaded vehicles count
             AL.NumberOfAxle
         FROM AxleLoad AL
-        INNER JOIN @Stations S ON AL.StationId = S.StationId
-        AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        ";
 
         query += this.GetFilterClause(reportParameters);
-
+        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
         query += @" GROUP BY DATEPART(HOUR, AL.DateTime), AL.NumberOfAxle
 
         SELECT 
@@ -1230,46 +1220,62 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
     private string GetFilterClause(ReportParameters reportParameters)
     {
-        string query = @" WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
+        string joining = String.Empty;
+        string whereClause = @" WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
             AND DATEDIFF(Day, AL.DateTime, @DateEnd) >= 0";
+        
+        if(reportParameters.Stations.Count() == 1)
+        {
+            whereClause += " AND AL.StationId=" + reportParameters.Stations.FirstOrDefault();
+        }
+        else
+        {
+            joining = " INNER JOIN @Stations S ON AL.StationId = S.StationId";
+        }
         if (reportParameters.TimeStart != reportParameters.TimeEnd)
         {
-            query += " AND CAST(AL.DateTime AS TIME) >= @TimeStart AND CAST(AL.DateTime AS TIME) <=@TimeEnd";
+            whereClause += " AND CAST(AL.DateTime AS TIME) >= @TimeStart AND CAST(AL.DateTime AS TIME) <=@TimeEnd";
         }
         if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
         {
             if (reportParameters.WIMScales.Count() == 1)
             {
-                query += " AND AL.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
+                whereClause += " AND AL.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
             }
             else
             {
-                query += " AND AL.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
+                whereClause += " AND AL.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
             }
         }
         if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
         {
             if (reportParameters.NumberOfAxle.Count() == 1)
             {
-                query += " AND AL.NumberOfAxle = " + reportParameters.NumberOfAxle.FirstOrDefault();
+                whereClause += " AND AL.NumberOfAxle = " + reportParameters.NumberOfAxle.FirstOrDefault();
             }
             else
             {
-                query += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
+                whereClause += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
             }
         }
         if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
         {
-            query += " AND (AL." + reportParameters.WeightFilterColumn + ">=" + reportParameters.WeightMin + " AND AL." + reportParameters.WeightFilterColumn + "<=" + reportParameters.WeightMax + ")";
+            whereClause += " AND (AL." + reportParameters.WeightFilterColumn + ">=" + reportParameters.WeightMin + " AND AL." + reportParameters.WeightFilterColumn + "<=" + reportParameters.WeightMax + ")";
         }
         if (reportParameters.Wheelbase > 0)
         {
-            query += " AND Wheelbase = @Wheelbase";
+            whereClause += " AND Wheelbase = @Wheelbase";
         }
         if (reportParameters.ClassStatus > 0)
         {
-            query += " AND ClassStatus = @ClassStatus";
+            whereClause += " AND ClassStatus = @ClassStatus";
         }
-        return query;
+
+        if (!string.IsNullOrEmpty(joining))
+        {
+            return joining + whereClause;
+        }
+        
+        return whereClause;
     }
 }

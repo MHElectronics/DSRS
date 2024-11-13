@@ -138,7 +138,10 @@
             }
             else
             {
-                <span class="form-control">Not available</span>
+                <span class="btn-group form-control p-0">
+                    <span class="btn btn-sm btn-primary text-left" @onclick="@(()=> reportParameters.UpboundDirection = !reportParameters.UpboundDirection)"><i class="fa @(reportParameters.UpboundDirection ? "fa-check-square": "fa-square")"></i> Upbound Direction</span>
+                    <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=> reportParameters.DownboundDirection = !reportParameters.DownboundDirection)"><i class="fa @(reportParameters.DownboundDirection ? "fa-check-square": "fa-square")"></i> Downbound Direction Direction</span>
+                </span>
             }
         </div>
 
