@@ -15,6 +15,8 @@ public interface IUserService
     Task<User> UpdateUser(User user, User activityUser);
     Task<bool> Delete(User user, User activityUser);
     Task<bool> ChangePassword(User user, User activityUser);
+    Task InsertLoginLog(User user);
+    Task InsertLogoutLog(User user);
 }
 
 public class UserService : IUserService
@@ -124,5 +126,16 @@ public class UserService : IUserService
     {
         string query = "SELECT COUNT(1) Count FROM Users WHERE LOWER(Email)=LOWER(@Email)";
         return await _db.LoadSingleAsync<bool, object>(query, user);
+    }
+
+    public async Task InsertLoginLog(User user)
+    {
+        UserActivity log = new UserActivity(user.Id, "Login: " + user.Email, LogActivity.Login);
+        await _userActivityService.InsertUserActivity(log);
+    }
+    public async Task InsertLogoutLog(User user)
+    {
+        UserActivity log = new UserActivity(user.Id, "Logout: " + user.Email, LogActivity.Logout);
+        await _userActivityService.InsertUserActivity(log);
     }
 }
