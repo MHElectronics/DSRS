@@ -112,7 +112,7 @@
                         @if(wimsByType.Count() > 0)
                         {
                             string allIcon = wims.Count(w => w.Type == value) == wimsByType.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
-                            <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllWIMTypeClicked(value))">
+                            <span class="btn btn-sm btn-info text-left" @onclick="@(() => AllWIMTypeClicked(value))">
                                 <i class="fa @allIcon"></i>
                                 @(((WIMType)Enum.ToObject(typeof(WIMType), value)).ToDescription())
                             </span>
@@ -153,10 +153,23 @@
             }
             else
             {
+                <div class="btn-group form-control p-0">
+                    @foreach (string item in Enum.GetNames(typeof(WIMType)))
+                    {
+                        int value = (int)Enum.Parse(typeof(WIMType), item);
+                        string allIcon = reportParameters.WIMType == value ? "fa-check-circle" : "fa-circle";
+                        <span class="btn btn-sm btn-info text-left" @onclick="@(() => CommonWIMTypeClicked(value))">
+                            <i class="fa @allIcon"></i>
+                            @(((WIMType)Enum.ToObject(typeof(WIMType), value)).ToDescription())
+                        </span>
+                    }
+                </div>
                 <span class="btn-group form-control p-0">
-                    <span class="btn btn-sm btn-primary text-left" @onclick="@(()=> reportParameters.UpboundDirection = !reportParameters.UpboundDirection)"><i class="fa @(reportParameters.UpboundDirection ? "fa-check-square": "fa-square")"></i> Upbound Direction</span>
-                    <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=> reportParameters.DownboundDirection = !reportParameters.DownboundDirection)"><i class="fa @(reportParameters.DownboundDirection ? "fa-check-square": "fa-square")"></i> Downbound Direction Direction</span>
+                    <span class="btn btn-sm btn-primary text-left" @onclick="@(()=> CommonUpDownboundClicked(true))"><i class="fa @(reportParameters.UpboundDirection ? "fa-check-circle": "fa-circle")"></i> Upbound Direction</span>
+                    <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=> CommonUpDownboundClicked(false))"><i class="fa @(reportParameters.DownboundDirection ? "fa-check-circle": "fa-circle")"></i> Downbound Direction Direction</span>
+                    <span class="btn btn-sm btn-danger text-left" @onclick="@CommonWIMClear">Clear</span>
                 </span>
+                @* <span class="form-control">Not available</span> *@
             }
         </div>
 
@@ -250,31 +263,36 @@ else
         }
         else
         {
+            string wimText = String.Empty;
+
             <div class="col-md-12">
                 <label>@reportParameters.Stations?.Count() station(s) selected: </label>
                 @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList().OrderBy(s => s.StationName))
                 {
                     <span class="badge bg-success"> @item.StationName</span>
                 }
-                @if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
+                @if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
                 {
-                    <label>
-                        , Lane No. (WIM Scale):
-                        @if (reportParameters.WIMScales.Any(w => w.IsUpbound))
-                        {
-                            <span class="badge bg-success">
-                                Upbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => w.IsUpbound).OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber))
-                            </span>
-                        }
-
-                        @if (reportParameters.WIMScales.Any(w => !w.IsUpbound))
-                        {
-                            <span class="badge bg-success">
-                                Downbound: Lane No- @string.Join(", ", reportParameters.WIMScales.Where(w => !w.IsUpbound).OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber))
-                            </span>
-                        }
-                    </label>
-
+                    if (reportParameters.WIMType > 0)
+                    {
+                        wimText += ((WIMType)Enum.ToObject(typeof(WIMType), reportParameters.WIMType)).ToDescription();
+                    }
+                    else if (reportParameters.UpboundDirection)
+                    {
+                        wimText += "Upbound Direction";
+                    }
+                    else if (reportParameters.DownboundDirection)
+                    {
+                        wimText += "Downbound Direction";
+                    }
+                }
+                else if (reportParameters.Stations.Count() == 1 && reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
+                {
+                    wimText = "Lane No: " + string.Join(", ", reportParameters.WIMScales.Where(w => w.IsUpbound).OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
+                }
+                @if (!string.IsNullOrEmpty(wimText))
+                {
+                    <label>, Lane No. (WIM Scale): @wimText</label>
                 }
             </div>
             <div class="col-md-6">
@@ -437,7 +455,7 @@ else
         }
 
         selectedWIMScales = new();
-        
+
         await LoadWIMScales();
     }
     private async Task LoadWIMScales()
@@ -474,7 +492,7 @@ else
             appState.SetNotification(this, "Maximum Wheelbase Number " + configuration.WheelBaseMaximum, Notification.NotificationType.Warning);
             return;
         }
-        
+
         reportParameters.Stations = new();
         if (selectedStations is not null && selectedStations.Any())
         {
@@ -555,6 +573,40 @@ else
                 selectedWIMScales.Add(item.LaneNumber);
             }
         }
+    }
+
+    private void CommonUpDownboundClicked(bool isUpbound)
+    {
+        reportParameters.WIMType = 0;
+        
+        if (isUpbound)
+        {
+            reportParameters.UpboundDirection = !reportParameters.UpboundDirection;
+            if (reportParameters.UpboundDirection)
+            {
+                reportParameters.DownboundDirection = false;
+            }
+        }
+        else
+        {
+            reportParameters.DownboundDirection = !reportParameters.DownboundDirection;
+            if (reportParameters.DownboundDirection)
+            {
+                reportParameters.UpboundDirection = false;
+            }
+        }
+    }
+    private void CommonWIMTypeClicked(int type)
+    {
+        reportParameters.UpboundDirection = false;
+        reportParameters.DownboundDirection = false;
+        reportParameters.WIMType = type;
+    }
+    private void CommonWIMClear()
+    {
+        reportParameters.UpboundDirection = false;
+        reportParameters.DownboundDirection = false;
+        reportParameters.WIMType = 0;
     }
 
     private void NofAxleClicked(int noOfAxle)

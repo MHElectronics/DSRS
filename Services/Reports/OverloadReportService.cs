@@ -33,13 +33,13 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) +
         @" 
-        SELECT TransactionNumber,LaneNumber,DateTime 
+        SELECT SN.StationName,TransactionNumber,LaneNumber,DateTime 
         ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
         ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
         ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
         ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
-        FROM AxleLoad AS AL";
+        FROM AxleLoad AS AL INNER JOIN Stations SN ON AL.StationId=SN.StationId ";
 
         query += this.GetFilterClause(reportParameters);
         
@@ -1138,10 +1138,43 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
     private string GetStationTableQuery(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string query = @" DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-            INSERT INTO @Stations(StationId) VALUES " + stationIds + " ";
+        if(reportParameters.Stations.Count == 1)
+        {
+            return "";
+        }
 
+        string query;
+
+        if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
+        {
+            string stationIds = string.Join(",", reportParameters.Stations.Select(s => s));
+            query = @" DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT,LaneNo INT)
+            INSERT INTO @Stations(StationId,LaneNo)
+            SELECT StationId,LaneNumber
+            FROM WIMScale
+            WHERE StationId IN (" + stationIds + ")";
+            if(reportParameters.WIMType > 0)
+            {
+                query += " AND Type=" + reportParameters.WIMType;
+            }
+            else if(reportParameters.UpboundDirection)
+            {
+                query += " AND IsUpbound=1";
+            }
+            else if (reportParameters.DownboundDirection)
+            {
+                query += " AND IsUpbound=0";
+            }
+
+            return query;
+        }
+        else
+        {
+            string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+            query = @" DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+            INSERT INTO @Stations(StationId) VALUES " + stationIds + " ";
+        }
+        
         return query;
     }
     private string GetFilterClause(ReportParameters reportParameters)
@@ -1156,7 +1189,14 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         else
         {
-            joining = " INNER JOIN @Stations S ON AL.StationId = S.StationId";
+            if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
+            {
+                joining = " INNER JOIN @Stations S ON AL.StationId = S.StationId AND AL.LaneNumber=S.LaneNo";
+            }
+            else
+            {
+                joining = " INNER JOIN @Stations S ON AL.StationId = S.StationId";
+            }
         }
         if (reportParameters.TimeStart != reportParameters.TimeEnd)
         {

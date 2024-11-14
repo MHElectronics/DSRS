@@ -38,7 +38,7 @@ public enum WIMType
     SlowSpeed = 1,
     [Description("Static")]
     Static = 2,
-    [Description("HSWIMSpeed")]
+    [Description("HSWIM")]
     HighSpeed = 3,
     [Description("MSWIM")]
     MiddleSpeed = 4,

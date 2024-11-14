@@ -83,6 +83,7 @@ public class LoadData
     public DateTime EntryTime { get; set; }
 
     //Additional properties
+    public string StationName { get; set; }
     public string DateString { get { return this.DateTime.ToString("yyyy/MM/dd"); } }
     public string TimeString { get { return this.DateTime.ToString("HH:mm:ss"); } }
 }
