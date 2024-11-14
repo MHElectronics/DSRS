@@ -31,10 +31,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-        string query = @"DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds +
+        string query = this.GetStationTableQuery(reportParameters) +
         @" 
         SELECT TransactionNumber,LaneNumber,DateTime 
         ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
@@ -75,16 +72,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     #region Overloaded Histogram report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
-
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -138,16 +130,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
-
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -201,16 +188,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedHistogramReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
-
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -264,16 +246,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedHistogramReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
-
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -327,16 +304,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedHistogramReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
-
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -394,18 +366,14 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     #region Overloaded Histogram Part 2 report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedHistogramReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @EquivalentAxleLoad DECIMAL(18,5) = 10
         DECLARE @EquivalentAxleLoad2 DECIMAL(18,5) = 8.16
 
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 200
-
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
 
         DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,2), Maximum DECIMAL(18,2), MediumWeight DECIMAL(18,2))
 
@@ -466,13 +434,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
-
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Years TABLE([Year] INT)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
 
@@ -551,14 +513,10 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedTimeSeriesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-            DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1),StationId INT)
-            
-            INSERT INTO @Stations(StationId) VALUES " + stationIds +
-                @" CREATE TABLE #T(TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,Axle1 INT DEFAULT 0,Axle2 INT DEFAULT 0,Axle3 INT DEFAULT 0,Axle4 INT DEFAULT 0,Axle5 INT DEFAULT 0,Axle6 INT DEFAULT 0,Axle7 INT DEFAULT 0,AxleRemaining INT DEFAULT 0,GrossVehicleWeight INT DEFAULT 0)
+        string query = this.GetStationTableQuery(reportParameters) +
+            @" CREATE TABLE #T(TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,Axle1 INT DEFAULT 0,Axle2 INT DEFAULT 0,Axle3 INT DEFAULT 0,Axle4 INT DEFAULT 0,Axle5 INT DEFAULT 0,Axle6 INT DEFAULT 0,Axle7 INT DEFAULT 0,AxleRemaining INT DEFAULT 0,GrossVehicleWeight INT DEFAULT 0)
             
             INSERT INTO #T([DateUnit],TotalVehicle,OverloadVehicle,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight)
             SELECT 
@@ -627,14 +585,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedTimeSeriesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -723,14 +676,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedTimeSeriesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Days TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -809,14 +757,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedTimeSeriesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -889,14 +832,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     #region Overloaded Number of Axles report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Years TABLE([Year] INT)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
 
@@ -948,14 +886,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetMonthlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Months TABLE([Month] INT, [MonthName] NVARCHAR(50))
         DECLARE @CurrentMonth INT = MONTH(@DateStart)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
@@ -1012,14 +945,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedNumberOfAxlesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @"
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -1079,14 +1007,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedNumberOfAxlesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @" 
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @Days TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -1137,14 +1060,9 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetHourlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters)
     {
-        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
         bool isSuccess = false;
         string message = "";
-        string query = @"
-        DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
-
-        INSERT INTO @Stations(StationId) VALUES " + stationIds + @" 
-
+        string query = this.GetStationTableQuery(reportParameters) + @"
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -1218,6 +1136,14 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }  
     #endregion
 
+    private string GetStationTableQuery(ReportParameters reportParameters)
+    {
+        string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+        string query = @" DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+            INSERT INTO @Stations(StationId) VALUES " + stationIds + " ";
+
+        return query;
+    }
     private string GetFilterClause(ReportParameters reportParameters)
     {
         string joining = String.Empty;
