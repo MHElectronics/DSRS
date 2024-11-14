@@ -34,13 +34,13 @@ public enum UploadedFileType
 }
 public enum WIMType
 {
-    [Description("Slow Speed")]
+    [Description("SSWIM")]
     SlowSpeed = 1,
     [Description("Static")]
     Static = 2,
-    [Description("High Speed")]
+    [Description("HSWIMSpeed")]
     HighSpeed = 3,
-    [Description("Middle Speed")]
+    [Description("MSWIM")]
     MiddleSpeed = 4,
     [Description("Others")]
     Others = 5

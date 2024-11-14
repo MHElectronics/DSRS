@@ -104,18 +104,33 @@
             <label>@localizer["Report.WimScale"]</label>
             @if (selectedWIMScales is not null && wims is not null)
             {
+                <div class="btn-group form-control p-0">
+                    @foreach (string item in Enum.GetNames(typeof(WIMType)))
+                    {
+                        int value = (int)Enum.Parse(typeof(WIMType), item);
+                        List<WIMScale> wimsByType = wims.Where(w => w.Type == value).ToList();
+                        @if(wimsByType.Count() > 0)
+                        {
+                            string allIcon = wims.Count(w => w.Type == value) == wimsByType.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
+                            <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllWIMTypeClicked(value))">
+                                <i class="fa @allIcon"></i>
+                                @(((WIMType)Enum.ToObject(typeof(WIMType), value)).ToDescription())
+                            </span>
+                        }
+                    }
+                </div>
                 @if (wims.Any(w => w.IsUpbound))
                 {
                     List<WIMScale> wimsUpbound = wims.Where(w => w.IsUpbound).ToList();
                     string allIcon = wims.Count(w => w.IsUpbound) == wimsUpbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
                     <div class="btn-group form-control p-0">
-                        <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllLaneClicked(true))"><i class="fa @allIcon"></i> Upbound: </span>
+                        <span class="btn btn-sm btn-primary text-left" @onclick="@(() => AllUpDownboundClicked(true))"><i class="fa @allIcon"></i> Upbound: </span>
                         @foreach (WIMScale item in wimsUpbound.OrderBy(w => w.LaneNumber))
                         {
                             string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
                             <span class="btn btn-sm btn-primary text-left" @onclick="@(()=>LaneClicked(item.LaneNumber))">
                                 <i class="fa @icon"></i>
-                                @item.LaneNumber
+                                @item.LaneNumber (@(((WIMType)Enum.ToObject(typeof(WIMType), item.Type)).ToDescription()))
                             </span>
                         }
                     </div>
@@ -125,12 +140,12 @@
                     List<WIMScale> wimsDownbound = wims.Where(w => !w.IsUpbound).ToList();
                     string allIcon = wims.Count(w => !w.IsUpbound) == wimsDownbound.Count(w => selectedWIMScales.Contains(w.LaneNumber)) ? "fa-check-square" : "fa-square";
                     <div class="btn-group form-control p-0">
-                        <span class="btn btn-sm btn-secondary text-left" @onclick="@(() => AllLaneClicked(false))"><i class="fa @allIcon"></i> Downbound: </span>
+                        <span class="btn btn-sm btn-secondary text-left" @onclick="@(() => AllUpDownboundClicked(false))"><i class="fa @allIcon"></i> Downbound: </span>
                         @foreach (WIMScale item in wimsDownbound.OrderBy(w => w.LaneNumber))
                         {
                             string icon = selectedWIMScales.Contains(item.LaneNumber) ? "fa-check-square" : "fa-square";
                             <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=>LaneClicked(item.LaneNumber))">
-                                <i class="fa @icon"></i> @item.LaneNumber
+                                <i class="fa @icon"></i> @item.LaneNumber (@(((WIMType)Enum.ToObject(typeof(WIMType), item.Type)).ToDescription()))
                             </span>
                         }
                     </div>
@@ -505,9 +520,27 @@ else
             selectedWIMScales.Add(laneNumber);
         }
     }
-    private void AllLaneClicked(bool isUpbound)
+    private void AllUpDownboundClicked(bool isUpbound)
     {
         List<WIMScale> shortlist = wims.Where(w => w.IsUpbound == isUpbound).ToList();
+        if (shortlist.Count() == shortlist.Count(w => selectedWIMScales.Contains(w.LaneNumber)))
+        {
+            foreach (WIMScale item in shortlist)
+            {
+                selectedWIMScales.Remove(item.LaneNumber);
+            }
+        }
+        else
+        {
+            foreach (WIMScale item in shortlist.Where(w => !selectedWIMScales.Contains(w.LaneNumber)))
+            {
+                selectedWIMScales.Add(item.LaneNumber);
+            }
+        }
+    }
+    private void AllWIMTypeClicked(int type)
+    {
+        List<WIMScale> shortlist = wims.Where(w => w.Type == type).ToList();
         if (shortlist.Count() == shortlist.Count(w => selectedWIMScales.Contains(w.LaneNumber)))
         {
             foreach (WIMScale item in shortlist)
