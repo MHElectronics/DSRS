@@ -64,14 +64,14 @@
     else if (results != null)
     {
         <div class="card-body">
-            <div class="data-table-container">
+            <div class="grid">
                 <QuickGrid TGridItem="DataRow" ItemsProvider="provider" Virtualize="true" ItemSize="35">
                     @foreach (DataColumn column in results.Columns)
                     {
-                        <PropertyColumn Property="@(c => c[column.ColumnName])" Sortable="true">
-                            <HeaderTemplate>
+                        <PropertyColumn Property="@(c => c[column.ColumnName])" Title="@column.ColumnName" Sortable="true">
+                            @* <HeaderTemplate>
                                 @column.ColumnName
-                            </HeaderTemplate>
+                            </HeaderTemplate> *@
                         </PropertyColumn>
                     }
                 </QuickGrid>
