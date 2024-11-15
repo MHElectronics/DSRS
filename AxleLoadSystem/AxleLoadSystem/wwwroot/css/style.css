@@ -159,3 +159,36 @@ input:-webkit-autofill:active {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+
+/*Quickgrid Table Scrolling */
+.enable-table-scroll {
+    height: 25rem;
+    overflow-y: auto;
+}
+
+.enable-table-scroll table {
+    min-width: 100%;
+}
+
+/* Sticky header while scrolling */
+.enable-table-scroll thead {
+    position: sticky;
+    top: 0;
+    background-color: #d8d8d8;
+    outline: 1px solid gray;
+    z-index: 1;
+}
+
+/* For virtualized grids, it's essential that all rows have the same known height */
+.enable-table-scroll tr {
+    height: 30px;
+    border-bottom: 0.5px solid silver;
+}
+
+.enable-table-scroll tbody td {
+    white-space: normal;
+    overflow: visible;
+    max-width: none;
+    text-overflow: clip;
+}
