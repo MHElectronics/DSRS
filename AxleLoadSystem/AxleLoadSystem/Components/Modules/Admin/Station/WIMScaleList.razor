@@ -44,7 +44,7 @@ else
                             <td>Lane: @wim.LaneNumber</td>
                             <td>@(((WIMType)Enum.Parse(typeof(WIMType), wim.Type.ToString())).ToDescription())</td>
                             <td>Eq. Code: @wim.EquipmentCode</td>
-                            <td>Direction: @wim.LaneDirection</td>
+                            <td>@(wim.IsUpbound ? "Upbound":"Downbound"): @wim.LaneDirection</td>
                             <td>
                                 <div class="btn-group float-right">
                                     <a class="btn btn-primary" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
