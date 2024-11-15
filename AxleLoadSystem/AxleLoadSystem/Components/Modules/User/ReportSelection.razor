@@ -167,7 +167,7 @@
                 <span class="btn-group form-control p-0">
                     <span class="btn btn-sm btn-primary text-left" @onclick="@(()=> CommonUpDownboundClicked(true))"><i class="fa @(reportParameters.UpboundDirection ? "fa-check-circle": "fa-circle")"></i> Upbound Direction</span>
                     <span class="btn btn-sm btn-secondary text-left" @onclick="@(()=> CommonUpDownboundClicked(false))"><i class="fa @(reportParameters.DownboundDirection ? "fa-check-circle": "fa-circle")"></i> Downbound Direction</span>
-                    <span class="btn btn-sm btn-danger text-left" @onclick="@CommonWIMClear">Clear</span>
+                    <span class="btn btn-sm btn-danger text-center" @onclick="@CommonWIMClear">Clear</span>
                 </span>
                 @* <span class="form-control">Not available</span> *@
             }
@@ -240,7 +240,7 @@
             </div>
         }
 
-        <div class="col-md-2">
+        <div class="@(string.IsNullOrEmpty(reportParameters.WeightFilterColumn) ? "col-md-6": "col-md-2")">
             <div class="form-group">
                 <label class="form-label">&nbsp;</label>
                 <div class="form-control btn-group p-0">
