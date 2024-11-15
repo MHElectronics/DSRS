@@ -31,24 +31,13 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
         bool isSuccess = false;
         string message = "";
 
-        string stationIds = string.Join(",", reportParameters.Stations);
-        string laneNumbers = string.Join(",", reportParameters.WIMScales.Select(ws => ws.LaneNumber));
-
-        string query = @"SELECT FP.TransactionNumber, FP.LaneNumber, FP.PaymentTransactionId, FP.DateTime, FP.IsPaid,
-                            FP.FineAmount, FP.PaymentMethod, FP.ReceiptNumber, FP.BillNumber,
-                            FP.WarehouseCharge, FP.DriversLicenseNumber, FP.TransportAgencyInformation
-                     FROM FinePayment FP
-                     WHERE FP.TransactionNumber IN (
-                        SELECT AL.TransactionNumber 
-                        FROM AxleLoad AL";
+        string query = @"SELECT SN.StationName,FP.StationId,FP.TransactionNumber,FP.LaneNumber,FP.PaymentTransactionId,FP.DateTime,FP.IsPaid,FP.FineAmount,FP.PaymentMethod,FP.ReceiptNumber,FP.BillNumber,FP.WarehouseCharge,FP.DriversLicenseNumber,FP.TransportAgencyInformation,FP.EntryTime
+                FROM FinePayment FP INNER JOIN Stations SN ON FP.StationId=SN.StationId ";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" AND AL.StationId IN @StationIds)";
-
         var parameters = new
         {
-            StationIds = reportParameters.Stations,
             DateStart = reportParameters.DateStart,
             DateEnd = reportParameters.DateEnd,
             NumberOfAxle = reportParameters.NumberOfAxle,
@@ -132,19 +121,19 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 
         return await _db.SaveData(query, new { FileId=file.Id, file.StationId, file.Date });
     }
-    private string GetFilterClause(ReportParameters reportParameters)
+    private string GetFilterClauseOld(ReportParameters reportParameters)
     {
-        string query = @" WHERE DATEDIFF(Day, AL.DateTime, @DateStart) <= 0
-            AND DATEDIFF(Day, AL.DateTime, @DateEnd) >= 0";
+        string query = @" WHERE DATEDIFF(Day, FP.DateTime, @DateStart) <= 0
+            AND DATEDIFF(Day, FP.DateTime, @DateEnd) >= 0";
         if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
         {
             if (reportParameters.WIMScales.Count() == 1)
             {
-                query += " AND AL.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
+                query += " AND FP.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
             }
             else
             {
-                query += " AND AL.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
+                query += " AND FP.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
             }
         }
         if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
@@ -167,5 +156,124 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
             query += " AND ClassStatus = @ClassStatus";
         }
         return query;
+    }
+
+    private string GetStationTableQuery(ReportParameters reportParameters)
+    {
+        if (reportParameters.Stations.Count == 1)
+        {
+            return "";
+        }
+
+        string query;
+
+        if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
+        {
+            string stationIds = string.Join(",", reportParameters.Stations.Select(s => s));
+            query = @" DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT,LaneNo INT)
+            INSERT INTO @Stations(StationId,LaneNo)
+            SELECT StationId,LaneNumber
+            FROM WIMScale
+            WHERE StationId IN (" + stationIds + ")";
+            if (reportParameters.WIMType > 0)
+            {
+                query += " AND Type=" + reportParameters.WIMType;
+            }
+            else if (reportParameters.UpboundDirection)
+            {
+                query += " AND IsUpbound=1";
+            }
+            else if (reportParameters.DownboundDirection)
+            {
+                query += " AND IsUpbound=0";
+            }
+
+            return query;
+        }
+        else
+        {
+            string stationIds = string.Join(",", reportParameters.Stations.Select(s => "(" + s + ")"));
+            query = @" DECLARE @Stations TABLE(AutoId INT IDENTITY(1,1), StationId INT)
+            INSERT INTO @Stations(StationId) VALUES " + stationIds + " ";
+        }
+
+        return query;
+    }
+    private string GetFilterClause(ReportParameters reportParameters)
+    {
+        bool needAxleLoadJoining = false;
+        string joining = String.Empty;
+        string whereClause = @" WHERE DATEDIFF(Day, FP.DateTime, @DateStart) <= 0
+            AND DATEDIFF(Day, FP.DateTime, @DateEnd) >= 0";
+
+        if (reportParameters.Stations.Count() == 1)
+        {
+            whereClause += " AND FP.StationId=" + reportParameters.Stations.FirstOrDefault();
+        }
+        else
+        {
+            if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
+            {
+                joining = " INNER JOIN @Stations S ON FP.StationId = S.StationId AND FP.LaneNumber=S.LaneNo ";
+            }
+            else
+            {
+                joining = " INNER JOIN @Stations S ON FP.StationId = S.StationId ";
+            }
+        }
+        if (reportParameters.TimeStart != reportParameters.TimeEnd)
+        {
+            whereClause += " AND CAST(FP.DateTime AS TIME) >= @TimeStart AND CAST(FP.DateTime AS TIME) <=@TimeEnd";
+        }
+        if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
+        {
+            if (reportParameters.WIMScales.Count() == 1)
+            {
+                whereClause += " AND FP.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
+            }
+            else
+            {
+                whereClause += " AND FP.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
+            }
+        }
+        if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
+        {
+            needAxleLoadJoining = true;
+            if (reportParameters.NumberOfAxle.Count() == 1)
+            {
+                whereClause += " AND AL.NumberOfAxle = " + reportParameters.NumberOfAxle.FirstOrDefault();
+            }
+            else
+            {
+                whereClause += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
+            }
+        }
+        if (!string.IsNullOrEmpty(reportParameters.WeightFilterColumn))
+        {
+            needAxleLoadJoining = true;
+            whereClause += " AND (AL." + reportParameters.WeightFilterColumn + ">=" + reportParameters.WeightMin + " AND AL." + reportParameters.WeightFilterColumn + "<=" + reportParameters.WeightMax + ")";
+        }
+        if (reportParameters.Wheelbase > 0)
+        {
+            needAxleLoadJoining = true;
+            whereClause += " AND AL.Wheelbase = @Wheelbase";
+        }
+        if (reportParameters.ClassStatus > 0)
+        {
+            needAxleLoadJoining = true;
+            whereClause += " AND AL.ClassStatus = @ClassStatus";
+        }
+
+        if (needAxleLoadJoining)
+        {
+            joining += " INNER JOIN AxleLoad AL ON FP.StationId=AL.StationId AND FP.LaneNumber=AL.LaneNumber AND FP.TransactionNumber=AL.TransactionNumber ";
+        }
+
+        if (!string.IsNullOrEmpty(joining))
+        {
+            return joining + whereClause;
+        }
+
+        return whereClause;
     }
 }

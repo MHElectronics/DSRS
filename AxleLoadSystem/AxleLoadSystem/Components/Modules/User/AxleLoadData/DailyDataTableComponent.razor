@@ -82,16 +82,17 @@
         else
         {
             <QuickGrid Items="@filteredFineRepaymentData" Virtualize='true'>
-                <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction No"/>
+                <PropertyColumn Property="@(l => l.StationName)" Title="Station" Sortable="true" />
+                <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction No" Sortable="true"/>
                 <PropertyColumn Property="@(l => l.LaneNumber)" Title="Lane No" Sortable="true"/>
                 <PropertyColumn Property="@(l => l.PaymentTransactionId)" Title="Payment Transaction ID" Sortable="true" />
-                <PropertyColumn Property="@(l => l.DateString)" Title="Date" />
-                <PropertyColumn Property="@(l => l.TimeString)" Title="Time" />
+                <PropertyColumn Property="@(l => l.DateString)" Title="Date"  Sortable="true"/>
+                <PropertyColumn Property="@(l => l.TimeString)" Title="Time"  Sortable="true"/>
                 <PropertyColumn Property="@(l => l.IsPaid)" Title="Is Paid" Sortable="true" />
                 <PropertyColumn Property="@(l => l.FineAmount)" Title="Fine Amount (Tk)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.PaymentMethod)" Title="Payment Method" Sortable="true" />
-                <PropertyColumn Property="@(l => l.ReceiptNumber)" Title="Receipt Number"/>
-                <PropertyColumn Property="@(l => l.BillNumber)" Title="Bill Number"/>
+                <PropertyColumn Property="@(l => l.ReceiptNumber)" Title="Receipt Number" Sortable="true"/>
+                <PropertyColumn Property="@(l => l.BillNumber)" Title="Bill Number" Sortable="true"/>
                 <PropertyColumn Property="@(l => l.WarehouseCharge)" Title="Warehouse Charge (Tk)" Sortable="true" />
                 <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Title="Driver License Number" Sortable="true" />
                 <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Title="Transport Agency Information"  Sortable="true" />

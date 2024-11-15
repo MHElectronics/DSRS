@@ -288,7 +288,7 @@ else
                 }
                 else if (reportParameters.Stations.Count() == 1 && reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
                 {
-                    wimText = "Lane No: " + string.Join(", ", reportParameters.WIMScales.Where(w => w.IsUpbound).OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
+                    wimText = "Lane No: " + string.Join(", ", reportParameters.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
                 }
                 @if (!string.IsNullOrEmpty(wimText))
                 {
