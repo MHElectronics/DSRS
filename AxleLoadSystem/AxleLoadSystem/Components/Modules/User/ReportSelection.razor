@@ -19,7 +19,11 @@
     return;
 }
 
-@if (selectionEnabled && reportParameters is not null && configuration is not null)
+@if (stations is null || stations.Count() == 0)
+{
+    <p class="info-danger">No Station Found</p>
+}
+else if (selectionEnabled && reportParameters is not null && configuration is not null)
 {
     <div class="row">
         @if (stations is not null)
@@ -254,41 +258,40 @@
         </div>
     </div>
 }
-else
+else if (reportParameters.Stations is not null)
 {
     <div class="row" @onclick="EnableChange" title="Click to change selection" style="cursor:pointer;">
-        @if (reportParameters.Stations is null || reportParameters.Stations.Count() == 0)
+        @if (reportParameters.Stations.Count() == 0)
         {
             <span class="text text-danger">No ALCS is selected</span>
         }
         else
         {
             string wimText = String.Empty;
-
+            if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
+            {
+                if (reportParameters.WIMType > 0)
+                {
+                    wimText += ((WIMType)Enum.ToObject(typeof(WIMType), reportParameters.WIMType)).ToDescription();
+                }
+                else if (reportParameters.UpboundDirection)
+                {
+                    wimText += "Upbound Direction";
+                }
+                else if (reportParameters.DownboundDirection)
+                {
+                    wimText += "Downbound Direction";
+                }
+            }
+            else if (reportParameters.Stations.Count() == 1 && reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
+            {
+                wimText = "Lane No: " + string.Join(", ", reportParameters.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
+            }
             <div class="col-md-12">
                 <label>@reportParameters.Stations?.Count() station(s) selected: </label>
                 @foreach (Station item in stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList().OrderBy(s => s.StationName))
                 {
                     <span class="badge bg-success"> @item.StationName</span>
-                }
-                @if (reportParameters.WIMType > 0 || reportParameters.UpboundDirection || reportParameters.DownboundDirection)
-                {
-                    if (reportParameters.WIMType > 0)
-                    {
-                        wimText += ((WIMType)Enum.ToObject(typeof(WIMType), reportParameters.WIMType)).ToDescription();
-                    }
-                    else if (reportParameters.UpboundDirection)
-                    {
-                        wimText += "Upbound Direction";
-                    }
-                    else if (reportParameters.DownboundDirection)
-                    {
-                        wimText += "Downbound Direction";
-                    }
-                }
-                else if (reportParameters.Stations.Count() == 1 && reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
-                {
-                    wimText = "Lane No: " + string.Join(", ", reportParameters.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
                 }
                 @if (!string.IsNullOrEmpty(wimText))
                 {

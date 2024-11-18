@@ -23,7 +23,7 @@
                     @foreach (Station station in stations)
                     {
                         int value = station.StationId;
-                        bool check = selectedStations.Any(s => s.StationId == value);
+                        bool check = selectedStations is not null && selectedStations.Any(s => s.StationId == value);
                         <div class="icheck-primary d-inline checkbox-item">
                             <input type="checkbox" id="checkId@(value)" checked="@check" @onchange="eventArgs => { CheckboxClicked(value, eventArgs.Value); }" />
                             <label for="checkId@(station.StationId)" class="ms-2">&nbsp; @station.StationName </label>
@@ -130,7 +130,6 @@
         {
             allStationAccessList = await stationAccessService.GetStationAccesses();
         }
-
     }
 
     private async Task Edit(int selectedUserId)
