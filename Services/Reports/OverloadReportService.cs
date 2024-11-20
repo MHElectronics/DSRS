@@ -22,7 +22,7 @@ public interface IOverloadReportService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad, decimal equivalentAxleLoad2);
 }
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
@@ -364,15 +364,15 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
 
     #region Overloaded Histogram Part 2 report query
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad, decimal equivalentAxleLoad2)
     {
+        //Disable number of axle filter
+        reportParameters.NumberOfAxle = new();
+
         bool isSuccess = false;
         string message = "";
         string whereClause  = this.GetFilterClause(reportParameters);
-        string query = @"DECLARE @EquivalentAxleLoad DECIMAL(18,5)=10
-,@EquivalentAxleLoad2 DECIMAL(18,5)=8.16
-
-DECLARE @Multiplier DECIMAL(18,2) = 1000
+        string query = @"DECLARE @Multiplier DECIMAL(18,2) = 1000
 DECLARE @TotalIteration INT = 200 ";
 
         query += this.GetStationTableQuery(reportParameters);
@@ -416,7 +416,8 @@ SET Minimum=Minimum/@TonConversion
 ,Maximum=Maximum/@TonConversion
 ,MediumWeight=MediumWeight/@TonConversion
 
-SELECT R.GroupId,R.Minimum,R.Maximum,R.MediumWeight,C.TotalNumberOfAxles
+SELECT R.GroupId,R.Minimum,R.Maximum,R.MediumWeight,CAST(R.Minimum AS VARCHAR(10))+'-'+CAST(R.Maximum AS VARCHAR(10)) GrossVehicleWeightRange
+,C.TotalNumberOfAxles
 --,POWER(R.MediumWeight,4) MediumWeight4,C.TotalNumberOfAxles*POWER(R.MediumWeight,4) Influence
 --,POWER(R.MediumWeight/@EquivalentAxleLoad,4) MediumWeight4_2,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad,4) Influence_2
 --,POWER(R.MediumWeight/@EquivalentAxleLoad2,4) MediumWeight4_3,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) Influence_3
@@ -427,11 +428,12 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
 
         var parameters = new
         {
-            DateStart = reportParameters.DateStart,
-            DateEnd = reportParameters.DateEnd,
-            NumberOfAxle = reportParameters.NumberOfAxle,
-            Wheelbase = reportParameters.Wheelbase,
-            ClassStatus = reportParameters.ClassStatus,
+            equivalentAxleLoad,
+            equivalentAxleLoad2,
+            reportParameters.DateStart,
+            reportParameters.DateEnd,
+            reportParameters.Wheelbase,
+            reportParameters.ClassStatus,
             TimeStart = reportParameters.TimeStart.ToTimeSpan(),
             TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
         };

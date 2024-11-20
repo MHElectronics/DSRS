@@ -401,6 +401,10 @@ else if (reportParameters.Stations is not null)
         currentUser = await customStateProvider.GetAuthorizedUser();
         stations = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
     }
+    public ReportParameters GetSelection()
+    {
+        return reportParameters;
+    }
     private async Task EnableChange()
     {
         reportParameters = await appState.GetReportParameters();

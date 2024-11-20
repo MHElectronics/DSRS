@@ -20,7 +20,7 @@
 
 <div class="card card-primary card-outline">
     <div class="card-body">
-        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+        <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
     @if (!selectionEnabled)
     {
@@ -29,7 +29,20 @@
             {
                 <div class="row">
                     <div class="col-md-4">
-                        <button class="btn @(selectedType == "Show" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Show"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
+                        <div class="form-group">
+                            <label for="name" class="form-label">Equivalent Axle Load</label>
+                            <input type="number" @bind-value="@equivalentAxleLoad" required class="form-control" placeholder="Equivalent Axle Load"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Equivalent Axle Load 2</label>
+                            <input type="number" @bind-value="@equivalentAxleLoad2" required class="form-control" placeholder="Equivalent Axle Load 2" />
+                        </div>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <label>&nbsp;</label>
+                        <button class="btn w-100 @(selectedType == "Show" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Show"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
                     </div>
                 </div>
             }
@@ -174,6 +187,10 @@
     public IQueryable<List<LoadData>> listLoadData { get; set; }
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
+    private decimal equivalentAxleLoad { get; set; } = 10;
+    private decimal equivalentAxleLoad2 { get; set; } = (decimal)8.61;
+    private ReportSelection refReportSelection { get; set; }
+
     public string Height { get; set; } = "100%";
     public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
@@ -193,8 +210,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        // currentUser = await customStateProvider.GetAuthorizedUser();
         ReportParameters reportParameters = await appState.GetReportParameters();
         showReportGroupSelection = reportParameters is not null;
     }
@@ -216,7 +231,6 @@
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Excel report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "csv")
         {
@@ -224,12 +238,10 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight CSV report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, FileName, allowDownload: true, isBase64: true);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Graph report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "pdf")
         {
@@ -237,7 +249,6 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Pdf report Downloaded", Activity = LogActivity.Download });
         }
     }
 
@@ -257,7 +268,7 @@
         }
         else if (type.ToLower() == "Graph3")
         {
-            
+
         }
         chartType = type;
     }
@@ -272,13 +283,14 @@
         ReportParameters reportParameters = await appState.GetReportParameters();
         if (reportParameters.Stations is not null)
         {
-            await LoadChart();
+            await LoadData();
         }
         isLoading = false;
     }
-    private async Task LoadChart()
+    private async Task LoadData()
     {
-        ReportParameters reportParameters = await appState.GetReportParameters();
+        //ReportParameters reportParameters = await appState.GetReportParameters();
+        ReportParameters reportParameters = refReportSelection.GetSelection();
         Summary = "";
         ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
         XAxisTitle = "Histogram (1t increments)";
@@ -287,7 +299,7 @@
 
         if (selectedType == "Show")
         {
-            report = await reportService.GetAxleWiseHistogramReport(reportParameters);
+            report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad, equivalentAxleLoad2);
             if (report.Item2)
             {
                 if (report.Item1.Count() > 0)
