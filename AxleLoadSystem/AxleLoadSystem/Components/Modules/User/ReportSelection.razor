@@ -543,6 +543,7 @@ else if (reportParameters.Stations is not null)
     }
     private void AllUpDownboundClicked(bool isUpbound)
     {
+        reportParameters.WIMType = 0;
         List<WIMScale> shortlist = wims.Where(w => w.IsUpbound == isUpbound).ToList();
         if (shortlist.Count() == shortlist.Count(w => selectedWIMScales.Contains(w.LaneNumber)))
         {
