@@ -373,7 +373,6 @@ else if (reportParameters.Stations is not null)
     public Configuration configuration { get; set; }
     private ReportParameters reportParameters { get; set; } = new();
     private (DateTime? StartDate, DateTime? EndDate)? selectedDateRange;
-    private User currentUser { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -398,7 +397,7 @@ else if (reportParameters.Stations is not null)
         }
 
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        currentUser = await customStateProvider.GetAuthorizedUser();
+        User currentUser = await customStateProvider.GetAuthorizedUser();
         stations = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
     }
     public ReportParameters GetSelection()

@@ -15,6 +15,7 @@ public interface IAppState
     void NotifyProfileImageChange();
     Notification GetNotification();
 
+    Task<bool> IsReportParametersSet();
     Task SetReportParameters(ReportParameters param);
     Task<ReportParameters> GetReportParameters();
 }
@@ -57,6 +58,10 @@ public class AppState : IAppState
     }
 
     #region Report Parameters
+    public async Task<bool> IsReportParametersSet()
+    {
+        return await _storage.ContainKeyAsync("ReportSelection");
+    }
     public async Task SetReportParameters(ReportParameters param)
     {
         await _storage.SetItemAsync("ReportSelection", param);

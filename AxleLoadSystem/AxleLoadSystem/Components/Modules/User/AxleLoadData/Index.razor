@@ -71,15 +71,8 @@
     private bool showHide { get; set; } = false;
     private bool isLoading { get; set; } = false;
     private List<int> stationAccess { get; set; } = new();
-    private User currentUser { get; set; } = new();
     private bool selectionEnabled = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        currentUser = await customStateProvider.GetAuthorizedUser();
-        //await TypeChanged("loaddata");
-    }
     private async Task TypeChanged(string type)
     {
         selectedType = type;

@@ -313,13 +313,12 @@
         ReportParameters reportParameters = await appState.GetReportParameters();
         if (reportParameters.Stations is not null)
         {
-            await LoadChart();
+            await LoadChart(reportParameters);
         }
         isLoading = false;
     }
-    private async Task LoadChart()
+    private async Task LoadChart(ReportParameters reportParameters)
     {
-        ReportParameters reportParameters = await appState.GetReportParameters();
         Summary = "";
         ChartTitle = "Number of overloaded vehicles for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
         XAxisTitle = "Number of axles";

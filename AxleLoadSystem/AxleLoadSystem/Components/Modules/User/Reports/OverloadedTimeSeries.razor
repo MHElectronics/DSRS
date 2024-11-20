@@ -197,7 +197,6 @@
     private string selectedType { get; set; } = "";
     private string chartType { get; set; } = "column";
     private string Summary { get; set; } = "";
-    private User currentUser { get; set; }
     private bool showReportGroupSelection { get; set; } = false;
     private bool Chartview { get; set; }
     private bool isLoading = false;
@@ -206,10 +205,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        // currentUser = await customStateProvider.GetAuthorizedUser();
-        ReportParameters reportParameters = await appState.GetReportParameters();
-        showReportGroupSelection = reportParameters is not null;
+        showReportGroupSelection = await appState.IsReportParametersSet();
     }
 
     private async Task Export(string type)
@@ -283,7 +279,7 @@
         ReportParameters reportParameters = await appState.GetReportParameters();
         if (reportParameters.Stations is not null)
         {
-            await LoadChart();
+            await LoadChart(reportParameters);
         }
         isLoading = false;
     }
@@ -294,11 +290,9 @@
     }
     private List<AverageValue> average { get; set; }
 
-    private async Task LoadChart()
+    private async Task LoadChart(ReportParameters reportParameters)
     {
         Summary = "";
-        ReportParameters reportParameters = await appState.GetReportParameters();
-
         ChartTitle = "Number of vehicles measured for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
         YAxisTitle = "Number of vehicles";
         Chartview = true;

@@ -210,8 +210,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ReportParameters reportParameters = await appState.GetReportParameters();
-        showReportGroupSelection = reportParameters is not null;
+        showReportGroupSelection = await appState.IsReportParametersSet();
     }
 
     private async Task Export(string type)
