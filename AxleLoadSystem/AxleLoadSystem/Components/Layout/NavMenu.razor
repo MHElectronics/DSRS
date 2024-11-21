@@ -75,7 +75,6 @@
                 </ul>
             </li>
 
-
             <li class="nav-item @(selectedGroups.Contains("dataAnalysisByPurpose") ? " menu-is-opening menu-open" : "")">
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("dataAnalysisByPurpose"))'>
                     <i class="nav-icon fas fa-th"></i>
@@ -104,6 +103,14 @@
                                 </NavLink>
                             </li>
                             <li class="nav-item">
+                                <NavLink class="nav-link" href="AxleWiseHistogram" Match="NavLinkMatch.All">
+                                    <i class="nav-icon fas fa-chart-pie"></i>
+                                    <p>
+                                        @localizer["Menu.AxleWiseHistogram"]
+                                    </p>
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
                                 <NavLink class="nav-link" href="overloaded" Match="NavLinkMatch.All">
                                     <i class="nav-icon fas fa-chart-line"></i>
                                     <p>
@@ -124,14 +131,6 @@
                                     <i class="nav-icon fas fa-chart-pie"></i>
                                     <p>
                                         @localizer["Menu.OverloadedRatio"]
-                                    </p>
-                                </NavLink>
-                            </li>
-                            <li class="nav-item">
-                                <NavLink class="nav-link" href="AxleWiseHistogram" Match="NavLinkMatch.All">
-                                    <i class="nav-icon fas fa-chart-pie"></i>
-                                    <p>
-                                        @localizer["Menu.AxleWiseHistogram"]
                                     </p>
                                 </NavLink>
                             </li>

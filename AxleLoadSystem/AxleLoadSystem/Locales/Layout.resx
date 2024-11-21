@@ -172,10 +172,10 @@
     <value>FAQ</value>
   </data>
   <data name="Menu.OverloadHistogram" xml:space="preserve">
-    <value>Overloaded (Histogram)</value>
+    <value>Histogram: Overloaded</value>
   </data>
   <data name="Menu.Overloaded" xml:space="preserve">
-    <value>Overloaded (Time series)</value>
+    <value>Time Series</value>
   </data>
   <data name="Menu.Overweight" xml:space="preserve">
     <value>Overloaded (Number of axles)</value>
@@ -223,6 +223,6 @@
     <value>Reports</value>
   </data>
   <data name="Menu.AxleWiseHistogram" xml:space="preserve">
-    <value>Axle-Wise Histogram</value>
+    <value>Histogram: Axle-Wise</value>
   </data>
 </root>

@@ -172,10 +172,10 @@
     <value>প্রশ্নাবলী</value>
   </data>
   <data name="Menu.OverloadHistogram" xml:space="preserve">
-    <value>ওভারলোডেড হিস্টোগ্রাম</value>
+    <value>হিস্টোগ্রাম: ওভারলোডেড </value>
   </data>
   <data name="Menu.Overloaded" xml:space="preserve">
-    <value>ওভারলোডেড টাইম সিরিজ</value>
+    <value>টাইম সিরিজ</value>
   </data>
   <data name="Menu.Overweight" xml:space="preserve">
     <value>ওভারলোডেড এক্সেল সংখ্যা</value>
@@ -223,6 +223,6 @@
     <value>রিপোর্ট</value>
   </data>
   <data name="Menu.AxleWiseHistogram" xml:space="preserve">
-    <value>এক্সেল-ওয়াইজ হিস্টোগ্রাম</value>
+    <value>হিস্টোগ্রাম: এক্সেল-ওয়াইজ</value>
   </data>
 </root>
