@@ -22,7 +22,7 @@ public interface IOverloadReportService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters);
-    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad, decimal equivalentAxleLoad2);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad);
 }
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
@@ -364,7 +364,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
 
     #region Overloaded Histogram Part 2 report query
-    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad, decimal equivalentAxleLoad2)
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad)
     {
         //Disable number of axle filter
         reportParameters.NumberOfAxle = new();
@@ -431,7 +431,6 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         var parameters = new
         {
             equivalentAxleLoad,
-            equivalentAxleLoad2,
             reportParameters.DateStart,
             reportParameters.DateEnd,
             reportParameters.Wheelbase,

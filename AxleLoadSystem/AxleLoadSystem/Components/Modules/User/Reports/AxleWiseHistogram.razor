@@ -5,8 +5,6 @@
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
-@* @inject AuthenticationStateProvider authStateProvider *@
-@* @inject IUserActivityService userActivityService *@
 @inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
@@ -16,7 +14,7 @@
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IExportHelper exportHelper
 
-<PageTitleComponent Title="@localizer["ReportTitle.GrossWeight"]"></PageTitleComponent>
+<PageTitleComponent Title="@localizer["ReportTitle.AxleWiseHistogram"]"></PageTitleComponent>
 
 <div class="card card-primary card-outline">
     <div class="card-body">
@@ -34,15 +32,15 @@
                             <input type="number" @bind-value="@equivalentAxleLoad" required class="form-control" placeholder="Equivalent Axle Load" />
                         </div>
                     </div>
-                    @* <div class="col-md-4">
-            <div class="form-group">
-            <label for="name" class="form-label">Equivalent Axle Load 2</label>
-            <input type="number" @bind-value="@equivalentAxleLoad2" required class="form-control" placeholder="Equivalent Axle Load 2" />
-            </div>
-            </div> *@
                     <div class="col-md-4 form-group">
                         <label>&nbsp;</label>
-                        <button class="btn btn-primary w-100" @onclick="@ShowReport" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
+                        <button class="btn btn-primary w-100" @onclick="@ShowReport" disabled="@(isLoading ? "disabled" : null)">
+                            @localizerResource["Button.Show"]
+                            @if (isLoading)
+                            {
+                                <span>&nbsp;<Loader IsSmall="true" /></span>
+                            }
+                        </button>
                     </div>
                 </div>
             }
@@ -53,7 +51,11 @@
         </div>
     }
 </div>
-@if (Chartview && ChartData is not null)
+@if (isLoading)
+{
+    <Loader/>
+}
+else if (Chartview && ChartData is not null)
 {
     <div class="card card-primary">
         <div class="card-header">
@@ -287,7 +289,7 @@
 
         selectedEquivalentAxleLoad = equivalentAxleLoad;
 
-        report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad, 0);
+        report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad);
         if (report.Item2)
         {
             if (report.Item1.Count() > 0)

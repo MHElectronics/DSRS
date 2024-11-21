@@ -201,7 +201,7 @@
   <data name="ReportConfiguration.Title" xml:space="preserve">
     <value>Report Configuration</value>
   </data>
-  <data name="ReportTitle.GrossWeight" xml:space="preserve">
+  <data name="ReportTitle.OverloadedHistogram" xml:space="preserve">
     <value>Overloaded (Histogram)</value>
   </data>
   <data name="ReportTitle.Overloaded" xml:space="preserve">
@@ -248,5 +248,8 @@
   </data>
   <data name="Report.StartTime" xml:space="preserve">
     <value>Start Time</value>
+  </data>
+  <data name="ReportTitle.AxleWiseHistogram" xml:space="preserve">
+    <value>Axle-Wise (Histogram)</value>
   </data>
 </root>
