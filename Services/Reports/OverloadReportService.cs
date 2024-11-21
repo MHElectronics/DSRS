@@ -1269,4 +1269,18 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         
         return whereClause;
     }
+
+    private string _overloadSelectQuery { get; set; } = " (CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN 1 ELSE 0 END) ";
+    private string _overloadCountQuery { get; set; } = " SUM(CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN 1 ELSE 0 END) ";
+    private string _overloadJoiningQuery { get; set; } = " LEFT JOIN ConfigurationOverloadWeight OL ON AL.NumberOfAxle=OL.AxleNumber ";
+    private (string, string) GetOverloadingQuery(bool isCount = false)
+    {
+        string selectQuery = " (CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN 1 ELSE 0 END) ";
+        if(isCount)
+        {
+            selectQuery = " SUM(CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN 1 ELSE 0 END) ";
+        }
+        string joiningQuery = " LEFT JOIN ConfigurationOverloadWeight OL ON AL.NumberOfAxle=OL.AxleNumber ";
+        return (selectQuery, joiningQuery);
+    }
 }
