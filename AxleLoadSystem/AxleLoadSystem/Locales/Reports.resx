@@ -154,7 +154,7 @@
     <value>Date Range</value>
   </data>
   <data name="Report.Export" xml:space="preserve">
-    <value>Export</value>
+    <value>Download</value>
   </data>
   <data name="Report.FileType" xml:space="preserve">
     <value>File Type</value>

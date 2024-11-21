@@ -1,4 +1,4 @@
-﻿@page "/overloadedhistogramv2"
+﻿@page "/AxleWiseHistogram"
 @using BOL.Helpers
 @using Services
 @using Services.Helpers
@@ -31,18 +31,18 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="name" class="form-label">Equivalent Axle Load</label>
-                            <input type="number" @bind-value="@equivalentAxleLoad" required class="form-control" placeholder="Equivalent Axle Load"/>
+                            <input type="number" @bind-value="@equivalentAxleLoad" required class="form-control" placeholder="Equivalent Axle Load" />
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="name" class="form-label">Equivalent Axle Load 2</label>
-                            <input type="number" @bind-value="@equivalentAxleLoad2" required class="form-control" placeholder="Equivalent Axle Load 2" />
-                        </div>
-                    </div>
+                    @* <div class="col-md-4">
+            <div class="form-group">
+            <label for="name" class="form-label">Equivalent Axle Load 2</label>
+            <input type="number" @bind-value="@equivalentAxleLoad2" required class="form-control" placeholder="Equivalent Axle Load 2" />
+            </div>
+            </div> *@
                     <div class="col-md-4 form-group">
                         <label>&nbsp;</label>
-                        <button class="btn w-100 @(selectedType == "Show" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Show"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
+                        <button class="btn btn-primary w-100" @onclick="@ShowReport" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
                     </div>
                 </div>
             }
@@ -51,7 +51,7 @@
                 <label class="text-danger">@Summary</label>
             }
         </div>
-    } 
+    }
 </div>
 @if (Chartview && ChartData is not null)
 {
@@ -83,20 +83,20 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "Garph1" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Garph1"))">@localizer["Report.Graph1"]</button>
-                            <button class="btn @(chartType == "Garph2" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Garph2"))">@localizer["Report.Graph2"]</button>
-                            <button class="btn @(chartType == "Garph3" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Garph3"))">@localizer["Report.Graph3"]</button>
+                            <button class="btn @(chartType == "TotalNumberOfAxles" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("TotalNumberOfAxles"))">Number of Axle</button>
+                            <button class="btn @(chartType == "Influence" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Influence"))">Influence</button>
+                            <button class="btn @(chartType == "Influence_2" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Influence_2"))">Equivalent to @(selectedEquivalentAxleLoad)t Axle</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
-                        @if (!string.IsNullOrEmpty(chartType))
+                        @if (ChartData is not null)
                         {
                             <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
                                 <ChartArea>
                                     <ChartAreaBorder Width="0"></ChartAreaBorder>
                                 </ChartArea>
 
-                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
+                                <ChartPrimaryXAxis Title="Weight Range in Ton" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                 </ChartPrimaryXAxis>
@@ -107,23 +107,13 @@
                                 </ChartPrimaryYAxis>
 
                                 <ChartSeriesCollection>
-                                @{
-                                    var allGrossWeightRanges = ChartData
-                                    .GroupBy(x => x.GrossVehicleWeightRange)
-                                    .OrderBy(g => Convert.ToDecimal(g.Key.Split('-')[0])) 
-                                    .Select(g => g.Key)
-                                    .ToList();
-                                }
-
-
-                                        <ChartSeries Name="Axle Load Histogram"
-                                                    ColumnWidth="0.5"
-                                                    DataSource="@allGrossWeightRanges"
-                                                    XName="GrossVehicleWeightRange"
-                                                    YName="TotalNumberOfAxles"
-                                                    YAxisName="PrimaryYAxis"
-                                                    Type="ChartSeriesType.Column"
-                                                    EnableTooltip="true">
+                                    <ChartSeries Name="@YAxisTitle"
+                                                 ColumnWidth="0.5"
+                                                 DataSource="@ChartData"
+                                                 XName="GrossVehicleWeightRange"
+                                                 YName="@chartType"
+                                                 Type="ChartSeriesType.Column"
+                                                 EnableTooltip="true">
                                         <ChartMarker>
                                             <ChartDataLabel Visible="false" Position="LabelPosition.Top">
                                                 <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -131,10 +121,7 @@
                                         </ChartMarker>
                                         <ChartSeriesBorder Width="1"></ChartSeriesBorder>
                                     </ChartSeries>
-                                  
                                 </ChartSeriesCollection>
-
-
                                 <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
                                 <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
                             </SfChart>
@@ -142,37 +129,40 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab_table">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th class="text-right">Gross Vehicle Weight Range</th>
-                                <th class="text-right">Cummilative Number of Axles</th>
-                                <th class="text-right">Medium Weight</th>
-                                <th class="text-right">Medium Weight4</th>
-                                <th class="text-right">Medium Weight4_2</th>
-                                <th class="text-right">Medium Weight4_3</th>
-                                <th class="text-right">Influence</th>
-                                <th class="text-right">Influence_2</th>
-                                <th class="text-right">Influence_3</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (AxleLoadReport item in ChartData)
-                            {
+                    @if (ChartData is not null)
+                    {
+                        <table class="table table-striped table-hover">
+                            <thead>
                                 <tr>
-                                    <td class="text-right">@item.GrossVehicleWeightRange</td>
-                                    <td class="text-right">@item.TotalNumberOfAxles.ToString("N0")</td>
-                                    <td class="text-right">@item.MediumWeight.ToString("N0")</td>
-                                    <td class="text-right">@item.MediumWeight4.ToString("N0")</td>
-                                    <td class="text-right">@item.MediumWeight4_2.ToString("N0")</td>
-                                    <td class="text-right">@item.MediumWeight4_3.ToString("N0")</td>
-                                    <td class="text-right">@item.Influence.ToString("N0")</td>
-                                    <td class="text-right">@item.Influence_2.ToString("N0")</td>
-                                    <td class="text-right">@item.Influence_3.ToString("N0")</td>
+                                    <th class="text-right">Weight Range in Ton</th>
+                                    <th class="text-right">Medium Weight</th>
+                                    <th class="text-right">Cummilative Number of Axles</th>
+                                    @* <th class="text-right">Medium Weight4</th>
+                                    <th class="text-right">Medium Weight4_2</th>
+                                    <th class="text-right">Medium Weight4_3</th> *@
+                                    <th class="text-right">Influence</th>
+                                    <th class="text-right">Equivalent to @(selectedEquivalentAxleLoad)t Axle</th>
+                                    @* <th class="text-right">Influence_3</th> *@
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (AxleLoadReport item in ChartData)
+                                {
+                                    <tr>
+                                        <td class="text-right">@item.GrossVehicleWeightRange</td>
+                                        <td class="text-right">@item.MediumWeight.ToString("N2")</td>
+                                        <td class="text-right">@item.TotalNumberOfAxles.ToString("N0")</td>
+                                        @* <td class="text-right">@item.MediumWeight4.ToString("N2")</td>
+                                        <td class="text-right">@item.MediumWeight4_2.ToString("N2")</td>
+                                        <td class="text-right">@item.MediumWeight4_3.ToString("N2")</td> *@
+                                        <td class="text-right">@item.Influence.ToString("N2")</td>
+                                        <td class="text-right">@item.Influence_2.ToString("N2")</td>
+                                        @* <td class="text-right">@item.Influence_3.ToString("N2")</td> *@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
                 </div>
             </div>
         </div>
@@ -188,7 +178,7 @@
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
     private decimal equivalentAxleLoad { get; set; } = 10;
-    private decimal equivalentAxleLoad2 { get; set; } = (decimal)8.61;
+    private decimal selectedEquivalentAxleLoad { get; set; } = 10;
     private ReportSelection refReportSelection { get; set; }
 
     public string Height { get; set; } = "100%";
@@ -196,17 +186,14 @@
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
-    public string XAxisTitle { get; set; } = "";
     public string YAxisTitle { get; set; } = "";
-    private string selectedType { get; set; } = "";
     private string Summary { get; set; } = "";
-    private string chartType { get; set; } = "";
-    private User currentUser { get; set; }
-    private bool showReportGroupSelection { get; set; } = false;    
+    private string chartType { get; set; } = "Influence";
+    private bool showReportGroupSelection { get; set; } = false;
     private bool Chartview { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
-    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
+    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -216,11 +203,11 @@
     private async Task Export(string type)
     {
         List<(string Header, string FieldName, Type FieldType)> fields = new();
-        fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
-        fields.Add(("Gross Vehicle Weight Range", nameof(AxleLoadReport.GrossVehicleWeightRange), new AxleLoadReport().GrossVehicleWeightRange?.GetType() ?? typeof(string)));
-        fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
-        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
-        fields.Add(("Overloaded Ratio by Gross Vehicle Weight", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
+        fields.Add(("Weight Range in Ton", nameof(AxleLoadReport.GrossVehicleWeightRange), new AxleLoadReport().GrossVehicleWeightRange?.GetType() ?? typeof(string)));
+        fields.Add(("Medium Weight", nameof(AxleLoadReport.MediumWeight), new AxleLoadReport().MediumWeight.GetType()));
+        fields.Add(("Cumulative Number Of Axles", nameof(AxleLoadReport.TotalNumberOfAxles), new AxleLoadReport().TotalNumberOfAxles.GetType()));
+        fields.Add(("Influence", nameof(AxleLoadReport.Influence), new AxleLoadReport().Influence.GetType()));
+        fields.Add(("Equivalent to " + selectedEquivalentAxleLoad + "t Axle", nameof(AxleLoadReport.Influence_2), new AxleLoadReport().Influence_2.GetType()));
 
         if (type == "excel")
         {
@@ -233,7 +220,7 @@
         }
         else if (type == "csv")
         {
-            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), refReportSelection.GetSelection());
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
@@ -255,66 +242,67 @@
     {
         string base64 = exportEventArgs.Base64;
     }
-    private async Task ChartChanged(string type)
+    private void ChartChanged(string type)
     {
-        if (type.ToLower() == "Graph1")
+        ReportParameters reportParameters = refReportSelection.GetSelection();
+        if (type == "TotalNumberOfAxles")
         {
-            chartSeriesType = ChartSeriesType.Line;
+            ChartTitle = "Cumulative Number of Axles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
+            YAxisTitle = "Cumulative Number of Axles";
         }
-        else if (type.ToLower() == "Graph2")
+        else if (type == "Influence")
         {
-            chartSeriesType = ChartSeriesType.StackingColumn;
+            ChartTitle = "Influence Degree to the Pavement " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
+            YAxisTitle = "Influence Degree to the Pavement";
         }
-        else if (type.ToLower() == "Graph3")
+        else if (type == "Influence_2")
         {
+            ChartTitle = "Influence Degree to the Pavement Equivalent to " + selectedEquivalentAxleLoad + "t Axle (" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
+            YAxisTitle = "Equivalent to " + selectedEquivalentAxleLoad + "t Axle";
+        }
 
-        }
         chartType = type;
     }
     private async Task HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;
     }
-    private async Task TypeChanged(string type)
+    private async Task ShowReport()
     {
-        selectedType = type;
         isLoading = true;
-        ReportParameters reportParameters = await appState.GetReportParameters();
+        // ReportParameters reportParameters = await appState.GetReportParameters();
+        ReportParameters reportParameters = refReportSelection.GetSelection();
         if (reportParameters.Stations is not null)
         {
-            await LoadData();
+            await LoadData(reportParameters);
         }
         isLoading = false;
     }
-    private async Task LoadData()
+    private async Task LoadData(ReportParameters reportParameters)
     {
-        //ReportParameters reportParameters = await appState.GetReportParameters();
-        ReportParameters reportParameters = refReportSelection.GetSelection();
         Summary = "";
-        ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
-        XAxisTitle = "Histogram (1t increments)";
-        YAxisTitle = "Number of vehicles";
+        ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")<br/>Number of Axle";
+        YAxisTitle = "Cumulative Number of Axles";
         Chartview = true;
 
-        if (selectedType == "Show")
+        selectedEquivalentAxleLoad = equivalentAxleLoad;
+
+        report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad, 0);
+        if (report.Item2)
         {
-            report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad, equivalentAxleLoad2);
-            if (report.Item2)
+            if (report.Item1.Count() > 0)
             {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else 
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
+                ChartData = report.Item1;
             }
             else
             {
-                Summary = report.Item3;    
+                Chartview = false;
+                Summary = "No value is available";
             }
+        }
+        else
+        {
+            Summary = report.Item3;
         }
     }
 }

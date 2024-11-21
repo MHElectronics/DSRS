@@ -171,7 +171,7 @@
   <data name="Menu.FAQ" xml:space="preserve">
     <value>FAQ</value>
   </data>
-  <data name="Menu.GrossWeight" xml:space="preserve">
+  <data name="Menu.OverloadHistogram" xml:space="preserve">
     <value>Overloaded (Histogram)</value>
   </data>
   <data name="Menu.Overloaded" xml:space="preserve">
@@ -221,5 +221,8 @@
   </data>
   <data name="Menu.Reports" xml:space="preserve">
     <value>Reports</value>
+  </data>
+  <data name="Menu.AxleWiseHistogram" xml:space="preserve">
+    <value>Axle-Wise Histogram</value>
   </data>
 </root>

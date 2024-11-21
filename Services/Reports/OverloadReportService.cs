@@ -393,13 +393,15 @@ FROM (";
 
         for(int i=1; i<=7; i++)
         {
-            query += $@"--Axle {i}
+            query += $@"
+--Axle {i}
 SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
 FROM AxleLoad AL
 INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
 {whereClause}
 AND Al.NumberOfAxle>={i}
-GROUP BY R.GroupId ";
+GROUP BY R.GroupId
+";
             if (i != 7)
             {
                 query += " UNION ALL ";
@@ -409,7 +411,7 @@ GROUP BY R.GroupId ";
         query += @") AS Sub
 GROUP BY GroupId 
 
---Top coversion
+--Ton coversion
 DECLARE @TonConversion INT=1000
 UPDATE @Range
 SET Minimum=Minimum/@TonConversion
@@ -423,7 +425,7 @@ SELECT R.GroupId,R.Minimum,R.Maximum,R.MediumWeight,CAST(R.Minimum AS VARCHAR(10
 --,POWER(R.MediumWeight/@EquivalentAxleLoad2,4) MediumWeight4_3,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) Influence_3
 ,CAST(POWER(R.MediumWeight,4) AS DECIMAL(18,2)) MediumWeight4,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight,4) AS DECIMAL(18,2)) Influence
 ,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad,4) AS DECIMAL(18,2)) MediumWeight4_2,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad,4) AS DECIMAL(18,2)) Influence_2
-,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) MediumWeight4_3,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) Influence_3
+--,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) MediumWeight4_3,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) Influence_3
 FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
 
         var parameters = new

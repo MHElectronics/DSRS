@@ -154,7 +154,7 @@
     <value>তারিখ পরিসীমা</value>
   </data>
   <data name="Report.Export" xml:space="preserve">
-    <value>রপ্তানি</value>
+    <value>ডাউনলোড করুন</value>
   </data>
   <data name="Report.FileType" xml:space="preserve">
     <value>ফাইলের ধরন</value>
