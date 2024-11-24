@@ -161,19 +161,6 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab_table">
-                    @{
-                        var overloadingRatioData3 = ChartData
-                        .GroupBy(x => x.NumberofAxle)
-                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
-                        .Select(group => new
-                        {
-                            NumberofAxle = group.Key,
-                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
-                        : 0
-                        })
-                        .ToDictionary(x => x.NumberofAxle, x => x.OverloadingRatio); // Create a dictionary for easy lookup
-                    }
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
@@ -184,24 +171,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var group in ChartData.OrderBy(x => x.NumberofAxle).GroupBy(x => x.NumberofAxle))
+                            @foreach (var item in ChartData.OrderBy(x => x.NumberofAxle))
                             {
-                                // Calculate the sum of overloaded and total vehicles for the current axle group
-                                var overloadedSum = group.Sum(x => x.OverloadVehicle);
-                                var totalVehicleSum = group.Sum(x => x.TotalVehicle);
-                                var overloadingRatio = overloadingRatioData3.ContainsKey(group.Key)
-                                ? overloadingRatioData3[group.Key]
-                                : 0;
-
+                                decimal overloadingRatio = item.TotalVehicle == 0 ? 0 : ((decimal)item.OverloadVehicle / (decimal)item.TotalVehicle);
                                 <tr>
-                                    <td class="text-right">@group.Key.ToString("N0")</td>
-                                    <td class="text-right">@overloadedSum.ToString("N0")</td>
-                                    <td class="text-right">@totalVehicleSum.ToString("N0")</td>
-                                    <td class="text-right">@($"{overloadingRatio:N2}%")</td>
+                                    <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
+                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
+                                    <td class="text-right">@overloadingRatio.ToString("P2")</td>
                                 </tr>
                             }
-
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-right">Total:</td>
+                                <td class="text-right">@ChartData.Sum(d => d.OverloadVehicle).ToString("N0")</td>
+                                <td class="text-right">@ChartData.Sum(d => d.TotalVehicle).ToString("N0")</td>
+                                <td class="text-right">@(ChartData.Sum(d => d.TotalVehicle) == 0 ? "0.00%" : ((decimal)ChartData.Sum(d => d.OverloadVehicle) / (decimal)ChartData.Sum(d => d.TotalVehicle)).ToString("P2"))</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
