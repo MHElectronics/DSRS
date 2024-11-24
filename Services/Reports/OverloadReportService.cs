@@ -23,6 +23,7 @@ public interface IOverloadReportService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedRatioReport(ReportParameters reportParameters, bool overloadCalculative);
 }
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
@@ -74,7 +75,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -90,9 +91,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATENAME(YEAR, AL.DateTime) AS DateUnitName,
             R.GroupId,
             COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            {_overloadCountQuery}  AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
+        {_overloadJoiningQuery}
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -1158,8 +1161,70 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             message = "Error: " + ex.Message;
         }
         return (null, isSuccess, message);
-    }  
+    }
     #endregion
+
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedRatioReport(ReportParameters reportParameters, bool overloadCalculative)
+    {
+        string message = "";
+
+        string countQuery = _overloadCountQuery;
+        string joiningQuery = _overloadJoiningQuery;
+        if (!overloadCalculative)
+        {
+            countQuery = "SUM(CAST(AL.IsOverloaded AS INT))";
+            joiningQuery = "";
+        }
+
+        string query = this.GetStationTableQuery(reportParameters) + $@"
+        DECLARE @DateRange TABLE([Date] DATE)
+        DECLARE @CurrentDate DATE = @DateStart
+
+        WHILE @CurrentDate <= @DateEnd
+        BEGIN
+            INSERT INTO @DateRange VALUES(@CurrentDate)
+            SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
+        END
+
+        SELECT 
+            AL.NumberOfAxle,
+            COUNT(1) AS TotalVehicle,  -- Total number of vehicles (overloaded + non-overloaded)
+            --SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle  -- Overloaded vehicle count
+            {countQuery} AS OverloadVehicle  -- Overloaded vehicle count
+        FROM AxleLoad AL
+        {joiningQuery} ";
+
+        query += this.GetFilterClause(reportParameters);
+        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        query += @" GROUP BY AL.NumberOfAxle
+        ORDER BY AL.NumberOfAxle";
+
+        var parameters = new
+        {
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
+        };
+
+        bool isSuccess;
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
+
 
     private string GetStationTableQuery(ReportParameters reportParameters)
     {
