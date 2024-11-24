@@ -54,6 +54,9 @@
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">@localizer["Report.Table"]</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#tab_table2" role="tab" aria-selected="false">@localizer["Report.Table"] 2</a>
+                </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         @localizer["Report.Export"]
@@ -109,7 +112,7 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
 
-                                        <ChartSeries Name="Total number of measured Vehicles" ColumnWidth="0.5" DataSource="@ChartData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="NotOverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="false" Position="LabelPosition.Top">
                                                     <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -171,6 +174,73 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="tab-pane" id="tab_table2">
+                    Test
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">@selectedType</th>
+                                <th colspan="8" class="text-center border-right">Breakdown of Total Vechile by Axle</th>
+                                <th colspan="8" class="text-center">Breakdown of Overloaded Vehicle by Axle</th>
+                                <th rowspan="2" class="text-right">Overloading Ratio</th>
+                            </tr>
+                            <tr>
+                                <th class="text-right">Total</th>
+                                <th class="text-right">2</th>
+                                <th class="text-right">3</th>
+                                <th class="text-right">4</th>
+                                <th class="text-right">5</th>
+                                <th class="text-right">6</th>
+                                <th class="text-right">7</th>
+                                <th class="text-right border-right">Others</th>
+
+                                <th class="text-right">Total</th>
+                                <th class="text-right">2</th>
+                                <th class="text-right">3</th>
+                                <th class="text-right">4</th>
+                                <th class="text-right">5</th>
+                                <th class="text-right">6</th>
+                                <th class="text-right">7</th>
+                                <th class="text-right">Others</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (AxleLoadReport item in ChartData)
+                            {
+                                <tr>
+                                    <td>@item.DateUnitName</td>
+                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 2).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 3).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 4).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 5).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 6).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 7).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+
+                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 2).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 3).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 4).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 5).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 6).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 7).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle <2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+
+                                    <td class="text-right">
+                                        @{
+                                            // Calculate overloading ratio for the current item
+                                            item.OverloadingRatio = item.TotalVehicle > 0
+                                            ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100
+                                            : 0;
+                                        }
+                                        @($"{item.OverloadingRatio:N2}%")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -182,9 +252,9 @@
     private ReportSelection refReportSelection { get; set; }
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
-    public IEnumerable<AxleLoadReport> ChartData { get; set; }
-    public IQueryable<List<LoadData>> listLoadData { get; set; }
-    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
+    public List<AxleLoadReport> ChartData { get; set; }
+    public List<AxleLoadReport> ChartDataByAxle { get; set; }
+
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Column;
     public string Height { get; set; } = "100%";
     public string Width { get; set; } = "100%";
@@ -277,12 +347,6 @@
         }
         isLoading = false;
     }
-    private class AverageValue
-    {
-        public string UnitName{ get; set; }
-        public decimal Average{ get; set; }
-    }
-    private List<AverageValue> average { get; set; }
 
     private async Task LoadChart(ReportParameters reportParameters)
     {
@@ -317,19 +381,30 @@
         {
             if (report.Item1.Count() > 0)
             {
-                ChartData = report.Item1;
+                //Only monthly report query is updated to return number of axle
+                if(selectedType == "Month")
+                {
+                    ChartDataByAxle = report.Item1.ToList();
+                    IEnumerable<int> dataUnits = ChartDataByAxle.Select(d => d.DateUnit).Distinct();
+                    ChartData = new();
+                    foreach (int dataUnit in dataUnits.OrderBy(x => x))
+                    {
+                        AxleLoadReport item = new();
+                        item.DateUnit = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnit;
+                        item.DateUnitName = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnitName;
+                        item.OverloadVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.OverloadVehicle);
+                        item.TotalVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.TotalVehicle);
+
+                        ChartData.Add(item);
+                    }
+                }
+                else
+                {
+                    ChartData = report.Item1.ToList();
+                }
+
                 XAxisTitle = dataTypeTitle2();
 
-                average=new();
-                foreach(var item in ChartData.Select(d => d.DateUnitName).Distinct())
-                {
-                    int totalOverload = ChartData.Where(d => d.DateUnitName == item).Sum(d => d.OverloadVehicle);
-                    int totalVehicle = ChartData.Where(d => d.DateUnitName == item).Sum(d => d.TotalVehicle);
-                    AverageValue r = new();
-                    r.UnitName = item;
-                    r.Average = totalVehicle == 0 ? 0 : (totalOverload / totalVehicle);
-                    average.Add(r);
-                }
             }
             else
             {

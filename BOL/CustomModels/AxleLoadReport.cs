@@ -24,6 +24,7 @@ public class AxleLoadReport
     public double OverloadingRatio { get; set; }
 
     // Additional Property for Overloaded Histogram for Influence Degree and Cumilative Number of Axles
+    public int NotOverloadVehicle { get {  return TotalVehicle - OverloadVehicle; } }
     public int TotalNumberOfAxles { get; set; }
     public double MediumWeight { get; set; }
     //public double MediumWeight4 { get; set; }
