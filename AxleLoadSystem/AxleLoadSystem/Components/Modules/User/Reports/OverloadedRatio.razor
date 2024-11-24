@@ -36,14 +36,14 @@
 
                 </div>
             }
-            @if (!string.IsNullOrEmpty(Summary))
+            @if (!string.IsNullOrEmpty(validationSummary))
             {
-                <label class="text-danger">@Summary</label>
+                <label class="text-danger">@validationSummary</label>
             }
         </div>
     }
 </div>
-@if (Chartview && ChartData is not null)
+@if (showChart && data is not null)
 {
     <div class="card card-primary">
         <div class="card-header">
@@ -73,90 +73,81 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
-                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
-                            <button class="btn @(chartType == "pie" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("pie"))">@localizer["Report.PieChart"]</button>
+                            <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => chartType = "column")">@localizer["Report.ColumnChart"]</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => chartType = "line")">@localizer["Report.LineChart"]</button>
+                            <button class="btn @(chartType == "pie" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => chartType = "pie")">@localizer["Report.PieChart"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
-                        @if (!string.IsNullOrEmpty(chartType) && chartType.ToLower() != "pie")
+                        @if (!string.IsNullOrEmpty(chartType))
                         {
-                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
-                                <ChartArea>
-                                    <ChartAreaBorder Width="0"></ChartAreaBorder>
-                                </ChartArea>
+                            var overloadingRatioData = data
+                            .GroupBy(x => x.NumberofAxle)
+                            .Where(group => group.Key != 0)
+                            .Select(group => new
+                            {
+                                NumberofAxle = group.Key,
+                                OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                            ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle))
+                            : 0
+                            })
+                            .ToList().OrderBy(x => x.NumberofAxle);
 
-                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
-                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                                    <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
-                                </ChartPrimaryXAxis>
+                            if (chartType.ToLower() == "pie")
+                            {
+                                <SfAccumulationChart Title="Overloading Ratio by Axle">
+                                    <AccumulationChartSeriesCollection>
+                                        <AccumulationChartSeries DataSource="@overloadingRatioData"
+                                                                 XName="NumberofAxle"
+                                                                 YName="OverloadingRatio"
+                                                                 Name="Overloading Ratio (%)">
+                                            <AccumulationDataLabelSettings Visible="true" Name="Text" Format="P2">
+                                            </AccumulationDataLabelSettings>
+                                        </AccumulationChartSeries>
+                                    </AccumulationChartSeriesCollection>
 
-                                <ChartPrimaryYAxis Name="SecondaryYAxis" Title="@YAxisTitle" LabelFormat="{value}%">
-                                    <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
-                                    <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
-                                </ChartPrimaryYAxis>
+                                    <AccumulationChartLegendSettings Visible="true"></AccumulationChartLegendSettings>
+                                </SfAccumulationChart>
+                            }
+                            else
+                            {
+                                ChartSeriesType chartSeriesType = ChartSeriesType.Column;
+                                if (chartType.ToLower() == "line")
+                                {
+                                    chartSeriesType = ChartSeriesType.Line;
+                                }
 
-                                <ChartSeriesCollection>
-                                    @* Calculate Overloading Ratio *@
-                                    @{
-                                        var overloadingRatioData = ChartData
-                                        .GroupBy(x => x.NumberofAxle)
-                                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
-                                        .Select(group => new
-                                        {
-                                            NumberofAxle = group.Key,
-                                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
-                                        : 0
-                                        })
-                                        .ToList();
-                                    }
+                                <SfChart @ref="@chartInstance" Title="@chartTitle" Width="100%" Height="100%">
+                                    <ChartArea>
+                                        <ChartAreaBorder Width="0"></ChartAreaBorder>
+                                    </ChartArea>
 
-                                    <ChartSeries Name="Overloading Ratio (%)"
-                                                 DataSource="@data.OrderBy(x =>x.NumberofAxle)"
-                                                 XName="NumberofAxle"
-                                                 YName="OverloadingRatio"
-                                                 YAxisName="SecondaryYAxis"
-                                                 Type="chartSeriesType"
-                                                 EnableTooltip="true">
-                                        <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
-                                    </ChartSeries>
-                                </ChartSeriesCollection>
+                                    <ChartPrimaryXAxis Title="Number of axles" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
+                                        <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                        <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
+                                    </ChartPrimaryXAxis>
 
-                                <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
-                                <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
-                            </SfChart>
-                        }
-                        else
-                        {
-                            <SfAccumulationChart Title="Overloading Ratio by Axle">
-                                <AccumulationChartSeriesCollection>
-                                    @* Calculate Overloading Ratio *@
-                                    @{
-                                        var overloadingRatioData2 = ChartData
-                                        .GroupBy(x => x.NumberofAxle)
-                                        .Where(group => group.Key != 0)
-                                        .Select(group => new
-                                        {
-                                            NumberofAxle = group.Key,
-                                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle))
-                                        : 0
-                                        })
-                                        .ToList();
-                                    }
+                                    <ChartPrimaryYAxis Name="SecondaryYAxis" Title="Overloading Ratio (%)" LabelFormat="{value}%">
+                                        <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                                        <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
+                                    </ChartPrimaryYAxis>
 
-                                    <AccumulationChartSeries DataSource="@overloadingRatioData2.OrderBy(x => x.NumberofAxle)"
-                                                             XName="NumberofAxle"
-                                                             YName="OverloadingRatio"
-                                                             Name="Overloading Ratio (%)">
-                                        <AccumulationDataLabelSettings Visible="true" Name="Text" Format="P2">
-                                        </AccumulationDataLabelSettings>
-                                    </AccumulationChartSeries>
-                                </AccumulationChartSeriesCollection>
+                                    <ChartSeriesCollection>
+                                        <ChartSeries Name="Overloading Ratio (%)"
+                                                     DataSource="@overloadingRatioData"
+                                                     XName="NumberofAxle"
+                                                     YName="OverloadingRatio"
+                                                     YAxisName="SecondaryYAxis"
+                                                     Type="chartSeriesType"
+                                                     EnableTooltip="true">
+                                            <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+                                        </ChartSeries>
+                                    </ChartSeriesCollection>
 
-                                <AccumulationChartLegendSettings Visible="true"></AccumulationChartLegendSettings>
-                            </SfAccumulationChart>
+                                    <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+                                    <ChartLegendSettings Visible="true" EnableHighlight="true"></ChartLegendSettings>
+                                </SfChart>
+                            }
                         }
                     </div>
                 </div>
@@ -167,11 +158,11 @@
                                 <th class="text-right">Number of Axle</th>
                                 <th class="text-right">Overloaded Vehicle</th>
                                 <th class="text-right">Total Vehicle</th>
-                                <th class="text-right">Overloading Ratio by Axle</th>
+                                <th class="text-right">Overloading Ratio</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in ChartData.OrderBy(x => x.NumberofAxle))
+                            @foreach (var item in data.OrderBy(x => x.NumberofAxle))
                             {
                                 decimal overloadingRatio = item.TotalVehicle == 0 ? 0 : ((decimal)item.OverloadVehicle / (decimal)item.TotalVehicle);
                                 <tr>
@@ -185,9 +176,9 @@
                         <tfoot>
                             <tr>
                                 <td class="text-right">Total:</td>
-                                <td class="text-right">@ChartData.Sum(d => d.OverloadVehicle).ToString("N0")</td>
-                                <td class="text-right">@ChartData.Sum(d => d.TotalVehicle).ToString("N0")</td>
-                                <td class="text-right">@(ChartData.Sum(d => d.TotalVehicle) == 0 ? "0.00%" : ((decimal)ChartData.Sum(d => d.OverloadVehicle) / (decimal)ChartData.Sum(d => d.TotalVehicle)).ToString("P2"))</td>
+                                <td class="text-right">@data.Sum(d => d.OverloadVehicle).ToString("N0")</td>
+                                <td class="text-right">@data.Sum(d => d.TotalVehicle).ToString("N0")</td>
+                                <td class="text-right">@(data.Sum(d => d.TotalVehicle) == 0 ? "0.00%" : ((decimal)data.Sum(d => d.OverloadVehicle) / (decimal)data.Sum(d => d.TotalVehicle)).ToString("P2"))</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -198,25 +189,14 @@
 }
 
 @code {
-    private Theme Theme { get; set; } = 0;
     private SfChart chartInstance;
-    public Syncfusion.Blazor.Charts.LabelIntersectAction Label { get; set; } = Syncfusion.Blazor.Charts.LabelIntersectAction.Trim;
 
-    public IEnumerable<AxleLoadReport> ChartData { get; set; }
-    public IQueryable<List<LoadData>> listLoadData { get; set; }
-    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
-    private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
-    public string Height { get; set; } = "100%";
-    public string Width { get; set; } = "100%";
-    public string FileName { get; set; } = "Charts";
-    public string Format { get; set; } = "{value} GW";
-    public string ChartTitle { get; set; } = "";
-    public string XAxisTitle { get; set; } = "";
-    public string YAxisTitle { get; set; } = "";
-    private string Summary { get; set; } = "";
+    public IEnumerable<AxleLoadReport>? data { get; set; }
+    public string chartTitle { get; set; } = "";
+    private string validationSummary { get; set; } = "";
     private string chartType { get; set; } = "column";
     private bool showReportGroupSelection { get; set; } = false;
-    private bool Chartview { get; set; }
+    private bool showChart { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
     private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; }
@@ -228,42 +208,46 @@
 
     private async Task Export(string type)
     {
+        if (data is null)
+        {
+            validationSummary = "No Data Found";
+            return;
+        }
+
         List<(string Header, string FieldName, Type FieldType)> fields = new();
         fields.Add(("Number of Axle", nameof(AxleLoadReport.NumberofAxle), new AxleLoadReport().NumberofAxle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overloaded Ratio by Axle", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
 
+        string fileName = "Overload Ratio";
+
         if (type == "excel")
         {
-            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, data.ToList());
 
             MemoryStream ms = new MemoryStream(fileByte);
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Excel report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "csv")
         {
-            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), await appState.GetReportParameters());
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight CSV report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "chart")
         {
-            await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, FileName, allowDownload: true, isBase64: true);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Graph report Downloaded", Activity = LogActivity.Download });
+            await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
         else if (type == "pdf")
         {
-            MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+            MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(data.ToList());
 
             using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Over weight Pdf report Downloaded", Activity = LogActivity.Download });
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".pdf", streamRef);
         }
     }
 
@@ -271,25 +255,12 @@
     {
         string base64 = exportEventArgs.Base64;
     }
-    private void ChartChanged(string type)
-    {
-        if (type.ToLower() == "line")
-        {
-            chartSeriesType = ChartSeriesType.Line;
-        }
-        else if (type.ToLower() == "column")
-        {
-            chartSeriesType = ChartSeriesType.Column;
-        }
-        chartType = type;
-    }
     private void HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;
     }
     private async Task TypeChanged(bool isCalculated)
     {
-        ChartChanged("column");
         isLoading = true;
         ReportParameters reportParameters = await appState.GetReportParameters();
         if (reportParameters.Stations is not null)
@@ -300,29 +271,28 @@
     }
     private async Task LoadChart(ReportParameters reportParameters, bool isCalculated)
     {
-        Summary = "";
-        ChartTitle = "Overloaded vehicle percentage for each vehicle type " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
-        XAxisTitle = "Number of axles";
-        YAxisTitle = "Overloading Ratio (%)";
-        Chartview = true;
-
+        //Reset chart type to solve pie chart re-render hang issue
+        chartType = "column";
+        validationSummary = "";
+        chartTitle = "Overloaded vehicle percentage for each vehicle type " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
 
         report = await reportService.GetOverloadedRatioReport(reportParameters, isCalculated);
         if (report.Item2)
         {
             if (report.Item1.Count() > 0)
             {
-                ChartData = report.Item1;
+                data = report.Item1;
+                showChart = true;
             }
             else
             {
-                Chartview = false;
-                Summary = "No value is available";
+                showChart = false;
+                validationSummary = "No value is available";
             }
         }
         else
         {
-            Summary = report.Item3;
+            validationSummary = report.Item3;
         }
     }
 }
