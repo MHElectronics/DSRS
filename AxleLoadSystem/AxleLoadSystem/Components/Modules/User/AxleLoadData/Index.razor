@@ -21,7 +21,7 @@
 
 <div class="card card-primary card-outline">
     <div class="card-body">
-        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+        <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
     @if (!selectionEnabled)
     {
@@ -60,6 +60,8 @@
 @code {
     private (IEnumerable<LoadData>, bool, string) report { get; set; }
     private (IEnumerable<FinePayment>, bool, string) reportFinePayment { get; set; }
+
+    private ReportSelection refReportSelection { get; set; }
     private Station? station { get; set; } = null;
     private int fileType { get; set; } = 1;
     private ReportParameters reportParameters { get; set; } = new();
@@ -81,7 +83,7 @@
         finePaymentData = null;
         showTable = false;
         Summary = "";
-        ReportParameters reportParameters = await appState.GetReportParameters();
+        ReportParameters reportParameters = refReportSelection.GetSelection();
         StateHasChanged();
         if (reportParameters.Stations is not null)
         {

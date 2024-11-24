@@ -5,8 +5,6 @@
 @using Syncfusion.Blazor
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
-@* @inject AuthenticationStateProvider authStateProvider *@
-@* @inject IUserActivityService userActivityService *@
 @inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
 @inject NavigationManager NavigationManager
@@ -20,7 +18,7 @@
 
 <div class="card card-primary card-outline">
     <div class="card-body">
-        <ReportSelection OnParametersChanged="HandleParametersChanged" />
+        <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
     @if (!selectionEnabled)
     {
@@ -44,7 +42,7 @@
         </div>
     } 
 </div>
-@if (Chartview && ChartData is not null)
+@if (showChart && ChartData is not null)
 {
     <div class="card card-primary">
         <div class="card-header">
@@ -241,9 +239,8 @@
     private SfChart chartInstance;
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
+    private ReportSelection refReportSelection { get; set; }
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
-    public IQueryable<List<LoadData>> listLoadData { get; set; }
-    private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
     public string Height { get; set; } = "100%";
     public string Width { get; set; } = "100%";
@@ -256,10 +253,9 @@
     private string Summary { get; set; } = "";
     private string chartType { get; set; } = "stackingcolumn";
     private bool showReportGroupSelection { get; set; } = false;    
-    private bool Chartview { get; set; }
+    private bool showChart { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
-    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; } 
 
     protected override async Task OnInitializedAsync()
     {
@@ -283,20 +279,17 @@
 
             using var streamRef = new DotNetStreamReference(ms);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Excel report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "csv")
         {
-            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), await appState.GetReportParameters());
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), refReportSelection.GetSelection());
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight CSV report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, FileName, allowDownload: true, isBase64: true);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Graph report Downloaded", Activity = LogActivity.Download });
         }
         else if (type == "pdf")
         {
@@ -304,7 +297,6 @@
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-            // await userActivityService.InsertUserActivity(new UserActivity { UserId = currentUser.Id, DateTime = DateTime.Now, Description = "Gross weight Pdf report Downloaded", Activity = LogActivity.Download });
         }
     }
 
@@ -332,7 +324,7 @@
     {
         selectedType = type;
         isLoading = true;
-        ReportParameters reportParameters = await appState.GetReportParameters();
+        ReportParameters reportParameters = refReportSelection.GetSelection();
         if (reportParameters.Stations is not null)
         {
             await LoadChart(reportParameters);
@@ -345,8 +337,9 @@
         ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
         XAxisTitle = "Histogram (1t increments)";
         YAxisTitle = "Number of vehicles";
-        Chartview = true;
+        showChart = true;
 
+        (IEnumerable<AxleLoadReport>, bool, string) report = new();
         if (selectedType == "Month")
         {
             report = await reportService.GetMonthlyOverloadedHistogramReport(reportParameters);
@@ -358,7 +351,7 @@
                 }
                 else 
                 {
-                    Chartview = false;
+                    showChart = false;
                     Summary = "No value is available";
                 }
             }
@@ -378,7 +371,7 @@
                 }
                 else
                 {
-                    Chartview = false;
+                    showChart = false;
                     Summary = "No value is available";
                 }
             }
@@ -398,7 +391,7 @@
                 }
                 else
                 {
-                    Chartview = false;
+                    showChart = false;
                     Summary = "No value is available";
                 }
             }
@@ -418,7 +411,7 @@
                 }
                 else
                 {
-                    Chartview = false;
+                    showChart = false;
                     Summary = "No value is available";
                 }
             }
@@ -438,7 +431,7 @@
                 }
                 else
                 {
-                    Chartview = false;
+                    showChart = false;
                     Summary = "No value is available";
                 }
             }

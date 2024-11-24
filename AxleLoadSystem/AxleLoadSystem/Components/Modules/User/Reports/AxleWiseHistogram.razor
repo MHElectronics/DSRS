@@ -195,8 +195,7 @@ else if (Chartview && ChartData is not null)
     private bool Chartview { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
-    private (IEnumerable<AxleLoadReport>, bool, string) report { get; set; }
-
+    
     protected override async Task OnInitializedAsync()
     {
         showReportGroupSelection = await appState.IsReportParametersSet();
@@ -289,7 +288,7 @@ else if (Chartview && ChartData is not null)
 
         selectedEquivalentAxleLoad = equivalentAxleLoad;
 
-        report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad);
+        (IEnumerable<AxleLoadReport>, bool, string) report = await reportService.GetAxleWiseHistogramReport(reportParameters, equivalentAxleLoad);
         if (report.Item2)
         {
             if (report.Item1.Count() > 0)
