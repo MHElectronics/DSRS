@@ -225,7 +225,7 @@
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 5).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 6).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 7).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle <2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
 
                                     <td class="text-right">
                                         @{
@@ -329,7 +329,7 @@
         else if (type.ToLower() == "column")
         {
             chartSeriesType = ChartSeriesType.Column;
-        }       
+        }
         chartType = type;
     }
     private async Task HandleParametersChanged(bool parameters)
@@ -381,27 +381,21 @@
         {
             if (report.Item1.Count() > 0)
             {
-                //Only monthly report query is updated to return number of axle
-                if(selectedType == "Month")
+                ChartDataByAxle = report.Item1.ToList();
+                IEnumerable<int> dataUnits = ChartDataByAxle.Select(d => d.DateUnit).Distinct();
+                ChartData = new();
+                foreach (int dataUnit in dataUnits.OrderBy(x => x))
                 {
-                    ChartDataByAxle = report.Item1.ToList();
-                    IEnumerable<int> dataUnits = ChartDataByAxle.Select(d => d.DateUnit).Distinct();
-                    ChartData = new();
-                    foreach (int dataUnit in dataUnits.OrderBy(x => x))
-                    {
-                        AxleLoadReport item = new();
-                        item.DateUnit = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnit;
-                        item.DateUnitName = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnitName;
-                        item.OverloadVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.OverloadVehicle);
-                        item.TotalVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.TotalVehicle);
+                    AxleLoadReport item = new();
+                    item.DateUnit = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnit;
+                    item.DateUnitName = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnitName;
+                    item.OverloadVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.OverloadVehicle);
+                    item.TotalVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.TotalVehicle);
 
-                        ChartData.Add(item);
-                    }
+                    ChartData.Add(item);
                 }
-                else
-                {
-                    ChartData = report.Item1.ToList();
-                }
+
+                // ChartData = report.Item1.ToList();
 
                 XAxisTitle = dataTypeTitle2();
 

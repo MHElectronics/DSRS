@@ -472,44 +472,22 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             SET @CurrentYear = @CurrentYear + 1
         END
 
-        CREATE TABLE #T(
-            TotalVehicle INT DEFAULT 0,
-            OverloadVehicle INT DEFAULT 0,
-            [Year] INT,
-            Axle1 INT DEFAULT 0,
-            Axle2 INT DEFAULT 0,
-            Axle3 INT DEFAULT 0,
-            Axle4 INT DEFAULT 0,
-            Axle5 INT DEFAULT 0,
-            Axle6 INT DEFAULT 0,
-            Axle7 INT DEFAULT 0,
-            AxleRemaining INT DEFAULT 0,
-            GrossVehicleWeight INT DEFAULT 0
-        )
+        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[Year] INT,GrossVehicleWeight INT DEFAULT 0)
 
-        INSERT INTO #T([Year], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight)
-        SELECT 
+        INSERT INTO #T(NumberOfAxle,[Year],TotalVehicle,OverloadVehicle,GrossVehicleWeight)
+        SELECT AL.NumberOfAxle,
             Y.[Year],
             COUNT(AL.StationId) AS TotalVehicle,
             SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle,
-            SUM(AL.Axle1) AS Axle1,
-            SUM(AL.Axle2) AS Axle2,
-            SUM(AL.Axle3) AS Axle3,
-            SUM(AL.Axle4) AS Axle4,
-            SUM(AL.Axle5) AS Axle5,
-            SUM(AL.Axle6) AS Axle6,
-            SUM(AL.Axle7) AS Axle7,
-            SUM(AL.AxleRemaining) AS AxleRemaining,
             SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
         FROM @Years Y LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
         ";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" GROUP BY Y.[Year]
+        query += @" GROUP BY Y.[Year],AL.NumberOfAxle
 
-        SELECT *,
-            CAST([Year] AS VARCHAR) AS DateUnitName
+        SELECT *,CAST([Year] AS VARCHAR) AS DateUnitName
         FROM #T
         ORDER BY [Year]
 
@@ -625,55 +603,24 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
         END
 
-        CREATE TABLE #T(
-            TotalVehicle INT DEFAULT 0,
-            OverloadVehicle INT DEFAULT 0,
-            [DateUnit] INT,
-            Axle1 INT DEFAULT 0,
-            Axle2 INT DEFAULT 0,
-            Axle3 INT DEFAULT 0,
-            Axle4 INT DEFAULT 0,
-            Axle5 INT DEFAULT 0,
-            Axle6 INT DEFAULT 0,
-            Axle7 INT DEFAULT 0,
-            AxleRemaining INT DEFAULT 0,
-            GrossVehicleWeight INT DEFAULT 0
-        )
+        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,GrossVehicleWeight INT DEFAULT 0)
 
-        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight)
-        SELECT 
+        INSERT INTO #T(NumberOfAxle,[DateUnit],TotalVehicle,OverloadVehicle,GrossVehicleWeight)
+        SELECT AL.NumberOfAxle,
             DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            SUM(Axle1) AS Axle1,
-            SUM(Axle2) AS Axle2,
-            SUM(Axle3) AS Axle3,
-            SUM(Axle4) AS Axle4,
-            SUM(Axle5) AS Axle5,
-            SUM(Axle6) AS Axle6,
-            SUM(Axle7) AS Axle7,
-            SUM(AxleRemaining) AS AxleRemaining,
             SUM(GrossVehicleWeight) AS GrossVehicleWeight
         FROM AxleLoad AL
         ";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" GROUP BY DATEPART(WEEKDAY, AL.DateTime)
+        query += @" GROUP BY DATEPART(WEEKDAY, AL.DateTime),AL.NumberOfAxle
 
-        SELECT *,
-            DATENAME(WEEKDAY, DATEADD(DAY, DateUnit - 1, 0)) AS DateUnitName
+        SELECT *,DATENAME(WEEKDAY, DATEADD(DAY, DateUnit - 1, 0)) AS DateUnitName
         FROM #T
-        ORDER BY 
-            CASE 
-                WHEN DateUnit = 7 THEN 1  -- Saturday
-                WHEN DateUnit = 1 THEN 2  -- Sunday
-                WHEN DateUnit = 2 THEN 3  -- Monday
-                WHEN DateUnit = 3 THEN 4  -- Tuesday
-                WHEN DateUnit = 4 THEN 5  -- Wednesday
-                WHEN DateUnit = 5 THEN 6  -- Thursday
-                WHEN DateUnit = 6 THEN 7  -- Friday
-            END
+        ORDER BY NumberOfAxle
 
         DROP TABLE #T
         ";
@@ -707,53 +654,33 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         bool isSuccess = false;
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) + @"
-        DECLARE @Days TABLE([Date] DATE)
+        DECLARE @Days TABLE(DateUnit INT,[Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
+        DECLARE @Loop INT=1
 
         WHILE @CurrentDate <= @DateEnd
         BEGIN
-            INSERT INTO @Days VALUES(@CurrentDate)
+            INSERT INTO @Days(DateUnit,[Date]) VALUES(@Loop,@CurrentDate)
             SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
+            SET @Loop = @Loop + 1
         END
 
-        CREATE TABLE #T(
-            TotalVehicle INT DEFAULT 0,
-            OverloadVehicle INT DEFAULT 0,
-            [Date] DATE,
-            Axle1 INT DEFAULT 0,
-            Axle2 INT DEFAULT 0,
-            Axle3 INT DEFAULT 0,
-            Axle4 INT DEFAULT 0,
-            Axle5 INT DEFAULT 0,
-            Axle6 INT DEFAULT 0,
-            Axle7 INT DEFAULT 0,
-            AxleRemaining INT DEFAULT 0,
-            GrossVehicleWeight INT DEFAULT 0
-        )
+        CREATE TABLE #T(DateUnit INT,NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[Date] DATE)
 
-        INSERT INTO #T([Date], TotalVehicle, OverloadVehicle, Axle1, Axle2, Axle3, Axle4, Axle5, Axle6, Axle7, AxleRemaining, GrossVehicleWeight)
-        SELECT 
+        INSERT INTO #T(DateUnit,NumberOfAxle,[Date],TotalVehicle,OverloadVehicle)
+        SELECT DateUnit,AL.NumberOfAxle,
             D.[Date],
             COUNT(AL.StationId) AS TotalVehicle,
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle,
-            SUM(AL.Axle1) AS Axle1,
-            SUM(AL.Axle2) AS Axle2,
-            SUM(AL.Axle3) AS Axle3,
-            SUM(AL.Axle4) AS Axle4,
-            SUM(AL.Axle5) AS Axle5,
-            SUM(AL.Axle6) AS Axle6,
-            SUM(AL.Axle7) AS Axle7,
-            SUM(AL.AxleRemaining) AS AxleRemaining,
-            SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
+            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
+            --,SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
         FROM @Days D LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
         ";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" GROUP BY D.[Date]
+        query += @" GROUP BY D.[Date],D.DateUnit,AL.NumberOfAxle
 
-        SELECT *,
-            CAST([Date] AS VARCHAR) AS DateUnitName
+        SELECT *,CAST([Date] AS VARCHAR) AS DateUnitName
         FROM #T
         ORDER BY [Date]
 
@@ -801,14 +728,10 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         INSERT INTO @AllHours([Hour])
         VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23)
 
-        CREATE TABLE #T(
-            TotalVehicle INT DEFAULT 0,
-            OverloadVehicle INT DEFAULT 0,
-            [DateUnit] INT 
-        )
+        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT)
 
-        INSERT INTO #T([DateUnit], TotalVehicle, OverloadVehicle)
-        SELECT 
+        INSERT INTO #T(NumberOfAxle,[DateUnit], TotalVehicle, OverloadVehicle)
+        SELECT AL.NumberOfAxle,
             DATEPART(HOUR, AL.DateTime) AS DateUnit,
             COUNT(1) AS TotalVehicle,
             SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle
@@ -817,9 +740,9 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" GROUP BY DATEPART(HOUR, AL.DateTime)
+        query += @" GROUP BY DATEPART(HOUR, AL.DateTime),AL.NumberOfAxle
 
-        SELECT 
+        SELECT NumberOfAxle,
             AH.Hour AS DateUnit,
             ISNULL(T.TotalVehicle, 0) AS TotalVehicle,
             ISNULL(T.OverloadVehicle, 0) AS OverloadVehicle,
