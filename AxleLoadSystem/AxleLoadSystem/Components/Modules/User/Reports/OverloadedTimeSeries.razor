@@ -55,7 +55,7 @@
                     <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">@localizer["Report.Table"]</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#tab_table2" role="tab" aria-selected="false">@localizer["Report.Table"] 2</a>
+                    <a class="nav-link" data-toggle="pill" href="#tab_table2" role="tab" aria-selected="false">Breakdown Table</a>
                 </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -76,8 +76,8 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
                             <button class="btn @(chartType == "column" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("column"))">@localizer["Report.ColumnChart"]</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
                         </div>
                         <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
                             @if (!string.IsNullOrEmpty(chartType))
@@ -175,13 +175,12 @@
                     </table>
                 </div>
                 <div class="tab-pane" id="tab_table2">
-                    Test
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th rowspan="2">@selectedType</th>
+                                <th rowspan="2" class="border-right">@selectedType</th>
                                 <th colspan="8" class="text-center border-right">Breakdown of Total Vechile by Axle</th>
-                                <th colspan="8" class="text-center">Breakdown of Overloaded Vehicle by Axle</th>
+                                <th colspan="8" class="text-center border-right">Breakdown of Overloaded Vehicle by Axle</th>
                                 <th rowspan="2" class="text-right">Overloading Ratio</th>
                             </tr>
                             <tr>
@@ -201,14 +200,14 @@
                                 <th class="text-right">5</th>
                                 <th class="text-right">6</th>
                                 <th class="text-right">7</th>
-                                <th class="text-right">Others</th>
+                                <th class="text-right border-right">Others</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (AxleLoadReport item in ChartData)
                             {
                                 <tr>
-                                    <td>@item.DateUnitName</td>
+                                    <td class="border-right">@item.DateUnitName</td>
                                     <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 2).Sum(d => d.TotalVehicle).ToString("N0"))</td>
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 3).Sum(d => d.TotalVehicle).ToString("N0"))</td>
@@ -225,7 +224,7 @@
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 5).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 6).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
                                     <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 7).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
 
                                     <td class="text-right">
                                         @{

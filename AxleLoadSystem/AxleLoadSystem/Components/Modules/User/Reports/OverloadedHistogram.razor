@@ -72,8 +72,8 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
                             <button class="btn @(chartType == "stackingcolumn" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("stackingcolumn"))">@localizer["Report.StackingColumnChart"]</button>
+                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
@@ -133,7 +133,7 @@
                                                     XName="GrossVehicleWeightRange"
                                                     YName="TotalVehicle"
                                                     YAxisName="PrimaryYAxis"
-                                                    Type="ChartSeriesType.StackingColumn"
+                                                    Type="@chartSeriesType"
                                                     EnableTooltip="true">
                                         <ChartMarker>
                                             <ChartDataLabel Visible="false" Position="LabelPosition.Top">
