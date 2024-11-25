@@ -7,14 +7,18 @@
 
 <PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
 
-@if (configuration != null)
+@if (configuration == null)
+{
+    <Loader />
+}
+else
 {
     <div class="card card-primary card-outline">
         <div class="card-body">
             <EditForm Model="@configuration" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
                 <DataAnnotationsValidator />
                 <div class="row">
-                    <div class="col-md-4 col-sm-12">
+                    <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             @if (editConfiguration)
                             {
@@ -29,7 +33,7 @@
                             }
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-12">
+                    <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             @if (editConfiguration)
                             {
@@ -44,7 +48,7 @@
                             }
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-12">
+                    <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             @if (editConfiguration)
                             {
@@ -59,47 +63,118 @@
                             }
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12 col-sm-12">
-                            <div class="btn-group">
-                                @if (editConfiguration)
+                    <div class="col-md-3 col-sm-6">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div class="form-control btn-group p-0">
+                                @if (!editConfiguration)
+                                {
+                                    <span class="btn btn-primary" @onclick="ToggleEdit">Edit</span>
+                                }
+                                else
                                 {
                                     <button class="btn btn-primary" type="submit">Save</button>
-                                    <span class="btn btn-primary" role="button" @onclick="Cancle">Cancle</span>
+                                    <span class="btn btn-primary" role="button" @onclick="Cancel">Cancel</span>
                                 }
                             </div>
                         </div>
                     </div>
                 </div>
             </EditForm>
-            @if (!editConfiguration)
+
+            @if (!string.IsNullOrEmpty(summary))
             {
-                <button class="btn btn-primary" @onclick="ToggleEdit">Edit</button>
+                <label class="error">@summary</label>
             }
-            @if (!string.IsNullOrEmpty(Summary))
+        </div>
+    </div>
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <h3 class="card-header">Allowed Weight</h3>
+            @if (weightEditEnabled)
             {
-                <label class="error">@Summary</label>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="form-group">
+                            <label for="axleNumber" class="form-label">Number of Axle</label>
+                            <label class="form-control">@selectedWeight.AxleNumber</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="form-group">
+                            <label for="allowedWeight" class="form-label">Allowed Weight</label>
+                            <input type="number" @bind="selectedWeight.AllowedWeight" required class="form-control" placeholder="Allowed Weight" min="1000" />
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <div class="form-control btn-group p-0">
+                                <span class="btn btn-primary" @onclick="UpdateAlloweWeight">Update</span>
+                                <span class="btn btn-primary" @onclick="CancelWeightEdit">Cancel</span>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(summaryWeightEdit))
+                    {
+                        <div class="col-md-3 col-sm-6">
+                            <label>&nbsp;</label>
+                            <div class="form-group">
+                                <span class="form-control p-0">
+                                    <p class="text-danger">@summaryWeightEdit</p>
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            @if (overloadWeights is not null)
+            {
+                <table class="table table-stripped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Number of Axle</th>
+                            <th class="text-right">Allowed Weight (kg)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ConfigurationOverloadWeight item in overloadWeights.OrderBy(w => w.AxleNumber))
+                        {
+                            <tr>
+                                <td class="text-center">@item.AxleNumber</td>
+                                <td class="text-right">@item.AllowedWeight.ToString("N0")</td>
+                                <td class="text-center"><span class="btn btn-primary" @onclick="(() => EditWeight(item.AxleNumber))" title="Edit allowed weight for number of axle @item.AxleNumber"><i class="fa fa-edit"></i></span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-danger">Allowed weights not found</p>
             }
         </div>
     </div>
 }
-else
-{
-    <Loader />
-}
 
 @code {
-    public Configuration configuration { get; set; } = new();
+    private Configuration configuration { get; set; } = new();
     private User currentUser { get; set; }
-    public bool editConfiguration { get; set; } = false;
-    public bool trigger { get; set; } = false;
-    public string Summary { get; set; }
+    private bool editConfiguration { get; set; } = false;
+    private bool trigger { get; set; } = false;
+    private string summary { get; set; } = string.Empty;
+
+    private IEnumerable<ConfigurationOverloadWeight> overloadWeights { get; set; }
+    private bool weightEditEnabled { get; set; } = false;
+    private ConfigurationOverloadWeight selectedWeight { get; set; }
+    private string summaryWeightEdit { get; set; } = string.Empty;
 
     protected override async Task OnParametersSetAsync()
     {
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
-        Summary = "";
+
         configuration = await configurationService.GetConfiguration();
         if (configuration == null)
         {
@@ -107,44 +182,77 @@ else
             editConfiguration = true;
             trigger = true;
         }
+
+        overloadWeights = await configurationService.GetOverloadWeights();
+
     }
 
     void OnInvalidSubmit()
     {
-        Summary = "Please enter valid data";
+        summary = "Please enter valid data";
     }
 
     async Task OnValidSubmit(EditContext editContext)
     {
-        Summary = "";
+        summary = "";
 
         if (editConfiguration && trigger)
         {
             if (await configurationService.InsertConfiguration(configuration, currentUser))
             {
-                Summary = "Configuration added successfully";
+                summary = "Configuration added successfully";
             }
             else
             {
-                Summary = "Failed to add configuration";
+                summary = "Failed to add configuration";
             }
         }
         else
         {
             await configurationService.UpdateConfiguration(configuration, currentUser);
-            Summary = "Configuration updated successfully";
+            summary = "Configuration updated successfully";
         }
         editConfiguration = false;
     }
-    private async Task Cancle()
+    private async Task Cancel()
     {
         configuration = await configurationService.GetConfiguration();
-        Summary = "";
+        summary = "";
         editConfiguration = false;
     }
     void ToggleEdit()
     {
-        Summary = "";
+        summary = "";
         editConfiguration = !editConfiguration;
+    }
+
+    private void EditWeight(int numberOfAxle)
+    {
+        weightEditEnabled = true;
+        summaryWeightEdit = string.Empty;
+        selectedWeight = new();
+        selectedWeight.AxleNumber = numberOfAxle;
+        if (overloadWeights.Any(w => w.AxleNumber == numberOfAxle))
+        {
+            selectedWeight.AllowedWeight = overloadWeights.FirstOrDefault(w => w.AxleNumber == numberOfAxle).AllowedWeight;
+        }
+    }
+    private async Task UpdateAlloweWeight()
+    {
+        if (selectedWeight.AllowedWeight > 0)
+        {
+            if(await configurationService.UpdateOverloadWeight(selectedWeight, currentUser))
+            {
+                overloadWeights.FirstOrDefault(w => w.AxleNumber == selectedWeight.AxleNumber).AllowedWeight = selectedWeight.AllowedWeight;
+            }
+        }
+        else
+        {
+            summaryWeightEdit = "Allowed weight must be greater then 0";
+        }
+    }
+    private void CancelWeightEdit()
+    {
+        weightEditEnabled = false;
     }
 }
