@@ -365,8 +365,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     }
     #endregion
 
-
-    #region Overloaded Histogram Part 2 report query
+    #region Axle-wise Histogram report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad)
     {
         //Disable number of axle filter
@@ -404,14 +403,20 @@ INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
 {whereClause}
 AND Al.NumberOfAxle>={i}
 GROUP BY R.GroupId
-";
-            if (i != 7)
-            {
-                query += " UNION ALL ";
-            }
+UNION ALL ";
+            //if (i != 7)
+            //{
+            //    query += " UNION ALL ";
+            //}
         }
 
-        query += @") AS Sub
+        query += $@"
+SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
+FROM AxleLoad AL
+INNER JOIN @Range R ON (AL.AxleRemaining >= R.Minimum AND AxleRemaining < R.Maximum)
+{whereClause}
+AND Al.NumberOfAxle=8
+GROUP BY R.GroupId) AS Sub
 GROUP BY GroupId 
 
 --Ton coversion

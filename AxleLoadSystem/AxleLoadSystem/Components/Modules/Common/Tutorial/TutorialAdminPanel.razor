@@ -150,8 +150,8 @@
     }
     private async Task Loadtutorials()
     {
-        var Listtutorials = await tutorialService.GetTutorials();
-        tutorials = Listtutorials.ToList();
+        var listtutorials = await tutorialService.GetTutorials();
+        tutorials = listtutorials.ToList();
     }
     private void Edit(Tutorial obj)
     {
@@ -173,8 +173,6 @@
             }
             else
             {
-                var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-                User currentUser = await customStateProvider.GetAuthorizedUser();
                 uploading = true;
                 foreach (var file in selectedFiles)
                 {
