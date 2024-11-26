@@ -252,4 +252,7 @@
   <data name="ReportTitle.AxleWiseHistogram" xml:space="preserve">
     <value>এক্সেল-ওয়াইজ (হিস্টোগ্রাম)</value>
   </data>
+  <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
+    <value>ওভারলোডেড ওজন অনুপাত</value>
+  </data>
 </root>

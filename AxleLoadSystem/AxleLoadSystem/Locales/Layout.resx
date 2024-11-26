@@ -178,7 +178,7 @@
     <value>Time Series</value>
   </data>
   <data name="Menu.Overweight" xml:space="preserve">
-    <value>Overloaded (Number of axles)</value>
+    <value>Number of axles</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
     <value>Data analysis (General purpose)</value>
@@ -224,5 +224,8 @@
   </data>
   <data name="Menu.AxleWiseHistogram" xml:space="preserve">
     <value>Histogram: Axle-Wise</value>
+  </data>
+  <data name="Menu.OverloadedWeightRatio" xml:space="preserve">
+    <value>Weight Ratio</value>
   </data>
 </root>

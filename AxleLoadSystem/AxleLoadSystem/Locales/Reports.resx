@@ -252,4 +252,7 @@
   <data name="ReportTitle.AxleWiseHistogram" xml:space="preserve">
     <value>Axle-Wise (Histogram)</value>
   </data>
+  <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
+    <value>Overloaded Weight Ratio</value>
+  </data>
 </root>
