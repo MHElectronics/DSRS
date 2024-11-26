@@ -8,6 +8,7 @@
 @using System.Globalization
 @inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
+@inject IConfigurationService configurationService
 @inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
@@ -179,27 +180,23 @@
                         <thead>
                             <tr>
                                 <th rowspan="2" class="border-right">@selectedType</th>
-                                <th colspan="8" class="text-center border-right">Breakdown of Total Vechile by Axle</th>
-                                <th colspan="8" class="text-center border-right">Breakdown of Overloaded Vehicle by Axle</th>
+                                <th colspan="@(maxNumberOfAxle + 1)" class="text-center border-right">Breakdown of Total Vechile by Axle</th>
+                                <th colspan="@(maxNumberOfAxle + 1)" class="text-center border-right">Breakdown of Overloaded Vehicle by Axle</th>
                                 <th rowspan="2" class="text-right">Overloading Ratio</th>
                             </tr>
                             <tr>
                                 <th class="text-right">Total</th>
-                                <th class="text-right">2</th>
-                                <th class="text-right">3</th>
-                                <th class="text-right">4</th>
-                                <th class="text-right">5</th>
-                                <th class="text-right">6</th>
-                                <th class="text-right">7</th>
+                                @for(int i=2; i<=maxNumberOfAxle; i++)
+                                {
+                                    <th class="text-right">@i</th>
+                                }
                                 <th class="text-right border-right">Others</th>
 
                                 <th class="text-right">Total</th>
-                                <th class="text-right">2</th>
-                                <th class="text-right">3</th>
-                                <th class="text-right">4</th>
-                                <th class="text-right">5</th>
-                                <th class="text-right">6</th>
-                                <th class="text-right">7</th>
+                                @for (int i = 2; i <= maxNumberOfAxle; i++)
+                                {
+                                    <th class="text-right">@i</th>
+                                }
                                 <th class="text-right border-right">Others</th>
                             </tr>
                         </thead>
@@ -209,21 +206,17 @@
                                 <tr>
                                     <td class="border-right">@item.DateUnitName</td>
                                     <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 2).Sum(d => d.TotalVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 3).Sum(d => d.TotalVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 4).Sum(d => d.TotalVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 5).Sum(d => d.TotalVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 6).Sum(d => d.TotalVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 7).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    @for (int i = 2; i <= maxNumberOfAxle; i++)
+                                    {
+                                        <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == i).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    }
                                     <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.TotalVehicle).ToString("N0"))</td>
 
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 2).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 3).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 4).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 5).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 6).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
-                                    <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == 7).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    @for (int i = 2; i <= maxNumberOfAxle; i++)
+                                    {
+                                        <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == i).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    }
                                     <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
 
                                     <td class="text-right">
@@ -251,6 +244,7 @@
     private ReportSelection refReportSelection { get; set; }
     public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
+    private int maxNumberOfAxle { get; set; } = 7;
     public List<AxleLoadReport> ChartData { get; set; }
     public List<AxleLoadReport> ChartDataByAxle { get; set; }
 
@@ -273,6 +267,11 @@
     protected override async Task OnInitializedAsync()
     {
         showReportGroupSelection = await appState.IsReportParametersSet();
+        Configuration reportConfiguration =await configurationService.GetConfiguration();
+        if(reportConfiguration is not null)
+        {
+            maxNumberOfAxle = reportConfiguration.NumberOfAxle;
+        }
     }
 
     private async Task Export(string type)

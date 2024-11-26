@@ -90,14 +90,26 @@ else
     </div>
     <div class="card card-primary card-outline">
         <div class="card-body">
-            <h3 class="card-header">Allowed Weight</h3>
-            @if (weightEditEnabled)
+            <h3 class="card-header">Allowed Weight 
+                @if(!weightAddEnabled && !weightEditEnabled)
+                {
+                    <span class="btn btn-primary" @onclick="AddWeight"><i class="fa fa-plus"></i> Add New</span>
+                }
+            </h3>
+            @if (weightAddEnabled || weightEditEnabled)
             {
                 <div class="row">
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             <label for="axleNumber" class="form-label">Number of Axle</label>
-                            <label class="form-control">@selectedWeight.AxleNumber</label>
+                            @if (weightEditEnabled)
+                            {
+                                <label class="form-control">@selectedWeight.AxleNumber</label>
+                            }
+                            else
+                            {
+                                <input type="number" max="" class="form-control" @bind="selectedWeight.AxleNumber" />
+                            }
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
@@ -110,7 +122,14 @@ else
                         <div class="form-group">
                             <label>&nbsp;</label>
                             <div class="form-control btn-group p-0">
-                                <span class="btn btn-primary" @onclick="UpdateAlloweWeight">Update</span>
+                                @if (weightEditEnabled)
+                                {
+                                    <span class="btn btn-primary" @onclick="UpdateAlloweWeight">Update</span>
+                                }
+                                else
+                                {
+                                    <span class="btn btn-primary" @onclick="AddAlloweWeight">Add</span>
+                                }
                                 <span class="btn btn-primary" @onclick="CancelWeightEdit">Cancel</span>
                             </div>
                         </div>
@@ -165,8 +184,9 @@ else
     private bool trigger { get; set; } = false;
     private string summary { get; set; } = string.Empty;
 
-    private IEnumerable<ConfigurationOverloadWeight> overloadWeights { get; set; }
+    private List<ConfigurationOverloadWeight> overloadWeights { get; set; }
     private bool weightEditEnabled { get; set; } = false;
+    private bool weightAddEnabled { get; set; } = false;
     private ConfigurationOverloadWeight selectedWeight { get; set; }
     private string summaryWeightEdit { get; set; } = string.Empty;
 
@@ -183,8 +203,7 @@ else
             trigger = true;
         }
 
-        overloadWeights = await configurationService.GetOverloadWeights();
-
+        overloadWeights = (await configurationService.GetOverloadWeights()).ToList();
     }
 
     void OnInvalidSubmit()
@@ -226,9 +245,19 @@ else
         editConfiguration = !editConfiguration;
     }
 
+    private void AddWeight()
+    {
+        weightAddEnabled = true;
+        weightEditEnabled = false;
+        summaryWeightEdit = string.Empty;
+        selectedWeight = new();
+        selectedWeight.AxleNumber = overloadWeights.Max(w=>w.AxleNumber) + 1;
+        selectedWeight.AllowedWeight = 0;
+    }
     private void EditWeight(int numberOfAxle)
     {
         weightEditEnabled = true;
+        weightAddEnabled = false;
         summaryWeightEdit = string.Empty;
         selectedWeight = new();
         selectedWeight.AxleNumber = numberOfAxle;
@@ -241,9 +270,39 @@ else
     {
         if (selectedWeight.AllowedWeight > 0)
         {
-            if(await configurationService.UpdateOverloadWeight(selectedWeight, currentUser))
+            if (await configurationService.UpdateOverloadWeight(selectedWeight, currentUser))
             {
                 overloadWeights.FirstOrDefault(w => w.AxleNumber == selectedWeight.AxleNumber).AllowedWeight = selectedWeight.AllowedWeight;
+            }
+        }
+        else
+        {
+            summaryWeightEdit = "Allowed weight must be greater then 0";
+        }
+    }
+    private async Task AddAlloweWeight()
+    {
+        if (selectedWeight.AllowedWeight > 0)
+        {
+            if(overloadWeights.Any(w=>w.AxleNumber == selectedWeight.AxleNumber))
+            {
+                summaryWeightEdit = "Axle number already exists";
+            }
+            try
+            {
+                if (await configurationService.InsertOverloadWeight(selectedWeight, currentUser))
+                {
+                    overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
+                }
+                else
+                {
+                    summaryWeightEdit = "Allowed weight add failed";
+                }
+            }
+            catch (Exception ex)
+            {
+                summaryWeightEdit = "Allowed weight add failed. Error: " + ex.Message;
+                throw;
             }
         }
         else
@@ -254,5 +313,6 @@ else
     private void CancelWeightEdit()
     {
         weightEditEnabled = false;
+        weightAddEnabled = false;
     }
 }
