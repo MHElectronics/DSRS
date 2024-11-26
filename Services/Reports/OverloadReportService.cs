@@ -404,13 +404,10 @@ INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
 AND Al.NumberOfAxle>={i}
 GROUP BY R.GroupId
 UNION ALL ";
-            //if (i != 7)
-            //{
-            //    query += " UNION ALL ";
-            //}
         }
 
         query += $@"
+--AxleRemaining for 8 Axle Vehiche only
 SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
 FROM AxleLoad AL
 INNER JOIN @Range R ON (AL.AxleRemaining >= R.Minimum AND AxleRemaining < R.Maximum)
