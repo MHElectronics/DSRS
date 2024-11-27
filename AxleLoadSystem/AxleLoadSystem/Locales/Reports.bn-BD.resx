@@ -202,13 +202,13 @@
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
   <data name="ReportTitle.OverloadedHistogram" xml:space="preserve">
-    <value>ওভারলোড (হিস্টোগ্রাম)</value>
+    <value>ওভারলোড হিস্টোগ্রাম</value>
   </data>
   <data name="ReportTitle.Overloaded" xml:space="preserve">
-    <value>ওভারলোড (টাইম সিরিজ)</value>
+    <value>টাইম সিরিজ</value>
   </data>
   <data name="ReportTitle.Overweight" xml:space="preserve">
-    <value>ওভারলোড (অ্যাক্সেলের সংখ্যা)</value>
+    <value>অ্যাক্সেলের সংখ্যা</value>
   </data>
   <data name="SystemStartDate" xml:space="preserve">
     <value>সিস্টেম শুরুর তারিখ</value>
@@ -250,7 +250,7 @@
     <value>শুরুর সময়</value>
   </data>
   <data name="ReportTitle.AxleWiseHistogram" xml:space="preserve">
-    <value>এক্সেল-ওয়াইজ (হিস্টোগ্রাম)</value>
+    <value>এক্সেল-ওয়াইজ হিস্টোগ্রাম</value>
   </data>
   <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
     <value>ওভারলোডেড ওজন অনুপাত</value>

@@ -174,10 +174,10 @@
   <data name="Menu.OverloadHistogram" xml:space="preserve">
     <value>হিস্টোগ্রাম: ওভারলোডেড </value>
   </data>
-  <data name="Menu.Overloaded" xml:space="preserve">
+  <data name="Menu.TimeSeries" xml:space="preserve">
     <value>টাইম সিরিজ</value>
   </data>
-  <data name="Menu.Overweight" xml:space="preserve">
+  <data name="Menu.NumberOfAxle" xml:space="preserve">
     <value>এক্সেল সংখ্যা</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">

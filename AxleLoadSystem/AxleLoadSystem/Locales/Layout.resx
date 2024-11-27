@@ -174,10 +174,10 @@
   <data name="Menu.OverloadHistogram" xml:space="preserve">
     <value>Histogram: Overloaded</value>
   </data>
-  <data name="Menu.Overloaded" xml:space="preserve">
+  <data name="Menu.TimeSeries" xml:space="preserve">
     <value>Time Series</value>
   </data>
-  <data name="Menu.Overweight" xml:space="preserve">
+  <data name="Menu.NumberOfAxle" xml:space="preserve">
     <value>Number of axles</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
