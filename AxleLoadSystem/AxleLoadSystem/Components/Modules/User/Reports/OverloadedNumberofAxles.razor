@@ -6,9 +6,7 @@
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
-@inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
-@inject NavigationManager NavigationManager
 @inject IAppState appState
 @inject IJSRuntime jsRuntime
 @inject IStringLocalizer<Locales.Reports> localizer
@@ -36,14 +34,14 @@
                     </div>
                 </div>
             }
-            @if (!string.IsNullOrEmpty(Summary))
+            @if (!string.IsNullOrEmpty(summary))
             {
-                <label class="text-danger">@Summary</label>
+                <label class="text-danger">@summary</label>
             }
         </div>
-    }  
+    }
 </div>
-@if (Chartview && ChartData is not null)
+@if (showChart && data is not null)
 {
     <div class="card card-primary">
         <div class="card-header">
@@ -59,11 +57,9 @@
                         @localizer["Report.Export"]
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">@localizer["Report.CSV"]</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">@localizer["Report.Graph"]</span></li>
-                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
                     </ul>
                 </li>
             </ul>
@@ -73,24 +69,37 @@
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "stackingcolumn" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("stackingcolumn"))">@localizer["Report.StackingColumnChart"]</button>
-                            <button class="btn @(chartType == "line" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("line"))">@localizer["Report.LineChart"]</button>
+                            <button class="btn @(chartSeriesType == ChartSeriesType.StackingColumn ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => chartSeriesType = ChartSeriesType.StackingColumn)">@localizer["Report.StackingColumnChart"]</button>
+                            <button class="btn @(chartSeriesType == ChartSeriesType.Line ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => chartSeriesType = ChartSeriesType.Line)">@localizer["Report.LineChart"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
-                        @if (!string.IsNullOrEmpty(chartType))
+                        @if (showChart)
                         {
-                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
+                            @* Calculate Overloading Ratio *@
+                            var overloadingRatioData = data
+                            .GroupBy(x => x.NumberofAxle)
+                            .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
+                            .Select(group => new
+                            {
+                                NumberofAxle = group.Key,
+                                OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                            ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                            : 0
+                            })
+                            .ToList();
+
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="100%" Height="100%" Theme="@Theme">
                                 <ChartArea>
                                     <ChartAreaBorder Width="0"></ChartAreaBorder>
                                 </ChartArea>
 
-                                <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
+                                <ChartPrimaryXAxis Title="Number of axles" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                 </ChartPrimaryXAxis>
 
-                                <ChartPrimaryYAxis Title="@YAxisTitle">
+                                <ChartPrimaryYAxis Title="Number of vehicles">
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="1"></ChartAxisMinorGridLines>
                                 </ChartPrimaryYAxis>
@@ -104,7 +113,7 @@
                                 </ChartAxes>
 
                                 <ChartSeriesCollection>
-                                    @foreach (var dayGroup in ChartData.GroupBy(x => x.DateUnit))
+                                    @foreach (var dayGroup in data.GroupBy(x => x.DateUnit))
                                     {
                                         if (dayGroup.Any(x => x.NumberofAxle != 0))
                                         {
@@ -123,20 +132,6 @@
                                                 <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                             </ChartSeries>
                                         }
-                                    }
-                                    @* Calculate Overloading Ratio *@
-                                    @{
-                                        var overloadingRatioData = ChartData
-                                        .GroupBy(x => x.NumberofAxle)
-                                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
-                                        .Select(group => new
-                                        {
-                                            NumberofAxle = group.Key,
-                                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
-                                        : 0
-                                        })
-                                        .ToList();
                                     }
 
                                     <ChartSeries Name="Overloading Ratio (%)"
@@ -158,47 +153,35 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab_table">
-                    @{
-                        var overloadingRatioData = ChartData
-                        .GroupBy(x => x.NumberofAxle)
-                        .Where(group => group.Key != 0)  // Filter out groups with NumberofAxle = 0
-                        .Select(group => new
-                        {
-                            NumberofAxle = group.Key,
-                            OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                        ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100 
-                        : 0
-                        })
-                        .ToDictionary(x => x.NumberofAxle, x => x.OverloadingRatio); // Create a dictionary for easy lookup
-                    }
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>@selectedType</th>
                                 <th class="text-right">Number of Axle</th>
+                                <th>@selectedType</th>
                                 <th class="text-right">Overloaded Vehicle</th>
                                 <th class="text-right">Total Vehicle</th>
                                 <th class="text-right">Overloading Ratio by Axle</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (AxleLoadReport item in ChartData)
+                            @foreach (int numberOfAxle in data.Select(d => d.NumberofAxle).Distinct().OrderBy(d => d))
                             {
+                                decimal ration = (decimal)data.Where(d => d.NumberofAxle == numberOfAxle).Sum(d => d.OverloadVehicle) / (decimal)data.Where(d => d.NumberofAxle == numberOfAxle).Sum(d => d.TotalVehicle);
                                 <tr>
-                                    <td>@item.DateUnitName</td>
-                                    <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
-                                    <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
-                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
-                                    <td class="text-right">
-                                        @{
-                                            // Lookup the overloading ratio for the current item's NumberofAxle
-                                            item.OverloadingRatio = overloadingRatioData.ContainsKey(item.NumberofAxle)
-                                            ? overloadingRatioData[item.NumberofAxle]
-                                            : 0;
-                                        }
-                                        @($"{item.OverloadingRatio:N2}%")
-                                    </td>
+                                    <th class="text-right">@numberOfAxle</th>
+                                    <th colspan="3"></th>
+                                    <th class="text-right">@ration.ToString("P2")</th>
                                 </tr>
+                                @foreach (AxleLoadReport item in data.Where(d => d.NumberofAxle == numberOfAxle).OrderBy(d => d.DateUnit).ThenBy(d => d.NumberofAxle))
+                                {
+                                    <tr>
+                                        <td></td>
+                                        <td>@item.DateUnitName</td>
+                                        <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                        <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
+                                        <td class="text-right">@(((decimal)item.OverloadVehicle / (decimal)item.TotalVehicle).ToString("P2"))</td>
+                                    </tr>
+                                }
                             }
                         </tbody>
                     </table>
@@ -211,24 +194,18 @@
 @code {
     private Theme Theme { get; set; } = 0;
     private SfChart chartInstance;
-    public LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
+    private LabelIntersectAction Label { get; set; } = LabelIntersectAction.Trim;
 
-    public IEnumerable<AxleLoadReport> ChartData { get; set; }
+    private IEnumerable<AxleLoadReport> data { get; set; }
     private ReportSelection refReportSelection { get; set; }
 
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
-    public string Height { get; set; } = "100%";
-    public string Width { get; set; } = "100%";
-    public string FileName { get; set; } = "Charts";
-    public string Format { get; set; } = "{value} GW";
-    public string ChartTitle { get; set; } = "";
-    public string XAxisTitle { get; set; } = "";
-    public string YAxisTitle { get; set; } = "";
+    private string Format { get; set; } = "{value} GW";
+    private string ChartTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
-    private string Summary { get; set; } = "";
-    private string chartType { get; set; } = "stackingcolumn";
-    private bool showReportGroupSelection { get; set; } = false;    
-    private bool Chartview { get; set; }
+    private string summary { get; set; } = "";
+    private bool showReportGroupSelection { get; set; } = false;
+    private bool showChart { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
 
@@ -245,53 +222,44 @@
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overloaded Ratio by Axle", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
-        if (type == "excel")
-        {
-            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
 
-            MemoryStream ms = new MemoryStream(fileByte);
+        string fileName = "Number of Axle Report";
 
-            using var streamRef = new DotNetStreamReference(ms);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-        }
-        else if (type == "csv")
+        // if (type == "excel")
+        // {
+        //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, data.ToList());
+
+        //     MemoryStream ms = new MemoryStream(fileByte);
+
+        //     using var streamRef = new DotNetStreamReference(ms);
+        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+        // }
+        // else 
+        if (type == "csv")
         {
-            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), refReportSelection.GetSelection());
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), refReportSelection.GetSelection());
 
             using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
         }
         else if (type == "chart")
         {
-            await chartInstance.ExportAsync(ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+            await chartInstance.ExportAsync(ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
-        else if (type == "pdf")
-        {
-            MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+        // else if (type == "pdf")
+        // {
+        //     MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(data.ToList());
 
-            using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-        }
+        //     using var streamRef = new DotNetStreamReference(stream);
+        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".pdf", streamRef);
+        // }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)
     {
         string base64 = exportEventArgs.Base64;
     }
-    private async Task ChartChanged(string type)
-    {
-        if (type.ToLower() == "line")
-        {
-            chartSeriesType = ChartSeriesType.Line;
-        }
-        else if (type.ToLower() == "stackingcolumn")
-        {
-            chartSeriesType = ChartSeriesType.StackingColumn;
-        }
-
-        chartType = type;
-    }
-    private async Task HandleParametersChanged(bool parameters)
+    private void HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;
     }
@@ -308,112 +276,47 @@
     }
     private async Task LoadChart(ReportParameters reportParameters)
     {
-        Summary = "";
+        summary = "";
         ChartTitle = "Number of overloaded vehicles for each time series " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
-        XAxisTitle = "Number of axles";
-        YAxisTitle = "Number of vehicles";
-        Chartview = true;
+        showChart = true;
 
         (IEnumerable<AxleLoadReport>, bool, string) report = new();
         if (selectedType == "Month")
         {
             report = await reportService.GetMonthlyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else 
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;    
-            }
         }
         else if (selectedType == "Day-of-week")
         {
             report = await reportService.GetWeeklyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
         }
         else if (selectedType == "Hour")
         {
             report = await reportService.GetHourlyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
         }
         else if (selectedType == "Year")
         {
             report = await reportService.GetYearlyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
-            {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
-            }
-            else
-            {
-                Summary = report.Item3;
-            }
         }
         else if (selectedType == "Day")
         {
             report = await reportService.GetDailyOverloadedNumberOfAxlesReport(reportParameters);
-            if (report.Item2)
+        }
+
+        if (report.Item2)
+        {
+            if (report.Item1 is not null && report.Item1.Count() > 0)
             {
-                if (report.Item1.Count() > 0)
-                {
-                    ChartData = report.Item1;
-                }
-                else
-                {
-                    Chartview = false;
-                    Summary = "No value is available";
-                }
+                data = report.Item1;
             }
             else
             {
-                Summary = report.Item3;
+                showChart = false;
+                summary = "No value is available";
             }
+        }
+        else
+        {
+            summary = report.Item3;
         }
     }
 }
