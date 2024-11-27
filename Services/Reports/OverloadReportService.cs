@@ -24,6 +24,7 @@ public interface IOverloadReportService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedRatioReport(ReportParameters reportParameters, bool overloadCalculative);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedWeightRatioReport(ReportParameters reportParameters);
 }
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
@@ -1123,6 +1124,75 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
         query += @" GROUP BY AL.NumberOfAxle
         ORDER BY AL.NumberOfAxle";
+
+        var parameters = new
+        {
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan()
+        };
+
+        bool isSuccess;
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = await _db.LoadData<AxleLoadReport, dynamic>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
+
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedWeightRatioReport(ReportParameters reportParameters)
+    {
+        string message = "";
+
+        string query = this.GetStationTableQuery(reportParameters) + $@"
+        DECLARE @WeightRatio2 TABLE(NumberOfAxle INT,OverloadGroupId INT,MinimumWeight DECIMAL(18,5),MaximumValue DECIMAL(18,5),OverloadCount DECIMAL(18,5),TotalCountByGroup DECIMAL(18,5))
+
+DECLARE @Range TABLE(AutoId INT IDENTITY(1,1),MinimumValue DECIMAL(18,5),MaximumValue DECIMAL(18,5))
+INSERT INTO @Range(MinimumValue,MaximumValue)
+VALUES(0,5)
+,(.05,.01)
+,(.01,.015)
+,(.015,.02)
+,(.020,.025)
+,(.025,.030)
+,(.030,.035)
+,(.035,.040)
+,(.040,100)
+
+INSERT INTO @WeightRatio2(NumberOfAxle,OverloadGroupId,MinimumWeight,MaximumValue,OverloadCount)
+SELECT AL.NumberOfAxle
+,R.AutoId OverloadGroupId,R.MinimumValue,R.MaximumValue
+,COUNT(1) OverloadCount
+--,(CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN CAST(AL.GrossVehicleWeight AS DECIMAL(18,5))-OL.AllowedWeight ELSE 0 END)/OL.AllowedWeight OverloadPercentage
+FROM AxleLoad AL INNER JOIN ConfigurationOverloadWeight OL ON AL.NumberOfAxle=OL.AxleNumber
+INNER JOIN @Range R ON R.MinimumValue>=(CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN CAST(AL.GrossVehicleWeight AS DECIMAL(18,5))-OL.AllowedWeight ELSE 0 END)/OL.AllowedWeight
+	AND R.MaximumValue<(CASE WHEN AL.GrossVehicleWeight>OL.AllowedWeight THEN CAST(AL.GrossVehicleWeight AS DECIMAL(18,5))-OL.AllowedWeight ELSE 0 END)/OL.AllowedWeight
+{this.GetFilterClause(reportParameters)}
+AND AL.GrossVehicleWeight>OL.AllowedWeight
+GROUP BY AL.NumberOfAxle,R.AutoId,R.MinimumValue,R.MaximumValue
+ORDER BY NumberOfAxle
+
+UPDATE @WeightRatio2
+SET [@WeightRatio2].TotalCountByGroup=Sub.TotalCountByGroup
+FROM (SELECT NumberOfAxle,SUM(OverloadCount) TotalCountByGroup
+	FROM @WeightRatio2
+	GROUP BY NumberOfAxle) Sub
+WHERE [@WeightRatio2].NumberOfAxle=Sub.NumberOfAxle
+
+SELECT NumberOfAxle DateUnit,OverloadGroupId GrossVehicleWeightRange,OverloadCount/TotalCountByGroup OverloadingRatio
+FROM @WeightRatio2
+ORDER BY NumberOfAxle";
 
         var parameters = new
         {
