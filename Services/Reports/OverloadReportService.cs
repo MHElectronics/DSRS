@@ -136,7 +136,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -152,9 +152,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATENAME(MONTH, AL.DateTime) AS DateUnitName,
             R.GroupId,
             COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            {_overloadCountQuery}  AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
+        {_overloadJoiningQuery}
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -194,7 +196,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -210,9 +212,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             DATENAME(WEEKDAY, DATEADD(DAY, DATEPART(WEEKDAY, AL.DateTime) - 1, 0)) AS DateUnitName,
             R.GroupId,
             COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            {_overloadCountQuery}  AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
+        {_overloadJoiningQuery}
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -252,7 +256,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -268,9 +272,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             CONVERT(NVARCHAR, CAST(AL.DateTime AS DATE), 23) AS DateUnitName,  -- Format full date as YYYY-MM-DD string
             R.GroupId,
             COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            {_overloadCountQuery}  AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
+        {_overloadJoiningQuery}
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
@@ -310,7 +316,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
         DECLARE @TotalIteration INT = 50
 
@@ -326,9 +332,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             CAST(DATEPART(HOUR, AL.DateTime) AS VARCHAR) + ':00' AS DateUnitName,
             R.GroupId,
             COUNT(1) AS TotalVehicle,
-            SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
+            {_overloadCountQuery}  AS OverloadVehicle,
             CAST((R.Minimum / 1000) AS VARCHAR(100)) + '-' + CAST((R.Maximum / 1000) AS VARCHAR(100)) AS GrossVehicleWeightRange
         FROM AxleLoad AL
+        {_overloadJoiningQuery}
         INNER JOIN @Range R ON (AL.GrossVehicleWeight > R.Minimum AND AL.GrossVehicleWeight <= R.Maximum)";
 
         query += this.GetFilterClause(reportParameters);
