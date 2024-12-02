@@ -139,7 +139,7 @@ else
                         <div class="col-md-3 col-sm-6">
                             <label>&nbsp;</label>
                             <div class="form-group">
-                                <span class="form-control p-0">
+                                <span class="form-control p-0" style="border: None">
                                     <p class="text-danger">@summaryWeightEdit</p>
                                 </span>
                             </div>
@@ -284,26 +284,29 @@ else
     {
         if (selectedWeight.AllowedWeight > 0)
         {
-            if(overloadWeights.Any(w=>w.AxleNumber == selectedWeight.AxleNumber))
+            if (overloadWeights.Any(w => w.AxleNumber == selectedWeight.AxleNumber))
             {
                 summaryWeightEdit = "Axle number already exists";
             }
-            try
+            else
             {
-                if (await configurationService.InsertOverloadWeight(selectedWeight, currentUser))
+                try
                 {
-                    overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
+                    if (await configurationService.InsertOverloadWeight(selectedWeight, currentUser))
+                    {
+                        overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
+                    }
+                    else
+                    {
+                        summaryWeightEdit = "Allowed weight add failed";
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    summaryWeightEdit = "Allowed weight add failed";
+                    summaryWeightEdit = "Allowed weight add failed. Error: " + ex.Message;
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-                summaryWeightEdit = "Allowed weight add failed. Error: " + ex.Message;
-                throw;
-            }
+            }            
         }
         else
         {
