@@ -5,6 +5,7 @@ public class AxleLoadReport
 {
     public int TotalVehicle { get; set; }
     public int OverloadVehicle { get; set; }
+    public int NotOverloadVehicle { get; set; } 
     public DateTime Date { get; set; }
     public int DateUnit { get; set; }
     public string DateUnitName { get; set; } = "";

@@ -149,8 +149,9 @@
                         <thead>
                             <tr>
                                 <th>@selectedType</th>
-                                <th class="text-right">Total Vehicle</th>
                                 <th class="text-right">Overloaded Vehicle</th>
+                                <th class="text-right">Not Overloaded Vehicle</th>
+                                <th class="text-right">Total Vehicle</th>
                                 <th class="text-right">Overloading Ratio</th>
                             </tr>
                         </thead>
@@ -159,8 +160,9 @@
                             {
                                 <tr>
                                     <td>@item.DateUnitName</td>
-                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@item.NotOverloadVehicle.ToString("N0")</td>
+                                    <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
                                     <td class="text-right">
                                         @{
                                             // Calculate overloading ratio for the current item
@@ -388,6 +390,7 @@
                     item.DateUnit = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnit;
                     item.DateUnitName = ChartDataByAxle.FirstOrDefault(d => d.DateUnit == dataUnit).DateUnitName;
                     item.OverloadVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.OverloadVehicle);
+                    item.NotOverloadVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.NotOverloadVehicle);
                     item.TotalVehicle = ChartDataByAxle.Where(d => d.DateUnit == dataUnit).Sum(x => x.TotalVehicle);
 
                     ChartData.Add(item);
