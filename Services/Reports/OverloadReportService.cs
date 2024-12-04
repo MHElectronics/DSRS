@@ -800,7 +800,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Years TABLE([Year] INT)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
 
@@ -815,8 +815,8 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             CAST(Y.[Year] AS VARCHAR) AS DateUnitName,  -- Year name
             AL.NumberOfAxle,
             ISNULL(COUNT(1), 0) AS TotalVehicle,  -- Total number of vehicles (overloaded + non-overloaded)
-            ISNULL(SUM(CAST(AL.IsOverloaded AS INT)), 0) AS OverloadVehicle  -- Overloaded vehicle count
-        FROM @Years Y LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year]
+            {_overloadCountQuery}  AS OverloadVehicle -- Overloaded vehicle count
+        FROM @Years Y LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year] {_overloadJoiningQuery}
             ";
 
         query += this.GetFilterClause(reportParameters);
@@ -854,7 +854,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Months TABLE([Month] INT, [MonthName] NVARCHAR(50))
         DECLARE @CurrentMonth INT = MONTH(@DateStart)
         DECLARE @CurrentYear INT = YEAR(@DateStart)
@@ -875,8 +875,8 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             M.[MonthName] AS DateUnitName, 
             AL.NumberOfAxle,
             COUNT(1) AS TotalVehicle, 
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle 
-        FROM @Months M LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month]
+            {_overloadCountQuery}  AS OverloadVehicle -- Overloaded vehicle count
+        FROM @Months M LEFT JOIN AxleLoad AL ON MONTH(AL.DateTime) = M.[Month] {_overloadJoiningQuery}
         ";
 
         query += this.GetFilterClause(reportParameters);
@@ -913,7 +913,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -928,8 +928,8 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             DATENAME(WEEKDAY, AL.DateTime) AS DateUnitName,  -- Name of the day (e.g., Sunday)
             COUNT(1) AS TotalVehicle,  -- Total number of vehicles (overloaded + non-overloaded)
             AL.NumberOfAxle,
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle  -- Overloaded vehicle count
-        FROM AxleLoad AL
+           {_overloadCountQuery}  AS OverloadVehicle -- Overloaded vehicle count
+        FROM AxleLoad AL {_overloadJoiningQuery}
         ";
 
         query += this.GetFilterClause(reportParameters);
@@ -975,7 +975,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Days TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -990,9 +990,9 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             CONVERT(NVARCHAR, D.[Date], 23) AS DateUnitName, 
             AL.NumberOfAxle,
             COUNT(AL.StationId) AS TotalVehicle,
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle
+            {_overloadCountQuery}  AS OverloadVehicle -- Overloaded vehicle count
         FROM @Days D
-        LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date]
+        LEFT JOIN AxleLoad AL ON CAST(AL.DateTime AS DATE) = D.[Date] {_overloadJoiningQuery}
             ";
 
         query += this.GetFilterClause(reportParameters);
@@ -1028,7 +1028,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
     {
         bool isSuccess = false;
         string message = "";
-        string query = this.GetStationTableQuery(reportParameters) + @"
+        string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @DateRange TABLE([Date] DATE)
         DECLARE @CurrentDate DATE = @DateStart
 
@@ -1054,9 +1054,9 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         SELECT
             DATEPART(HOUR, AL.DateTime) AS DateUnit,
             COUNT(1) AS TotalVehicle,  -- Total vehicles count (overloaded and non-overloaded)
-            SUM(CAST(AL.IsOverloaded AS INT)) AS OverloadVehicle,  -- Overloaded vehicles count
+            {_overloadCountQuery}  AS OverloadVehicle, -- Overloaded vehicle count
             AL.NumberOfAxle
-        FROM AxleLoad AL
+        FROM AxleLoad AL {_overloadJoiningQuery}
         ";
 
         query += this.GetFilterClause(reportParameters);
