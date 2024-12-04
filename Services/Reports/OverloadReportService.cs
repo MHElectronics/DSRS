@@ -540,8 +540,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
             SELECT 
             DATEPART(MONTH,DateTime) AS DateUnit,AL.NumberOfAxle
             ,COUNT(1) AS TotalVehicle
-            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            {_overloadCountQuery}  AS OverloadVehicle, 
+            ,{_overloadCountQuery}  AS OverloadVehicle 
             ,SUM(Axle1) AS Axle1,SUM(Axle2) AS Axle2,SUM(Axle3) AS Axle3,SUM(Axle4) AS Axle4,SUM(Axle5) AS Axle5,SUM(Axle6) AS Axle6,SUM(Axle7) AS Axle7
             ,SUM(AxleRemaining) AS AxleRemaining,SUM(GrossVehicleWeight) AS GrossVehicleWeight
             FROM AxleLoad AL {_overloadJoiningQuery}";
@@ -749,8 +748,7 @@ FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
         SELECT AL.NumberOfAxle,
             DATEPART(HOUR, AL.DateTime) AS DateUnit,
             COUNT(1) AS TotalVehicle,
-            --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            {_overloadCountQuery}  AS OverloadVehicle,
+            {_overloadCountQuery}  AS OverloadVehicle
         FROM AxleLoad AL {_overloadJoiningQuery}
         ";
 
