@@ -109,6 +109,17 @@
                             }
                             else
                             {
+                                var overloadingRatioDataMutiplly100 = data
+                                .GroupBy(x => x.NumberofAxle)
+                                .Where(group => group.Key != 0)
+                                .Select(group => new
+                                {
+                                    NumberofAxle = group.Key,
+                                    OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                                ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle)) * 100
+                                : 0
+                                })
+                                .ToList().OrderBy(x => x.NumberofAxle);
                                 ChartSeriesType chartSeriesType = ChartSeriesType.Column;
                                 if (chartType.ToLower() == "line")
                                 {
@@ -132,7 +143,7 @@
 
                                     <ChartSeriesCollection>
                                         <ChartSeries Name="Overloading Ratio (%)"
-                                                     DataSource="@overloadingRatioData"
+                                                     DataSource="@overloadingRatioDataMutiplly100"
                                                      XName="NumberofAxle"
                                                      YName="OverloadingRatio"
                                                      YAxisName="SecondaryYAxis"
