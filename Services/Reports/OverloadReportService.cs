@@ -25,6 +25,7 @@ public interface IOverloadReportService
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedRatioReport(ReportParameters reportParameters, bool overloadCalculative);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetOverloadedWeightRatioReport(ReportParameters reportParameters);
+    Task<(IEnumerable<AxleLoadReport>, bool, string)> TestGetOverloadedWeightRatioReport(ReportParameters reportParameters);
 }
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
@@ -1232,7 +1233,58 @@ ORDER BY NumberOfAxle";
         return (null, isSuccess, message);
     }
 
+    public async Task<(IEnumerable<AxleLoadReport>, bool, string)> TestGetOverloadedWeightRatioReport(ReportParameters reportParameters)
+    {
+        string message = "";
+        bool isSuccess;
+        List<AxleLoadReport> dummyData = new List<AxleLoadReport>();
 
+        int[] axleCounts = { 2, 3, 4 };
+        string[] overloadRanges = { "2", "3", "4", "5", "6", "7", "8", "9", "10" };
+
+        Random random = new Random();
+
+        foreach (int axleCount in axleCounts)
+        {
+            List<double> overloadRatios = new List<double>();
+            double total = 0;
+
+            for (int i = 0; i < overloadRanges.Length; i++)
+            {
+                double value = random.NextDouble(); 
+                overloadRatios.Add(value);
+                total += value; 
+            }
+
+            for (int i = 0; i < overloadRanges.Length; i++)
+            {
+                overloadRatios[i] = overloadRatios[i] / total; 
+            }
+
+            for (int i = 0; i < overloadRanges.Length; i++)
+            {
+                dummyData.Add(new AxleLoadReport
+                {
+                    DateUnit = axleCount,
+                    GrossVehicleWeightRange = overloadRanges[i],
+                    OverloadingRatio = overloadRatios[i]
+                });
+            }
+        }
+
+        try
+        {
+            IEnumerable<AxleLoadReport> reports = dummyData;
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
     private string GetStationTableQuery(ReportParameters reportParameters)
     {
         if(reportParameters.Stations.Count == 1)
