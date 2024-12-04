@@ -42,48 +42,57 @@
 </div>
 @if (data is not null)
 {
-<div class="card card-primary card-outline">
-    <div class="card-body">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>Freight Vehicle Type</th>
-                    <th class="text-right">Less than 5%</th>
-                    <th class="text-right">5% - 10%</th>
-                    <th class="text-right">10% - 15%</th>
-                    <th class="text-right">15% - 20%</th>
-                    <th class="text-right">20% - 25%</th>
-                    <th class="text-right">25% - 30%</th>
-                    <th class="text-right">30% - 35%</th>
-                    <th class="text-right">35% - 40%</th>
-                    <th class="text-right">40% or more</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 2; i <= maxNumberOfAxle; i++)
-                {
-                    IEnumerable<AxleLoadReport> items = data.Where(d => d.DateUnit == i);
-                    
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
                     <tr>
-                        <td>@i</td>
-                        @if(items is not null)
-                        {
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "2") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "2").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "3") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "3").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "4") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "4").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "5") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "5").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "6") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "6").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "7") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "7").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "8") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "8").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "9") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "9").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                            <td class="text-right">@(items.Any(d => d.GrossVehicleWeightRange == "10") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "10").OverloadingRatio.ToString("P2") : "0.00%")</td>
-                        }
+                        <th>Freight Vehicle Type</th>
+                        <th class="text-right">Less than 5%</th>
+                        <th class="text-right">5% - 10%</th>
+                        <th class="text-right">10% - 15%</th>
+                        <th class="text-right">15% - 20%</th>
+                        <th class="text-right">20% - 25%</th>
+                        <th class="text-right">25% - 30%</th>
+                        <th class="text-right">30% - 35%</th>
+                        <th class="text-right">35% - 40%</th>
+                        <th class="text-right">40% or more</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @for (int i = 2; i <= maxNumberOfAxle; i++)
+                    {
+                        IEnumerable<AxleLoadReport> items = data.Where(d => d.DateUnit == i);
+                        double weightRatioGroup2 = items.Any(d => d.GrossVehicleWeightRange == "2") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "2").OverloadingRatio : 0;
+                        double weightRatioGroup3 = items.Any(d => d.GrossVehicleWeightRange == "3") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "3").OverloadingRatio : 0;
+                        double weightRatioGroup4 = items.Any(d => d.GrossVehicleWeightRange == "4") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "4").OverloadingRatio : 0;
+                        double weightRatioGroup5 = items.Any(d => d.GrossVehicleWeightRange == "5") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "5").OverloadingRatio : 0;
+                        double weightRatioGroup6 = items.Any(d => d.GrossVehicleWeightRange == "6") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "6").OverloadingRatio : 0;
+                        double weightRatioGroup7 = items.Any(d => d.GrossVehicleWeightRange == "7") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "7").OverloadingRatio : 0;
+                        double weightRatioGroup8 = items.Any(d => d.GrossVehicleWeightRange == "8") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "8").OverloadingRatio : 0;
+                        double weightRatioGroup9 = items.Any(d => d.GrossVehicleWeightRange == "9") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "9").OverloadingRatio : 0;
+                        double weightRatioGroup10 = items.Any(d => d.GrossVehicleWeightRange == "10") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "10").OverloadingRatio : 0;
+
+                        <tr>
+                            <td>@i</td>
+                            @if (items is not null)
+                            {
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup2);">@weightRatioGroup2.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup3);">@weightRatioGroup3.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup4);">@weightRatioGroup4.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup5);">@weightRatioGroup5.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup6);">@weightRatioGroup6.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup7);">@weightRatioGroup7.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup8);">@weightRatioGroup8.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup9);">@weightRatioGroup9.ToString("P2")</td>
+                                <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup10);">@weightRatioGroup10.ToString("P2")</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 }
 
 @code {
@@ -149,6 +158,7 @@
         ReportParameters reportParameters = refReportSelection.GetSelection();
         (IEnumerable<AxleLoadReport>, bool, string) report = new();
         report = await reportService.GetOverloadedWeightRatioReport(reportParameters);
+        //report = await reportService.TestGetOverloadedWeightRatioReport(reportParameters);
 
         if (report.Item2)
         {
@@ -165,5 +175,47 @@
         {
             Summary = report.Item3;
         }
+    }
+
+    private string GetGroupColor(double value)
+    {
+        if(value > 0.9)
+        {
+            return "rgb(255,0,0)";
+        }
+        else if(value > 0.8)
+        {
+            return "rgb(240,0,0)";
+        }
+        else if (value > 0.7)
+        {
+            return "rgb(220,0,0)";
+        }
+        else if (value > 0.6)
+        {
+            return "rgb(200,0,0)";
+        }
+        else if (value > 0.5)
+        {
+            return "rgb(180,0,0)";
+        }
+        else if (value > 0.4)
+        {
+            return "rgb(160,0,0)";
+        }
+        else if (value > 0.3)
+        {
+            return "rgb(140,0,0)";
+        }
+        else if (value > 0.2)
+        {
+            return "rgb(120,0,0)";
+        }
+        else if (value > 0.1)
+        {
+            return "rgb(100,0,0)";
+        }
+
+        return "green";
     }
 }
