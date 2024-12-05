@@ -285,7 +285,7 @@ else if (reportParameters.Stations is not null)
             }
             else if (reportParameters.Stations.Count() == 1 && reportParameters.WIMScales is not null && reportParameters.WIMScales.Count() > 0)
             {
-                wimText = "Lane No: " + string.Join(", ", reportParameters.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
+                wimText = string.Join(", ", reportParameters.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber));
             }
             <div class="col-md-12">
                 <label>@reportParameters.Stations?.Count() station(s) selected: </label>

@@ -172,7 +172,7 @@
     <value>প্রশ্নাবলী</value>
   </data>
   <data name="Menu.OverloadHistogram" xml:space="preserve">
-    <value>হিস্টোগ্রাম: ওভারলোডেড </value>
+    <value>মোট যানবাহন ওজন</value>
   </data>
   <data name="Menu.TimeSeries" xml:space="preserve">
     <value>টাইম সিরিজ</value>
@@ -223,9 +223,12 @@
     <value>রিপোর্ট</value>
   </data>
   <data name="Menu.AxleWiseHistogram" xml:space="preserve">
-    <value>হিস্টোগ্রাম: এক্সেল-ওয়াইজ</value>
+    <value>একক এক্সেল লোড</value>
   </data>
   <data name="Menu.OverloadedWeightRatio" xml:space="preserve">
-    <value>ওজন অনুপাত</value>
+    <value>ওভারলোডিং ওজন অনুপাত</value>
+  </data>
+  <data name="Menu.Histogram" xml:space="preserve">
+    <value>হিস্টোগ্রাম</value>
   </data>
 </root>

@@ -202,7 +202,7 @@
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
   <data name="ReportTitle.OverloadedHistogram" xml:space="preserve">
-    <value>ওভারলোড হিস্টোগ্রাম</value>
+    <value>মোট যানবাহন ওজন</value>
   </data>
   <data name="ReportTitle.Overloaded" xml:space="preserve">
     <value>টাইম সিরিজ</value>
@@ -250,9 +250,9 @@
     <value>শুরুর সময়</value>
   </data>
   <data name="ReportTitle.AxleWiseHistogram" xml:space="preserve">
-    <value>এক্সেল-ওয়াইজ হিস্টোগ্রাম</value>
+    <value>একক এক্সেল লোড</value>
   </data>
   <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
-    <value>ওভারলোডেড ওজন অনুপাত</value>
+    <value>ওভারলোডিং ওজন অনুপাত</value>
   </data>
 </root>

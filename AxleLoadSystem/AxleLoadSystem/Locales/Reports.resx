@@ -202,7 +202,7 @@
     <value>Report Configuration</value>
   </data>
   <data name="ReportTitle.OverloadedHistogram" xml:space="preserve">
-    <value>Overloaded Histogram</value>
+    <value>Gross Vehicle Weight</value>
   </data>
   <data name="ReportTitle.Overloaded" xml:space="preserve">
     <value>Time Series</value>
@@ -250,9 +250,9 @@
     <value>Start Time</value>
   </data>
   <data name="ReportTitle.AxleWiseHistogram" xml:space="preserve">
-    <value>Axle-Wise Histogram</value>
+    <value>Single Axle Load</value>
   </data>
   <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
-    <value>Overloaded Weight Ratio</value>
+    <value>Overloading Weight Ratio</value>
   </data>
 </root>

@@ -83,7 +83,7 @@
                         <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
                             @if (!string.IsNullOrEmpty(chartType))
                             {
-                                <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Theme="@Theme" EnableAnimation="true" Height="@Height">
+                                <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="100%" Theme="@Theme" EnableAnimation="true" Height="100%">
                                     <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
 
                                     <ChartPrimaryXAxis Title="@XAxisTitle" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
@@ -96,7 +96,7 @@
                                     </ChartPrimaryYAxis>
 
                                     <ChartAxes>
-                                        <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloading Ratio (%)" LabelFormat="{value}%">
+                                        <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloaded Vehicle Ratio (%)" LabelFormat="{value}%">
                                             <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
                                             <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                             <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
@@ -113,7 +113,7 @@
                                             <ChartSeriesBorder Width="1" Color="#ffffff"></ChartSeriesBorder>
                                         </ChartSeries>
 
-                                        <ChartSeries Name="Not-Overloaded Vehicles" ColumnWidth="0.5" DataSource="@ChartData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="NotOverloadVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
+                                        <ChartSeries Name="Total number of mesured Vehicles" ColumnWidth="0.5" DataSource="@ChartData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="TotalVehicle" Width="2" Type="chartSeriesType" EnableTooltip="true">
                                             <ChartMarker>
                                                 <ChartDataLabel Visible="false" Position="LabelPosition.Top">
                                                     <ChartDataLabelFont FontWeight="600" Color="#ffffff"></ChartDataLabelFont>
@@ -132,7 +132,7 @@
                                             }).ToList();
                                         }
 
-                                        <ChartSeries Name="Overloading Ratio (%)" DataSource="@overloadingRatioData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="OverloadingRatio" YAxisName="SecondaryYAxis" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
+                                        <ChartSeries Name="Overloaded Vehicle Ratio (%)" DataSource="@overloadingRatioData.OrderBy(x=>x.DateUnit)" XName="DateUnitName" YName="OverloadingRatio" YAxisName="SecondaryYAxis" Width="2" Type="ChartSeriesType.Line" EnableTooltip="true">
                                             <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
                                         </ChartSeries>
                                     </ChartSeriesCollection>
@@ -184,7 +184,7 @@
                                 <th rowspan="2" class="border-right">@selectedType</th>
                                 <th colspan="@(maxNumberOfAxle + 1)" class="text-center border-right">Breakdown of Total Vechile by Axle</th>
                                 <th colspan="@(maxNumberOfAxle + 1)" class="text-center border-right">Breakdown of Overloaded Vehicle by Axle</th>
-                                <th rowspan="2" class="text-right">Overloading Ratio</th>
+                                <th rowspan="2" class="text-right">Overloaded Vehicle Ratio (%)</th>
                             </tr>
                             <tr>
                                 <th class="text-right">Total</th>
@@ -192,14 +192,14 @@
                                 {
                                     <th class="text-right">@i</th>
                                 }
-                                <th class="text-right border-right">Others</th>
+                                <th class="text-right border-right">More than @maxNumberOfAxle</th>
 
                                 <th class="text-right">Total</th>
                                 @for (int i = 2; i <= maxNumberOfAxle; i++)
                                 {
                                     <th class="text-right">@i</th>
                                 }
-                                <th class="text-right border-right">Others</th>
+                                <th class="text-right border-right">More than @maxNumberOfAxle</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -221,7 +221,7 @@
                                     }
                                     <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
 
-                                    <td class="text-right">
+                                    <td class="text-right overloading-ratio">
                                         @{
                                             // Calculate overloading ratio for the current item
                                             item.OverloadingRatio = item.TotalVehicle > 0
@@ -239,7 +239,24 @@
         </div>
     </div>
 }
+<style>
+    .table-container {
+        overflow-x: auto;
+    }
 
+    .table td, .table th {
+        padding: 8px;
+        white-space: nowrap;
+    }
+
+    .table th, .table td {
+        text-align: right;
+    }
+
+    .overloading-ratio {
+        width: 100px; /* Adjust width as necessary */
+    }
+</style>
 @code {
     private Theme Theme { get; set; } = 0;
     private SfChart chartInstance;
@@ -251,8 +268,6 @@
     public List<AxleLoadReport> ChartDataByAxle { get; set; }
 
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.Column;
-    public string Height { get; set; } = "100%";
-    public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";

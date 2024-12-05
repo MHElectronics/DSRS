@@ -172,7 +172,7 @@
     <value>FAQ</value>
   </data>
   <data name="Menu.OverloadHistogram" xml:space="preserve">
-    <value>Histogram: Overloaded</value>
+    <value>Gross Vehicle Weight</value>
   </data>
   <data name="Menu.TimeSeries" xml:space="preserve">
     <value>Time Series</value>
@@ -223,9 +223,12 @@
     <value>Reports</value>
   </data>
   <data name="Menu.AxleWiseHistogram" xml:space="preserve">
-    <value>Histogram: Axle-Wise</value>
+    <value>Single Axle Load</value>
   </data>
   <data name="Menu.OverloadedWeightRatio" xml:space="preserve">
-    <value>Weight Ratio</value>
+    <value>Overloading Weight Ratio</value>
+  </data>
+  <data name="Menu.Histogram" xml:space="preserve">
+    <value>Histogram</value>
   </data>
 </root>

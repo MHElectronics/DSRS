@@ -95,7 +95,7 @@
                                 </ChartPrimaryYAxis>
 
                                 <ChartAxes>
-                                    <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloading Ratio (%)" LabelFormat="{value}%">
+                                    <ChartAxis Name="SecondaryYAxis" OpposedPosition="true" Title="Overloaded Vehicle Ratio (%)" LabelFormat="{value}%">
                                         <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
                                         <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                         <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
@@ -155,7 +155,7 @@
                                         }).ToList();
                                     }
 
-                                    <ChartSeries Name="Overloading Ratio (%)"
+                                    <ChartSeries Name="Overloaded Vehicle Ratio (%)"
                                                  ColumnWidth="0.5"
                                                  DataSource="@allGrossWeightRanges.Select(gr => new {
                                                              GrossVehicleWeightRange = gr,
@@ -334,7 +334,7 @@
     private async Task LoadChart(ReportParameters reportParameters)
     {
         Summary = "";
-        ChartTitle = "Number of overloaded vehicles " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
+        ChartTitle = "Histogram distribution of Gross vehicle weight " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
         XAxisTitle = "Histogram (1t increments)";
         YAxisTitle = "Number of vehicles";
         showChart = true;
