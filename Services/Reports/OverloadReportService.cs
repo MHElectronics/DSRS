@@ -379,69 +379,87 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad)
     {
         //Disable number of axle filter
-        reportParameters.NumberOfAxle = new();
+        //reportParameters.NumberOfAxle = new();
 
         bool isSuccess = false;
         string message = "";
         string whereClause  = this.GetFilterClause(reportParameters);
         string query = @"DECLARE @Multiplier DECIMAL(18,2) = 1000
-DECLARE @TotalIteration INT = 200 ";
+        DECLARE @TotalIteration INT = 200 ";
 
         query += this.GetStationTableQuery(reportParameters);
 
         query += @" DECLARE @Range TABLE(GroupId INT, Minimum DECIMAL(18,0), Maximum DECIMAL(18,0),MediumWeight DECIMAL(18,2))
 
-INSERT INTO @Range(GroupId, Minimum, Maximum,MediumWeight)
-SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier,((number-1)*@Multiplier + number*@Multiplier)/2
-FROM master..[spt_values]
-WHERE number >= 1 AND number <= @TotalIteration
+        INSERT INTO @Range(GroupId, Minimum, Maximum,MediumWeight)
+        SELECT DISTINCT number, (number - 1) * @Multiplier, number * @Multiplier,((number-1)*@Multiplier + number*@Multiplier)/2
+        FROM master..[spt_values]
+        WHERE number >= 1 AND number <= @TotalIteration
 
 
-DECLARE @GoupCount TABLE(GroupId INT,TotalNumberOfAxles INT)
+        DECLARE @GoupCount TABLE(GroupId INT,TotalNumberOfAxles INT)
 
-INSERT INTO @GoupCount(GroupId,TotalNumberOfAxles)
-SELECT GroupId,SUM(TotalNumberOfAxles) TotalNumberOfAxles
-FROM (";
-
-        for(int i=1; i<=7; i++)
+        INSERT INTO @GoupCount(GroupId,TotalNumberOfAxles)
+        SELECT GroupId,SUM(TotalNumberOfAxles) TotalNumberOfAxles
+        FROM (";
+        if (reportParameters.NumberOfAxle is null || reportParameters.NumberOfAxle.Count() == 0)
         {
-            query += $@"
---Axle {i}
-SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
-FROM AxleLoad AL
-INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
-{whereClause}
-AND Al.NumberOfAxle>={i}
-GROUP BY R.GroupId
-UNION ALL ";
+            for (int i = 2; i <= 7; i++)
+            {
+                query += $@"
+            --Axle {i}
+            SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
+            FROM AxleLoad AL
+            INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
+            {whereClause}
+            AND Al.NumberOfAxle>={i}
+            GROUP BY R.GroupId
+            UNION ALL ";
+            }
+        }
+        else 
+        {
+            int maxAxles = reportParameters.NumberOfAxle.Max();
+            for (int i = 2; i <= maxAxles; i++)
+            {
+                query += $@"
+            --Axle {i}
+            SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
+            FROM AxleLoad AL
+            INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
+            {whereClause}
+            AND Al.NumberOfAxle>={i}
+            GROUP BY R.GroupId
+            UNION ALL ";
+            }
         }
 
         query += $@"
---AxleRemaining for 8 Axle Vehiche only
-SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
-FROM AxleLoad AL
-INNER JOIN @Range R ON (AL.AxleRemaining >= R.Minimum AND AxleRemaining < R.Maximum)
-{whereClause}
-AND Al.NumberOfAxle=8
-GROUP BY R.GroupId) AS Sub
-GROUP BY GroupId 
+        --AxleRemaining for 8 Axle Vehiche only
+        SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
+        FROM AxleLoad AL
+        INNER JOIN @Range R ON (AL.AxleRemaining >= R.Minimum AND AxleRemaining < R.Maximum)
+        {whereClause}
+        AND Al.NumberOfAxle=8
+        GROUP BY R.GroupId) AS Sub
+        GROUP BY GroupId 
 
---Ton coversion
-DECLARE @TonConversion INT=1000
-UPDATE @Range
-SET Minimum=Minimum/@TonConversion
-,Maximum=Maximum/@TonConversion
-,MediumWeight=MediumWeight/@TonConversion
+        --Ton coversion
+        DECLARE @TonConversion INT=1000
+        UPDATE @Range
+        SET Minimum=Minimum/@TonConversion
+        ,Maximum=Maximum/@TonConversion
+        ,MediumWeight=MediumWeight/@TonConversion
 
-SELECT R.GroupId,R.Minimum,R.Maximum,R.MediumWeight,CAST(R.Minimum AS VARCHAR(10))+'-'+CAST(R.Maximum AS VARCHAR(10)) GrossVehicleWeightRange
-,C.TotalNumberOfAxles
---,POWER(R.MediumWeight,4) MediumWeight4,C.TotalNumberOfAxles*POWER(R.MediumWeight,4) Influence
---,POWER(R.MediumWeight/@EquivalentAxleLoad,4) MediumWeight4_2,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad,4) Influence_2
---,POWER(R.MediumWeight/@EquivalentAxleLoad2,4) MediumWeight4_3,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) Influence_3
-,CAST(POWER(R.MediumWeight,4) AS DECIMAL(18,2)) MediumWeight4,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight,4) AS DECIMAL(18,2)) Influence
-,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad,4) AS DECIMAL(18,2)) MediumWeight4_2,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad,4) AS DECIMAL(18,2)) Influence_2
---,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) MediumWeight4_3,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) Influence_3
-FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
+        SELECT R.GroupId,R.Minimum,R.Maximum,R.MediumWeight,CAST(R.Minimum AS VARCHAR(10))+'-'+CAST(R.Maximum AS VARCHAR(10)) GrossVehicleWeightRange
+        ,C.TotalNumberOfAxles
+        --,POWER(R.MediumWeight,4) MediumWeight4,C.TotalNumberOfAxles*POWER(R.MediumWeight,4) Influence
+        --,POWER(R.MediumWeight/@EquivalentAxleLoad,4) MediumWeight4_2,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad,4) Influence_2
+        --,POWER(R.MediumWeight/@EquivalentAxleLoad2,4) MediumWeight4_3,C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) Influence_3
+        ,CAST(POWER(R.MediumWeight,4) AS DECIMAL(18,2)) MediumWeight4,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight,4) AS DECIMAL(18,2)) Influence
+        ,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad,4) AS DECIMAL(18,2)) MediumWeight4_2,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad,4) AS DECIMAL(18,2)) Influence_2
+        --,CAST(POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) MediumWeight4_3,CAST(C.TotalNumberOfAxles*POWER(R.MediumWeight/@EquivalentAxleLoad2,4) AS DECIMAL(18,2)) Influence_3
+        FROM @Range R INNER JOIN @GoupCount C ON R.GroupId=C.GroupId";
 
         var parameters = new
         {
