@@ -378,9 +378,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     #region Axle-wise Histogram report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetAxleWiseHistogramReport(ReportParameters reportParameters, decimal equivalentAxleLoad)
     {
-        //Disable number of axle filter
-        //reportParameters.NumberOfAxle = new();
-
         bool isSuccess = false;
         string message = "";
         string whereClause  = this.GetFilterClause(reportParameters);
@@ -402,11 +399,10 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         INSERT INTO @GoupCount(GroupId,TotalNumberOfAxles)
         SELECT GroupId,SUM(TotalNumberOfAxles) TotalNumberOfAxles
         FROM (";
-        if (reportParameters.NumberOfAxle is null || reportParameters.NumberOfAxle.Count() == 0)
+
+        for (int i = 1; i <= 7; i++)
         {
-            for (int i = 2; i <= 7; i++)
-            {
-                query += $@"
+            query += $@"
             --Axle {i}
             SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
             FROM AxleLoad AL
@@ -415,23 +411,6 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             AND Al.NumberOfAxle>={i}
             GROUP BY R.GroupId
             UNION ALL ";
-            }
-        }
-        else 
-        {
-            int maxAxles = reportParameters.NumberOfAxle.Max();
-            for (int i = 2; i <= maxAxles; i++)
-            {
-                query += $@"
-            --Axle {i}
-            SELECT R.GroupId,COUNT(1) TotalNumberOfAxles
-            FROM AxleLoad AL
-            INNER JOIN @Range R ON (AL.Axle{i} >= R.Minimum AND AL.Axle{i} < R.Maximum)
-            {whereClause}
-            AND Al.NumberOfAxle>={i}
-            GROUP BY R.GroupId
-            UNION ALL ";
-            }
         }
 
         query += $@"
