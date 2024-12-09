@@ -205,7 +205,7 @@ public class ExportHelper : IExportHelper
         else if (reportParamete.Stations.Count() == 1 && reportParamete.WIMScales is not null && reportParamete.WIMScales.Count() > 0)
         {
             headerRow += "Lane,";
-            dataRow = string.Join(", ", reportParamete.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber)) + ",";
+            dataRow += string.Join("-", reportParamete.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber)) + ",";
         }
 
         if (reportParamete.NumberOfAxle is not null && reportParamete.NumberOfAxle.Any())
