@@ -27,11 +27,12 @@
             @if (appState is not null && showReportGroupSelection)
             {
                 <div class="row">
-                    <div class="col-md-4">
-                        <button class="btn btn-primary" @onclick="@(() => TypeChanged(true))" disabled="@(isLoading ? "disabled" : null)">Gross Vehicle Weight Limit</button>
-                        <button class="btn btn-primary" @onclick="@(() => TypeChanged(false))" disabled="@(isLoading ? "disabled" : null)">Overload Flag on the Measured Data</button>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" @onclick="@(() => TypeChanged(true))" disabled="@(isLoading ? "disabled" : null)">Gross Vehicle Weight Limit</button>
+                            <button class="btn btn-primary" @onclick="@(() => TypeChanged(false))" disabled="@(isLoading ? "disabled" : null)">Overload Flag on the Measured Data</button>
+                        </div>
                     </div>
-
                 </div>
             }
             @if (!string.IsNullOrEmpty(validationSummary))
@@ -99,7 +100,7 @@
                                                                  XName="NumberofAxle"
                                                                  YName="OverloadingRatio"
                                                                  Name="Overloading Ratio (%)">
-                                            <AccumulationDataLabelSettings Visible="true" Name="Text" Format="P2" >
+                                            <AccumulationDataLabelSettings Visible="true" Name="Text" Format="P2">
                                                 <AccumulationChartDataLabelFont Size="14px" Color="Black"></AccumulationChartDataLabelFont>
                                             </AccumulationDataLabelSettings>
                                         </AccumulationChartSeries>
