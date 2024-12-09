@@ -242,7 +242,6 @@
     private ReportSelection refReportSelection { get; set; }
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
-    public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
     public string XAxisTitle { get; set; } = "";
@@ -268,34 +267,34 @@
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overloaded Ratio by Gross Vehicle Weight", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
+        string fileName = "Gross Vehicle Weight Range";
+        // if (type == "excel")
+        // {
+        //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
 
-        if (type == "excel")
-        {
-            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
+        //     MemoryStream ms = new MemoryStream(fileByte);
 
-            MemoryStream ms = new MemoryStream(fileByte);
-
-            using var streamRef = new DotNetStreamReference(ms);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-        }
-        else if (type == "csv")
+        //     using var streamRef = new DotNetStreamReference(ms);
+        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
+        // }
+        if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), refReportSelection.GetSelection());
 
             using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
         }
         else if (type == "chart")
         {
-            await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, FileName, allowDownload: true, isBase64: true);
+            await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
-        else if (type == "pdf")
-        {
-            MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
+        // else if (type == "pdf")
+        // {
+        //     MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
 
-            using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-        }
+        //     using var streamRef = new DotNetStreamReference(stream);
+        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
+        // }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)

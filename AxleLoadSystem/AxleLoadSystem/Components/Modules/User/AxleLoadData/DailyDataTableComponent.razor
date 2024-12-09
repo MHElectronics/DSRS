@@ -270,17 +270,20 @@
         if (type == "csv")
         {
             MemoryStream stream = new();
+            string fileName = "";
             if (FileType == 1)
             {
                 stream = await exportHelper.GenerateCSVStream(fields, filteredAxleLoadData.ToList(), null);
+                fileName = "Data By Date_Load Data";
             }
             else if (FileType == 2)
             {
                 stream = await exportHelper.GenerateCSVStream<FinePayment>(fields, filteredFineRepaymentData.ToList(), null);
+                fileName = "Data By Date_Fine Payment Data";
             }
 
             using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
         }
     }
 }
