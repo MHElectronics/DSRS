@@ -234,4 +234,10 @@
   <data name="Category.Id" xml:space="preserve">
     <value>Id</value>
   </data>
+  <data name="Parameter.Name" xml:space="preserve">
+    <value>Parameter Name</value>
+  </data>
+  <data name="Parameter.Value" xml:space="preserve">
+    <value>Parameter Value</value>
+  </data>
 </root>

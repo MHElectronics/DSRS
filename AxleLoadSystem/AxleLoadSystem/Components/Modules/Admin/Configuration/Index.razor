@@ -90,7 +90,7 @@ else
     </div>
     <div class="card card-primary card-outline">
         <div class="card-body">
-            <h3 class="card-header">Allowed Weight 
+            <h3 class="card-header"> Gross Vehicle Weight Limit
                 @if(!weightAddEnabled && !weightEditEnabled)
                 {
                     <span class="btn btn-primary" @onclick="AddWeight"><i class="fa fa-plus"></i> Add New</span>
@@ -101,7 +101,7 @@ else
                 <div class="row">
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
-                            <label for="axleNumber" class="form-label">Number of Axle</label>
+                            <label for="axleNumber" class="form-label">Vehicle Type</label>
                             @if (weightEditEnabled)
                             {
                                 <label class="form-control">@selectedWeight.AxleNumber</label>
@@ -114,8 +114,8 @@ else
                     </div>
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
-                            <label for="allowedWeight" class="form-label">Allowed Weight</label>
-                            <input type="number" @bind="selectedWeight.AllowedWeight" required class="form-control" placeholder="Allowed Weight" min="1000" />
+                            <label for="allowedWeight" class="form-label">Gross Vehicle Weight Limit</label>
+                            <input type="number" @bind="selectedWeight.AllowedWeight" required class="form-control" placeholder="Gross Vehicle Weight Limit" min="1000" />
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
@@ -152,8 +152,8 @@ else
                 <table class="table table-stripped">
                     <thead>
                         <tr>
-                            <th class="text-center">Number of Axle</th>
-                            <th class="text-right">Allowed Weight (kg)</th>
+                            <th class="text-center">Vehicle Type</th>
+                            <th class="text-right">Gross Vehicle Weight Limit</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -163,7 +163,7 @@ else
                             <tr>
                                 <td class="text-center">@item.AxleNumber</td>
                                 <td class="text-right">@item.AllowedWeight.ToString("N0")</td>
-                                <td class="text-center"><span class="btn btn-primary" @onclick="(() => EditWeight(item.AxleNumber))" title="Edit allowed weight for number of axle @item.AxleNumber"><i class="fa fa-edit"></i></span></td>
+                                <td class="text-center"><span class="btn btn-primary" @onclick="(() => EditWeight(item.AxleNumber))" title="Edit Gross Vehicle Weight Limit for number of axle @item.AxleNumber"><i class="fa fa-edit"></i></span></td>
                             </tr>
                         }
                     </tbody>
@@ -171,7 +171,7 @@ else
             }
             else
             {
-                <p class="text-danger">Allowed weights not found</p>
+                <p class="text-danger">Gross Vehicle Weight Limit not found</p>
             }
         </div>
     </div>

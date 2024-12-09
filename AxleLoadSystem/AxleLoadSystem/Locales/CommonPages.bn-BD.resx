@@ -234,4 +234,10 @@
   <data name="Tutorial.UploadedTime" xml:space="preserve">
     <value>আপলোডের সময়</value>
   </data>
+  <data name="Parameter.Name" xml:space="preserve">
+    <value>প্যারামিটারের নাম</value>
+  </data>
+  <data name="Parameter.Value" xml:space="preserve">
+    <value>প্যারামিটার মান</value>
+  </data>
 </root>

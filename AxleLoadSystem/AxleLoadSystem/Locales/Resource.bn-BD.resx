@@ -201,4 +201,10 @@
   <data name="Button.Show" xml:space="preserve">
     <value>দেখান</value>
   </data>
+  <data name="Button.Delete" xml:space="preserve">
+    <value>মুছে দিন</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
+  </data>
 </root>

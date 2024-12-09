@@ -201,4 +201,7 @@
   <data name="Button.Show" xml:space="preserve">
     <value>Show</value>
   </data>
+  <data name="Button.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
 </root>

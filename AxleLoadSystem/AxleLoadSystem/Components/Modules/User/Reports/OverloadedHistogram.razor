@@ -79,7 +79,7 @@
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
                         @if (!string.IsNullOrEmpty(chartType))
                         {
-                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="100%" Height="100%" Theme="@Theme">
                                 <ChartArea>
                                     <ChartAreaBorder Width="0"></ChartAreaBorder>
                                 </ChartArea>
@@ -204,7 +204,7 @@
                                 <th>@selectedType</th>
                                 <th class="text-right">Gross Vehicle Weight Range</th>
                                 <th class="text-right">Overloaded Vehicle</th>
-                                <th class="text-right">Total Vehicle</th>
+                                <th class="text-right">Total Number of Mesured Vehicles</th>
                                 <th class="text-right">Overloaded Ratio by Gross Vehicle Weight</th>
                             </tr>
                         </thead>
@@ -242,8 +242,6 @@
     private ReportSelection refReportSelection { get; set; }
     public IEnumerable<AxleLoadReport> ChartData { get; set; }
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
-    public string Height { get; set; } = "100%";
-    public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";
@@ -334,8 +332,8 @@
     private async Task LoadChart(ReportParameters reportParameters)
     {
         Summary = "";
-        ChartTitle = "Histogram distribution of Gross vehicle weight " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
-        XAxisTitle = "Histogram (1t increments)";
+        ChartTitle = "Histogram of Gross vehicle weight " + "(" + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + ")";
+        XAxisTitle = "Gross Vehicle Weight Range (Ton)";
         YAxisTitle = "Number of vehicles";
         showChart = true;
 

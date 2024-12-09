@@ -93,12 +93,12 @@ else if (Chartview && ChartData is not null)
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
                         @if (ChartData is not null)
                         {
-                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="@Width" Height="@Height" Theme="@Theme">
+                            <SfChart @ref="@chartInstance" Title="@ChartTitle" Width="100%" Height="100%" Theme="@Theme">
                                 <ChartArea>
                                     <ChartAreaBorder Width="0"></ChartAreaBorder>
                                 </ChartArea>
 
-                                <ChartPrimaryXAxis Title="Weight Range in Ton" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
+                                <ChartPrimaryXAxis Title="Single Axle Load Range (Ton)" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Interval="1" LabelRotation="90">
                                     <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
                                     <ChartAxisMinorGridLines Width="0"></ChartAxisMinorGridLines>
                                 </ChartPrimaryXAxis>
@@ -183,8 +183,6 @@ else if (Chartview && ChartData is not null)
     private decimal selectedEquivalentAxleLoad { get; set; } = 10;
     private ReportSelection refReportSelection { get; set; }
 
-    public string Height { get; set; } = "100%";
-    public string Width { get; set; } = "100%";
     public string FileName { get; set; } = "Charts";
     public string Format { get; set; } = "{value} GW";
     public string ChartTitle { get; set; } = "";

@@ -43,6 +43,44 @@
                     <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
                 </div>
 
+                <div class="col-md-12">
+                    <table class="table no-border">
+                        <thead>
+                            <tr>
+                                <th>@localizerCommon["Parameter.Name"]</th>
+                                <th>@localizerCommon["Parameter.Value"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var param in sqlSearch.Parameters)
+                            {
+                                string prefix = "@";
+                                <tr>
+                                    <td>
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text" id="basic-addon1">@prefix</span>
+                                            <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-success" title="Add New Parameter" @onclick="ParameterAdd"><i class="fas fa-plus-circle"></i></button>
+                                            @if (sqlSearch.Parameters.Count > 1)
+                                            {
+                                                <button type="button" class="btn btn-danger" title="Delete New Parameter" @onclick="@(() => ParameterDelete(param))"><i class="fas fa-trash"></i></button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
                 @if (!string.IsNullOrEmpty(Summary))
                 {
                     <div class="col-md-12">
@@ -95,6 +133,10 @@
         editContext = new EditContext(sqlSearch);
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
+        if (sqlSearch.Parameters.Count == 0)
+        {
+            sqlSearch.Parameters.Add(new SqlParameter { Name = "", Value = "" });
+        }
     }
     private async Task OnValidSubmit(EditContext editContext)
     {
@@ -151,18 +193,13 @@
     {
         appState.SetNotification(this, "Please enter valid values", Notification.NotificationType.Failure);
     }
-    // private async Task<bool> QueryValidation(string query)
-    // {
-    //     string upperQuery = query.ToUpper();
-    //     Regex selectRegex = new Regex(@"\bSELECT\b", RegexOptions.IgnoreCase);
-    //     Regex fromRegex = new Regex(@"\bFROM\b", RegexOptions.IgnoreCase);
-    //     Regex keywordsRegex = new Regex(@"\b(AXLELOAD|CLASSSTATUS|FINEPAYMENT|STATIONS|WIMSCALE)\b", RegexOptions.IgnoreCase);
+    private void ParameterAdd()
+    {
+        sqlSearch.Parameters.Add(new SqlParameter { Name = "", Value = "" });
+    }
 
-    //     if (selectRegex.IsMatch(upperQuery) && fromRegex.IsMatch(upperQuery) && keywordsRegex.IsMatch(upperQuery))
-    //     {
-    //         return true;
-    //     }
-
-    //     return false;
-    // }
+    private void ParameterDelete(SqlParameter param)
+    {
+        sqlSearch.Parameters.Remove(param);
+    }
 }

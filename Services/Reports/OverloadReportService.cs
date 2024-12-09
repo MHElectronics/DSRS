@@ -818,7 +818,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             ";
 
         query += this.GetFilterClause(reportParameters);
-        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        // As allowed weight range is fixed for 2 to 7 Axle 
+        query += " AND AL.NumberOfAxle=OL.AxleNumber";
         query += @" GROUP BY Y.[Year], AL.NumberOfAxle
         ORDER BY Y.[Year]
         ";
@@ -878,7 +879,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         ";
 
         query += this.GetFilterClause(reportParameters);
-        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        // As allowed weight range is fixed for 2 to 7 Axle 
+        query += " AND AL.NumberOfAxle=OL.AxleNumber";
         query += @" GROUP BY M.[Month], M.[MonthName], AL.NumberOfAxle
         ORDER BY M.[Month]
         ";
@@ -931,7 +933,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         ";
 
         query += this.GetFilterClause(reportParameters);
-        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        // As allowed weight range is fixed for 2 to 7 Axle 
+        query += " AND AL.NumberOfAxle=OL.AxleNumber";
         query += @" GROUP BY DATEPART(WEEKDAY, AL.DateTime), DATENAME(WEEKDAY, AL.DateTime), AL.NumberOfAxle
         ORDER BY 
             CASE 
@@ -994,7 +997,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             ";
 
         query += this.GetFilterClause(reportParameters);
-        query += @" AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        // As allowed weight range is fixed for 2 to 7 Axle 
+        query += " AND AL.NumberOfAxle=OL.AxleNumber";
         query += @" GROUP BY D.[Date], AL.NumberOfAxle
         ORDER BY AL.NumberOfAxle";
 
@@ -1058,7 +1062,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         ";
 
         query += this.GetFilterClause(reportParameters);
-        query += " AND AL.NumberOfAxle >=2 AND AL.NumberOfAxle <= 7";
+        // As allowed weight range is fixed for 2 to 7 Axle 
+        query += " AND AL.NumberOfAxle=OL.AxleNumber";
         query += @" GROUP BY DATEPART(HOUR, AL.DateTime), AL.NumberOfAxle
 
         SELECT 
@@ -1236,8 +1241,8 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         bool isSuccess;
         List<AxleLoadReport> dummyData = new List<AxleLoadReport>();
 
-        int[] axleCounts = { 2, 3, 4 };
-        string[] overloadRanges = { "2", "3", "4", "5", "6", "7", "8", "9", "10" };
+        int[] axleCounts = { 2, 3, 4, 5, 6, 7 };
+        string[] overloadRanges = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
         Random random = new Random();
 
