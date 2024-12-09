@@ -9,6 +9,7 @@ using Syncfusion.Drawing;
 using Syncfusion.HtmlConverter;
 using BOL.CustomModels;
 using BOL;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Services.Helpers;
 
@@ -182,6 +183,30 @@ public class ExportHelper : IExportHelper
 
         headerRow += "Date Range,";
         dataRow += reportParamete.DateStart.ToString("dd MMM yy") + " to " + reportParamete.DateEnd.ToString("dd MMM yy") + ",";
+
+        //Lane
+        if (reportParamete.WIMType > 0 || reportParamete.UpboundDirection || reportParamete.DownboundDirection)
+        {
+            headerRow += "Lane,";
+
+            if (reportParamete.WIMType > 0)
+            {
+                dataRow += ((WIMType)Enum.ToObject(typeof(WIMType), reportParamete.WIMType)).ToDescription() + ",";
+            }
+            else if (reportParamete.UpboundDirection)
+            {
+                dataRow += "Upbound Direction,";
+            }
+            else if (reportParamete.DownboundDirection)
+            {
+                dataRow += "Downbound Direction,";
+            }
+        }
+        else if (reportParamete.Stations.Count() == 1 && reportParamete.WIMScales is not null && reportParamete.WIMScales.Count() > 0)
+        {
+            headerRow += "Lane,";
+            dataRow += string.Join("-", reportParamete.WIMScales.OrderBy(w => w.LaneNumber).Select(w => w.LaneNumber)) + ",";
+        }
 
         if (reportParamete.NumberOfAxle is not null && reportParamete.NumberOfAxle.Any())
         {

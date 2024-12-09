@@ -29,7 +29,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="name" class="form-label">Equivalent Axle Load</label>
-                            <input type="number" @bind-value="@equivalentAxleLoad" required class="form-control" placeholder="Equivalent Axle Load" />
+                            <input type="number" @bind-value="@equivalentAxleLoad" step=".01" required class="form-control" placeholder="Equivalent Axle Load" />
                         </div>
                     </div>
                     <div class="col-md-4 form-group">
@@ -180,7 +180,7 @@ else if (Chartview && ChartData is not null)
     private Dictionary<string, IEnumerable<AxleLoadReport>> FilteredChartData;
     private ChartSeriesType chartSeriesType { get; set; } = ChartSeriesType.StackingColumn;
     private decimal equivalentAxleLoad { get; set; } = 10;
-    private decimal selectedEquivalentAxleLoad { get; set; } = 10;
+    private decimal selectedEquivalentAxleLoad { get; set; } = (decimal)10.00;
     private ReportSelection refReportSelection { get; set; }
 
     public string FileName { get; set; } = "Charts";

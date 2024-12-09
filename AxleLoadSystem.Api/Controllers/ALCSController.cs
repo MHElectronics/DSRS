@@ -115,7 +115,7 @@ public class ALCSController : ControllerBase
             {
                 string headerLine = await reader.ReadLineAsync();
                 reader.Close();
-                reader.Dispose();   
+                reader.Dispose();
                 stream.Close();
                 stream.Dispose();
                 if (string.IsNullOrEmpty(headerLine))
@@ -242,7 +242,7 @@ public class ALCSController : ControllerBase
         return await _fileService.Upload(byteFile, file);
     }
     #endregion
-    
+
     [HttpPost("[action]")]
     public async Task<IActionResult> LoadData(LoadData obj)
     {
@@ -263,7 +263,7 @@ public class ALCSController : ControllerBase
         if (validData.Count > 0)
         {
             isSuccess = await _axleLoadService.Add(validData);
-            if(isSuccess.Item1)
+            if (isSuccess.Item1)
             {
                 return Ok("Axle load data insert successful");
             }
@@ -292,7 +292,7 @@ public class ALCSController : ControllerBase
         int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
         List<LoadData> validData = await this.CheckValidData(stationId, obj);
-        
+
         if (validData.Count > 0)
         {
             foreach (var item in validData)
@@ -305,7 +305,7 @@ public class ALCSController : ControllerBase
             {
                 return Ok("Axle load multiple data insert successful");
             }
-            
+
             _logger.LogError("Station " + stationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2);
         }
@@ -319,12 +319,19 @@ public class ALCSController : ControllerBase
         data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
 
         //Check lane number
-        IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale(){ StationId = stationId });
-        if(data.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
+        IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
+        if (data.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
         {
-            _logger.LogInformation("Wrong Lane Number for station " + stationId);
+            _logger.LogInformation("Wrong Lane Number for station " + stationId + ". Count: " + data.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)));
         }
         data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+
+        //Check Number of Axle
+        if (data.Any(d => d.NumberOfAxle < 2))
+        {
+            _logger.LogInformation("Number of axle less then 2 for station " + stationId + ". Count: " + data.Count(d => d.NumberOfAxle < 2));
+        }
+        data.RemoveAll(d => d.NumberOfAxle < 2);
 
         return data;
     }
@@ -387,12 +394,12 @@ public class ALCSController : ControllerBase
         //Check station code
         int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-        foreach(var item in obj)
+        foreach (var item in obj)
         {
             item.StationId = stationId;
         }
 
-        List<FinePayment> validData = await this.CheckValidFineData(stationId,  obj );
+        List<FinePayment> validData = await this.CheckValidFineData(stationId, obj);
         if (validData.Count > 0)
         {
             isSuccess = await _finePaymentService.Add(obj);
