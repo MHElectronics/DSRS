@@ -24,6 +24,7 @@
     @if (!selectionEnabled)
     {
         <div class="card-footer">
+            <div class="card-subtitle">Select the method for judging overloaded vehicles.</div>
             @if (appState is not null && showReportGroupSelection)
             {
                 <div class="row">
@@ -285,7 +286,7 @@
         //Reset chart type to solve pie chart re-render hang issue
         chartType = "column";
         validationSummary = "";
-        chartTitle = "Overloaded vehicle percentage for each vehicle type " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
+        chartTitle = "Overloaded vehicle ratio for each vehicle type " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
 
         (IEnumerable<AxleLoadReport>, bool, string) report = await reportService.GetOverloadedRatioReport(reportParameters, isCalculated);
         if (report.Item2)
