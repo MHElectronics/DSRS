@@ -21,23 +21,24 @@ public class RHDApiHelper : IRHDApiHelper
     public async Task<string> GetBRTAInformationByRFID(PayloadBRTA payloadBRTA)
     {
         string info = "Initiated";
+        
         try
         {
             HttpResponseMessage response = await _http.PostAsJsonAsync("public/fetch-data", new { rfid = payloadBRTA.rfid, bridgeOid = payloadBRTA.bridgeOid, username = payloadBRTA.userName, password = payloadBRTA.password });
-
             if (response.IsSuccessStatusCode)
             {
                 info = await response.Content.ReadAsStringAsync();
             }
             else
             {
-                info = "GetBRTAInformation() error: " + response.ReasonPhrase;
-                _logger.LogError("GetBRTAInformation() error: " + response.ReasonPhrase);
+                info = "GetBRTAInformationByRFID() error: " + response.ReasonPhrase + " - Status code:" + response.StatusCode;
+                _logger.LogError("GetBRTAInformationByRFID() error: " + response.ReasonPhrase + " - Status code:" + response.StatusCode);
             }
         }
         catch (Exception ex)
         {
-            throw;
+            info = "GetBRTAInformationByRFID() exception: " + ex.Message;
+            _logger.LogError("GetBRTAInformationByRFID() exception: " + ex.Message);
         }
         
 
@@ -46,17 +47,32 @@ public class RHDApiHelper : IRHDApiHelper
     public async Task<string> GetBRTAInformationByRegistrationNumber(PayloadBRTA payloadBRTA)
     {
         string info = "Initiated";
-        HttpResponseMessage response = await _http.PostAsJsonAsync("public/fetch-data", new { zone = payloadBRTA.zone,
-            series=payloadBRTA.series, number=payloadBRTA.Number, bridgeOid = payloadBRTA.bridgeOid, username = payloadBRTA.userName, password = payloadBRTA.password });
-
-        if (response.IsSuccessStatusCode)
+        
+        try
         {
-            info = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await _http.PostAsJsonAsync("public/fetch-data", new
+            {
+                zone = payloadBRTA.zone,
+                series = payloadBRTA.series,
+                number = payloadBRTA.Number,
+                bridgeOid = payloadBRTA.bridgeOid,
+                username = payloadBRTA.userName,
+                password = payloadBRTA.password
+            });
+            if (response.IsSuccessStatusCode)
+            {
+                info = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                info = "GetBRTAInformationByRegistrationNumber() error: " + response.ReasonPhrase + " - Status code:" + response.StatusCode;
+                _logger.LogError("GetBRTAInformationByRegistrationNumber() error: " + response.ReasonPhrase + " - Status code:" + response.StatusCode);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            info = "GetBRTAInformation() error: " + response.ReasonPhrase;
-            _logger.LogError("GetBRTAInformation() error: " + response.ReasonPhrase);
+            info = "GetBRTAInformationByRegistrationNumber() exception: " + ex.Message;
+            _logger.LogError("GetBRTAInformationByRegistrationNumber() exception: " + ex.Message);
         }
 
         return info;
