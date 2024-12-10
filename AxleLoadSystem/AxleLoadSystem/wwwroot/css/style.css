@@ -179,7 +179,7 @@ input[type="number"], input[type="date"] {
 
 /*Quickgrid Table Scrolling */
 .enable-table-scroll {
-    height: 25rem;
+    height: 37rem;
     overflow-y: auto;
 }
 
