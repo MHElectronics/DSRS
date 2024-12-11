@@ -265,9 +265,9 @@
         fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
         fields.Add(("Gross Vehicle Weight Range", nameof(AxleLoadReport.GrossVehicleWeightRange), new AxleLoadReport().GrossVehicleWeightRange?.GetType() ?? typeof(string)));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
-        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
+        fields.Add(("Total Number of Measured Vehicles", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overloaded Ratio by Gross Vehicle Weight", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
-        string fileName = "Gross Vehicle Weight Range";
+        string fileName = "Histogram_Gross Vehicle Weight";
         // if (type == "excel")
         // {
         //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
