@@ -4,6 +4,8 @@
 @inject Microsoft.JSInterop.IJSRuntime JSRuntime
 @inject IStationService stationService
 @inject IWIMScaleService wimScaleService
+@inject AuthenticationStateProvider authStateProvider
+@inject IStationAccessService stationAccessService
 @rendermode InteractiveServer
 
 <div class="row">
@@ -134,7 +136,9 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        stations = await stationService.Get();
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        User currentUser = await customStateProvider.GetAuthorizedUser();
+        stations = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
         wimScales = await wimScaleService.GetAll();
     }
     private void MapClicked(Station item, bool isUpboundSelected)
