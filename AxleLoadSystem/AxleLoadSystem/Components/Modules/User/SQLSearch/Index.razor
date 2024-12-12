@@ -49,7 +49,7 @@
                             <tr>
                                 <th>@localizerCommon["Parameter.Name"]</th>
                                 <th>@localizerCommon["Parameter.Value"]</th>
-                                <th></th>
+                                <th style="width:20%;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,7 +58,7 @@
                                 string prefix = "@";
                                 <tr>
                                     <td>
-                                        <div class="input-group mb-3">
+                                        <div class="input-group">
                                             <span class="input-group-text" id="basic-addon1">@prefix</span>
                                             <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
                                         </div>
