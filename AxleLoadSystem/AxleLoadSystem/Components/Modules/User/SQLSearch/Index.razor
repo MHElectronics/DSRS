@@ -15,104 +15,95 @@
     @if (sqlSearch is not null)
     {
         <div class="card-body">
-            @* <EditForm EditContext="@editContext" OnValidSubmit="@OnValidSubmit" OnInvalidSubmit="@OnInvalidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <div class="row">
-                    <div class="col-md-12 col-sm-12">
-                        <label for="sql" class="form-label">SQL Query</label>
-                        <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
-                    </div>
-
-                    @if (!string.IsNullOrEmpty(Summary))
-                    {
-                        <div class="col-md-12">
-                            <label class="text-danger">@Summary</label>
-                        </div>
-                    }
-                    <div class="col-md-12 col-sm-12">
-                        <div class="btn btn-group">
-                            <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)">@localizerResource["Button.Execute"]</button>
-                        </div>
-                    </div>
-                </div>
-            </EditForm> *@
             <div class="row">
-                <div class="col-md-12 col-sm-12">
+                <div class="col-md-8 col-sm-12">
                     <label for="sql" class="form-label">SQL Query</label>
                     <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
                 </div>
 
-                <div class="col-md-12">
-                    <table class="table no-border">
-                        <thead>
-                            <tr>
-                                <th>@localizerCommon["Parameter.Name"]</th>
-                                <th>@localizerCommon["Parameter.Value"]</th>
-                                <th style="width:20%;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var param in sqlSearch.Parameters)
-                            {
-                                string prefix = "@";
+                @if (parameters is not null)
+                {
+                    <div class="col-md-4 col-sm-12">
+                        <table class="table no-border">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <div class="input-group">
-                                            <span class="input-group-text" id="basic-addon1">@prefix</span>
-                                            <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-success" title="Add New Parameter" @onclick="ParameterAdd"><i class="fas fa-plus-circle"></i></button>
-                                            @if (sqlSearch.Parameters.Count > 1)
-                                            {
-                                                <button type="button" class="btn btn-danger" title="Delete New Parameter" @onclick="@(() => ParameterDelete(param))"><i class="fas fa-trash"></i></button>
-                                            }
-                                        </div>
-                                    </td>
+                                    <th class="m-0 pt-0">@localizerCommon["Parameter.Name"]</th>
+                                    <th class="m-0 pt-0">@localizerCommon["Parameter.Value"]</th>
+                                    <th class="m-0 pt-0" style="width:20%;"></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach (var param in parameters)
+                                {
+                                    <tr>
+                                        <td class="m-0 p-0">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">@@</span>
+                                                    <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="m-0 p-0">
+                                            <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
+                                        </td>
+                                        <td class="m-0 p-0">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-success" title="Add New Parameter" @onclick="ParameterAdd"><i class="fas fa-plus-circle"></i></button>
+                                                @if (parameters.Count > 1)
+                                                {
+                                                    <button type="button" class="btn btn-danger" title="Delete New Parameter" @onclick="@(() => ParameterDelete(param))"><i class="fas fa-trash"></i></button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
 
+                <div class="col-md-12 col-sm-12">
+                    <div class="btn btn-group">
+                        <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="ExecuteQuery">@localizerResource["Button.Execute"]</button>
+                    </div>
+                </div>
                 @if (!string.IsNullOrEmpty(Summary))
                 {
                     <div class="col-md-12">
                         <label class="text-danger">@Summary</label>
                     </div>
                 }
-                <div class="col-md-12 col-sm-12">
-                    <div class="btn btn-group">
-                        <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="Save">@localizerResource["Button.Execute"]</button>
-                    </div>
-                </div>
             </div>
         </div>
     }
     @if (showLoading)
     {
-        <Loader/>
+        <Loader />
     }
     else if (results != null)
     {
         <div class="card-body">
             <div class="enable-table-scroll">
-                <QuickGrid TGridItem="DataRow" ItemsProvider="provider" Virtualize="true" ItemSize="35">
-                    @foreach (DataColumn column in results.Columns)
-                    {
-                        <PropertyColumn Property="@(c => c[column.ColumnName])" Title="@column.ColumnName" Sortable="true">
-                            @* <HeaderTemplate>
-                                @column.ColumnName
-                            </HeaderTemplate> *@
-                        </PropertyColumn>
-                    }
-                </QuickGrid>
+                <ErrorBoundary @ref="errorBoundary">
+                    <ChildContent>
+                        <QuickGrid TGridItem="DataRow" ItemsProvider="provider" Virtualize="true" ItemSize="35">
+                            @foreach (DataColumn column in results.Columns)
+                            {
+                                <PropertyColumn Property="@(c => c[column.ColumnName])" Title="@column.ColumnName" Sortable="true"></PropertyColumn>
+                            }
+                        </QuickGrid>
+                    </ChildContent>
+                    <ErrorContent Context="ex">
+                        @if (HandleError(@ex) == true)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <h5>An Unhandled error occured. Exception: @ex.Message</h5>
+                                Stack Trace: @ex.StackTrace
+                            </div>
+                        }
+                    </ErrorContent>
+                </ErrorBoundary>
             </div>
         </div>
     }
@@ -125,43 +116,29 @@
     private DataTable results;
     private GridItemsProvider<DataRow>? provider;
 
+    private List<SqlSearchParameters> parameters { get; set; }
     private bool showLoading { get; set; } = false;
     private string Summary { get; set; }
+    ErrorBoundary errorBoundary;
 
+    private class SqlSearchParameters
+    {
+        public string Name { get; set; } = "";
+        public string Value { get; set; } = "";
+    }
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(sqlSearch);
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
-        if (sqlSearch.Parameters.Count == 0)
-        {
-            sqlSearch.Parameters.Add(new SqlParameter { Name = "", Value = "" });
-        }
+
+        parameters = new();
+        parameters.Add(new());
     }
-    private async Task OnValidSubmit(EditContext editContext)
-    {
-        showLoading = true;
-        Summary = "";
-        // sqlSearch.Date = DateTime.Now;
-        // sqlSearch.UserId = currentUser.Id;
-        try
-        {
-            await this.LoadData();
-        }
-        catch (Exception ex)
-        {
-            Summary = "Error: " + ex.Message;
-        }
-        finally
-        {
-            showLoading = false;
-        }
-    }
-    private async Task Save()
+
+    private async Task ExecuteQuery()
     {
         Summary = "";
-        // sqlSearch.Date = DateTime.Now;
-        // sqlSearch.UserId = currentUser.Id;
         if (string.IsNullOrEmpty(sqlSearch.Query))
         {
             Summary = "Please enter query";
@@ -170,6 +147,9 @@
         try
         {
             showLoading = true;
+            // On each event, reset any error state
+            errorBoundary?.Recover();
+
             await this.LoadData();
         }
         catch (Exception ex)
@@ -183,7 +163,14 @@
     }
     private async Task LoadData()
     {
-        results = await sqlSearchService.GetSQLSearch(sqlSearch);
+        Dictionary<string, object> dicParameters = new();
+
+        foreach (SqlSearchParameters item in parameters.Where(p => !string.IsNullOrEmpty(p.Name) && !string.IsNullOrEmpty(p.Value)))
+        {
+            dicParameters.Add(item.Name, item.Value);
+        }
+
+        results = await sqlSearchService.GetSQLSearch(sqlSearch, dicParameters);
         var rows = results.AsEnumerable().ToList();
         var providerResult = GridItemsProviderResult
             .From<DataRow>(rows, rows.Count);
@@ -195,11 +182,19 @@
     }
     private void ParameterAdd()
     {
-        sqlSearch.Parameters.Add(new SqlParameter { Name = "", Value = "" });
+        parameters.Add(new SqlSearchParameters { Name = "", Value = "" });
     }
 
-    private void ParameterDelete(SqlParameter param)
+    private void ParameterDelete(SqlSearchParameters param)
     {
-        sqlSearch.Parameters.Remove(param);
+        parameters.Remove(param);
+    }
+
+    private bool HandleError(Exception ex)
+    {
+        var msg = ex.Message;
+        var trace = ex.StackTrace;
+        // examine error here
+        return true;
     }
 }
