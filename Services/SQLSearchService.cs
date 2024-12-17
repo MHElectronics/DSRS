@@ -6,16 +6,13 @@ using System.Data.SqlClient;
 namespace Services;
 public interface ISQLSearchService
 {
-    Task<DataTable> GetSQLSearch(SQLSearch sQLSearch);
+    Task<DataTable> GetSQLSearch(SQLSearch sQLSearch, Dictionary<string, object> parameters);
 }
-public class SQLSearchService : ISQLSearchService
+public class SQLSearchService(IConfiguration config) : ISQLSearchService
 {
-    private string _connectionString;
-    public SQLSearchService(IConfiguration config)
-    {
-        _connectionString = config.GetConnectionString("AxleLoadDBDirectQuery");
-    }
-    public async Task<DataTable> GetSQLSearch(SQLSearch sQLSearch)
+    private string _connectionString = config.GetConnectionString("AxleLoadDBDirectQuery");
+
+    public async Task<DataTable> GetSQLSearch(SQLSearch sQLSearch, Dictionary<string, object> parameters)
     {
         DataTable dataTable = new DataTable();
 
@@ -31,6 +28,14 @@ public class SQLSearchService : ISQLSearchService
 
         // Create data adapter
         SqlDataAdapter da = new SqlDataAdapter(cmd);
+
+        if(parameters is not null && parameters.Any())
+        {
+            foreach(KeyValuePair<string, object> item in parameters)
+            {
+                cmd.Parameters.Add(new SqlParameter("@" + item.Key, item.Value));
+            }
+        }
 
         try
         {

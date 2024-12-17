@@ -43,43 +43,46 @@
                     <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
                 </div>
 
-                <div class="col-md-12">
-                    <table class="table no-border">
-                        <thead>
-                            <tr>
-                                <th>@localizerCommon["Parameter.Name"]</th>
-                                <th>@localizerCommon["Parameter.Value"]</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var param in sqlSearch.Parameters)
-                            {
-                                string prefix = "@";
+                @if(parameters is not null)
+                {
+                    <div class="col-md-12">
+                        <table class="table no-border">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text" id="basic-addon1">@prefix</span>
-                                            <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-success" title="Add New Parameter" @onclick="ParameterAdd"><i class="fas fa-plus-circle"></i></button>
-                                            @if (sqlSearch.Parameters.Count > 1)
-                                            {
-                                                <button type="button" class="btn btn-danger" title="Delete New Parameter" @onclick="@(() => ParameterDelete(param))"><i class="fas fa-trash"></i></button>
-                                            }
-                                        </div>
-                                    </td>
+                                    <th>@localizerCommon["Parameter.Name"]</th>
+                                    <th>@localizerCommon["Parameter.Value"]</th>
+                                    <th></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach (var param in parameters)
+                                {
+                                    string prefix = "@";
+                                    <tr>
+                                        <td>
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text" id="basic-addon1">@prefix</span>
+                                                <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-success" title="Add New Parameter" @onclick="ParameterAdd"><i class="fas fa-plus-circle"></i></button>
+                                                @if (parameters.Count > 1)
+                                                {
+                                                    <button type="button" class="btn btn-danger" title="Delete New Parameter" @onclick="@(() => ParameterDelete(param))"><i class="fas fa-trash"></i></button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
 
                 @if (!string.IsNullOrEmpty(Summary))
                 {
@@ -125,18 +128,23 @@
     private DataTable results;
     private GridItemsProvider<DataRow>? provider;
 
+    private List<SqlSearchParameters> parameters { get; set; }
     private bool showLoading { get; set; } = false;
     private string Summary { get; set; }
 
+    private class SqlSearchParameters
+    {
+        public string Name { get; set; } = "";
+        public string Value { get; set; } = "";
+    }
     protected override async Task OnInitializedAsync()
     {
         editContext = new EditContext(sqlSearch);
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
-        if (sqlSearch.Parameters.Count == 0)
-        {
-            sqlSearch.Parameters.Add(new SqlParameter { Name = "", Value = "" });
-        }
+
+        parameters = new();
+        parameters.Add(new());
     }
     private async Task OnValidSubmit(EditContext editContext)
     {
@@ -183,7 +191,14 @@
     }
     private async Task LoadData()
     {
-        results = await sqlSearchService.GetSQLSearch(sqlSearch);
+        Dictionary<string, object> dicParameters = new();
+
+        foreach (SqlSearchParameters item in parameters.Where(p => !string.IsNullOrEmpty(p.Name) && !string.IsNullOrEmpty(p.Value)))
+        {
+            dicParameters.Add(item.Name, item.Value);
+        }
+
+        results = await sqlSearchService.GetSQLSearch(sqlSearch, dicParameters);
         var rows = results.AsEnumerable().ToList();
         var providerResult = GridItemsProviderResult
             .From<DataRow>(rows, rows.Count);
@@ -195,11 +210,11 @@
     }
     private void ParameterAdd()
     {
-        sqlSearch.Parameters.Add(new SqlParameter { Name = "", Value = "" });
+        parameters.Add(new SqlSearchParameters { Name = "", Value = "" });
     }
 
-    private void ParameterDelete(SqlParameter param)
+    private void ParameterDelete(SqlSearchParameters param)
     {
-        sqlSearch.Parameters.Remove(param);
+        parameters.Remove(param);
     }
 }
