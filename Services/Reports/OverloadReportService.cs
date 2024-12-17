@@ -6,7 +6,7 @@ namespace Services.Reports;
 
 public interface IOverloadReportService
 {
-    Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters);
+    Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters, bool overloadCalculative,bool isOverloadedOnly);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedHistogramReport(ReportParameters reportParameters);
@@ -30,22 +30,44 @@ public interface IOverloadReportService
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 {
-    public async Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters)
+    public async Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly)
     {
         bool isSuccess = false;
+        string overloSelectQuery = _overloadSelectQuery;
+        string overloadJoiningQuery = _overloadJoiningQuery;
+        string overloadWhereQuery = "";
+        if (!overloadCalculative)
+        {
+            overloSelectQuery = "IsOverloaded";
+            overloadJoiningQuery = "";
+        }
+        if (isOverloadedOnly)
+        {
+            if (overloadCalculative)
+            {
+                overloadWhereQuery = " AND AL.GrossVehicleWeight>OL.AllowedWeight";
+            }
+            else
+            {
+                overloadWhereQuery = " AND IsOverloaded=1";
+            }
+        }
+
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) +
-        @" 
-        SELECT SN.StationName,TransactionNumber,LaneNumber,DateTime 
+        $@"SELECT SN.StationName,TransactionNumber,LaneNumber,DateTime 
         ,PlateZone,PlateSeries,PlateNumber,NumberOfAxle,VehicleSpeed
         ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
-        ,AxleRemaining,GrossVehicleWeight,IsUnloaded,IsOverloaded 
+        ,AxleRemaining,GrossVehicleWeight,IsUnloaded
+        ,{overloSelectQuery} AS IsOverloaded 
         ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
-        FROM AxleLoad AS AL INNER JOIN Stations SN ON AL.StationId=SN.StationId ";
+        FROM AxleLoad AS AL INNER JOIN Stations SN ON AL.StationId=SN.StationId 
+        {overloadJoiningQuery} ";
 
         query += this.GetFilterClause(reportParameters);
-        
+        query += overloadWhereQuery;
+
         var parameters = new
         {
             StationIds = reportParameters.Stations,

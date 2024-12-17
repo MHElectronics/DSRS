@@ -25,8 +25,22 @@
     </div>
     @if (!selectionEnabled)
     {
+        string iconOverload = isCalculated == false ? "fa-check-circle" : "fa-circle";
+        string iconGrossWeight = isCalculated == true ? "fa-check-circle" : "fa-circle";
+        string iconOverloaded = isOverloaded == true ? "fa-check-square" : "fa-square";
         <div class="card-footer">
             <div class="row">
+                <div class="col-md-6"> 
+                    <span @onclick="() => OnCalculationTypeChanged(true)">
+                        <i class="fa @iconGrossWeight"></i> Gross Vehicle Weight Limit  &nbsp;
+                    </span>
+                    <span @onclick="() => OnCalculationTypeChanged(false)">
+                        <i class="fa @iconOverload"></i> Overload Flag on Measured Data
+                    </span>                   
+                </div>
+                <span @onclick="OnIsOverloadedChanged">
+                    <i class="fa @iconOverloaded"></i> Show Overloaded Only
+                </span>
                 <div class="col-md-12 btn-group">
                     <button class="btn @(selectedType == "loaddata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("loaddata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.LoadData"]</button>
                     <button class="btn @(selectedType == "finepaymentdata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("finepaymentdata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.FinePaymentData"]</button>
@@ -74,7 +88,8 @@
     private bool isLoading { get; set; } = false;
     private List<int> stationAccess { get; set; } = new();
     private bool selectionEnabled = false;
-
+    private bool isCalculated = true;
+    private bool isOverloaded = false;
     private async Task TypeChanged(string type)
     {
         selectedType = type;
@@ -90,7 +105,7 @@
             if (selectedType.ToLower() == "loaddata")
             {
                 fileType = 1;
-                report = await reportService.Get(reportParameters);
+                report = await reportService.Get(reportParameters,isCalculated ,isOverloaded);
                 if (report.Item2)
                 {
                     if (report.Item1.Count() > 0)
@@ -112,7 +127,7 @@
             else if (selectedType.ToLower() == "finepaymentdata")
             {
                 fileType = 2;
-                reportFinePayment = await fineRepaymentService.Get(reportParameters);
+                reportFinePayment = await fineRepaymentService.Get(reportParameters, isCalculated, isOverloaded);
                 if (reportFinePayment.Item2)
                 {
                     if (reportFinePayment.Item1.Count() > 0)
@@ -137,5 +152,13 @@
     private async Task HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;
+    }
+    private void OnCalculationTypeChanged(bool calculated)
+    {
+        isCalculated = calculated;
+    }
+    private void OnIsOverloadedChanged()
+    {
+        isOverloaded = !isOverloaded;
     }
 }

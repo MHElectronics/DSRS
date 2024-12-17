@@ -8,9 +8,9 @@ namespace Services;
 public interface IFinePaymentService
 {
     Task<IEnumerable<FinePayment>> Get(FinePayment obj);
-    Task<(IEnumerable<FinePayment>, bool, string)> Get(ReportParameters reportParameters);
-    Task<(bool,string)> Add(FinePayment obj);
-    Task<(bool,string)> Add(List<FinePayment> obj);
+    Task<(IEnumerable<FinePayment>, bool, string)> Get(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly);
+    Task<(bool, string)> Add(FinePayment obj);
+    Task<(bool, string)> Add(List<FinePayment> obj);
     Task<bool> Delete(UploadedFile file);
 }
 
@@ -26,16 +26,33 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 
         return await _db.LoadData<FinePayment, object>(query, obj);
     }
-    public async Task<(IEnumerable<FinePayment>, bool, string)> Get(ReportParameters reportParameters)
+    public async Task<(IEnumerable<FinePayment>, bool, string)> Get(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly)
     {
         bool isSuccess = false;
         string message = "";
 
+        string overloadJoiningQuery = "";
+        string overloadWhereQuery = "";
+
+        if (isOverloadedOnly)
+        {
+            if (overloadCalculative)
+            {
+                overloadJoiningQuery = " LEFT JOIN ConfigurationOverloadWeight OL ON AL.NumberOfAxle=OL.AxleNumber ";
+                overloadWhereQuery = " AND AL.GrossVehicleWeight>OL.AllowedWeight";
+            }
+            else
+            {
+                overloadWhereQuery = " AND IsOverloaded=1";
+            }
+        }
         string query = @"SELECT SN.StationName,FP.StationId,FP.TransactionNumber,FP.LaneNumber,FP.PaymentTransactionId,FP.DateTime,FP.IsPaid,FP.FineAmount,FP.PaymentMethod,FP.ReceiptNumber,FP.BillNumber,FP.WarehouseCharge,FP.DriversLicenseNumber,FP.TransportAgencyInformation,FP.EntryTime
                 FROM FinePayment FP INNER JOIN Stations SN ON FP.StationId=SN.StationId ";
 
-        query += this.GetFilterClause(reportParameters);
-
+        (string filterJoining, string filterWhere) filterQueries = this.GetFilterClause(reportParameters, isOverloadedOnly);
+        query += filterQueries.filterJoining + overloadJoiningQuery + filterQueries.filterWhere;
+        query += overloadWhereQuery;
+        
         var parameters = new
         {
             DateStart = reportParameters.DateStart,
@@ -61,14 +78,14 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
     }
 
 
-    public async Task<(bool,string)> Add(FinePayment obj)
+    public async Task<(bool, string)> Add(FinePayment obj)
     {
         bool isSuccess = false;
         string message = "";
         string query = @"INSERT INTO FinePayment(StationId,LaneNumber,TransactionNumber,PaymentTransactionId,DateTime,IsPaid,FineAmount,PaymentMethod,ReceiptNumber,BillNumber,WarehouseCharge,DriversLicenseNumber,TransportAgencyInformation)
                         VALUES(@StationId,@LaneNumber,@TransactionNumber,@PaymentTransactionId,@DateTime,@IsPaid,@FineAmount,@PaymentMethod,@ReceiptNumber,@BillNumber,@WarehouseCharge,@DriversLicenseNumber,@TransportAgencyInformation)";
         try
-        { 
+        {
             isSuccess = await _db.SaveData(query, obj);
         }
         catch (SqlException ex)
@@ -87,7 +104,7 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
         }
         return (isSuccess, message);
     }
-    public async Task<(bool,string)> Add(List<FinePayment> obj)
+    public async Task<(bool, string)> Add(List<FinePayment> obj)
     {
         bool isSuccess = false;
         string message = "";
@@ -111,7 +128,7 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
             isSuccess = false;
             message = "Error: " + ex.Message;
         }
-        return (isSuccess, message);  
+        return (isSuccess, message);
     }
 
     public async Task<bool> Delete(UploadedFile file)
@@ -119,44 +136,44 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
         string query = @"DELETE FROM FinePaymentProcess WHERE FileId=@FileId
             DELETE FROM FinePayment WHERE StationId=@StationId AND DATEDIFF(DAY,DateTime,@Date)=0";
 
-        return await _db.SaveData(query, new { FileId=file.Id, file.StationId, file.Date });
+        return await _db.SaveData(query, new { FileId = file.Id, file.StationId, file.Date });
     }
-    private string GetFilterClauseOld(ReportParameters reportParameters)
-    {
-        string query = @" WHERE DATEDIFF(Day, FP.DateTime, @DateStart) <= 0
-            AND DATEDIFF(Day, FP.DateTime, @DateEnd) >= 0";
-        if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
-        {
-            if (reportParameters.WIMScales.Count() == 1)
-            {
-                query += " AND FP.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
-            }
-            else
-            {
-                query += " AND FP.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
-            }
-        }
-        if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
-        {
-            if (reportParameters.NumberOfAxle.Count() == 1)
-            {
-                query += " AND AL.NumberOfAxle = " + reportParameters.NumberOfAxle.FirstOrDefault();
-            }
-            else
-            {
-                query += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
-            }
-        }
-        if (reportParameters.Wheelbase > 0)
-        {
-            query += " AND Wheelbase = @Wheelbase";
-        }
-        if (reportParameters.ClassStatus > 0)
-        {
-            query += " AND ClassStatus = @ClassStatus";
-        }
-        return query;
-    }
+    //private string GetFilterClauseOld(ReportParameters reportParameters)
+    //{
+    //    string query = @" WHERE DATEDIFF(Day, FP.DateTime, @DateStart) <= 0
+    //        AND DATEDIFF(Day, FP.DateTime, @DateEnd) >= 0";
+    //    if (reportParameters.WIMScales is not null && reportParameters.WIMScales.Any())
+    //    {
+    //        if (reportParameters.WIMScales.Count() == 1)
+    //        {
+    //            query += " AND FP.LaneNumber = " + reportParameters.WIMScales.FirstOrDefault().LaneNumber;
+    //        }
+    //        else
+    //        {
+    //            query += " AND FP.LaneNumber IN (" + string.Join(",", reportParameters.WIMScales.Select(ws => "(" + ws.LaneNumber + ")")) + ")";
+    //        }
+    //    }
+    //    if (reportParameters.NumberOfAxle is not null && reportParameters.NumberOfAxle.Any())
+    //    {
+    //        if (reportParameters.NumberOfAxle.Count() == 1)
+    //        {
+    //            query += " AND AL.NumberOfAxle = " + reportParameters.NumberOfAxle.FirstOrDefault();
+    //        }
+    //        else
+    //        {
+    //            query += " AND AL.NumberOfAxle IN (" + string.Join(",", reportParameters.NumberOfAxle.Select(na => "(" + na + ")")) + ")";
+    //        }
+    //    }
+    //    if (reportParameters.Wheelbase > 0)
+    //    {
+    //        query += " AND Wheelbase = @Wheelbase";
+    //    }
+    //    if (reportParameters.ClassStatus > 0)
+    //    {
+    //        query += " AND ClassStatus = @ClassStatus";
+    //    }
+    //    return query;
+    //}
 
     private string GetStationTableQuery(ReportParameters reportParameters)
     {
@@ -199,9 +216,8 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 
         return query;
     }
-    private string GetFilterClause(ReportParameters reportParameters)
+    private (string,string) GetFilterClause(ReportParameters reportParameters, bool needAxleLoadJoining = false)
     {
-        bool needAxleLoadJoining = false;
         string joining = String.Empty;
         string whereClause = @" WHERE DATEDIFF(Day, FP.DateTime, @DateStart) <= 0
             AND DATEDIFF(Day, FP.DateTime, @DateEnd) >= 0";
@@ -271,9 +287,9 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
 
         if (!string.IsNullOrEmpty(joining))
         {
-            return joining + whereClause;
+            return (joining,whereClause);
         }
 
-        return whereClause;
+        return ("", whereClause);
     }
 }
