@@ -208,6 +208,7 @@
     public string chartTitle { get; set; } = "";
     private string validationSummary { get; set; } = "";
     private string chartType { get; set; } = "column";
+    private string fileName { get; set; } = "Test";
     private bool showReportGroupSelection { get; set; } = false;
     private bool showChart { get; set; }
     private bool isLoading = false;
@@ -227,40 +228,22 @@
         }
 
         List<(string Header, string FieldName, Type FieldType)> fields = new();
-        fields.Add(("Number of Axle", nameof(AxleLoadReport.NumberofAxle), new AxleLoadReport().NumberofAxle.GetType()));
+        fields.Add(("Vehicle Type", nameof(AxleLoadReport.NumberofAxle), new AxleLoadReport().NumberofAxle.GetType()));
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
-        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
-        fields.Add(("Overloaded Ratio by Axle", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
+        fields.Add(("Total Number of Measured Vehicles", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
+        fields.Add(("Overloaded Vehicle Ratio by Axle", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
 
-        string fileName = "Overload Ratio";
-
-        // if (type == "excel")
-        // {
-        //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, data.ToList());
-
-        //     MemoryStream ms = new MemoryStream(fileByte);
-
-        //     using var streamRef = new DotNetStreamReference(ms);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-        // }
         if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), refReportSelection.GetSelection());
 
             using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.csv", streamRef);
+            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
         }
         else if (type == "chart")
         {
             await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
-        // else if (type == "pdf")
-        // {
-        //     MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(data.ToList());
-
-        //     using var streamRef = new DotNetStreamReference(stream);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".pdf", streamRef);
-        // }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)
@@ -287,6 +270,14 @@
         chartType = "column";
         validationSummary = "";
         chartTitle = "Overloaded vehicle ratio for each vehicle type " + "( " + reportParameters.DateStart.ToString("dd MMM yyy") + " to " + reportParameters.DateEnd.ToString("dd MMM yyy") + " )";
+        if (isCalculated)
+        {
+            fileName = "Overloaded Ratio_Gross Vehicle Weight Limit";
+        }
+        else
+        {
+            fileName = "Overloaded Ratio_Overload Flag";
+        }
 
         (IEnumerable<AxleLoadReport>, bool, string) report = await reportService.GetOverloadedRatioReport(reportParameters, isCalculated);
         if (report.Item2)

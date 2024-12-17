@@ -65,7 +65,7 @@
                                 <label class="text">@localizerCommon["Dashboard.DataAnalysisChart"] </label>
                             <div class="col-md-12 btn-group">
                                 <button class="btn @(selectedType == "Daily" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Daily"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
-                                <button class="btn @(selectedType == "Weekly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Weekly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
+                                <button class="btn @(selectedType == "Day-of-week" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day-of-week"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
                                 <button class="btn @(selectedType == "Monthly" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Monthly"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
                             </div>
                             <br/>

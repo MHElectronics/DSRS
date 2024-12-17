@@ -188,6 +188,7 @@ else if (Chartview && ChartData is not null)
     public string YAxisTitle { get; set; } = "";
     private string Summary { get; set; } = "";
     private string chartType { get; set; } = "TotalNumberOfAxles";
+    private string fileName { get; set; } = "Test";
     private bool showReportGroupSelection { get; set; } = false;
     private bool Chartview { get; set; }
     private bool isLoading = false;
@@ -201,21 +202,24 @@ else if (Chartview && ChartData is not null)
     private async Task Export(string type)
     {
         List<(string Header, string FieldName, Type FieldType)> fields = new();
-        fields.Add(("Weight Range in Ton", nameof(AxleLoadReport.GrossVehicleWeightRange), new AxleLoadReport().GrossVehicleWeightRange?.GetType() ?? typeof(string)));
+        fields.Add(("Single Axle Load Range (Ton)", nameof(AxleLoadReport.GrossVehicleWeightRange), new AxleLoadReport().GrossVehicleWeightRange?.GetType() ?? typeof(string)));
         fields.Add(("Medium Weight", nameof(AxleLoadReport.MediumWeight), new AxleLoadReport().MediumWeight.GetType()));
         fields.Add(("Cumulative Number Of Axles", nameof(AxleLoadReport.TotalNumberOfAxles), new AxleLoadReport().TotalNumberOfAxles.GetType()));
         fields.Add(("Influence", nameof(AxleLoadReport.Influence), new AxleLoadReport().Influence.GetType()));
         fields.Add(("Equivalent to " + selectedEquivalentAxleLoad + "t Axle", nameof(AxleLoadReport.Influence_2), new AxleLoadReport().Influence_2.GetType()));
-        string fileName = "Single Axle Load";
-        // if (type == "excel")
-        // {
-        //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
-
-        //     MemoryStream ms = new MemoryStream(fileByte);
-
-        //     using var streamRef = new DotNetStreamReference(ms);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-        // }
+        
+        if (chartType == "TotalNumberOfAxles")
+        {
+            fileName = "Single Axle Load_Cummilative";
+        }
+        else if (chartType == "Influence")
+        {
+            fileName = "Single Axle Load_Influence";
+        }
+        else if (chartType == "Influence_2")
+        {
+            fileName = "Single Axle Load_Equivalent";
+        }
         if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), refReportSelection.GetSelection());
@@ -227,13 +231,6 @@ else if (Chartview && ChartData is not null)
         {
             await chartInstance.ExportAsync(Syncfusion.Blazor.Charts.ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
-        // else if (type == "pdf")
-        // {
-        //     MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
-
-        //     using var streamRef = new DotNetStreamReference(stream);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.pdf", streamRef);
-        // }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)

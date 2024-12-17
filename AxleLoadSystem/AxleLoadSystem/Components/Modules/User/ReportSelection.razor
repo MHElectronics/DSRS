@@ -376,7 +376,9 @@ else if (reportParameters.Stations is not null)
 
     protected override async Task OnInitializedAsync()
     {
-        stations = await stationService.Get();
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        User currentUser = await customStateProvider.GetAuthorizedUser();
+        stations = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
         //selectedStations = stations.Where(s => reportParameters.Stations.Contains(s.StationId)).ToList();
         ListClassStatus = await classStatusService.GetClassStatusList();
         configuration = await configurationService.GetConfiguration();
@@ -387,6 +389,10 @@ else if (reportParameters.Stations is not null)
         }
 
         reportParameters = await appState.GetReportParameters();
+        if (stations is not null && !stations.Any(s => reportParameters.Stations.Contains(s.StationId)))
+        {
+            reportParameters.Stations = new();
+        }
         if (reportParameters.WIMScales is not null)
         {
             selectedWIMScales = reportParameters.WIMScales.Select(w => w.LaneNumber).ToList();
@@ -395,10 +401,6 @@ else if (reportParameters.Stations is not null)
         {
             selectedNoOfAxle = reportParameters.NumberOfAxle;
         }
-
-        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-        User currentUser = await customStateProvider.GetAuthorizedUser();
-        stations = await stationAccessService.GetStationAccessByUserId(currentUser.Id);
     }
     public ReportParameters GetSelection()
     {
@@ -526,6 +528,10 @@ else if (reportParameters.Stations is not null)
     {
         selectionEnabled = false;
         reportParameters = await appState.GetReportParameters();
+        if (stations is not null && !stations.Any(s => reportParameters.Stations.Contains(s.StationId)))
+        {
+            reportParameters.Stations = new();
+        }
         await OnParametersChanged.InvokeAsync(selectionEnabled);
     }
     private void TypeChanged(string type)

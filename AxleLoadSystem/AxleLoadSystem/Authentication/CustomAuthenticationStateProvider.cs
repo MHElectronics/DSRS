@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
 using BOL;
+using Blazored.LocalStorage;
 
 namespace AxleLoadSystem.Authentication;
 
@@ -9,10 +10,12 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly ProtectedLocalStorage _sessionStorage;
     private ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+    private readonly ILocalStorageService _localStorage;
 
-    public CustomAuthenticationStateProvider(ProtectedLocalStorage sessionStorage)
+    public CustomAuthenticationStateProvider(ProtectedLocalStorage sessionStorage, ILocalStorageService localStorage)
     {
         _sessionStorage = sessionStorage;
+        _localStorage  = localStorage;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -87,6 +90,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         else
         {
             await _sessionStorage.DeleteAsync("UserSession");
+            await _localStorage.ClearAsync();
             claimsPrincipal = _anonymous;
         }
 
