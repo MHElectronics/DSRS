@@ -23,24 +23,25 @@
 
                 @if (parameters is not null)
                 {
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-sm-12">
                         <table class="table no-border">
                             <thead>
                                 <tr>
-                                    <th>@localizerCommon["Parameter.Name"]</th>
-                                    <th>@localizerCommon["Parameter.Value"]</th>
-                                    <th style="width:20%;"></th>
+                                    <th class="m-0 pt-0">@localizerCommon["Parameter.Name"]</th>
+                                    <th class="m-0 pt-0">@localizerCommon["Parameter.Value"]</th>
+                                    <th class="m-0 pt-0" style="width:20%;"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var param in parameters)
                                 {
-                                    string prefix = "@";
                                     <tr>
                                         <td class="m-0 p-0">
-                                            <div class="input-group m-0 p-0">
-                                                <span class="input-group-text" id="basic-addon1">@prefix</span>
-                                                <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">@@</span>
+                                                    <input type="text" @bind="param.Name" class="form-control" placeholder="@localizerCommon["Parameter.Name"]" min="5" maxlength="300" />
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="m-0 p-0">
@@ -62,17 +63,17 @@
                     </div>
                 }
 
+                <div class="col-md-12 col-sm-12">
+                    <div class="btn btn-group">
+                        <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="ExecuteQuery">@localizerResource["Button.Execute"]</button>
+                    </div>
+                </div>
                 @if (!string.IsNullOrEmpty(Summary))
                 {
                     <div class="col-md-12">
                         <label class="text-danger">@Summary</label>
                     </div>
                 }
-                <div class="col-md-12 col-sm-12">
-                    <div class="btn btn-group">
-                        <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="ExecuteQuery">@localizerResource["Button.Execute"]</button>
-                    </div>
-                </div>
             </div>
         </div>
     }
