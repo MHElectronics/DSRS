@@ -1,4 +1,4 @@
-﻿@page "/sqldirectsearch"
+﻿@page "/SQSQuaryRegistration"
 @using System.Data
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Text.RegularExpressions;
@@ -8,8 +8,7 @@
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
-<PageTitleComponent Title="@localizerCommon["SQLDirectSearch"]">
-</PageTitleComponent>
+<PageTitleComponent Title="@localizerCommon["SQLDirectSearch"]"></PageTitleComponent>
 
 <div class="card card-primary card-outline">
     @if (sqlSearch is not null)
@@ -99,7 +98,6 @@
                         {
                             <div class="alert alert-danger" role="alert">
                                 <h5>An Unhandled error occured. Exception: @ex.Message</h5>
-                                Stack Trace: @ex.StackTrace
                             </div>
                         }
                     </ErrorContent>

@@ -29,7 +29,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <button class="btn btn-primary" @onclick="ShowReport" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
-                        <button class="btn btn-primary" @onclick="Export" disabled="@(isLoading ? "disabled" : null)">@localizer["Report.CSV"]</button>
+                        <button class="btn btn-primary" @onclick="Export" disabled="@((isLoading || data is null) ? "disabled" : null)">@localizer["Report.Export"] @localizer["Report.CSV"]</button>
                     </div>
                 </div>
             }
