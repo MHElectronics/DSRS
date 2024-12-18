@@ -108,14 +108,14 @@ else
                             }
                             else
                             {
-                                <input type="number" max="" class="form-control" @bind="selectedWeight.AxleNumber" />
+                                <input type="number" min="2" max="@configuration.NumberOfAxle" class="form-control" @bind="selectedWeight.AxleNumber" />
                             }
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group">
                             <label for="allowedWeight" class="form-label">Gross Vehicle Weight Limit</label>
-                            <input type="number" @bind="selectedWeight.AllowedWeight" required class="form-control" placeholder="Gross Vehicle Weight Limit" min="1000" />
+                            <input type="number" @bind="selectedWeight.AllowedWeight" required class="form-control" placeholder="Gross Vehicle Weight Limit" />
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-6">
@@ -268,49 +268,67 @@ else
     }
     private async Task UpdateAlloweWeight()
     {
-        if (selectedWeight.AllowedWeight > 0)
+        summaryWeightEdit = "";
+        if (selectedWeight.AxleNumber <= 2 || selectedWeight.AxleNumber >= configuration.NumberOfAxle)
         {
-            if (await configurationService.UpdateOverloadWeight(selectedWeight, currentUser))
-            {
-                overloadWeights.FirstOrDefault(w => w.AxleNumber == selectedWeight.AxleNumber).AllowedWeight = selectedWeight.AllowedWeight;
-            }
+            summaryWeightEdit = "Axle number must be in between or equal to  2 to " + configuration.NumberOfAxle;
         }
         else
         {
-            summaryWeightEdit = "Allowed weight must be greater then 0";
+            if (selectedWeight.AllowedWeight > 0)
+            {
+                if (await configurationService.UpdateOverloadWeight(selectedWeight, currentUser))
+                {
+                    overloadWeights.FirstOrDefault(w => w.AxleNumber == selectedWeight.AxleNumber).AllowedWeight = selectedWeight.AllowedWeight;
+                    summaryWeightEdit = "Allowed weight updated successfully";
+                }
+            }
+            else
+            {
+                summaryWeightEdit = "Allowed weight must be greater then 0";
+            }
         }
     }
     private async Task AddAlloweWeight()
     {
-        if (selectedWeight.AllowedWeight > 0)
+        summaryWeightEdit = "";
+        if (selectedWeight.AxleNumber <= 2 || selectedWeight.AxleNumber >= configuration.NumberOfAxle)
         {
-            if (overloadWeights.Any(w => w.AxleNumber == selectedWeight.AxleNumber))
-            {
-                summaryWeightEdit = "Axle number already exists";
-            }
-            else
-            {
-                try
-                {
-                    if (await configurationService.InsertOverloadWeight(selectedWeight, currentUser))
-                    {
-                        overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
-                    }
-                    else
-                    {
-                        summaryWeightEdit = "Allowed weight add failed";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    summaryWeightEdit = "Allowed weight add failed. Error: " + ex.Message;
-                    throw;
-                }
-            }            
+            summaryWeightEdit = "Axle number must be in between or equal to  2 to " + configuration.NumberOfAxle;
         }
         else
         {
-            summaryWeightEdit = "Allowed weight must be greater then 0";
+            if (selectedWeight.AllowedWeight > 0)
+            {
+                if (overloadWeights.Any(w => w.AxleNumber == selectedWeight.AxleNumber))
+                {
+                    summaryWeightEdit = "Axle number already exists";
+                }
+                else
+                {
+                    try
+                    {
+                        if (await configurationService.InsertOverloadWeight(selectedWeight, currentUser))
+                        {
+                            overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
+                            summaryWeightEdit = "Allowed weight added successfully";
+                        }
+                        else
+                        {
+                            summaryWeightEdit = "Allowed weight add failed";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        summaryWeightEdit = "Allowed weight add failed. Error: " + ex.Message;
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                summaryWeightEdit = "Allowed weight must be greater then 0";
+            }
         }
     }
     private void CancelWeightEdit()
