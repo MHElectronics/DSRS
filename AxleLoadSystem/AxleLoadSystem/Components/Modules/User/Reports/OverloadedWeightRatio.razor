@@ -3,9 +3,8 @@
 @using Services
 @using Services.Helpers
 @using Syncfusion.Blazor
-@using Syncfusion.PdfExport;
-@using Syncfusion.Blazor.Charts
 @using System.Globalization
+@using System.Text
 @inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
 @inject IConfigurationService configurationService
@@ -29,7 +28,8 @@
             {
                 <div class="row">
                     <div class="col-md-4">
-                        <button class="btn btn-primary" @onclick="ShowReport" disabled="@(isLoading ? "disabled" : null)">Show</button>
+                        <button class="btn btn-primary" @onclick="ShowReport" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
+                        <button class="btn btn-primary" @onclick="Export" disabled="@(isLoading ? "disabled" : null)">@localizer["Report.CSV"]</button>
                     </div>
                 </div>
             }
@@ -63,20 +63,26 @@
                     @for (int i = 2; i <= maxNumberOfAxle; i++)
                     {
                         IEnumerable<AxleLoadReport> items = data.Where(d => d.DateUnit == i);
-                        double weightRatioGroup2 = items.Any(d => d.GrossVehicleWeightRange == "1") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "1").OverloadingRatio : 0;
-                        double weightRatioGroup3 = items.Any(d => d.GrossVehicleWeightRange == "2") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "2").OverloadingRatio : 0;
-                        double weightRatioGroup4 = items.Any(d => d.GrossVehicleWeightRange == "3") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "3").OverloadingRatio : 0;
-                        double weightRatioGroup5 = items.Any(d => d.GrossVehicleWeightRange == "4") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "4").OverloadingRatio : 0;
-                        double weightRatioGroup6 = items.Any(d => d.GrossVehicleWeightRange == "5") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "5").OverloadingRatio : 0;
-                        double weightRatioGroup7 = items.Any(d => d.GrossVehicleWeightRange == "6") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "6").OverloadingRatio : 0;
-                        double weightRatioGroup8 = items.Any(d => d.GrossVehicleWeightRange == "7") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "7").OverloadingRatio : 0;
-                        double weightRatioGroup9 = items.Any(d => d.GrossVehicleWeightRange == "8") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "8").OverloadingRatio : 0;
-                        double weightRatioGroup10 = items.Any(d => d.GrossVehicleWeightRange == "9") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "9").OverloadingRatio : 0;
+                        if(items is null)
+                        {
+                            <tr>
+                                <td>@i</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            double weightRatioGroup2 = items.Any(d => d.GrossVehicleWeightRange == "1") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "1").OverloadingRatio : 0;
+                            double weightRatioGroup3 = items.Any(d => d.GrossVehicleWeightRange == "2") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "2").OverloadingRatio : 0;
+                            double weightRatioGroup4 = items.Any(d => d.GrossVehicleWeightRange == "3") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "3").OverloadingRatio : 0;
+                            double weightRatioGroup5 = items.Any(d => d.GrossVehicleWeightRange == "4") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "4").OverloadingRatio : 0;
+                            double weightRatioGroup6 = items.Any(d => d.GrossVehicleWeightRange == "5") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "5").OverloadingRatio : 0;
+                            double weightRatioGroup7 = items.Any(d => d.GrossVehicleWeightRange == "6") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "6").OverloadingRatio : 0;
+                            double weightRatioGroup8 = items.Any(d => d.GrossVehicleWeightRange == "7") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "7").OverloadingRatio : 0;
+                            double weightRatioGroup9 = items.Any(d => d.GrossVehicleWeightRange == "8") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "8").OverloadingRatio : 0;
+                            double weightRatioGroup10 = items.Any(d => d.GrossVehicleWeightRange == "9") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "9").OverloadingRatio : 0;
 
-                        <tr>
-                            <td>@i</td>
-                            @if (items is not null)
-                            {
+                            <tr>
+                                <td>@i</td>
                                 <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup2); color:black;">@weightRatioGroup2.ToString("P2")</td>
                                 <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup3); color:black;">@weightRatioGroup3.ToString("P2")</td>
                                 <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup4); color:black;">@weightRatioGroup4.ToString("P2")</td>
@@ -86,8 +92,8 @@
                                 <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup8); color:black;">@weightRatioGroup8.ToString("P2")</td>
                                 <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup9); color:black;">@weightRatioGroup9.ToString("P2")</td>
                                 <td class="text-right" style="background-color:@GetGroupColor(weightRatioGroup10); color:black;">@weightRatioGroup10.ToString("P2")</td>
-                            }
-                        </tr>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -116,37 +122,42 @@
         }
     }
 
-    private async Task Export(string type)
+    private async Task Export()
     {
-        List<(string Header, string FieldName, Type FieldType)> fields = new();
-        //fields.Add((selectedType, nameof(AxleLoadReport.DateUnitName), new AxleLoadReport().DateUnitName.GetType()));
-        fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
-        fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
-        fields.Add(("Overloaded Ratio", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
+        if(data is null)
+        {
+            Summary = "No data to export";
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendLine("Freight Vehicle Type,Less than 5%,5% - 10%,10% - 15%,15% - 20%,20% - 25%,25% - 30%,30% - 35%,35% - 40%,40% or more");
+
+        for (int i = 2; i <= maxNumberOfAxle; i++)
+        {
+            IEnumerable<AxleLoadReport> items = data.Where(d => d.DateUnit == i);
+            double weightRatioGroup2 = items.Any(d => d.GrossVehicleWeightRange == "1") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "1").OverloadingRatio : 0;
+            double weightRatioGroup3 = items.Any(d => d.GrossVehicleWeightRange == "2") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "2").OverloadingRatio : 0;
+            double weightRatioGroup4 = items.Any(d => d.GrossVehicleWeightRange == "3") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "3").OverloadingRatio : 0;
+            double weightRatioGroup5 = items.Any(d => d.GrossVehicleWeightRange == "4") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "4").OverloadingRatio : 0;
+            double weightRatioGroup6 = items.Any(d => d.GrossVehicleWeightRange == "5") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "5").OverloadingRatio : 0;
+            double weightRatioGroup7 = items.Any(d => d.GrossVehicleWeightRange == "6") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "6").OverloadingRatio : 0;
+            double weightRatioGroup8 = items.Any(d => d.GrossVehicleWeightRange == "7") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "7").OverloadingRatio : 0;
+            double weightRatioGroup9 = items.Any(d => d.GrossVehicleWeightRange == "8") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "8").OverloadingRatio : 0;
+            double weightRatioGroup10 = items.Any(d => d.GrossVehicleWeightRange == "9") ? items.FirstOrDefault(d => d.GrossVehicleWeightRange == "9").OverloadingRatio : 0;
+
+            sb.AppendLine($"{i},{weightRatioGroup2.ToString("P2")},{weightRatioGroup3.ToString("P2")},{weightRatioGroup4.ToString("P2")},{weightRatioGroup5.ToString("P2")},{weightRatioGroup6.ToString("P2")},{weightRatioGroup7.ToString("P2")},{weightRatioGroup8.ToString("P2")},{weightRatioGroup9.ToString("P2")},{weightRatioGroup10.ToString("P2")}");
+        }
 
         string fileName = "Overloaded Weight Ratio";
-        if (type == "excel")
-        {
-            byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, data.ToList());
+        
+        MemoryStream stream = exportHelper.GenerateCSVStreamFromString(sb.ToString());
 
-            MemoryStream ms = new MemoryStream(fileByte);
-
-            using var streamRef = new DotNetStreamReference(ms);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".xlsx", streamRef);
-        }
-        else if (type == "csv")
-        {
-            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), refReportSelection.GetSelection());
-
-            using var streamRef = new DotNetStreamReference(stream);
-            await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
-        }
+        using var streamRef = new DotNetStreamReference(stream);
+        await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
     }
 
-    public void ExportComplete(ExportEventArgs exportEventArgs)
-    {
-        string base64 = exportEventArgs.Base64;
-    }
     private void HandleParametersChanged(bool parameters)
     {
         selectionEnabled = parameters;
@@ -156,9 +167,7 @@
         Summary = "";
 
         ReportParameters reportParameters = refReportSelection.GetSelection();
-        (IEnumerable<AxleLoadReport>, bool, string) report = new();
-        report = await reportService.GetOverloadedWeightRatioReport(reportParameters);
-        //report = await reportService.TestGetOverloadedWeightRatioReport(reportParameters);
+        (IEnumerable<AxleLoadReport>, bool, string) report = await reportService.GetOverloadedWeightRatioReport(reportParameters);
 
         if (report.Item2)
         {

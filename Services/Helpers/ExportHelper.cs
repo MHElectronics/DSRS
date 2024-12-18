@@ -19,7 +19,8 @@ public interface IExportHelper
     MemoryStream CreatePdfFromHtml(string html);
     byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data);
     Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null);
-    Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null);
+    MemoryStream GenerateCSVStreamFromString(string csvString);
+    //Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null);
 }
 
 public class ExportHelper : IExportHelper
@@ -125,6 +126,10 @@ public class ExportHelper : IExportHelper
     {
         string csvString = await GenerateCSVString(fields, data, reportParameter);
 
+        return this.GenerateCSVStreamFromString(csvString);
+    }
+    public MemoryStream GenerateCSVStreamFromString(string csvString)
+    {
         MemoryStream stream = new MemoryStream();
         StreamWriter writer = new StreamWriter(stream);
         writer.Write(csvString);
@@ -133,7 +138,7 @@ public class ExportHelper : IExportHelper
 
         return stream;
     }
-    public async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null)
+    private async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null)
     {
         StringBuilder sb = new StringBuilder();
         if(reportParameter is not null)
