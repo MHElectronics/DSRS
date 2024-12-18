@@ -178,7 +178,7 @@
                 {
                     if (file.Size > (1024 * 1024 * maxFileSizeMB))
                     {
-                        Summary = file.Name + " is too large (max limit 3 mb)";
+                        Summary = file.Name + " is too large (max limit 30 mb)";
                     }
                     else if (file.Name.Length > 300)
                     {
@@ -224,37 +224,58 @@
         }
     }
     private async Task OnValidSubmit(EditContext editContext)
-    { 
+    {
+        Summary = "";
         //Save file
         tutorial.UserId = currentUser.Id;
         tutorial.Date = DateTime.Now;
-        if (editEnable && !string.IsNullOrEmpty(previousFileLocation))
+        
+        if (string.IsNullOrEmpty(tutorial.FileLocation))
         {
-            if (!string.Equals(tutorial.FileLocation, previousFileLocation, StringComparison.OrdinalIgnoreCase))
-            {
-                fileStoreHelper.DeleteFile(previousFileLocation);
-            }
-            if (await tutorialService.UpdateTutorial(tutorial, currentUser))
-            {
-                await this.Loadtutorials();
-            }
-            uploading = false;
-            appState.SetNotification(this, "Tutorial Update Successful", Notification.NotificationType.Success);
+            Summary = "Please select the file";
+        }
+        else if (tutorial.TutorialCategoryId <= 0)
+        {
+            Summary = "Please select the tutorial category";
+        }
+        else if (string.IsNullOrEmpty(tutorial.Description))
+        {
+            Summary = "Description field can not be empty";
+        }
+        else if (tutorial.DisplayOrder <= 0)
+        {
+            Summary = "Diplay order must be greater than zero";
         }
         else
         {
-            int tutorialId = await tutorialService.InsertTutorial(tutorial, currentUser);
-            if (tutorialId > 0)
+            if (editEnable && !string.IsNullOrEmpty(previousFileLocation))
             {
-                tutorial.Id = tutorialId;
-                tutorials.Add(tutorial);
+                if (!string.Equals(tutorial.FileLocation, previousFileLocation, StringComparison.OrdinalIgnoreCase))
+                {
+                    fileStoreHelper.DeleteFile(previousFileLocation);
+                }
+                if (await tutorialService.UpdateTutorial(tutorial, currentUser))
+                {
+                    await this.Loadtutorials();
+                }
+                uploading = false;
+                appState.SetNotification(this, "Tutorial Update Successful", Notification.NotificationType.Success);
             }
-            uploading = false;
-            appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
-        } 
-        tutorial = new();
-        previousFileLocation = "";
-        _inputFileId = Guid.NewGuid().ToString();
+            else
+            {
+                int tutorialId = await tutorialService.InsertTutorial(tutorial, currentUser);
+                if (tutorialId > 0)
+                {
+                    tutorial.Id = tutorialId;
+                    tutorials.Add(tutorial);
+                }
+                uploading = false;
+                appState.SetNotification(this, "Tutorial Upload Successful", Notification.NotificationType.Success);
+            }
+            tutorial = new();
+            previousFileLocation = "";
+            _inputFileId = Guid.NewGuid().ToString();
+        }
     }
     private void OnInvalidSubmit()
     {

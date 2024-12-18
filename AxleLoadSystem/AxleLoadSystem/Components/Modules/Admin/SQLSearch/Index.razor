@@ -180,7 +180,14 @@
     }
     private void ParameterAdd()
     {
-        parameters.Add(new SqlSearchParameters { Name = "", Value = "" });
+        if (parameters.Count() < 30)
+        {
+            parameters.Add(new SqlSearchParameters { Name = "", Value = "" });
+        }
+        else
+        {
+            Summary = "Maximum 30 Parameters can be added";
+        }
     }
 
     private void ParameterDelete(SqlSearchParameters param)
