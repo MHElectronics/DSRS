@@ -173,10 +173,10 @@
 
                                 <tr>
                                     <th class="text-right">@numberOfAxle</th>
-                                    <td></td> 
-                                    <td class="text-right">@sumOverloadedVehicle.ToString("N0")</td>
-                                    <td class="text-right">@sumTotalVehicle.ToString("N0")</td>
-                                    <td class="text-right">@ratio.ToString("P2")</td>
+                                    <th></th> 
+                                    <th class="text-right">@sumOverloadedVehicle.ToString("N0")</th>
+                                    <th class="text-right">@sumTotalVehicle.ToString("N0")</th>
+                                    <th class="text-right">@ratio.ToString("P2")</th>
                                 </tr>
                                 @foreach (AxleLoadReport item in data.Where(d => d.NumberofAxle == numberOfAxle).OrderBy(d => d.DateUnit).ThenBy(d => d.NumberofAxle))
                                 {
