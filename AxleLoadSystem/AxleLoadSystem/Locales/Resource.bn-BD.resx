@@ -213,4 +213,7 @@
   <data name="Button.ShowOverloadedOnly" xml:space="preserve">
     <value>শুধু ওভারলোড ডেটা</value>
   </data>
+  <data name="Button.Search" xml:space="preserve">
+    <value>অনুসন্ধান করুন</value>
+  </data>
 </root>

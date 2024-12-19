@@ -213,4 +213,7 @@
   <data name="Button.ShowOverloadedOnly" xml:space="preserve">
     <value>Show Overloaded Only</value>
   </data>
+  <data name="Button.Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
 </root>

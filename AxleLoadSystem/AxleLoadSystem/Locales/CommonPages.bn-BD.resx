@@ -240,6 +240,18 @@
   <data name="Parameter.Value" xml:space="preserve">
     <value>প্যারামিটার মান</value>
   </data>
+  <data name="Activity" xml:space="preserve">
+    <value>কার্যকলাপ</value>
+  </data>
+  <data name="DateRange" xml:space="preserve">
+    <value>তারিখ পরিসীমা</value>
+  </data>
+  <data name="OverloadCondition" xml:space="preserve">
+    <value>ওভারলোড অবস্থা</value>
+  </data>
+  <data name="OverloadFilter" xml:space="preserve">
+    <value>ওভারলোড ফিল্টার</value>
+  </data>
   <data name="SQLQuery" xml:space="preserve">
     <value>SQL Query</value>
   </data>

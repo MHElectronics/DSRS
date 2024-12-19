@@ -130,12 +130,12 @@ public class UserService : IUserService
 
     public async Task InsertLoginLog(User user)
     {
-        UserActivity log = new UserActivity(user.Id, "Login: " + user.Email, LogActivity.Login);
+        UserActivity log = new UserActivity(user.Id, user.Email, LogActivity.Login);
         await _userActivityService.InsertUserActivity(log);
     }
     public async Task InsertLogoutLog(User user)
     {
-        UserActivity log = new UserActivity(user.Id, "Logout: " + user.Email, LogActivity.Logout);
+        UserActivity log = new UserActivity(user.Id,  user.Email, LogActivity.Logout);
         await _userActivityService.InsertUserActivity(log);
     }
 }
