@@ -255,6 +255,9 @@
   <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
     <value>Overloading Weight Ratio</value>
   </data>
+  <data name="Report.TableBreakdown" xml:space="preserve">
+    <value>Breakdown Table</value>
+  </data>
   <data name="Report.BridgeOid" xml:space="preserve">
     <value>Bridge Oid</value>
   </data>

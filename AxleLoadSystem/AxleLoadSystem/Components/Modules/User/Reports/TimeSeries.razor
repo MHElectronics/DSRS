@@ -6,6 +6,7 @@
 @using Syncfusion.PdfExport;
 @using Syncfusion.Blazor.Charts
 @using System.Globalization
+@using System.Text
 @inject IAxleLoadService loadService
 @inject IOverloadReportService reportService
 @inject IConfigurationService configurationService
@@ -56,7 +57,7 @@
                     <a class="nav-link" data-toggle="pill" href="#tab_table" role="tab" aria-selected="false">@localizer["Report.Table"]</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="pill" href="#tab_table2" role="tab" aria-selected="false">Breakdown Table</a>
+                    <a class="nav-link" data-toggle="pill" href="#tab_table2" role="tab" aria-selected="false">@localizer["Report.TableBreakdown"]</a>
                 </li>
                 <li class="nav-item dropdown">
                     <span class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -65,6 +66,7 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">@localizer["Report.CSV"]</span></li>
+                        <li><span class="dropdown-item" @onclick="@ExportBreakdownTable">@localizer["Report.TableBreakdown"] @localizer["Report.CSV"]</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">@localizer["Report.Graph"]</span></li>
                         @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
@@ -188,7 +190,7 @@
                             </tr>
                             <tr>
                                 <th class="text-right">Total</th>
-                                @for(int i=2; i<=maxNumberOfAxle; i++)
+                                @for (int i = 2; i <= maxNumberOfAxle; i++)
                                 {
                                     <th class="text-right">@i</th>
                                 }
@@ -212,14 +214,14 @@
                                     {
                                         <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == i).Sum(d => d.TotalVehicle).ToString("N0"))</td>
                                     }
-                                    <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.TotalVehicle).ToString("N0"))</td>
+                                    <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > maxNumberOfAxle)).Sum(d => d.TotalVehicle).ToString("N0"))</td>
 
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
                                     @for (int i = 2; i <= maxNumberOfAxle; i++)
                                     {
                                         <td class="text-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == i).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
                                     }
-                                    <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > 7)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
+                                    <td class="text-right border-right">@(ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > maxNumberOfAxle)).Sum(d => d.OverloadVehicle).ToString("N0"))</td>
 
                                     <td class="text-right overloading-ratio">
                                         @{
@@ -283,8 +285,8 @@
     protected override async Task OnInitializedAsync()
     {
         showReportGroupSelection = await appState.IsReportParametersSet();
-        Configuration reportConfiguration =await configurationService.GetConfiguration();
-        if(reportConfiguration is not null)
+        Configuration reportConfiguration = await configurationService.GetConfiguration();
+        if (reportConfiguration is not null)
         {
             maxNumberOfAxle = reportConfiguration.NumberOfAxle;
         }
@@ -297,16 +299,9 @@
         fields.Add(("Overload Vehicle", nameof(AxleLoadReport.OverloadVehicle), new AxleLoadReport().OverloadVehicle.GetType()));
         fields.Add(("Total Vehicle", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overloaded Ratio", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
+
         string fileName = "Time Series";
-        // if (type == "excel")
-        // {
-        //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, ChartData.ToList());
 
-        //     MemoryStream ms = new MemoryStream(fileByte);
-
-        //     using var streamRef = new DotNetStreamReference(ms);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-        // }
         if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, ChartData.ToList(), refReportSelection.GetSelection());
@@ -318,17 +313,65 @@
         {
             await chartInstance.ExportAsync(ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
-        // else if (type == "pdf")
-        // {
-        //     // MemoryStream stream = ExportHelper.CreatePdf<AxleLoadReport>(ChartData.ToList());
-        //     // byte[] bytes = stream.ToArray();
-        //     // await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
+    }
+    private async Task ExportBreakdownTable()
+    {
+        if (ChartData is null)
+        {
+            Summary = "No data to export";
+            return;
+        }
 
-        //     var html = await jsRuntime.InvokeAsync<string>("GetHTML", "#tab_2");
-        //     MemoryStream stream = exportHelper.CreatePdfFromHtml(html);
-        //     byte[] bytes = stream.ToArray();
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromString", "Test.pdf", Convert.ToBase64String(bytes));
-        // }
+        StringBuilder sb = new StringBuilder();
+        //Header 1
+        string strHeaderRow1 = ",Breakdown of Total Number of Measured Vehicles by Axle";
+        for (int i = 1; i <= (maxNumberOfAxle + 1); i++)
+        {
+            strHeaderRow1 += ",";
+        }
+        strHeaderRow1 += "Breakdown of Overloaded Vehicle by Axle";
+        sb.AppendLine(strHeaderRow1);
+
+        //Header 2
+        string strHeaderRow2 = "Total,";
+        for (int i = 2; i <= maxNumberOfAxle; i++)
+        {
+            strHeaderRow2 += i + ",";
+        }
+        strHeaderRow2 += "More than " + maxNumberOfAxle + ",";
+        strHeaderRow2 = selectedType + "," + strHeaderRow2 + strHeaderRow2 + "Overloaded Vehicle Ratio (%)";
+        sb.AppendLine(strHeaderRow2);
+
+        //Data rows
+        foreach (AxleLoadReport item in ChartData)
+        {
+            string strRow = item.DateUnitName + ",";
+            strRow += @item.TotalVehicle + ",";
+            for (int i = 2; i <= maxNumberOfAxle; i++)
+            {
+                strRow += (ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == i).Sum(d => d.TotalVehicle)) + ",";
+            }
+            strRow += ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > maxNumberOfAxle)).Sum(d => d.TotalVehicle) + ",";
+            strRow += item.OverloadVehicle + ",";
+            for (int i = 2; i <= maxNumberOfAxle; i++)
+            {
+                strRow += ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && d.NumberofAxle == i).Sum(d => d.OverloadVehicle) + ",";
+            }
+            strRow += ChartDataByAxle.Where(d => d.DateUnit == item.DateUnit && (d.NumberofAxle < 2 || d.NumberofAxle > maxNumberOfAxle)).Sum(d => d.OverloadVehicle) + ",";
+
+            // Calculate overloading ratio for the current item
+            item.OverloadingRatio = item.TotalVehicle > 0 ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100 : 0;
+
+            strRow += item.OverloadingRatio + "%";
+            sb.AppendLine(strRow);
+        }
+
+        string fileName = "Time Series Breakdown";
+
+        MemoryStream stream = exportHelper.GenerateCSVStreamFromString(sb.ToString());
+
+        using var streamRef = new DotNetStreamReference(stream);
+        await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)
