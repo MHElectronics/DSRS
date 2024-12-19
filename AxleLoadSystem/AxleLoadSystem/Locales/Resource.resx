@@ -204,4 +204,13 @@
   <data name="Button.Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Button.GrossVehicleWeightLimit" xml:space="preserve">
+    <value>Gross Vehicle Weight Limit</value>
+  </data>
+  <data name="Button.OverloadFlagonMeasuredData" xml:space="preserve">
+    <value>Overload Flag on Measured Data</value>
+  </data>
+  <data name="Button.ShowOverloadedOnly" xml:space="preserve">
+    <value>Show Overloaded Only</value>
+  </data>
 </root>

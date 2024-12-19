@@ -13,50 +13,50 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="name" class="form-label">User Name</label>
+                    <label for="name" class="form-label">@localizer["Report.UserName"]</label>
                     <input type="text" @bind-value="payloadBRTA.userName" required class="form-control" placeholder="User Name" id="name" disabled />
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="name" class="form-label">Password</label>
+                    <label for="name" class="form-label">@localizer["Report.Password"]</label>
                     <input type="password" @bind-value="payloadBRTA.password" required class="form-control" placeholder="Password" id="name" disabled />
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="name" class="form-label">Bridge Oid</label>
+                    <label for="name" class="form-label">@localizer["Report.BridgeOid"]</label>
                     <input type="text" @bind-value="payloadBRTA.bridgeOid" required class="form-control" placeholder="Bridge Oid" id="name" disabled />
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="rfid" class="form-label">RFID</label>
+                    <label for="rfid" class="form-label">@localizer["Report.RFID"]</label>
                     <input type="text" @bind-value="payloadBRTA.rfid" class="form-control" placeholder="RFID" id="rfid" />
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="zone" class="form-label">Zone</label>
+                    <label for="zone" class="form-label">@localizer["Report.PlateZone"]</label>
                     <input type="text" @bind-value="payloadBRTA.zone" class="form-control" placeholder="zone" id="zone" />
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="series" class="form-label">Series</label>
+                    <label for="series" class="form-label">@localizer["Report.PlateSeries"]</label>
                     <input type="text" @bind-value="payloadBRTA.series" class="form-control" placeholder="Series" id="series" />
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="number" class="form-label">Vehicle Number</label>
+                    <label for="number" class="form-label">@localizer["Report.PlateNumber"]</label>
                     <input type="text" @bind-value="payloadBRTA.Number" class="form-control" placeholder="Vehicle Number" id="number" />
                 </div>
             </div>
 
             <div class="col-12">
-                <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">Show By RFID</button>
-                <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">Show by Registration Number</button>
+                <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">@localizer["Report.ShowbyRFID"]</button>
+                <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">@localizer["Report.ShowbyRegistrationNumber"]</button>
             </div>
         </div>
         @if(result is not null)

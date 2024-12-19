@@ -139,7 +139,7 @@
     <value>Bar Chart</value>
   </data>
   <data name="Report.BRTAApiTest" xml:space="preserve">
-    <value>BRTA API Test</value>
+    <value>BRTA Inquiry</value>
   </data>
   <data name="Report.ClassStatus" xml:space="preserve">
     <value>Class Status</value>
@@ -254,5 +254,38 @@
   </data>
   <data name="ReportTitle.OverloadedWeightRatio" xml:space="preserve">
     <value>Overloading Weight Ratio</value>
+  </data>
+  <data name="Report.BridgeOid" xml:space="preserve">
+    <value>Bridge Oid</value>
+  </data>
+  <data name="Report.EquivalentAxleLoad" xml:space="preserve">
+    <value>Equivalent Axle Load</value>
+  </data>
+  <data name="Report.Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Report.PlateNumber" xml:space="preserve">
+    <value>Plate Number</value>
+  </data>
+  <data name="Report.PlateSeries" xml:space="preserve">
+    <value>Plate Series</value>
+  </data>
+  <data name="Report.PlateZone" xml:space="preserve">
+    <value>Plate Zone</value>
+  </data>
+  <data name="Report.RFID" xml:space="preserve">
+    <value>RFID</value>
+  </data>
+  <data name="Report.ShowbyRegistrationNumber" xml:space="preserve">
+    <value>Show By Registration Number</value>
+  </data>
+  <data name="Report.ShowbyRFID" xml:space="preserve">
+    <value>Show By RFID</value>
+  </data>
+  <data name="Report.Text" xml:space="preserve">
+    <value>Select the method for judging overloaded vehicles.</value>
+  </data>
+  <data name="Report.UserName" xml:space="preserve">
+    <value>User Name</value>
   </data>
 </root>

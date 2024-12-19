@@ -32,14 +32,14 @@
             <div class="row">
                 <div class="col-md-6"> 
                     <span @onclick="() => OnCalculationTypeChanged(true)">
-                        <i class="fa @iconGrossWeight"></i> Gross Vehicle Weight Limit  &nbsp;
+                        <i class="fa @iconGrossWeight"></i> @localizerResource["Button.GrossVehicleWeightLimit"] &nbsp;
                     </span>
                     <span @onclick="() => OnCalculationTypeChanged(false)">
-                        <i class="fa @iconOverload"></i> Overload Flag on Measured Data
+                        <i class="fa @iconOverload"></i> @localizerResource["Button.OverloadFlagonMeasuredData"]
                     </span>                   
                 </div>
                 <span @onclick="OnIsOverloadedChanged">
-                    <i class="fa @iconOverloaded"></i> Show Overloaded Only
+                    <i class="fa @iconOverloaded"></i> @localizerResource["Button.ShowOverloadedOnly"]
                 </span>
                 <div class="col-md-12 btn-group">
                     <button class="btn @(selectedType == "loaddata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("loaddata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.LoadData"]</button>

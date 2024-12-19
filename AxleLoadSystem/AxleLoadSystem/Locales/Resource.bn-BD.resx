@@ -157,7 +157,7 @@
     <value>নির্বাচন সংরক্ষণ করুন</value>
   </data>
   <data name="Button.Update" xml:space="preserve">
-    <value>হালনাগাদ</value>
+    <value>হালনাগাদ করুন</value>
   </data>
   <data name="Button.Weekly" xml:space="preserve">
     <value>সপ্তাহের দিন</value>
@@ -166,7 +166,7 @@
     <value>বার্ষিক</value>
   </data>
   <data name="HomeText" xml:space="preserve">
-    <value>হোম পেজে স্বাগতম</value>
+    <value>এক্সেল লোড ডাটাবেস সিস্টেমে স্বাগতম !!!</value>
   </data>
   <data name="Category.Name" xml:space="preserve">
     <value>নাম</value>
@@ -206,5 +206,14 @@
   </data>
   <data name="String1" xml:space="preserve">
     <value />
+  </data>
+  <data name="Button.GrossVehicleWeightLimit" xml:space="preserve">
+    <value>মোট যানবাহনের ওজন সীমা</value>
+  </data>
+  <data name="Button.OverloadFlagonMeasuredData" xml:space="preserve">
+    <value>পরিমাপ করা ডেটাতে ওভারলোড ফ্ল্যাগ</value>
+  </data>
+  <data name="Button.ShowOverloadedOnly" xml:space="preserve">
+    <value>ওভারলোড শুধুমাত্র দেখান</value>
   </data>
 </root>
