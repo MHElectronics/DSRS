@@ -240,4 +240,10 @@
   <data name="Parameter.Value" xml:space="preserve">
     <value>প্যারামিটার মান</value>
   </data>
+  <data name="SQLQuery" xml:space="preserve">
+    <value>SQL Query</value>
+  </data>
+  <data name="SQLQueryRegistration" xml:space="preserve">
+    <value>স্থায়ী SQL নিবন্ধন</value>
+  </data>
 </root>

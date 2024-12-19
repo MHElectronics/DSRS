@@ -197,7 +197,7 @@
             reportParameters.DateEnd = DateTime.Now;
             report = await reportService.GetMonthlyOverloadedTimeSeriesReport(reportParameters);
         }
-        else if (selectedType == "Weekly")
+        else if (selectedType == "Day-of-week")
         {
             reportParameters.DateStart = DateTime.Now.AddMonths(-3);
             reportParameters.DateEnd = DateTime.Now;

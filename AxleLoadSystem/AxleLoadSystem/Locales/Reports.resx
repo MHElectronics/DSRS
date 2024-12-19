@@ -291,4 +291,10 @@
   <data name="Report.UserName" xml:space="preserve">
     <value>User Name</value>
   </data>
+  <data name="Report.GrossVehicleWeightLimit" xml:space="preserve">
+    <value>Gross Vehicle Weight Limit</value>
+  </data>
+  <data name="Report.VehicleType" xml:space="preserve">
+    <value>Vehicle Type</value>
+  </data>
 </root>
