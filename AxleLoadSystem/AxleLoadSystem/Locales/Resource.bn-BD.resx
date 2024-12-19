@@ -166,7 +166,7 @@
     <value>বার্ষিক</value>
   </data>
   <data name="HomeText" xml:space="preserve">
-    <value>এক্সেল লোড ডাটাবেস সিস্টেমে স্বাগতম !!!</value>
+    <value>এক্সেল লোড ডেটাবেস সিস্টেমে স্বাগতম !!!</value>
   </data>
   <data name="Category.Name" xml:space="preserve">
     <value>নাম</value>
@@ -190,7 +190,7 @@
     <value>WIM স্কেল</value>
   </data>
   <data name="Button.FinePaymentData" xml:space="preserve">
-    <value>ফাইন পেমেন্ট ডেটা</value>
+    <value>জরিমানা পরিশোধ ডেটা</value>
   </data>
   <data name="Button.LoadData" xml:space="preserve">
     <value>লোড ডেটা</value>
@@ -204,16 +204,13 @@
   <data name="Button.Delete" xml:space="preserve">
     <value>মুছে দিন</value>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
-  </data>
   <data name="Button.GrossVehicleWeightLimit" xml:space="preserve">
-    <value>মোট যানবাহনের ওজন সীমা</value>
+    <value>যানবাহনের ওজন সীমা অনুযায়ী</value>
   </data>
   <data name="Button.OverloadFlagonMeasuredData" xml:space="preserve">
     <value>পরিমাপ করা ডেটাতে ওভারলোড ফ্ল্যাগ</value>
   </data>
   <data name="Button.ShowOverloadedOnly" xml:space="preserve">
-    <value>ওভারলোড শুধুমাত্র দেখান</value>
+    <value>শুধু ওভারলোড ডেটা</value>
   </data>
 </root>
