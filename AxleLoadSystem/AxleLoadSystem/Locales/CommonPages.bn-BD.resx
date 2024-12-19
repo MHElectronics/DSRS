@@ -247,7 +247,7 @@
     <value>তারিখ পরিসীমা</value>
   </data>
   <data name="OverloadCondition" xml:space="preserve">
-    <value>ওভারলোড অবস্থা</value>
+    <value>ওভারলোডের শর্ত</value>
   </data>
   <data name="OverloadFilter" xml:space="preserve">
     <value>ওভারলোড ফিল্টার</value>

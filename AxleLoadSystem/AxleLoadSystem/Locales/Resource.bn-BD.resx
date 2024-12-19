@@ -208,7 +208,7 @@
     <value>যানবাহনের ওজন সীমা অনুযায়ী</value>
   </data>
   <data name="Button.OverloadFlagonMeasuredData" xml:space="preserve">
-    <value>পরিমাপ করা ডেটাতে ওভারলোড ফ্ল্যাগ</value>
+    <value>পরিমাপ করা ডেটাতে ওভারলোড ফ্ল্যাগ অনুযায়ী</value>
   </data>
   <data name="Button.ShowOverloadedOnly" xml:space="preserve">
     <value>শুধু ওভারলোড ডেটা</value>
