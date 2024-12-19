@@ -1,12 +1,9 @@
 ﻿using BOL;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic.FileIO;
-using Syncfusion.Drawing;
 using System.Drawing.Imaging;
 using System.Data;
 using System.Net;
 using System.Runtime.Versioning;
-using System.Text;
 using System.Drawing;
 
 namespace Services.Helpers
