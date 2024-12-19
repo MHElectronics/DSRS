@@ -1,12 +1,6 @@
 ﻿using BOL;
 using BOL.Models;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Services.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services;
 public interface ITutorialService

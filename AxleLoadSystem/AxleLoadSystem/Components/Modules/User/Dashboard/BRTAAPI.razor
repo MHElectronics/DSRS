@@ -1,6 +1,6 @@
 ﻿@page "/BRTA"
 @using AxleLoadSystem.Helpers
-@using Newtonsoft.Json
+@using System.Text.Json
 @inject IRHDApiHelper apiHelper
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Reports> localizer
@@ -81,7 +81,8 @@
         try
         {
             string resultString = await apiHelper.GetBRTAInformationByRFID(payloadBRTA);
-            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
+            // result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
+            result = JsonSerializer.Deserialize<Dictionary<string, string>>(resultString);
         }
         catch (Exception ex)
         {
@@ -94,7 +95,8 @@
         try
         {
             string resultString = await apiHelper.GetBRTAInformationByRegistrationNumber(payloadBRTA);
-            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
+            // result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
+            result = JsonSerializer.Deserialize<Dictionary<string, string>>(resultString);
         }
         catch (Exception ex)
         {
