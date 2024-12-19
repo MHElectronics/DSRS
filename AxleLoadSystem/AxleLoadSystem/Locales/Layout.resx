@@ -231,7 +231,7 @@
   <data name="Menu.Histogram" xml:space="preserve">
     <value>Histogram</value>
   </data>
-  <data name="Menu.SQLQuaryRegistration" xml:space="preserve">
+  <data name="Menu.SQLQueryRegistration" xml:space="preserve">
     <value>Fixed SQL Registration</value>
   </data>
 </root>

@@ -231,7 +231,7 @@
   <data name="Menu.Histogram" xml:space="preserve">
     <value>হিস্টোগ্রাম</value>
   </data>
-  <data name="Menu.SQLQuaryRegistration" xml:space="preserve">
+  <data name="Menu.SQLQueryRegistration" xml:space="preserve">
     <value>স্থায়ী SQL নিবন্ধন</value>
   </data>
 </root>

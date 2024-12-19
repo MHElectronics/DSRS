@@ -1,4 +1,4 @@
-﻿@page "/SQSQuaryRegistration"
+﻿@page "/SQLQueryRegistration"
 @using System.Data
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Text.RegularExpressions;
@@ -8,7 +8,7 @@
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
-<PageTitleComponent Title="@localizerCommon["SQLDirectSearch"]"></PageTitleComponent>
+<PageTitleComponent Title="@localizerCommon["SQLQueryRegistration"]"></PageTitleComponent>
 
 <div class="card card-primary card-outline">
     @if (sqlSearch is not null)
@@ -16,7 +16,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-8 col-sm-12">
-                    <label for="sql" class="form-label">SQL Query</label>
+                    <label for="sql" class="form-label">@localizerCommon["SQLQuery"]</label>
                     <textarea @bind="@sqlSearch.Query" class="form-control" placeholder="Please write SQL query only..." id="sql" style="field-sizing: content;"></textarea>
                 </div>
 

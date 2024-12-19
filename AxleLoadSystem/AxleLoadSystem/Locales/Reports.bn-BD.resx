@@ -291,4 +291,10 @@
   <data name="Report.UserName" xml:space="preserve">
     <value>ব্যবহারকারীর নাম</value>
   </data>
+  <data name="Report.GrossVehicleWeightLimit" xml:space="preserve">
+    <value>মোট যানবাহনের ওজন সীমা</value>
+  </data>
+  <data name="Report.VehicleType" xml:space="preserve">
+    <value>যানবাহনের ধরন</value>
+  </data>
 </root>

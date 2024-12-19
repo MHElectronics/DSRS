@@ -165,8 +165,8 @@
   <data name="Publish" xml:space="preserve">
     <value>Publish?</value>
   </data>
-  <data name="SQLDirectSearch" xml:space="preserve">
-    <value>SQL Direct Search</value>
+  <data name="SQLQueryRegistration" xml:space="preserve">
+    <value>SQL Query Registration</value>
   </data>
   <data name="Tutorial.AdminPanel" xml:space="preserve">
     <value>Admin Tutorial Panel</value>
@@ -239,5 +239,8 @@
   </data>
   <data name="Parameter.Value" xml:space="preserve">
     <value>Parameter Value</value>
+  </data>
+  <data name="SQLQuery" xml:space="preserve">
+    <value>SQL Query</value>
   </data>
 </root>
