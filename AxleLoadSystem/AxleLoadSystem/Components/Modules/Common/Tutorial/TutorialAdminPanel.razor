@@ -229,7 +229,7 @@
         //Save file
         tutorial.UserId = currentUser.Id;
         tutorial.Date = DateTime.Now;
-        
+
         if (string.IsNullOrEmpty(tutorial.FileLocation))
         {
             Summary = "Please select the file";
@@ -241,6 +241,10 @@
         else if (string.IsNullOrEmpty(tutorial.Description))
         {
             Summary = "Description field can not be empty";
+        }
+        else if (tutorial.Description.Trim().Count(char.IsLetter) < 10)
+        {
+            Summary = "Description must contain at least 10 characters";
         }
         else if (tutorial.DisplayOrder <= 0)
         {
