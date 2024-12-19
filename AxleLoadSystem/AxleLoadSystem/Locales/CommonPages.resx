@@ -240,7 +240,19 @@
   <data name="Parameter.Value" xml:space="preserve">
     <value>Parameter Value</value>
   </data>
+  <data name="OverloadCondition" xml:space="preserve">
+    <value>Overload Condition</value>
+  </data>
+  <data name="OverloadFilter" xml:space="preserve">
+    <value>Overload Filter</value>
+  </data>
   <data name="SQLQuery" xml:space="preserve">
     <value>SQL Query</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="DateRange" xml:space="preserve">
+    <value>Date Range</value>
   </data>
 </root>
