@@ -64,12 +64,10 @@
                         @localizer["Report.Export"]
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">@localizer["Report.CSV"]</span></li>
                         <li><span class="dropdown-item" @onclick="@ExportBreakdownTable">@localizer["Report.TableBreakdown"] @localizer["Report.CSV"]</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">@localizer["Report.Graph"]</span></li>
-                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
                     </ul>
                 </li>
             </ul>

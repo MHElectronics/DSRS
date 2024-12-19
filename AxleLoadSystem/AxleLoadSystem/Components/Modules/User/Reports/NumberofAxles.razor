@@ -232,16 +232,6 @@
 
         string fileName = "Number of axles";
 
-        // if (type == "excel")
-        // {
-        //     byte[] fileByte = exportHelper.CreateSpreadsheetWorkbook<AxleLoadReport>(fields, data.ToList());
-
-        //     MemoryStream ms = new MemoryStream(fileByte);
-
-        //     using var streamRef = new DotNetStreamReference(ms);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "Test.xlsx", streamRef);
-        // }
-        // else 
         if (type == "csv")
         {
             MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), refReportSelection.GetSelection());
@@ -253,13 +243,6 @@
         {
             await chartInstance.ExportAsync(ExportType.PNG, fileName, allowDownload: true, isBase64: true);
         }
-        // else if (type == "pdf")
-        // {
-        //     MemoryStream stream = exportHelper.CreatePdf<AxleLoadReport>(data.ToList());
-
-        //     using var streamRef = new DotNetStreamReference(stream);
-        //     await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".pdf", streamRef);
-        // }
     }
 
     public void ExportComplete(ExportEventArgs exportEventArgs)

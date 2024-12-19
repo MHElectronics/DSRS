@@ -71,11 +71,9 @@ else if (Chartview && ChartData is not null)
                         @localizer["Report.Export"]
                     </span>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("excel"))">Excel</span></li> *@
                         <li><span class="dropdown-item" @onclick="@(() => Export("csv"))">@localizer["Report.CSV"]</span></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><span class="dropdown-item" @onclick="@(() => Export("chart"))">@localizer["Report.Graph"]</span></li>
-                        @*  <li><span class="dropdown-item" @onclick="@(() => Export("pdf"))">Pdf</span></li> *@
                     </ul>
                 </li>
             </ul>
@@ -139,12 +137,8 @@ else if (Chartview && ChartData is not null)
                                     <th class="text-right">Weight Range in Ton</th>
                                     <th class="text-right">Medium Weight</th>
                                     <th class="text-right">Cummilative Number of Axles</th>
-                                    @* <th class="text-right">Medium Weight4</th>
-                                    <th class="text-right">Medium Weight4_2</th>
-                                    <th class="text-right">Medium Weight4_3</th> *@
                                     <th class="text-right">Influence</th>
                                     <th class="text-right">Equivalent to @(selectedEquivalentAxleLoad)t Axle</th>
-                                    @* <th class="text-right">Influence_3</th> *@
                                 </tr>
                             </thead>
                             <tbody>
@@ -154,12 +148,8 @@ else if (Chartview && ChartData is not null)
                                         <td class="text-right">@item.GrossVehicleWeightRange</td>
                                         <td class="text-right">@item.MediumWeight.ToString("N2")</td>
                                         <td class="text-right">@item.TotalNumberOfAxles.ToString("N0")</td>
-                                        @* <td class="text-right">@item.MediumWeight4.ToString("N2")</td>
-                                        <td class="text-right">@item.MediumWeight4_2.ToString("N2")</td>
-                                        <td class="text-right">@item.MediumWeight4_3.ToString("N2")</td> *@
                                         <td class="text-right">@item.Influence.ToString("N2")</td>
                                         <td class="text-right">@item.Influence_2.ToString("N2")</td>
-                                        @* <td class="text-right">@item.Influence_3.ToString("N2")</td> *@
                                     </tr>
                                 }
                             </tbody>
