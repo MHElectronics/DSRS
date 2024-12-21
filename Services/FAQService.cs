@@ -64,7 +64,7 @@ public class FAQService : IFAQService
 
         if (isSuccess)
         {
-            UserActivity log = new UserActivity(user.Id, "FAQ Added", LogActivity.Insert);
+            UserActivity log = new UserActivity(user.Id, "FAQ", LogActivity.Insert);
             await _userActivityService.InsertUserActivity(log);
         }
 
@@ -78,7 +78,7 @@ public class FAQService : IFAQService
 
         if (isSuccess)
         {
-            UserActivity log = new UserActivity(user.Id, "FAQ Updated. FAQ Id: " + faq.Id , LogActivity.Update);
+            UserActivity log = new UserActivity(user.Id, "FAQ Id: " + faq.Id , LogActivity.Update);
             await _userActivityService.InsertUserActivity(log);
         }
 
@@ -91,7 +91,7 @@ public class FAQService : IFAQService
 
         if (isSuccess)
         {
-            UserActivity log = new UserActivity(user.Id, "FAQ Question Updated. FAQ Id: " + faq.Id, LogActivity.Update);
+            UserActivity log = new UserActivity(user.Id, "FAQ Question Id: " + faq.Id, LogActivity.Update);
             await _userActivityService.InsertUserActivity(log);
         }
 
@@ -104,7 +104,7 @@ public class FAQService : IFAQService
         
         if (count > 0)
         {
-            UserActivity log = new UserActivity(user.Id, "FAQ Deleted. FAQ Id: " + faq.Id, LogActivity.Delete);
+            UserActivity log = new UserActivity(user.Id, "FAQ Id: " + faq.Id, LogActivity.Delete);
             await _userActivityService.InsertUserActivity(log);
         }
 

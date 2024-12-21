@@ -4,7 +4,7 @@
 @using System.Text.RegularExpressions;
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
-@inject ISQLSearchService sqlSearchService
+@inject ISQLQueriesService sqlQueryService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -108,7 +108,7 @@
 </div>
 
 @code {
-    private SQLSearch sqlSearch { get; set; } = new();
+    private SQLQueries sqlSearch { get; set; } = new();
     private EditContext editContext = default!;
     private User currentUser { get; set; }
     private DataTable results;
@@ -168,7 +168,7 @@
             dicParameters.Add(item.Name, item.Value);
         }
 
-        results = await sqlSearchService.GetSQLSearch(sqlSearch, dicParameters);
+        results = await sqlQueryService.ExecuteSQLQuery(sqlSearch, dicParameters);
         var rows = results.AsEnumerable().ToList();
         var providerResult = GridItemsProviderResult
             .From<DataRow>(rows, rows.Count);

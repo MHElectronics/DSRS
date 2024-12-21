@@ -12,7 +12,7 @@ public static class DependencyInjection
         services.AddScoped<ISqlDataAccess, SqlDataAccess>();
         services.AddScoped<IFileStoreHelper, FileStoreHelper>();
         services.AddScoped<IExportHelper, ExportHelper>();
-        services.AddScoped<ISQLSearchService, SQLSearchService>();
+        services.AddScoped<ISQLQueriesService, SQLQueriesService>();
         //Services
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IStationService, StationService>();
