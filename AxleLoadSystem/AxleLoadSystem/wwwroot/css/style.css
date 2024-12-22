@@ -208,3 +208,13 @@ input[type="number"], input[type="date"] {
         max-width: none;
         text-overflow: clip;
     }
+
+
+hr {
+    border: 1px solid #007bff;
+    border-radius: 50%;
+}
+.dark-mode hr {
+    border: 1px solid #3f6791;
+    border-radius:50%;
+}

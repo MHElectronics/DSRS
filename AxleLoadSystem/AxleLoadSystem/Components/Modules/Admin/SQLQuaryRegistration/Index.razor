@@ -1,4 +1,4 @@
-﻿@page "/SQLQueryRegistration"
+﻿@page "/SQLQueryRegistration/{id:int?}"
 @using System.Data
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using System.Text.RegularExpressions;
@@ -7,6 +7,7 @@
 @inject ISQLQueriesService sqlQueryService
 @inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
+@inject NavigationManager navigationManager
 
 <PageTitleComponent Title="@localizerCommon["SQLQueryRegistration"]"></PageTitleComponent>
 
@@ -67,6 +68,31 @@
                         <button type="submit" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="ExecuteQuery">@localizerResource["Button.Execute"]</button>
                     </div>
                 </div>
+                <div class="col-md-3">
+                    <label for="title" class="form-label">@localizerCommon["Title"]</label>
+                    <input type="text" @bind="@sqlSearch.Title" class="form-control" placeholder="Title" id="title" />
+                </div>
+                <div class="col-md-5">
+                    <label for="description" class="form-label">@localizerCommon["Description"]</label>
+                    <input type="text" @bind="@sqlSearch.Description" class="form-control" placeholder="Description" id="description" />
+                </div>
+                <div class="col-md-4 col-sm-4">
+                    <div class="from-group">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="form-control btn-group p-0">
+                            @if (Id is not null && Id > 0)
+                            {
+                                <button type="button" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="Update">@localizerResource["Button.Update"]</button>
+                                <button type="button" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="Cancel">@localizerResource["Button.Cancel"]</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-primary" disabled="@(showLoading ? "disabled" : null)" @onclick="SaveNew">@localizerResource["Button.Save"]</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
                 @if (!string.IsNullOrEmpty(Summary))
                 {
                     <div class="col-md-12">
@@ -108,6 +134,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public int? Id { get; set; }
+
     private SQLQueries sqlSearch { get; set; } = new();
     private EditContext editContext = default!;
     private User currentUser { get; set; }
@@ -124,14 +153,28 @@
         public string Name { get; set; } = "";
         public string Value { get; set; } = "";
     }
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnParametersSetAsync()
     {
         editContext = new EditContext(sqlSearch);
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
 
-        parameters = new();
-        parameters.Add(new());
+        if(Id is not null && Id > 0)
+        {
+            sqlSearch.Id = Id ?? 0;
+            sqlSearch = await sqlQueryService.GetById(sqlSearch);
+            parameters = new();
+            foreach(string item in sqlSearch.ParameterList)
+            {
+                parameters.Add(new() { Name = item, Value = "" });
+            }
+        }
+        else
+        {
+            parameters = new();
+            parameters.Add(new());
+        }
     }
 
     private async Task ExecuteQuery()
@@ -193,6 +236,35 @@
     private void ParameterDelete(SqlSearchParameters param)
     {
         parameters.Remove(param);
+    }
+
+    private async Task SaveNew()
+    {
+        sqlSearch.ParameterList = parameters.Select(p => p.Name).ToList();
+        if (await sqlQueryService.InsertSqlQuery(sqlSearch, currentUser))
+        {
+            Summary = "Saved Successfully";
+        }
+        else
+        {
+            Summary = "Save Failed";
+        }
+    }
+    private async Task Update()
+    {
+        sqlSearch.ParameterList = parameters.Select(p => p.Name).ToList();
+        if(await sqlQueryService.UpdateSqlQuery(sqlSearch, currentUser))
+        {
+            Summary = "Updated Successfully";
+        }
+        else
+        {
+            Summary = "Updated Failed";
+        }
+    }
+    private void Cancel()
+    {
+        navigationManager.NavigateTo("/sqlexecution");
     }
 
     private bool HandleError(Exception ex)

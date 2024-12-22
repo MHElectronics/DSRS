@@ -101,7 +101,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 50
+        DECLARE @TotalIteration INT = 200
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -161,7 +161,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 50
+        DECLARE @TotalIteration INT = 200
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -221,7 +221,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 50
+        DECLARE @TotalIteration INT = 200
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -281,7 +281,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 50
+        DECLARE @TotalIteration INT = 200
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 
@@ -341,7 +341,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) + $@"
         DECLARE @Multiplier DECIMAL(18,2) = 1000
-        DECLARE @TotalIteration INT = 50
+        DECLARE @TotalIteration INT = 200
 
         DECLARE @Range TABLE(GroupId INT, Minimum INT, Maximum INT)
 

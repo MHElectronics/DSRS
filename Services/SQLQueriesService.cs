@@ -9,6 +9,8 @@ public interface ISQLQueriesService
 {
     Task<IEnumerable<SQLQueries>> Get();
     Task<SQLQueries> GetById(SQLQueries sQLQueries);
+    Task<bool> InsertSqlQuery(SQLQueries obj, User user);
+    Task<bool> UpdateSqlQuery(SQLQueries obj, User user);
     Task<DataTable> ExecuteSQLQuery(SQLQueries sQLSearch, Dictionary<string, object> parameters);
 }
 public class SQLQueriesService(IConfiguration config, ISqlDataAccess _db, IUserActivityService _userActivityService) : ISQLQueriesService
@@ -21,7 +23,15 @@ public class SQLQueriesService(IConfiguration config, ISqlDataAccess _db, IUserA
     }
     public async Task<SQLQueries> GetById(SQLQueries sQLQueries)
     {
-        return await _db.LoadSingleAsync<SQLQueries, dynamic>("SELECT * FROM SQLQueries WHERE Id=@Id", sQLQueries);
+        try
+        {
+            return await _db.LoadSingleAsync<SQLQueries, dynamic>("SELECT * FROM SQLQueries WHERE Id=@Id", sQLQueries);
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
 
     public async Task<DataTable> ExecuteSQLQuery(SQLQueries sQLSearch, Dictionary<string, object> parameters)
