@@ -7,17 +7,21 @@
 @inject IJSRuntime jsRuntime
 
 <div class="row">
-    <div class="col-md-12">
-        <h6>Total items found: @count.ToString("N0")</h6>
-    </div>
     <div class="col-md-8 col-sm-12">
-        <input @bind="searchQuery" placeholder="Search..." class="form-control" />
+        <div class="form-group">
+            <label class="form-label">Total items found: @count.ToString("N0")</label>
+            <input @bind="searchQuery" placeholder="Search..." class="form-control" />
+        </div>
     </div>
     <div class="col-md-4 col-sm-12">
-        <div class="btn btn-group">
-            <button class="btn btn-primary" @onclick="ApplyFilter"> <i class="fa fa-filter">&nbsp;</i>Filter</button>
-            <button class="btn btn-primary" @onclick="@(() => Export("csv"))"><i class="fa fa-download">&nbsp;</i>@localizer["Report.CSV"]</button>
+        <div class="form-group">
+            <label class="form-label">&nbsp;</label>
+            <div class="form-control btn-group m-0 p-0">
+                <button class="btn btn-primary" @onclick="ApplyFilter"> <i class="fa fa-filter">&nbsp;</i>Filter</button>
+                <button class="btn btn-primary" @onclick="@(() => Export("csv"))"><i class="fa fa-download">&nbsp;</i>@localizer["Report.CSV"]</button>
+            </div>
         </div>
+        
     </div>
 </div>
 <div class="row">
