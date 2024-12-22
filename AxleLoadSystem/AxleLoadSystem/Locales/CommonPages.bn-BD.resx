@@ -258,4 +258,10 @@
   <data name="SQLQueryRegistration" xml:space="preserve">
     <value>স্থায়ী SQL নিবন্ধন</value>
   </data>
+  <data name="Description" xml:space="preserve">
+    <value>বর্ণনা</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>শিরোনাম</value>
+  </data>
 </root>

@@ -255,4 +255,10 @@
   <data name="DateRange" xml:space="preserve">
     <value>Date Range</value>
   </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
 </root>
