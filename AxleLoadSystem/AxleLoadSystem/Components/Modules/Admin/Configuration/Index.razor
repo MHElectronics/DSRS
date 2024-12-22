@@ -92,7 +92,7 @@ else
     <div class="card card-primary card-outline">
         <div class="card-body">
             <h3 class="card-header">
-                @localizer["Report.GrossVehicleWeightLimit"]
+                <span>@localizer["Report.GrossVehicleWeightLimit"]&nbsp;</span>
                 @if(!weightAddEnabled && !weightEditEnabled)
                 {
                     <span class="btn btn-primary" @onclick="AddWeight"><i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]</span>

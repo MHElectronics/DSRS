@@ -45,14 +45,17 @@
     </div>
     @if (userActivities is not null && userActivities.Count() > 0)
     {
-        <div class="card-footer">
-            <QuickGrid Items="@userActivities" Virtualize='true'>
-                <PropertyColumn Property="@(l => l.Id)" Sortable="true" />
-                <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy/MM/dd HH:mm:ss tt" Title="Date Time" Sortable="true" />
-                <PropertyColumn Property="@(l => GetUserName(l.UserId))" Title="User Name" Sortable="true" />
-                <PropertyColumn Property="@(l => l.Activity)" Title="Activity" Sortable="true" />
-                <PropertyColumn Property="@(l => l.Description)" Title="Description" Sortable="true" />
-            </QuickGrid>
+        <div class="card-body">
+            <hr />
+            <div class="enable-table-scroll">
+                <QuickGrid Items="@userActivities" Virtualize='true'>
+                    <PropertyColumn Property="@(l => l.Id)" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.DateTime)" Format="yyyy/MM/dd HH:mm:ss tt" Title="Date Time" Sortable="true" />
+                    <PropertyColumn Property="@(l => GetUserName(l.UserId))" Title="User Name" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.Activity)" Title="Activity" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.Description)" Title="Description" Sortable="true" />
+                </QuickGrid>
+            </div>
         </div>
     }
     @if (!string.IsNullOrEmpty(Summary))

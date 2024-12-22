@@ -97,27 +97,25 @@ else
                             else
                             {
                                 <label for="MapY" class="form-label">@localizer["MapY"]</label>
-                                <input type="number" step="0.1" @bind-value="station.MapY" class="form-control" placeholder="@localizer["MapY"]" aria-label="Map Y Coordinate" id="MapY" min="0" max="1800"/>
+                                <input type="number" step="0.1" @bind-value="station.MapY" class="form-control" placeholder="@localizer["MapY"]" aria-label="Map Y Coordinate" id="MapY" min="0" max="1800" />
                                 <ValidationMessage For="() => station.MapY" />
                             }
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <div class="col-md-12 col-sm-12">
-                        <div class="btn-group">
-                            @if (Mode == FormMode.Details)
-                            {
-                                string editLink = "/station/edit/" + station.StationId;
-                                <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
-                            }
-                            else
-                            {
-                                <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
-                            }
-                            <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Cancel"]</NavLink>
-                            </div>
-                        </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-4 col-sm-12 btn-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        string editLink = "/station/edit/" + station.StationId;
+                        <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
+                    }
+                    <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Cancel"]</NavLink>
                     </div>
                 </div>
             </div>

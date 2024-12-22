@@ -18,7 +18,7 @@ else
         <div class="card card-primary card-outline">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6 col-sm-12">
+                    <div class="col-md-8 col-sm-12">
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
@@ -33,12 +33,14 @@ else
                             }
                         </div>
                     </div>
-                    <div class="col align-self-end">
-                        <div class="form-group float-left align-bottom">
+                    <div class="col-md-4 col-sm-12">
+                        <div class="form-group">
                             <label class="form-label">&nbsp;</label>
-                            <button class="btn btn-primary" type="submit">
-                                @(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])
-                            </button>
+                            <div class="form-control m-0 p-0">
+                                <button class="btn btn-primary w-100" type="submit">
+                                    @(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -43,8 +43,8 @@
         @if (showParameters)
         {
             <div class="card-body">
-                <hr/>
-                <dl class="row">
+                <hr />
+                <dl class="col-md-12">
                     <dt class="col-sm-4">@localizerCommon["Title"]</dt>
                     <dd class="col-sm-8">@selectedSqlQuery.Title</dd>
                     <dt class="col-sm-4">@localizerCommon["Description"]</dt>
@@ -52,26 +52,28 @@
                 </dl>
                 @if (parameters is not null)
                 {
-                    <table class="table table-striped table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>@localizerCommon["Parameter.Name"]</th>
-                                <th>@localizerCommon["Parameter.Value"]</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var param in parameters)
-                            {
-                                <tr>
-                                    <td>@@@param.Name</td>
-                                    <td>
-                                        <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
                     <div class="col-md-12">
+                        <table class="table table-striped table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th>@localizerCommon["Parameter.Name"]</th>
+                                    <th>@localizerCommon["Parameter.Value"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var param in parameters)
+                                {
+                                    <tr>
+                                        <td>@@@param.Name</td>
+                                        <td>
+                                            <input type="text" @bind="param.Value" class="form-control" placeholder="@localizerCommon["Parameter.Value"]" min="1" maxlength="300" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4 btn-group">
                         <span class="btn btn-primary" @onclick="ExecuteWithParameters" title="Execute">Execute</span>
                         <span class="btn btn-primary" @onclick="Cancel" title="Cancel">Cancel</span>
                     </div>
@@ -162,7 +164,7 @@
     }
     private void Cancel()
     {
-        showParameters  = false;
+        showParameters = false;
         selectedSqlQuery = new();
         results = null;
     }
@@ -176,7 +178,7 @@
         results = null;
         if (parameters.Any(p => string.IsNullOrEmpty(p.Value)))
         {
-            Summary = "Please enter values for " + String.Join(",", parameters.Where(p => string.IsNullOrEmpty(p.Value)).Select(p=>p.Name).ToList());
+            Summary = "Please enter values for " + String.Join(",", parameters.Where(p => string.IsNullOrEmpty(p.Value)).Select(p => p.Name).ToList());
             return;
         }
 

@@ -45,15 +45,18 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="form-label">&nbsp;</label>
-                            <div class="icheck-primary d-inline">
-                                <input type="checkbox" @bind="@newQuestion.IsPublished" id="chkIsPublished" />
-                                <label for="chkIsPublished">@localizerCommon["Publish"]</label>
+                            <div class="form-control">
+                                <div class="icheck-primary d-inline">
+                                    <input type="checkbox" @bind="@newQuestion.IsPublished" id="chkIsPublished" />
+                                    <label for="chkIsPublished">@localizerCommon["Publish"]</label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            <div class="btn btn-group">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="btn-group form-control m-0 p-0">
                                 <button type="submit" class="btn btn-primary">@localizerResource["Button.Save"]</button>
                                 <NavLink class="btn btn-primary" href="/faq">@localizerResource["Button.Cancel"]</NavLink>
                             </div>

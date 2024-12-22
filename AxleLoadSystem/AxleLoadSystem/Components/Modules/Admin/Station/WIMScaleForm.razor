@@ -39,7 +39,7 @@ else
                                 <input type="number" @bind-value="wimScale.LaneNumber" required class="form-control" id="wimLaneNumber" min="1" max="99" />
                                 <ValidationMessage For="() => wimScale.LaneNumber" />
                             }
-                            else 
+                            else
                             {
                                 <label for="wimLaneNumber" class="form-label">@localizer["WimLaneNumber"]</label>
                                 <label class="form-control">@wimScale.LaneNumber</label>
@@ -126,22 +126,20 @@ else
                 </div>
             </div>
             <div class="card-footer">
-                <div class="col-md-12 col-sm-12">
-                    <div class="btn-group">
-                        @if (formMode == FormMode.Details)
-                        {
-                            <span @onclick="Edit" class="btn btn-primary">@localizerResource["Button.Edit"]</span>
-                        }
-                        else
-                        {
-                            <button class="btn btn-primary" type="submit">@(formMode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
-                        }
-                        <NavLink class="btn btn-primary" href="@("/wimscale/list/" + wimScale.StationId )">@localizerResource["Button.Cancel"]</NavLink>
+                <div class="col-md-4 col-sm-12 btn-group">
+                    @if (formMode == FormMode.Details)
+                    {
+                        <span @onclick="Edit" class="btn btn-primary">@localizerResource["Button.Edit"]</span>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">@(formMode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
+                    }
+                    <NavLink class="btn btn-primary" href="@("/wimscale/list/" + wimScale.StationId )">@localizerResource["Button.Cancel"]</NavLink>
                     </div>
                 </div>
             </div>
-        </div>
-    </EditForm>
+        </EditForm>
 }
 
 @code {
@@ -234,7 +232,7 @@ else
 
         appState.SetNotification(this, notification);
         navigation.NavigateTo("wimscale/list/" + wimScale.StationId);
-       
+
     }
     private void Edit()
     {
