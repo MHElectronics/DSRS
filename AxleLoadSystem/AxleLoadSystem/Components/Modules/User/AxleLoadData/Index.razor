@@ -115,7 +115,7 @@
             if (selectedType.ToLower() == "loaddata")
             {
                 fileType = 1;
-                report = await reportService.Get(reportParameters,isCalculated ,isOverloaded);
+                report = await reportService.GetDataByDate(reportParameters,isCalculated ,isOverloaded);
                 if (report.Item2)
                 {
                     if (report.Item1.Count() > 0)

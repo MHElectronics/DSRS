@@ -6,7 +6,7 @@ namespace Services.Reports;
 
 public interface IOverloadReportService
 {
-    Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters, bool overloadCalculative,bool isOverloadedOnly);
+    Task<(IEnumerable<LoadData>, bool, string)> GetDataByDate(ReportParameters reportParameters, bool overloadCalculative,bool isOverloadedOnly);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedHistogramReport(ReportParameters reportParameters);
@@ -30,7 +30,7 @@ public interface IOverloadReportService
 
 public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 {
-    public async Task<(IEnumerable<LoadData>, bool, string)> Get(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly)
+    public async Task<(IEnumerable<LoadData>, bool, string)> GetDataByDate(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly)
     {
         bool isSuccess = false;
         string overloSelectQuery = _overloadSelectQuery;
@@ -60,9 +60,12 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         ,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7 
         ,AxleRemaining,GrossVehicleWeight,IsUnloaded
         ,{overloSelectQuery} AS IsOverloaded 
-        ,OverSizedModified,Wheelbase,ClassStatus,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
+        ,OverSizedModified,Wheelbase,ClassStatus
+        ,(CASE WHEN CS.Name is null THEN CAST(AL.ClassStatus AS VARCHAR(5)) ELSE CS.Name END) ClassStatusName
+        ,RecognizedBy,IsBRTAInclude,LadenWeight,UnladenWeight,ReceiptNumber,BillNumber
         ,Axle1Time,Axle2Time,Axle3Time,Axle4Time,Axle5Time,Axle6Time,Axle7Time
         FROM AxleLoad AS AL INNER JOIN Stations SN ON AL.StationId=SN.StationId 
+        LEFT JOIN ClassStatus CS ON AL.ClassStatus=CS.Id
         {overloadJoiningQuery} ";
 
         query += this.GetFilterClause(reportParameters);

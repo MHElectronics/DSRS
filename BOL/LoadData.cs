@@ -50,6 +50,7 @@ public class LoadData
     public int Wheelbase { get; set; }
     [MinValue(0)]
     public int ClassStatus { get; set; }
+    public string ClassStatusName { get; set; } = String.Empty;
     [MinValue(0)]
     public int RecognizedBy { get; set; }
     public bool IsBRTAInclude { get; set; }
