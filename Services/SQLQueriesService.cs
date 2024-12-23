@@ -46,7 +46,7 @@ public class SQLQueriesService(IConfiguration config, ISqlDataAccess _db, IUserA
         //Open Connection
         SqlConnection conn = new SqlConnection(_connectionString);
         SqlCommand cmd = new SqlCommand(sQLSearch.Query, conn);
-        conn.Open();
+        await conn.OpenAsync();
 
         // Create data adapter
         SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -71,7 +71,7 @@ public class SQLQueriesService(IConfiguration config, ISqlDataAccess _db, IUserA
         finally
         {
             //Close and dispose connection
-            conn.Close();
+            await conn.CloseAsync();
             da.Dispose();
         }
 

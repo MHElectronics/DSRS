@@ -204,9 +204,26 @@
     }
     private async Task LoadData()
     {
+        if (parameters.Any(p => string.IsNullOrEmpty(p.Name) || string.IsNullOrEmpty(p.Value)))
+        {
+            Summary = "Please enter name and values for all parameters";
+            return;
+        }
+        if(parameters.Any(p=> p.Name.Contains(" ")))
+        {
+            Summary = "Parameter name can't contain blank space";
+            return;
+        }
+        
+        var regexItem = new Regex("^[a-zA-Z0-9 ]*$");
+        if (parameters.Any(p => !regexItem.IsMatch(p.Name) || !regexItem.IsMatch(p.Value)))
+        {
+            Summary = "Parameter name and value can't contain special character";
+            return;
+        }
+        
         Dictionary<string, object> dicParameters = new();
-
-        foreach (SqlSearchParameters item in parameters.Where(p => !string.IsNullOrEmpty(p.Name) && !string.IsNullOrEmpty(p.Value)))
+        foreach (SqlSearchParameters item in parameters)
         {
             dicParameters.Add(item.Name, item.Value);
         }
