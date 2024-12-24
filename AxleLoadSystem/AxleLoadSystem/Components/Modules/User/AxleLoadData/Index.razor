@@ -10,20 +10,19 @@
 @inject IFinePaymentService fineRepaymentService
 @inject AuthenticationStateProvider authStateProvider
 @inject IStationAccessService stationAccessService
-@rendermode InteractiveServer
 @inject IStringLocalizer<Locales.File> localizer
 @inject IStringLocalizer<Locales.Reports> localizerReports
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 @inject IStringLocalizer<Locales.Resource> localizerResource
+@rendermode InteractiveServer
 
-<PageTitleComponent Title="@localizerCommon["DataByDate"]">
-</PageTitleComponent>
+<PageTitleComponent Title="@localizerCommon["DataByDate"]"></PageTitleComponent>
 
 <div class="card card-primary card-outline">
     <div class="card-body">
         <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
-    @if (!selectionEnabled)
+    @if (selectionEnabled)
     {
         string iconOverload = isCalculated == false ? "fa-check-circle" : "fa-circle";
         string iconGrossWeight = isCalculated == true ? "fa-check-circle" : "fa-circle";
@@ -52,8 +51,8 @@
                     </div>
                 </div>
                 <div class="col-md-12 btn-group">
-                    <button class="btn @(selectedType == "loaddata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("loaddata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.LoadData"]</button>
-                    <button class="btn @(selectedType == "finepaymentdata" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("finepaymentdata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.FinePaymentData"]</button>
+                    <button class="btn @(selectedType == "loaddata" ? "btn-danger" : "btn-primary")" @onclick="@(() => ShowData("loaddata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.LoadData"]</button>
+                    <button class="btn @(selectedType == "finepaymentdata" ? "btn-danger" : "btn-primary")" @onclick="@(() => ShowData("finepaymentdata"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.FinePaymentData"]</button>
                 </div>
 
                 @if (!string.IsNullOrEmpty(Summary))
@@ -100,7 +99,12 @@
     private bool selectionEnabled = false;
     private bool isCalculated = true;
     private bool isOverloaded = false;
-    private async Task TypeChanged(string type)
+
+    protected override async Task OnInitializedAsync()
+    {
+        selectionEnabled = await appState.IsReportParametersSet();
+    }
+    private async Task ShowData(string type)
     {
         selectedType = type;
         isLoading = showHide = true;
@@ -161,7 +165,7 @@
     }
     private async Task HandleParametersChanged(bool parameters)
     {
-        selectionEnabled = parameters;
+        selectionEnabled = !parameters;
     }
     private void OnCalculationTypeChanged(bool calculated)
     {
