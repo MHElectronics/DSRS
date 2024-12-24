@@ -143,7 +143,7 @@
         sqlQueries = await sqlQueryService.Get();
     }
 
-    private void SetParameters(SQLQueries sqlSearch)
+    private async Task SetParameters(SQLQueries sqlSearch)
     {
         parameters = new();
         results = null;
@@ -151,7 +151,7 @@
 
         if (sqlSearch.ParameterList.Count() == 0)
         {
-            showParameters = false;
+            await this.Execute(selectedSqlQuery);
         }
         else
         {

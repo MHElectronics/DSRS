@@ -9,7 +9,13 @@ public class SQLQueries
     
     public List<string> ParameterList
     {
-        get { return this.Parameters.Split(",").ToList(); }
+        get {
+            if (string.IsNullOrEmpty(this.Parameters))
+            {
+                return new();
+            }
+            return this.Parameters.Split(",").ToList();
+        }
         set { this.Parameters = String.Join(",", value); }
     }
 }
