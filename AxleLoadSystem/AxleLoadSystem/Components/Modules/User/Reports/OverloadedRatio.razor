@@ -174,12 +174,19 @@
                         <tbody>
                             @foreach (var item in data.OrderBy(x => x.NumberofAxle))
                             {
-                                decimal overloadingRatio = item.TotalVehicle == 0 ? 0 : ((decimal)item.OverloadVehicle / (decimal)item.TotalVehicle);
                                 <tr>
                                     <td class="text-right">@item.NumberofAxle.ToString("N0")</td>
                                     <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
                                     <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
-                                    <td class="text-right">@overloadingRatio.ToString("P2")</td>
+                                    <td class="text-right overloading-ratio">
+                                        @{
+                                            // Calculate overloading ratio for the current item
+                                            item.OverloadingRatio = item.TotalVehicle > 0
+                                            ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100
+                                            : 0;
+                                        }
+                                        @($"{item.OverloadingRatio:N2}%")
+                                    </td>
                                 </tr>
                             }
                         </tbody>
