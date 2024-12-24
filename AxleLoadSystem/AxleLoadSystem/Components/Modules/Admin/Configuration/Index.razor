@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider authStateProvider
 @inject IStringLocalizer<Locales.Reports> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IAppState appState
 
 <PageTitleComponent Title="@localizer["ReportConfiguration.Title"]"></PageTitleComponent>
 
@@ -82,11 +83,6 @@ else
                     </div>
                 </div>
             </EditForm>
-
-            @if (!string.IsNullOrEmpty(summary))
-            {
-                <label class="error">@summary</label>
-            }
         </div>
     </div>
     <div class="card card-primary card-outline">
@@ -120,7 +116,7 @@ else
                             <input type="number" @bind="selectedWeight.AllowedWeight" required class="form-control" placeholder="Gross Vehicle Weight Limit" />
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6">
+                    <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             <label>&nbsp;</label>
                             <div class="form-control btn-group p-0">
@@ -136,15 +132,10 @@ else
                             </div>
                         </div>
                     </div>
-                    @if (!string.IsNullOrEmpty(summaryWeightEdit))
+                    @if (allowWeightNotification is not null)
                     {
-                        <div class="col-md-3 col-sm-6">
-                            <label>&nbsp;</label>
-                            <div class="form-group">
-                                <span class="form-control p-0" style="border: None">
-                                    <p class="text-danger">@summaryWeightEdit</p>
-                                </span>
-                            </div>
+                        <div class="col-md-12 col-sm-12">
+                            <CustomNotification Notification="allowWeightNotification"></CustomNotification> 
                         </div>
                     }
                 </div>
@@ -184,15 +175,15 @@ else
     private User currentUser { get; set; }
     private bool editConfiguration { get; set; } = false;
     private bool trigger { get; set; } = false;
-    private string summary { get; set; } = string.Empty;
 
     private List<ConfigurationOverloadWeight> overloadWeights { get; set; }
     private bool weightEditEnabled { get; set; } = false;
     private bool weightAddEnabled { get; set; } = false;
     private ConfigurationOverloadWeight selectedWeight { get; set; }
-    private string summaryWeightEdit { get; set; } = string.Empty;
+    private Notification allowWeightNotification { get; set; }
     private int MaxAxleNumber { get; set; }
-    protected override async Task OnParametersSetAsync()
+
+    protected override async Task OnInitializedAsync()
     {
         var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
         currentUser = await customStateProvider.GetAuthorizedUser();
@@ -211,40 +202,45 @@ else
 
     void OnInvalidSubmit()
     {
-        summary = "Please enter valid data";
+        Notification notification = new("Please enter valid data", Notification.NotificationType.Warning);
+        appState.SetNotification(this, notification);
     }
 
     async Task OnValidSubmit(EditContext editContext)
     {
-        summary = "";
+        Notification notification = null;
 
         if (editConfiguration && trigger)
         {
             if (await configurationService.InsertConfiguration(configuration, currentUser))
             {
-                summary = "Configuration added successfully";
+                notification = new("Configuration added successfully",Notification.NotificationType.Success);
             }
             else
             {
-                summary = "Failed to add configuration";
+                notification = new("Failed to add configuration", Notification.NotificationType.Failure);
             }
         }
         else
         {
             await configurationService.UpdateConfiguration(configuration, currentUser);
-            summary = "Configuration updated successfully";
+            notification = new("Configuration updated successfully", Notification.NotificationType.Success);
         }
+
+        if (notification is not null)
+        {
+            appState.SetNotification(this, notification);
+        }
+
         editConfiguration = false;
     }
     private async Task Cancel()
     {
         configuration = await configurationService.GetConfiguration();
-        summary = "";
         editConfiguration = false;
     }
     void ToggleEdit()
     {
-        summary = "";
         editConfiguration = !editConfiguration;
     }
 
@@ -252,7 +248,7 @@ else
     {
         weightAddEnabled = true;
         weightEditEnabled = false;
-        summaryWeightEdit = string.Empty;
+        allowWeightNotification = null;
         selectedWeight = new();
         selectedWeight.AxleNumber = overloadWeights.Max(w=>w.AxleNumber) + 1;
         selectedWeight.AllowedWeight = 0;
@@ -261,7 +257,7 @@ else
     {
         weightEditEnabled = true;
         weightAddEnabled = false;
-        summaryWeightEdit = string.Empty;
+        allowWeightNotification = null;
         selectedWeight = new();
         selectedWeight.AxleNumber = numberOfAxle;
         if (overloadWeights.Any(w => w.AxleNumber == numberOfAxle))
@@ -271,10 +267,10 @@ else
     }
     private async Task UpdateAlloweWeight()
     {
-        summaryWeightEdit = "";
-        if (selectedWeight.AxleNumber <= 2 || selectedWeight.AxleNumber >= MaxAxleNumber)
+        allowWeightNotification = null;
+        if (selectedWeight.AxleNumber < 2 || selectedWeight.AxleNumber > MaxAxleNumber)
         {
-            summaryWeightEdit = "Axle number must be in between or equal to 2 to " + MaxAxleNumber;
+            allowWeightNotification = new("Axle number must be in between or equal to 2 to " + MaxAxleNumber, Notification.NotificationType.Warning);
         }
         else
         {
@@ -283,21 +279,21 @@ else
                 if (await configurationService.UpdateOverloadWeight(selectedWeight, currentUser))
                 {
                     overloadWeights.FirstOrDefault(w => w.AxleNumber == selectedWeight.AxleNumber).AllowedWeight = selectedWeight.AllowedWeight;
-                    summaryWeightEdit = "Allowed weight updated successfully";
+                    allowWeightNotification = new("Allowed weight updated successfully", Notification.NotificationType.Success);
                 }
             }
             else
             {
-                summaryWeightEdit = "Allowed weight must be greater then 0";
+                allowWeightNotification = new("Allowed weight must be greater then 0", Notification.NotificationType.Warning);
             }
         }
     }
     private async Task AddAlloweWeight()
     {
-        summaryWeightEdit = "";
+        allowWeightNotification = null;
         if (selectedWeight.AxleNumber <= 2 || selectedWeight.AxleNumber >= MaxAxleNumber)
         {
-            summaryWeightEdit = "Axle number must be in between or equal to 2 to " + MaxAxleNumber;
+            allowWeightNotification = new("Axle number must be in between or equal to 2 to " + MaxAxleNumber, Notification.NotificationType.Warning);
         }
         else
         {
@@ -305,7 +301,7 @@ else
             {
                 if (overloadWeights.Any(w => w.AxleNumber == selectedWeight.AxleNumber))
                 {
-                    summaryWeightEdit = "Axle number already exists";
+                    allowWeightNotification = new("Axle number already exists", Notification.NotificationType.Warning);
                 }
                 else
                 {
@@ -314,23 +310,23 @@ else
                         if (await configurationService.InsertOverloadWeight(selectedWeight, currentUser))
                         {
                             overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
-                            summaryWeightEdit = "Allowed weight added successfully";
+                            allowWeightNotification = new("Allowed weight added successfully", Notification.NotificationType.Success);
                         }
                         else
                         {
-                            summaryWeightEdit = "Allowed weight add failed";
+                            allowWeightNotification = new("Allowed weight add failed", Notification.NotificationType.Failure);
                         }
                     }
                     catch (Exception ex)
                     {
-                        summaryWeightEdit = "Allowed weight add failed. Error: " + ex.Message;
+                        allowWeightNotification = new("Allowed weight add failed. Error: " + ex.Message, Notification.NotificationType.Failure);
                         throw;
                     }
                 }
             }
             else
             {
-                summaryWeightEdit = "Allowed weight must be greater then 0";
+                allowWeightNotification = new("Allowed weight must be greater then 0", Notification.NotificationType.Warning);
             }
         }
     }
