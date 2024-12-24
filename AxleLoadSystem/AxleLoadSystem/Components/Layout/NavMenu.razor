@@ -84,78 +84,65 @@
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
-
-                    <li class="nav-item @(selectedGroups.Contains("Reports") ? " menu-is-opening menu-open" : "")">
-                        <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("Reports"))'>
+                    <li class="nav-item @(selectedGroups.Contains("Histogram") ? " menu-is-opening menu-open" : "")">
+                        <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("Histogram"))'>
                             <i class="nav-icon fas fa-th"></i>
                             <p>
-                                @localizer["Menu.Reports"]
+                                @localizer["Menu.Histogram"]
                                 <i class="fas fa-angle-left right"></i>
                             </p>
-                        </a>                        
+                        </a>
                         <ul class="nav nav-treeview">
-                            <li class="nav-item @(selectedGroups.Contains("Histogram") ? " menu-is-opening menu-open" : "")">
-                                <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("Histogram"))'>
-                                    <i class="nav-icon fas fa-th"></i>
-                                    <p>
-                                        @localizer["Menu.Histogram"]
-                                        <i class="fas fa-angle-left right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <NavLink class="nav-link" href="Report/OverloadHistogram" Match="NavLinkMatch.All">
-                                            <i class="nav-icon fas fa-chart-bar"></i>
-                                            <p>
-                                                @localizer["Menu.OverloadHistogram"]
-                                            </p>
-                                        </NavLink>
-                                    </li>
-                                    <li class="nav-item">
-                                        <NavLink class="nav-link" href="Report/AxleWiseHistogram" Match="NavLinkMatch.All">
-                                            <i class="nav-icon fas fa-chart-pie"></i>
-                                            <p>
-                                                @localizer["Menu.AxleWiseHistogram"]
-                                            </p>
-                                        </NavLink>
-                                    </li>
-                                </ul>
-                            </li>
                             <li class="nav-item">
-                                <NavLink class="nav-link" href="Report/TimeSeries" Match="NavLinkMatch.All">
-                                    <i class="nav-icon fas fa-chart-line"></i>
+                                <NavLink class="nav-link" href="Report/OverloadHistogram" Match="NavLinkMatch.All">
+                                    <i class="nav-icon fas fa-chart-bar"></i>
                                     <p>
-                                        @localizer["Menu.TimeSeries"]
+                                        @localizer["Menu.OverloadHistogram"]
                                     </p>
                                 </NavLink>
                             </li>
                             <li class="nav-item">
-                                <NavLink class="nav-link" href="Report/NumberOfAxle" Match="NavLinkMatch.All">
+                                <NavLink class="nav-link" href="Report/AxleWiseHistogram" Match="NavLinkMatch.All">
                                     <i class="nav-icon fas fa-chart-pie"></i>
                                     <p>
-                                        @localizer["Menu.NumberOfAxle"]
-                                    </p>
-                                </NavLink>
-                            </li>
-                            <li class="nav-item">
-                                <NavLink class="nav-link" href="Report/OverloadedRatio" Match="NavLinkMatch.All">
-                                    <i class="nav-icon fas fa-chart-pie"></i>
-                                    <p>
-                                        @localizer["Menu.OverloadedRatio"]
-                                    </p>
-                                </NavLink>
-                            </li>
-                            <li class="nav-item">
-                                <NavLink class="nav-link" href="Report/OverloadedWeightRatio" Match="NavLinkMatch.All">
-                                    <i class="nav-icon fas fa-chart-pie"></i>
-                                    <p>
-                                        @localizer["Menu.OverloadedWeightRatio"]
+                                        @localizer["Menu.AxleWiseHistogram"]
                                     </p>
                                 </NavLink>
                             </li>
                         </ul>
                     </li>
-                    
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="Report/TimeSeries" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <p>
+                                @localizer["Menu.TimeSeries"]
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="Report/NumberOfAxle" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>
+                                @localizer["Menu.NumberOfAxle"]
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="Report/OverloadedRatio" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>
+                                @localizer["Menu.OverloadedRatio"]
+                            </p>
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="Report/OverloadedWeightRatio" Match="NavLinkMatch.All">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>
+                                @localizer["Menu.OverloadedWeightRatio"]
+                            </p>
+                        </NavLink>
+                    </li>
                 </ul>
             </li>
         </Authorized>

@@ -31,7 +31,7 @@
                             <td>@item.Parameters</td>
                             <td class="text-right">
                                 <div class="btn-group">
-                                    <span class="btn btn-primary" @onclick="@(() => SetParameters(item))" title="Set Parameters"><i class="fa fa-list"></i> Select</span>
+                                    <span class="btn btn-primary" @onclick="@(() => SetParameters(item))" title="Set Parameters"><i class="fa fa-list"></i> @(item.Parameters.Any() ? "Select": "Execute")</span>
                                     <span class="btn btn-primary" @onclick="@(()=> navigationManager.NavigateTo(strEditUrl))" title="Edit"><i class="fa fa-edit"></i> Edit</span>
                                 </div>
                             </td>
@@ -151,6 +151,7 @@
 
         if (sqlSearch.ParameterList.Count() == 0)
         {
+            showParameters = false;
             await this.Execute(selectedSqlQuery);
         }
         else
