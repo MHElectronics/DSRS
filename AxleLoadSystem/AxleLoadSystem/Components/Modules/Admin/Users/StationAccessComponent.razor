@@ -20,7 +20,7 @@
             </div>
             <div class="card-body">
                 <div class="checkbox-grid">
-                    @foreach (Station station in stations)
+                    @foreach (Station station in stations.OrderBy(s => s.StationName))
                     {
                         int value = station.StationId;
                         bool check = selectedStations is not null && selectedStations.Any(s => s.StationId == value);
@@ -63,7 +63,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (User user in users)
+                    @foreach (User user in users.OrderBy(u => u.Email))
                     {
                         string stationNames = String.Join(", ", stations.Where(s => allStationAccessList.Any(sa => sa.StationId == s.StationId && sa.UserId == user.Id)).Select(sn => sn.StationName));
                         <tr>
@@ -84,14 +84,14 @@
         flex-wrap: wrap;
         padding: 5px;
         max-width: 100%;
-        box-sizing: border-box; 
-        justify-content: space-between; 
+        box-sizing: border-box;
+        justify-content: space-between;
     }
 
     .checkbox-item {
-        width: 200px; 
-        margin-bottom: 5px; 
-        box-sizing: border-box; 
+        width: 200px;
+        margin-bottom: 5px;
+        box-sizing: border-box;
     }
 </style>
 <ConfirmDialog @ref="submitConfirmationStationAccessRef" ModalName="Confirmation Modal" ConfirmationButtonText="Submit" ConfirmationChanged="SubmitConfirmedStationAccess" OnClose="SubmitDeclined" ConfirmationMessage="Sure to Submit Station Access?" />
@@ -199,14 +199,14 @@
     {
         if ((bool)aChecked)
         {
-            if (!selectedStations.Any(s=>s.StationId == aSelectedId))
+            if (!selectedStations.Any(s => s.StationId == aSelectedId))
             {
-                selectedStations.Add(stations.FirstOrDefault(s=>s.StationId == aSelectedId));
+                selectedStations.Add(stations.FirstOrDefault(s => s.StationId == aSelectedId));
             }
         }
         else
         {
-            if (selectedStations.Any(s=> s.StationId == aSelectedId))
+            if (selectedStations.Any(s => s.StationId == aSelectedId))
             {
                 selectedStations.Remove(selectedStations.FirstOrDefault(s => s.StationId == aSelectedId));
             }

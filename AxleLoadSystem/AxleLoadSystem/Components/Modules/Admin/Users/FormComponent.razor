@@ -163,7 +163,7 @@ else
     {
         <EditForm Model="@userPassword" OnValidSubmit="@OnValidPasswordSubmit" OnInvalidSubmit="@OnInvalidPasswordSubmit" FormName="Users" method="post">
             <DataAnnotationsValidator />
-            <div class="card">
+            <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h3 class="card-title">@localizer["ChangePassword"]</h3>
                 </div>
