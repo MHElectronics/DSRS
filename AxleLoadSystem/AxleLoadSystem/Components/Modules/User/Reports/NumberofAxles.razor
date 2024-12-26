@@ -238,11 +238,14 @@
         fields.Add(("Total Number of Measured Vehicles", nameof(AxleLoadReport.TotalVehicle), new AxleLoadReport().TotalVehicle.GetType()));
         fields.Add(("Overloaded Vehicle Ratio by Axle", nameof(AxleLoadReport.OverloadingRatio), new AxleLoadReport().OverloadingRatio.GetType()));
 
+        List<(string FieldName, string Format)> formats = new();
+        formats.Add((nameof(AxleLoadReport.OverloadingRatio), "P2"));
+
         string fileName = "Number of axles";
 
         if (type == "csv")
         {
-            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), refReportSelection.GetSelection());
+            MemoryStream stream = await exportHelper.GenerateCSVStream<AxleLoadReport>(fields, data.ToList(), refReportSelection.GetSelection(), formats);
 
             using var streamRef = new DotNetStreamReference(stream);
             await jsRuntime.InvokeVoidAsync("downloadFileFromStream", fileName + ".csv", streamRef);

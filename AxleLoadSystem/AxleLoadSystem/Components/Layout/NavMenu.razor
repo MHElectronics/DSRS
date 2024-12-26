@@ -7,24 +7,6 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <!-- Add icons to the links using the .nav-icon class
          with font-awesome or any other icon font library -->
-    @*<li class="nav-item">
-    <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
-    <i class="nav-icon fas fa-th"></i>
-    <p>
-    @localizer["Menu.Counter"]
-    <span class="right badge badge-danger">New</span>
-    </p>
-    </NavLink>
-    </li>
-    <li class="nav-item">
-    <NavLink class="nav-link" href="counter2" Match="NavLinkMatch.All">
-    <i class="nav-icon fas fa-th"></i>
-    <p>
-    @localizer["Menu.Counter2"]
-    <span class="right badge badge-danger">New</span>
-    </p>
-    </NavLink>
-    </li> *@
     <AuthorizeView>
         <NotAuthorized>
             <li class="nav-item">
@@ -43,7 +25,6 @@
                     <i class="nav-icon fas fa-map"></i>
                     <p>
                         @localizer["Menu.Map"]
-                        @* <span class="right badge badge-danger">New</span> *@
                     </p>
                 </NavLink>
             </li>
@@ -151,7 +132,7 @@
     <AuthorizeView>
         <Authorized>
             <li class="nav-item">
-                <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.Prefix">
                     <i class="nav-icon fas fa-store"></i>
                     <p>
                         @localizer["Menu.Tutorial"]
@@ -159,7 +140,7 @@
                 </NavLink>
             </li>
             <li class="nav-item">
-                <NavLink class="nav-link" href="faq" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="faq" Match="NavLinkMatch.Prefix">
                     <i class="nav-icon fas fa-question-circle"></i>
                     <p>
                         @localizer["Menu.FAQ"]
@@ -203,7 +184,7 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <NavLink class="nav-link" href="user" Match="NavLinkMatch.All">
+                                <NavLink class="nav-link" href="user" Match="NavLinkMatch.Prefix">
                                     <i class="nav-icon fas fa-users"></i>
                                     <p>
                                         @localizer["Menu.Users"]
@@ -221,7 +202,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="station" Match="NavLinkMatch.All">
+                        <NavLink class="nav-link" href="station" Match="NavLinkMatch.Prefix">
                             <i class="nav-icon fas fa-list"></i>
                             <p>
                                 @localizer["Menu.Station"]
@@ -229,7 +210,7 @@
                         </NavLink>
                     </li>
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="classstatus" Match="NavLinkMatch.All">
+                        <NavLink class="nav-link" href="classstatus" Match="NavLinkMatch.Prefix">
                             <i class="nav-icon fas fa-layer-group"></i>
                             <p>
                                 @localizer["Menu.ClassStatus"]
@@ -301,8 +282,6 @@
                 //Set Unanswered FAQ count
                 faqCount = await faqService.GetUnansweredFAQCount();
                 await notificationState.SetFAQCount(faqCount);
-
-                //await this.InvokeAsync(StateHasChanged);
             }
         }
     }
