@@ -6,7 +6,7 @@ namespace Services.Helpers;
 
 public interface IExportHelper
 {
-    Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null);
+    Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null, List<(string FieldName, string Format)>? formats = null);
     MemoryStream GenerateCSVStreamFromString(string csvString);
     
     //byte[] CreateSpreadsheetWorkbook<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data);
@@ -24,9 +24,9 @@ public class ExportHelper : IExportHelper
         this.stationService = stationService;
     }
 
-    public async Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null)
+    public async Task<MemoryStream> GenerateCSVStream<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null, List<(string FieldName, string Format)>? formats = null)
     {
-        string csvString = await GenerateCSVString(fields, data, reportParameter);
+        string csvString = await GenerateCSVString(fields, data, reportParameter, formats);
 
         return this.GenerateCSVStreamFromString(csvString);
     }
@@ -40,7 +40,7 @@ public class ExportHelper : IExportHelper
 
         return stream;
     }
-    private async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null)
+    private async Task<string> GenerateCSVString<T>(List<(string Header, string FieldName, Type FieldType)> fields, List<T> data, ReportParameters? reportParameter = null, List<(string FieldName, string Format)>? formats = null)
     {
         StringBuilder sb = new StringBuilder();
         if(reportParameter is not null)
@@ -67,7 +67,17 @@ public class ExportHelper : IExportHelper
 
             foreach ((string Header, string FieldName, Type FieldType) column in fields)
             {
-                row += item.GetType().GetProperty(column.FieldName).GetValue(item, null) + ",";
+                string value =  item.GetType().GetProperty(column.FieldName).GetValue(item, null).ToString();
+                
+                if (formats is not null && formats.Any(f => f.FieldName == column.FieldName))
+                {
+                    string format = formats.FirstOrDefault(f => f.FieldName == column.FieldName).Format;
+                    if(format.StartsWith("N") || format.StartsWith("P"))
+                    {
+                        value = Convert.ToDecimal(item.GetType().GetProperty(column.FieldName).GetValue(item, null)).ToString(format).Replace(",", "");
+                    }
+                }
+                row += value + ",";
             }
             //Remove , from end
             row = row.TrimEnd(',');
