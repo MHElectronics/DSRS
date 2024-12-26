@@ -9,9 +9,16 @@
 <PageTitleComponent Title="@localizer["Tutorial.CategoryList"]">
 @*     <NavLink class="btn btn-primary pull-right" href="/Category/new" title="Add New">
         <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
-    </NavLink> *@
-   
+    </NavLink> *@ 
+    <div class="btn-group float-right">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <a href="TutorialAdmin" class="btn btn-primary">@localizer["Tutorial.Link.Admin"]</a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
 </PageTitleComponent>
+
 
 <FormComponent Category="category" Mode="SelectedFormMode" OnParametersChanged="HandleParametersChanged" />
 @if (CategoryList is null)

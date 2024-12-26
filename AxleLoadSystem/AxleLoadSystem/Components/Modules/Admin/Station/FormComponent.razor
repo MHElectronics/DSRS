@@ -115,9 +115,13 @@ else
                     {
                         <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                     }
-                    <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Cancel"]</NavLink>
+                    <NavLink class="btn btn-primary" href="/station">@localizerResource["Button.Back"]</NavLink>
                     </div>
                 </div>
+                @if (!string.IsNullOrEmpty(Summary))
+                {
+                    <label class="text-danger">@Summary</label>
+                }
             </div>
         </EditForm>
 }
@@ -129,6 +133,7 @@ else
     [Parameter]
     public FormMode Mode { get; set; } = FormMode.Details;
     private User currentUser { get; set; }
+    private string Summary { get; set; }
 
     void OnInvalidSubmit()
     {
@@ -141,38 +146,63 @@ else
         currentUser = await customStateProvider.GetAuthorizedUser();
         Notification notification = new();
         bool isSuccess = false;
-
-        if (Mode == FormMode.Edit)
+        if (station.StationName.Trim().Count(char.IsLetter) < 5)
         {
-            if (await stationService.Update(station, currentUser))
-            {
-                notification.Type = Notification.NotificationType.Success;
-                notification.Message = "Station Updated Successfully";
-                isSuccess = true;
-            }
-            else
-            {
-                notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "Error: Station Update Failed";
-            }
+            Summary = "Station Name must contain at least 5 characters";
+            return;
+        }
+        else if (station.StationName.Trim().Any(c => !char.IsLetter(c) && c != ' '))
+        {
+            Summary = "Station Name can only contain alphabets";
+            return;
+        }
+        else if (station.Address.Trim().Count(char.IsLetter) < 5)
+        {
+            Summary = "Station address must contain at least 5 characters";
+            return;
+        }
+        else if (station.Address.Trim().Any(c => !char.IsLetter(c) && c != ' '))
+        {
+            Summary = "Station address can only contain alphabets";
+            return;
         }
         else
         {
-            if (await stationService.Add(station, currentUser))
+            if (Mode == FormMode.Edit)
             {
-                notification.Type = Notification.NotificationType.Success;
-                notification.Message = "Station Added Successfully";
-                isSuccess = true;
+                if (await stationService.Update(station, currentUser))
+                {
+                    notification.Type = Notification.NotificationType.Success;
+                    notification.Message = "Station Updated Successfully";
+                    isSuccess = true;
+                }
+                else
+                {
+                    notification.Type = Notification.NotificationType.Failure;
+                    notification.Message = "Error: Station Update Failed";
+                }
             }
             else
             {
-                notification.Type = Notification.NotificationType.Failure;
-                notification.Message = "Error: Station Add Failed";
+                if (await stationService.Add(station, currentUser))
+                {
+                    notification.Type = Notification.NotificationType.Success;
+                    notification.Message = "Station Added Successfully";
+                    isSuccess = true;
+                }
+                else
+                {
+                    notification.Type = Notification.NotificationType.Failure;
+                    notification.Message = "Error: Station Add Failed";
+                }
             }
+
+            appState.SetNotification(this, notification);
+            navigation.NavigateTo("station");
+        
         }
 
-        appState.SetNotification(this, notification);
-        navigation.NavigateTo("station");
+
     }
 
     private void GenerateKey()

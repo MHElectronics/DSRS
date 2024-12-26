@@ -37,9 +37,12 @@ else
                         <div class="form-group">
                             <label class="form-label">&nbsp;</label>
                             <div class="form-control m-0 p-0">
-                                <button class="btn btn-primary w-100" type="submit">
-                                    @(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])
-                                </button>
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-primary" type="submit">
+                                        @(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])
+                                    </button>
+                                    <span class="btn btn-primary" @onclick="Cancel">@localizerResource["Button.Cancel"]</span>
+                                </div> 
                             </div>
                         </div>
                     </div>
@@ -100,5 +103,9 @@ else
             }
         }
         await OnParametersChanged.InvokeAsync(isSuccess);
+    }
+    private async Task Cancel()
+    {
+        Category = new();
     }
 }
