@@ -185,7 +185,15 @@
                                         <td>@item.DateUnitName</td>
                                         <td class="text-right">@item.OverloadVehicle.ToString("N0")</td>
                                         <td class="text-right">@item.TotalVehicle.ToString("N0")</td>
-                                        <td class="text-right">@(((decimal)item.OverloadVehicle / (decimal)item.TotalVehicle).ToString("P2"))</td>
+                                        <td class="text-right overloading-ratio">
+                                            @{
+                                                // Calculate overloading ratio for the current item
+                                                item.OverloadingRatio = item.TotalVehicle > 0
+                                                ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100
+                                                : 0;
+                                            }
+                                            @($"{item.OverloadingRatio:N2}%")
+                                        </td>
                                     </tr>
                                 }
                             }
