@@ -90,9 +90,11 @@
             var mode = window.localStorage.getItem('menu-mode');
             if (mode === 'open') {
                 $('body').removeClass('sidebar-collapse');
+                $('body').addClass('sidebar-open');
             }
             else {
                 $('body').addClass('sidebar-collapse');
+                $('body').removeClass('sidebar-open');
             }
         }
 
@@ -117,10 +119,12 @@
         $(document).on('click', '.menu-opener', function () {
             if ($('body').hasClass('sidebar-collapse')) {
                 $('body').removeClass('sidebar-collapse');
+                $('body').addClass('sidebar-open');
                 window.localStorage.setItem('menu-mode', 'open');
             }
             else {
                 $('body').addClass('sidebar-collapse');
+                $('body').removeClass('sidebar-open');
                 window.localStorage.setItem('menu-mode', 'collapsed');
             }
         });

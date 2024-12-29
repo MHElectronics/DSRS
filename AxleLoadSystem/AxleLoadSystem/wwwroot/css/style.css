@@ -218,3 +218,17 @@ hr {
     border: 1px solid #3f6791;
     border-radius:50%;
 }
+
+
+/* Sidebar button not showing in mobile mode*/
+@media only screen and (max-width: 991px) {
+    .main-header {
+        margin-left: 0px !important;
+    }
+
+    .main-sidebar {
+        top: 85px !important;
+        transition-delay: 0.25s !important;
+        transition: top 0.25s;
+    }
+}
