@@ -527,12 +527,19 @@ else if (reportParameters.Stations is not null)
     private async Task SelectionCancel()
     {
         selectionEnabled = false;
-        reportParameters = await appState.GetReportParameters();
-        if (stations is not null && !stations.Any(s => reportParameters.Stations.Contains(s.StationId)))
+        if(!await appState.IsReportParametersSet())
         {
-            reportParameters.Stations = new();
+            await OnParametersChanged.InvokeAsync(true);
         }
-        await OnParametersChanged.InvokeAsync(selectionEnabled);
+        else
+        {
+            reportParameters = await appState.GetReportParameters();
+            if (stations is not null && !stations.Any(s => reportParameters.Stations.Contains(s.StationId)))
+            {
+                reportParameters.Stations = new();
+            }
+            await OnParametersChanged.InvokeAsync(selectionEnabled);
+        }
     }
     private void TypeChanged(string type)
     {
