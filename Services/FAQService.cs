@@ -58,8 +58,8 @@ public class FAQService : IFAQService
     public async Task<bool> InsertFAQ(FAQ faq, User user)
     {
         faq.EntryTime = DateTime.Now;
-        string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,IsPublished,DisplayOrder,EntryTime)
-            VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@IsPublished,@DisplayOrder,@EntryTime)";
+        string sql = @"INSERT INTO FAQ(Question,Answer,QuestionUserId,AnswerUserId,AnswerDateTime,IsPublished,DisplayOrder,EntryTime)
+            VALUES (@Question,@Answer,@QuestionUserId,@AnswerUserId,@AnswerDateTime,@IsPublished,@DisplayOrder,@EntryTime)";
         bool isSuccess = await _db.SaveData<FAQ>(sql, faq);
 
         if (isSuccess)
@@ -72,7 +72,7 @@ public class FAQService : IFAQService
     }
     public async Task<bool> UpdateFAQ(FAQ faq, User user)
     {
-        string sql = @"UPDATE FAQ SET Question=@Question, Answer=@Answer, QuestionUserId=@QuestionUserId, AnswerUserId=@AnswerUserId, IsPublished=@IsPublished, DisplayOrder=@DisplayOrder
+        string sql = @"UPDATE FAQ SET Question=@Question, Answer=@Answer, QuestionUserId=@QuestionUserId, AnswerUserId=@AnswerUserId, AnswerDateTime=@AnswerDateTime, IsPublished=@IsPublished, DisplayOrder=@DisplayOrder
                        WHERE Id=@Id";
         bool isSuccess = await _db.SaveData<FAQ>(sql, faq);
 

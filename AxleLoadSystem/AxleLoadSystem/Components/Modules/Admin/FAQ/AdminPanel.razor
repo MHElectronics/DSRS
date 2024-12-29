@@ -123,7 +123,7 @@
                             @if (!string.IsNullOrEmpty(faq.Answer) && UserList is not null)
                             {
                                 string userName = UserList.Where(u => u.Id == faq.AnswerUserId).FirstOrDefault()?.Name ?? "";
-                                <span class="float-right">Answered by: @userName, @faq.AnswerDateTime.ToString("dd MMM yy")</span>
+                                <span class="float-right">Answered by: @userName, @faq.AnswerDateTime?.ToString("dd MMM yy")</span>
                             }
                         </div>
                     </div>
@@ -203,6 +203,7 @@
     private async Task OnValidSubmit(EditContext editContext)
     {
         newQuestion.AnswerUserId = currentUser.Id;
+        newQuestion.AnswerDateTime = DateTime.Now;
         lengthQuestion = await this.refQuestion.GetCharCountAsync();
         lengthAnswer = await this.refAnswer.GetCharCountAsync();
         if (string.IsNullOrEmpty(newQuestion.Question) ||  lengthQuestion < 10 )
