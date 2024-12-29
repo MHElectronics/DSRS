@@ -76,7 +76,7 @@
         <h3 class="card-title">@localizerCommon["Tutorial.List"]</h3>
     </div>
     <div class="card-body">
-        @if (tutorials == null && categories is null)
+        @if (tutorials == null || categories is null)
         {
             <Loader />
         }
