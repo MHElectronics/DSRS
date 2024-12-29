@@ -1,4 +1,4 @@
-﻿@page "/wimscale/{mode?}/{id:int?}"
+﻿@page "/station/wimscale/{mode?}/{id:int?}"
 @inherits BasePageComponent
 @using System
 @using BOL
@@ -135,7 +135,7 @@ else
                     {
                         <button class="btn btn-primary" type="submit">@(formMode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
                     }
-                    <NavLink class="btn btn-primary" href="@("/wimscale/list/" + wimScale.StationId )">@localizerResource["Button.Cancel"]</NavLink>
+                    <NavLink class="btn btn-primary" href="@("/station/wimscale/list/" + wimScale.StationId )">@localizerResource["Button.Cancel"]</NavLink>
                     </div>
                 </div>
             </div>

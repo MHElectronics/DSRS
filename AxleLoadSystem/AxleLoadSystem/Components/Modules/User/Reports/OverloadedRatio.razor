@@ -21,21 +21,19 @@
     <div class="card-body">
         <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
-    @if (!selectionEnabled)
+    @if (selectionEnabled)
     {
         <div class="card-footer">
             <div class="card-subtitle">@localizer["Report.Text"]</div>
-            @if (appState is not null && showReportGroupSelection)
-            {
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="btn-group">
-                            <button class="btn @(IsCalculated == "GrossVehicleWeightLimit"? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged(true))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.GrossVehicleWeightLimit"]</button>
-                            <button class="btn @(IsCalculated == "OverloadFlagonMeasuredData"? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged(false))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.OverloadFlagonMeasuredData"]</button>
-                        </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="btn-group">
+                        <button class="btn @(IsCalculated == "GrossVehicleWeightLimit"? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged(true))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.GrossVehicleWeightLimit"]</button>
+                        <button class="btn @(IsCalculated == "OverloadFlagonMeasuredData"? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged(false))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.OverloadFlagonMeasuredData"]</button>
                     </div>
                 </div>
-            }
+            </div>
+
             @if (!string.IsNullOrEmpty(validationSummary))
             {
                 <label class="text-danger">@validationSummary</label>
@@ -214,7 +212,6 @@
     private string validationSummary { get; set; } = "";
     private string chartType { get; set; } = "column";
     private string fileName { get; set; } = "Test";
-    private bool showReportGroupSelection { get; set; } = false;
     private bool showChart { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
@@ -222,7 +219,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        showReportGroupSelection = await appState.IsReportParametersSet();
+        selectionEnabled = await appState.IsReportParametersSet();
     }
 
     private async Task Export(string type)
@@ -268,7 +265,7 @@
     }
     private void HandleParametersChanged(bool parameters)
     {
-        selectionEnabled = parameters;
+        selectionEnabled = !parameters;
     }
     private async Task TypeChanged(bool isCalculated)
     {
