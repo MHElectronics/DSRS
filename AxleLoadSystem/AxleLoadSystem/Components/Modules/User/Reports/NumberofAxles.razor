@@ -19,21 +19,19 @@
     <div class="card-body">
         <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
-    @if (!selectionEnabled)
+    @if (selectionEnabled)
     {
         <div class="card-footer">
-            @if (appState is not null && showReportGroupSelection)
-            {
-                <div class="row">
-                    <div class="col-md-12 btn-group">
-                        <button class="btn @(selectedType == "Hour" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hour"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
-                        <button class="btn @(selectedType == "Day" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
-                        <button class="btn @(selectedType == "Day-of-week" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day-of-week"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
-                        <button class="btn @(selectedType == "Month" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Month"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
-                        <button class="btn @(selectedType == "Year" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Year"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
-                    </div>
+            <div class="row">
+                <div class="col-md-12 btn-group">
+                    <button class="btn @(selectedType == "Hour" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Hour"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Hourly"]</button>
+                    <button class="btn @(selectedType == "Day" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Daily"]</button>
+                    <button class="btn @(selectedType == "Day-of-week" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Day-of-week"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Weekly"]</button>
+                    <button class="btn @(selectedType == "Month" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Month"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Monthly"]</button>
+                    <button class="btn @(selectedType == "Year" ? "btn-danger" : "btn-primary")" @onclick="@(() => TypeChanged("Year"))" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Yearly"]</button>
                 </div>
-            }
+            </div>
+
             @if (!string.IsNullOrEmpty(summary))
             {
                 <label class="text-danger">@summary</label>
@@ -219,14 +217,13 @@
     private string ChartTitle { get; set; } = "";
     private string selectedType { get; set; } = "";
     private string summary { get; set; } = "";
-    private bool showReportGroupSelection { get; set; } = false;
     private bool showChart { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
 
     protected override async Task OnInitializedAsync()
     {
-        showReportGroupSelection = await appState.IsReportParametersSet();
+        selectionEnabled = await appState.IsReportParametersSet();
     }
 
     private async Task Export(string type)
@@ -260,9 +257,9 @@
     {
         string base64 = exportEventArgs.Base64;
     }
-    private void HandleParametersChanged(bool parameters)
+    private async Task HandleParametersChanged(bool parameters)
     {
-        selectionEnabled = parameters;
+        selectionEnabled = !parameters;
     }
     private async Task TypeChanged(string type)
     {

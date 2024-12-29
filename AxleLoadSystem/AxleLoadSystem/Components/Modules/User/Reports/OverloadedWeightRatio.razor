@@ -22,17 +22,15 @@
     <div class="card-body">
         <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
-    @if (!selectionEnabled)
+    @if (selectionEnabled)
     {
         <div class="card-footer">
-            @if (appState is not null && showReportGroupSelection)
-            {
-                <div class="row">
-                    <div class="col-md-4">
-                        <button class="btn btn-primary" @onclick="ShowReport" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
-                    </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <button class="btn btn-primary" @onclick="ShowReport" disabled="@(isLoading ? "disabled" : null)">@localizerResource["Button.Show"]</button>
                 </div>
-            }
+            </div>
+
             @if (!string.IsNullOrEmpty(Summary))
             {
                 <label class="text-danger">@Summary</label>
@@ -167,7 +165,6 @@
     private SfChart chartInstance;
     private int maxNumberOfAxle;
     public List<AxleLoadReport> data { get; set; }
-    private bool showReportGroupSelection = false;
     private string Summary { get; set; } = "";
     private bool isLoading = false;
     private bool selectionEnabled = false;
@@ -180,7 +177,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        showReportGroupSelection = await appState.IsReportParametersSet();
+        selectionEnabled = await appState.IsReportParametersSet();
         var reportConfiguration = await configurationService.GetConfiguration();
         if (reportConfiguration != null)
         {
@@ -246,7 +243,7 @@
 
     private void HandleParametersChanged(bool parameters)
     {
-        selectionEnabled = parameters;
+        selectionEnabled = !parameters;
     }
     private async Task ShowReport()
     {

@@ -1,4 +1,4 @@
-﻿@page "/wimscale/list/{id:int?}"
+﻿@page "/station/wimscale/list/{id:int?}"
 @using System
 @using BOL
 @using Services
@@ -14,7 +14,7 @@
     <NavLink class="btn btn-primary pull-right" href="/station" title="Station List">
         <i class="fa fa-arrow-left"></i> @localizerResource["Button.Back"]
     </NavLink>
-    <NavLink class="btn btn-primary pull-right" href="@("/wimscale/new/" + Id)" title="Add New WIM Scale">
+    <NavLink class="btn btn-primary pull-right" href="@("/station/wimscale/new/" + Id)" title="Add New WIM Scale">
         <i class="fa fa-plus"></i> @localizer["Button.AddWim"]
     </NavLink>
 </PageTitleComponent>
@@ -47,10 +47,10 @@ else
                             <td>@(wim.IsUpbound ? "Upbound":"Downbound"): @wim.LaneDirection</td>
                             <td>
                                 <div class="btn-group float-right">
-                                    <a class="btn btn-primary" href="@("/wimscale/details/" + wim.Id)" title="Details Information">
+                                    <a class="btn btn-primary" href="@("/station/wimscale/details/" + wim.Id)" title="Details Information">
                                         <i class="fa fa-info"></i>
                                     </a>
-                                    <a class="btn btn-primary" href="@("/wimscale/edit/" + wim.Id)" title="Edit Information">
+                                    <a class="btn btn-primary" href="@("/station/wimscale/edit/" + wim.Id)" title="Edit Information">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                     <a class="btn btn-primary" @onclick="(() => DeleteWim(wim))" title="Delete WIM Scale">

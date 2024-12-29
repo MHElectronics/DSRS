@@ -20,30 +20,28 @@
     <div class="card-body">
         <ReportSelection @ref="refReportSelection" OnParametersChanged="HandleParametersChanged" />
     </div>
-    @if (!selectionEnabled)
+    @if (selectionEnabled)
     {
         <div class="card-footer">
-            @if (appState is not null && showReportGroupSelection)
-            {
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="name" class="form-label">@localizer["Report.EquivalentAxleLoad"]</label>
-                            <input type="number" @bind-value="@equivalentAxleLoad" step=".01" required class="form-control" placeholder="Equivalent Axle Load" />
-                        </div>
-                    </div>
-                    <div class="col-md-4 form-group">
-                        <label>&nbsp;</label>
-                        <button class="btn btn-primary w-100" @onclick="@ShowReport" disabled="@(isLoading ? "disabled" : null)">
-                            @localizerResource["Button.Show"]
-                            @if (isLoading)
-                            {
-                                <span>&nbsp;<Loader IsSmall="true" /></span>
-                            }
-                        </button>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="name" class="form-label">@localizer["Report.EquivalentAxleLoad"]</label>
+                        <input type="number" @bind-value="@equivalentAxleLoad" step=".01" required class="form-control" placeholder="Equivalent Axle Load" />
                     </div>
                 </div>
-            }
+                <div class="col-md-4 form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary w-100" @onclick="@ShowReport" disabled="@(isLoading ? "disabled" : null)">
+                        @localizerResource["Button.Show"]
+                        @if (isLoading)
+                        {
+                            <span>&nbsp;<Loader IsSmall="true" /></span>
+                        }
+                    </button>
+                </div>
+            </div>
+          
             @if (!string.IsNullOrEmpty(Summary))
             {
                 <label class="text-danger">@Summary</label>
@@ -179,14 +177,13 @@ else if (Chartview && ChartData is not null)
     private string Summary { get; set; } = "";
     private string chartType { get; set; } = "TotalNumberOfAxles";
     private string fileName { get; set; } = "Test";
-    private bool showReportGroupSelection { get; set; } = false;
     private bool Chartview { get; set; }
     private bool isLoading = false;
     private bool selectionEnabled = false;
     
     protected override async Task OnInitializedAsync()
     {
-        showReportGroupSelection = await appState.IsReportParametersSet();
+        selectionEnabled = await appState.IsReportParametersSet();
     }
 
     private async Task Export(string type)
@@ -250,7 +247,7 @@ else if (Chartview && ChartData is not null)
     }
     private async Task HandleParametersChanged(bool parameters)
     {
-        selectionEnabled = parameters;
+        selectionEnabled = !parameters;
     }
     private async Task ShowReport()
     {
