@@ -16,6 +16,7 @@ public interface IUserService
     Task<bool> ChangePassword(User user, User activityUser);
     Task InsertLoginLog(User user);
     Task InsertLogoutLog(User user);
+    Task<bool> CheckDuplicateEntry(User user);
 }
 
 public class UserService : IUserService

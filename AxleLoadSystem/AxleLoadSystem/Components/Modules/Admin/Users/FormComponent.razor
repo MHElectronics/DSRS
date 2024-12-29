@@ -292,6 +292,12 @@ else
             saveDisabled = false;
             return;
         }
+        if (await userService.CheckDuplicateEntry(user))
+        {
+            Summary = "Email has already registered";
+            saveDisabled = false;
+            return;
+        }
 
 
         if (Mode == FormMode.Edit)
