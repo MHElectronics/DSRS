@@ -32,8 +32,8 @@
                                     <option value="@category.Id">@category.Name</option>
                                 }
                             </select>
-                            <div class="input-group-append">
-                                <span class="input-group-text" role="button" title="Manage Category"><i class="fa fa-plus" @onclick="NewCategory"></i></span>
+                            <div class="input-group-append" @onclick="NewCategory">
+                                <span class="input-group-text" role="button" title="Manage Category"><i class="fa fa-plus"></i></span>
                             </div>
                         </div>
                         
