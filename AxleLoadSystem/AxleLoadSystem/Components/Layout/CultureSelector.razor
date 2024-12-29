@@ -5,7 +5,7 @@
 @if(cultures is not null)
 {
     <li class="nav-item dropdown mt-3" role="button">
-        <span class="nav-link" data-toggle="dropdown" aria-expanded="false" title="@CurrentCultureTitle()">
+        <span class="nav-link" style="padding:.2rem 1rem" data-toggle="dropdown" aria-expanded="false" title="@CurrentCultureTitle()">
             <img src="images/locales/@(CultureInfo.CurrentCulture.Name).png" style="max-height:38px; max-width: 38px;" alt="Localization Culture" />
         </span>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
