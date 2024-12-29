@@ -84,7 +84,7 @@
                             @if (!string.IsNullOrEmpty(faq.Answer) && UserList is not null)
                             {
                                 string userName = UserList.Where(u => u.Id == faq.AnswerUserId).FirstOrDefault()?.Name ?? "";
-                                <span class="float-right">Answered by: @userName</span>
+                                <span class="float-right">Answered by: @userName, @faq.AnswerDateTime.ToString("dd MMM yy")</span>
                             }
                         </div>
                     </div>
