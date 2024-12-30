@@ -26,8 +26,8 @@
     background-size: 200px 200px;*/
 }
 
-/*Side bad hover color*/
-.nav-item:hover .nav-icon {
+/*Side bar hover color*/
+.nav-link:hover .nav-icon, .nav-item:hover > .nav-link .nav-icon {
     color: #FF5800 !important;
 }
 
@@ -56,7 +56,7 @@ input:-webkit-autofill:active {
 }
 
 /*Apex Chart*/
-.dark-mode .apexchart .apexcharts-legend-text, .dark-mode .apexchart .apexcharts-title-text {
+/*.dark-mode .apexchart .apexcharts-legend-text, .dark-mode .apexchart .apexcharts-title-text {
     color: white !important;
     fill: white !important;
 }
@@ -90,7 +90,7 @@ input:-webkit-autofill:active {
 
     .dark-mode .apexcharts-tooltip .apexcharts-tooltip-title {
         color: black;
-    }
+    }*/
 
 
 

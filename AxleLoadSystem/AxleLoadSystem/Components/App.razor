@@ -38,6 +38,7 @@
 </head>
 
 <body class="sidebar-mini layout-fixed">
+    <div class="sidebar-overlay"></div>
     <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
     <script src="_framework/blazor.web.js"></script>
     <script src="js/anime.min.js"></script>
@@ -98,6 +99,7 @@
             }
         }
 
+        //Dark mode toggle function to be called from code
         function ThemeToggleClicked() {
             var mode = window.localStorage.getItem('design-mode');
             if (mode === '"dark"') {
@@ -107,15 +109,8 @@
                 $('body').removeClass('dark-mode');
             }
         }
-        function DownloadBlob(options) {
-            var link = document.createElement('a');
-            //link.href = url;
-            link.href = "data:application/octet-stream;base64," + options.data;
-            link.setAttribute('download', options.fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        
+        //Menu icon click event
         $(document).on('click', '.menu-opener', function () {
             if ($('body').hasClass('sidebar-collapse')) {
                 $('body').removeClass('sidebar-collapse');
@@ -126,6 +121,17 @@
                 $('body').addClass('sidebar-collapse');
                 $('body').removeClass('sidebar-open');
                 window.localStorage.setItem('menu-mode', 'collapsed');
+            }
+        });
+
+        //In mobile mode; hide menu when clicked outside
+        $(document).on('click', '.content-wrapper', function () {
+            var tst = $('.main-header').css('margin-left');
+            if (tst === '0px') {
+                if ($('body').hasClass('sidebar-open')) {
+                    $('body').addClass('sidebar-collapse');
+                    $('body').removeClass('sidebar-open');
+                }
             }
         });
     </script>
@@ -162,6 +168,17 @@
                 document.body.removeChild(link);
             }
         }
+
+        function DownloadBlob(options) {
+            var link = document.createElement('a');
+            //link.href = url;
+            link.href = "data:application/octet-stream;base64," + options.data;
+            link.setAttribute('download', options.fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         function GetHTML(selector)
         {
             return $(selector).html();
