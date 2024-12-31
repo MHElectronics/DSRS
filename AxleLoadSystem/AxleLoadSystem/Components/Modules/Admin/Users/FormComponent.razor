@@ -172,7 +172,7 @@ else
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="password">@localizer["NewPassword"] <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
-                                <InputText type="@(showPassword ? "text" : "password")" @bind-Value="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" />
+                                <input type="@(showPassword ? "text" : "password")" @bind="NewPasswordInput" class="form-control" placeholder="New Password" id="NewPassword" maxlength="50" required />
                             </div>
                             @if (!string.IsNullOrWhiteSpace(NewPasswordInput))
                             {
@@ -193,7 +193,7 @@ else
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="password">@localizer["ConfirmNewPassword"]</label>
-                                <InputText type="password" @bind-Value="PasswordMatch" class="form-control" placeholder="Confirm New Password" id="CNewPassword" maxlength="50" />
+                                <input type="password" @bind="PasswordMatch" class="form-control" placeholder="Confirm New Password" id="CNewPassword" maxlength="50" required/>
                             </div>
                         </div>
                     </div>
