@@ -26,8 +26,8 @@
     background-size: 200px 200px;*/
 }
 
-/*Side bad hover color*/
-.nav-item:hover .nav-icon {
+/*Side bar hover color*/
+.nav-link:hover .nav-icon, .nav-item:hover > .nav-link .nav-icon {
     color: #FF5800 !important;
 }
 
@@ -56,7 +56,7 @@ input:-webkit-autofill:active {
 }
 
 /*Apex Chart*/
-.dark-mode .apexchart .apexcharts-legend-text, .dark-mode .apexchart .apexcharts-title-text {
+/*.dark-mode .apexchart .apexcharts-legend-text, .dark-mode .apexchart .apexcharts-title-text {
     color: white !important;
     fill: white !important;
 }
@@ -90,7 +90,7 @@ input:-webkit-autofill:active {
 
     .dark-mode .apexcharts-tooltip .apexcharts-tooltip-title {
         color: black;
-    }
+    }*/
 
 
 
@@ -217,4 +217,18 @@ hr {
 .dark-mode hr {
     border: 1px solid #3f6791;
     border-radius:50%;
+}
+
+
+/* Sidebar button not showing in mobile mode*/
+@media only screen and (max-width: 991px) {
+    .main-header {
+        margin-left: 0px !important;
+    }
+
+    .main-sidebar {
+        top: 85px !important;
+        transition-delay: 0.25s !important;
+        transition: top 0.25s;
+    }
 }

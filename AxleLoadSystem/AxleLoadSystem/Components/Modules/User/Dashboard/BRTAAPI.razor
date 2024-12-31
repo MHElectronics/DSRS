@@ -2,6 +2,7 @@
 @using AxleLoadSystem.Helpers
 @using System.Text.Json
 @using Newtonsoft.Json
+@using System.Text.RegularExpressions
 @inject IRHDApiHelper apiHelper
 @inject IAppState appState
 @inject IStringLocalizer<Locales.Reports> localizer
@@ -30,50 +31,68 @@
                     <input type="text" @bind-value="payloadBRTA.bridgeOid" required class="form-control" placeholder="Bridge Oid" id="name" disabled />
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <div class="form-group">
                     <label for="rfid" class="form-label">@localizer["Report.RFID"]</label>
                     <input type="text" @bind-value="payloadBRTA.rfid" class="form-control" placeholder="RFID" id="rfid" />
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="form-control m-0 p-0">
+                        <button class="btn btn-primary w-100" type="button" @onclick="ShowBrtaInfoByRfid">@localizer["Report.ShowbyRFID"]</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="form-group">
                     <label for="zone" class="form-label">@localizer["Report.PlateZone"]</label>
                     <input type="text" @bind-value="payloadBRTA.zone" class="form-control" placeholder="zone" id="zone" />
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label for="series" class="form-label">@localizer["Report.PlateSeries"]</label>
                     <input type="text" @bind-value="payloadBRTA.series" class="form-control" placeholder="Series" id="series" />
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label for="number" class="form-label">@localizer["Report.PlateNumber"]</label>
                     <input type="text" @bind-value="payloadBRTA.Number" class="form-control" placeholder="Vehicle Number" id="number" />
                 </div>
             </div>
-
-            <div class="col-12">
-                <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRfid">@localizer["Report.ShowbyRFID"]</button>
-                <button class="btn btn-primary" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">@localizer["Report.ShowbyRegistrationNumber"]</button>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <div class="form-control m-0 p-0">
+                        <button class="btn btn-primary w-100" type="button" @onclick="ShowBrtaInfoByRegistrationNumber">@localizer["Report.ShowbyRegistrationNumber"]</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    @if (result is not null)
-    {
+</div>
+@if (result is not null)
+{
+    <div class="card card-primary card-outline">
         <div class="card-body">
-            <dl class="row">
+            <div class="row">
                 @foreach (KeyValuePair<string, string> item in result)
                 {
-                    <dt class="col-sm-4">@item.Key</dt>
-                    <dd class="col-sm-8">@item.Value</dd>
+                    string filedTitle = Regex.Replace(item.Key, "(\\B[A-Z])", " $1");
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label" style="text-transform: capitalize;">@filedTitle</label>
+                            <label class="form-control">@item.Value</label>
+                        </div>
+                    </div>
                 }
-            </dl>
+            </div>
         </div>
-    }
-</div>
+    </div>
+}
 
 @code {
     private PayloadBRTA payloadBRTA { get; set; } = new() { userName = "AxleLoad", password = "Ax$@23L", bridgeOid = "3", rfid = "42525441FF021A151D6A0001", zone = "KHULNA METRO", series = "LA", Number = "12-9358" };
@@ -105,4 +124,26 @@
             appState.SetNotification(this, notification);
         }
     }
+
+    private class BRTAInfo
+    {
+        public string vehicleRegistrationNumber { get; set; }
+        public string brtaSeries { get; set; }
+        public string brtaSeriesBnName { get; set; }
+        public string brtaClass { get; set; }
+        public string brtaType { get; set; }
+        public string rhdSeries { get; set; }
+        public string rhdSeriesBnName { get; set; }
+        public string rhdClass { get; set; }
+        public string bridgeName { get; set; }
+        public string fare { get; set; }
+        public string rfidNo { get; set; }
+        public string unladenWeight { get; set; }
+        public string ladenWeight { get; set; }
+        public string totalAxel { get; set; }
+        public string ownerName { get; set; }
+        public string vehicleCC { get; set; }
+        public string message { get; set; }
+
     }
+}

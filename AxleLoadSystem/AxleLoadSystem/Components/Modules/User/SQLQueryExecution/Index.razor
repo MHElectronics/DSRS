@@ -30,7 +30,7 @@
                             <td>@item.Description</td>
                             <td>@item.Parameters</td>
                             <td class="text-right">
-                                <div class="btn-group">
+                                <div class="btn-group w-100">
                                     <span class="btn btn-primary" @onclick="@(() => SetParameters(item))" title="Set Parameters"><i class="fa fa-list"></i> @(item.Parameters.Any() ? "Select": "Execute")</span>
                                     <span class="btn btn-primary" @onclick="@(()=> navigationManager.NavigateTo(strEditUrl))" title="Edit"><i class="fa fa-edit"></i> Edit</span>
                                 </div>
