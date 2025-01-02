@@ -11,7 +11,7 @@
 </div>
 
 @code {
-    public bool IsLight;
+    public bool IsLight = true;
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && await localStorage.ContainKeyAsync("design-mode"))
