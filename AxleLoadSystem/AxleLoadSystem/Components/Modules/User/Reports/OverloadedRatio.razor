@@ -77,20 +77,20 @@
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
                         @if (!string.IsNullOrEmpty(chartType))
                         {
-                            var overloadingRatioData = data
-                            .GroupBy(x => x.NumberofAxle)
-                            .Where(group => group.Key != 0)
-                            .Select(group => new
-                            {
-                                NumberofAxle = group.Key,
-                                OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
-                            ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle))
-                            : 0
-                            })
-                            .ToList().OrderBy(x => x.NumberofAxle);
-
                             if (chartType.ToLower() == "pie")
                             {
+                                var overloadingRatioData = data
+                                .GroupBy(x => x.NumberofAxle)
+                                .Where(group => group.Key != 0)
+                                .Select(group => new
+                                {
+                                    NumberofAxle = group.Key,
+                                    OverloadingRatio = group.Sum(x => x.OverloadVehicle) > 0
+                                ? (group.Sum(x => x.OverloadVehicle) / (double)group.Sum(x => x.TotalVehicle))
+                                : 0
+                                })
+                                .ToList().OrderBy(x => x.NumberofAxle);
+
                                 <SfAccumulationChart @ref="@pieChartInstance" Title="Overloading Ratio by Axle">
                                     <AccumulationChartSeriesCollection>
                                         <AccumulationChartSeries DataSource="@overloadingRatioData"
@@ -180,10 +180,10 @@
                                         @{
                                             // Calculate overloading ratio for the current item
                                             item.OverloadingRatio = item.TotalVehicle > 0
-                                            ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100
+                                            ? (item.OverloadVehicle / (double)item.TotalVehicle)
                                             : 0;
                                         }
-                                        @($"{item.OverloadingRatio:N2}%")
+                                        @($"{item.OverloadingRatio:P2}%")
                                     </td>
                                 </tr>
                             }
