@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @inject NavigationManager navigationManager
 @inject ISQLQueriesService sqlQueryService
+@inject IStringLocalizer<Locales.Resource> localizerResource
 @inject IStringLocalizer<Locales.Reports> localizer
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
 
@@ -29,11 +30,15 @@
                             <td>@item.Title</td>
                             <td>@item.Description</td>
                             <td>@item.Parameters</td>
-                            <td class="text-right">
-                                <div class="btn-group w-100">
-                                    <span class="btn btn-primary" @onclick="@(() => SetParameters(item))" title="Set Parameters"><i class="fa fa-list"></i> @(item.Parameters.Any() ? "Select": "Execute")</span>
-                                    <span class="btn btn-primary" @onclick="@(()=> navigationManager.NavigateTo(strEditUrl))" title="Edit"><i class="fa fa-edit"></i> Edit</span>
-                                </div>
+                            <td>
+                                @if (item.Parameters.Any())
+                                {
+                                    <span class="btn btn-primary w-100" @onclick="@(() => SetParameters(item))" title="Set Parameters for execution"><i class="fa fa-list"></i> @localizerResource["Button.Show"]</span>
+                                }
+                                else
+                                {
+                                    <span class="btn btn-primary w-100" @onclick="@(() => SetParameters(item))" title="Execute as there is no parameters">@localizerResource["Button.Execute"]</span>
+                                }
                             </td>
                         </tr>
                     }
@@ -74,8 +79,8 @@
                         </table>
                     </div>
                     <div class="col-md-4 btn-group">
-                        <span class="btn btn-primary" @onclick="ExecuteWithParameters" title="Execute">Execute</span>
-                        <span class="btn btn-primary" @onclick="Cancel" title="Cancel">Cancel</span>
+                        <span class="btn btn-primary" @onclick="ExecuteWithParameters" title="Execute">@localizerResource["Button.Execute"]</span>
+                        <span class="btn btn-primary" @onclick="Cancel" title="Cancel">@localizerResource["Button.Cancel"]</span>
                     </div>
                 }
                 @if (!string.IsNullOrEmpty(Summary))

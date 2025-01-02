@@ -6,12 +6,12 @@
     <div class="btn-group float-right">
         <AuthorizeView Roles="Admin">
             <Authorized>
-                <a href="FAQAdmin" class="btn btn-primary">@localizerCommon["FAQ.Link.AdminPage"]</a>
+                <a href="FAQ/Admin" class="btn btn-primary">@localizerCommon["FAQ.Link.AdminPage"]</a>
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Roles="User">
             <Authorized>
-                <a href="MyFAQ" class="btn btn-primary">@localizerCommon["FAQ.Link.MyQuestions"]</a>
+                <a href="FAQ/User" class="btn btn-primary">@localizerCommon["FAQ.Link.MyQuestions"]</a>
             </Authorized>
         </AuthorizeView>
     </div>

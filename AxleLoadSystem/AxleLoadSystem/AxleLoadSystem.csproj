@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="images\**" />
+    <Content Remove="images\**" />
+    <EmbeddedResource Remove="images\**" />
+    <None Remove="images\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\bootstrap\bootstrap.min.css.map" />
     <None Include="wwwroot\images\locales\bn-BD.png" />
     <None Include="wwwroot\images\locales\en-US.png" />
@@ -29,7 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Components\Layout\Locales\" />
-    <Folder Include="images\" />
   </ItemGroup>
 
 </Project>
