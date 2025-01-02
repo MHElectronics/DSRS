@@ -216,7 +216,7 @@
                                                 // Lookup the overloading ratio for the current item's GrossVehicleWeightRange
                                                 item.OverloadingRatio = item.TotalVehicle == 0 ? 0 : ((double)item.OverloadVehicle / (double)item.TotalVehicle) * 100;
                                             }
-                                            @($"{item.OverloadingRatio:N2}%")
+                                            @($"{item.OverloadingRatio:P2}")
                                         </td>
                                     </tr>
                                 }

@@ -187,10 +187,10 @@
                                             @{
                                                 // Calculate overloading ratio for the current item
                                                 item.OverloadingRatio = item.TotalVehicle > 0
-                                                ? (item.OverloadVehicle / (double)item.TotalVehicle) * 100
+                                                ? (item.OverloadVehicle / (double)item.TotalVehicle)
                                                 : 0;
                                             }
-                                            @($"{item.OverloadingRatio:N2}%")
+                                            @($"{item.OverloadingRatio:P2}")
                                         </td>
                                     </tr>
                                 }
