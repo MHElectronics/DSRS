@@ -28,7 +28,7 @@ else
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
-                            @if (Mode == FormMode.Details)
+                            @if (Mode == FormMode.Details || Mode == FormMode.Edit)
                             {
                                 <label for="name" class="form-label">@localizer["Email"]</label>
                                 <label class="form-control">@user.Email</label>
@@ -292,13 +292,6 @@ else
             saveDisabled = false;
             return;
         }
-        if (await userService.CheckDuplicateEntry(user))
-        {
-            Summary = "Email has already registered";
-            saveDisabled = false;
-            return;
-        }
-
 
         if (Mode == FormMode.Edit)
         {
@@ -320,6 +313,13 @@ else
         }
         else
         {
+            if (await userService.CheckDuplicateEntry(user))
+            {
+                Summary = "Email has already registered";
+                saveDisabled = false;
+                return;
+            }
+
             if (await ValidatePassword(user.Password))
             {
                 if (confirmPassword.Contains(user.Password))
