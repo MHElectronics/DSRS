@@ -522,7 +522,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
 
         query += @" GROUP BY Y.[Year],AL.NumberOfAxle
 
-        SELECT *,(TotalVehicle - OverloadVehicle) AS NotOverloadVehicle,CAST([Year] AS VARCHAR) AS DateUnitName
+        SELECT *,[Year] AS DateUnit,(TotalVehicle - OverloadVehicle) AS NotOverloadVehicle,CAST([Year] AS VARCHAR) AS DateUnitName
         FROM #T
         ORDER BY [Year]
 
