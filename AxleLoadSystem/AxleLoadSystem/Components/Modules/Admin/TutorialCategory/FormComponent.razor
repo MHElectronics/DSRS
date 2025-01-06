@@ -103,6 +103,7 @@ else
             }
         }
         await OnParametersChanged.InvokeAsync(isSuccess);
+        Category = new();
     }
     private async Task Cancel()
     {

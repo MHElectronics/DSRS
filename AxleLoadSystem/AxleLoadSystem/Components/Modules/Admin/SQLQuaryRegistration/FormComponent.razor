@@ -253,28 +253,64 @@
 
     private async Task SaveNew()
     {
-        SqlSearch.ParameterList = parameters.Select(p => p.Name).ToList();
-        if (await sqlQueryService.InsertSqlQuery(SqlSearch, currentUser))
+        if (SqlSearch.Query is null || SqlSearch.Query.Trim().Count(char.IsLetter) < 5)
         {
-            appState.SetNotification(this, new("Saved Successfully", Notification.NotificationType.Success));
-            await this.OnChange.InvokeAsync(false);
+            appState.SetNotification(this, new("SQL Query must contain at least 5 characters", Notification.NotificationType.Failure));
+            return;
+        }
+        else if (SqlSearch.Title is null || SqlSearch.Title.Trim().Count(char.IsLetter) < 5)
+        {
+            appState.SetNotification(this, new("Title must contain at least 5 characters", Notification.NotificationType.Failure));
+            return;
+        }
+        else if (SqlSearch.Description is null || SqlSearch.Description.Trim().Count(char.IsLetter) < 5)
+        {
+            appState.SetNotification(this, new("Description must contain at least 5 characters", Notification.NotificationType.Failure));
+            return;
         }
         else
         {
-            appState.SetNotification(this, new("Save Failed", Notification.NotificationType.Failure));
+            SqlSearch.ParameterList = parameters.Select(p => p.Name).ToList();
+            if (await sqlQueryService.InsertSqlQuery(SqlSearch, currentUser))
+            {
+                appState.SetNotification(this, new("Saved Successfully", Notification.NotificationType.Success));
+                await this.OnChange.InvokeAsync(false);
+            }
+            else
+            {
+                appState.SetNotification(this, new("Save Failed", Notification.NotificationType.Failure));
+            }       
         }
     }
     private async Task Update()
     {
-        SqlSearch.ParameterList = parameters.Select(p => p.Name).ToList();
-        if(await sqlQueryService.UpdateSqlQuery(SqlSearch, currentUser))
+        if (SqlSearch.Query is null || SqlSearch.Query.Trim().Count(char.IsLetter) < 5)
         {
-            appState.SetNotification(this, new("Updated Successfully", Notification.NotificationType.Success));
-            await this.OnChange.InvokeAsync(false);
+            appState.SetNotification(this, new("SQL Query must contain at least 5 characters", Notification.NotificationType.Failure));
+            return;
+        }
+        else if (SqlSearch.Title is null || SqlSearch.Title.Trim().Count(char.IsLetter) < 5)
+        {
+            appState.SetNotification(this, new("Title must contain at least 5 characters", Notification.NotificationType.Failure));
+            return;
+        }
+        else if (SqlSearch.Description is null || SqlSearch.Description.Trim().Count(char.IsLetter) < 5)
+        {
+            appState.SetNotification(this, new("Description must contain at least 5 characters", Notification.NotificationType.Failure));
+            return;
         }
         else
         {
-            appState.SetNotification(this, new("Updated Failed", Notification.NotificationType.Failure));
+            SqlSearch.ParameterList = parameters.Select(p => p.Name).ToList();
+            if (await sqlQueryService.UpdateSqlQuery(SqlSearch, currentUser))
+            {
+                appState.SetNotification(this, new("Updated Successfully", Notification.NotificationType.Success));
+                await this.OnChange.InvokeAsync(false);
+            }
+            else
+            {
+                appState.SetNotification(this, new("Updated Failed", Notification.NotificationType.Failure));
+            }
         }
     }
     private async Task Cancel()
