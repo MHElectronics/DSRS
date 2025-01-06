@@ -250,7 +250,11 @@ else
         weightEditEnabled = false;
         allowWeightNotification = null;
         selectedWeight = new();
-        selectedWeight.AxleNumber = overloadWeights.Max(w=>w.AxleNumber) + 1;
+        if (overloadWeights is not null && overloadWeights.Count() >0)
+        {
+            selectedWeight.AxleNumber = overloadWeights.Max(w => w.AxleNumber) + 1;
+        }
+
         selectedWeight.AllowedWeight = 0;
     }
     private void EditWeight(int numberOfAxle)
@@ -280,6 +284,7 @@ else
                 {
                     overloadWeights.FirstOrDefault(w => w.AxleNumber == selectedWeight.AxleNumber).AllowedWeight = selectedWeight.AllowedWeight;
                     allowWeightNotification = new("Allowed weight updated successfully", Notification.NotificationType.Success);
+                    selectedWeight = new();
                 }
             }
             else
@@ -311,6 +316,7 @@ else
                         {
                             overloadWeights.Add(new ConfigurationOverloadWeight() { AxleNumber = selectedWeight.AxleNumber, AllowedWeight = selectedWeight.AllowedWeight });
                             allowWeightNotification = new("Allowed weight added successfully", Notification.NotificationType.Success);
+                            selectedWeight = new();
                         }
                         else
                         {
