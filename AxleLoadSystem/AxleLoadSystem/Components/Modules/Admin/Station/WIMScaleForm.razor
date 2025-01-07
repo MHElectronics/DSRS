@@ -56,7 +56,7 @@ else
                             else
                             {
                                 <label for="WimEquipmentCode" class="form-label">@localizer["WimEquipmentCode"]</label>
-                                <input type="text" @bind-value="wimScale.EquipmentCode" required class="form-control" placeholder="@localizer["WimEquipmentCode"]" id="WimEquipmentCode" maxlength="1" />
+                                <input type="text" @bind-value="wimScale.EquipmentCode" required class="form-control" placeholder="@localizer["WimEquipmentCode"]" id="WimEquipmentCode" maxlength="20" />
                                 <ValidationMessage For="() => wimScale.EquipmentCode" />
                             }
                         </div>
