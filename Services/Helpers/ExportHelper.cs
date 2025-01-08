@@ -67,8 +67,9 @@ public class ExportHelper : IExportHelper
 
             foreach ((string Header, string FieldName, Type FieldType) column in fields)
             {
-                string value =  item.GetType().GetProperty(column.FieldName).GetValue(item, null).ToString();
-                
+                object? valueObject = item.GetType().GetProperty(column.FieldName).GetValue(item, null);
+                string value = valueObject is null ? "" : valueObject.ToString();
+
                 if (formats is not null && formats.Any(f => f.FieldName == column.FieldName))
                 {
                     string format = formats.FirstOrDefault(f => f.FieldName == column.FieldName).Format;
