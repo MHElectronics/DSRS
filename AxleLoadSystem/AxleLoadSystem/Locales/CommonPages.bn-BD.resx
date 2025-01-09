@@ -247,10 +247,10 @@
     <value>তারিখ পরিসীমা</value>
   </data>
   <data name="OverloadCondition" xml:space="preserve">
-    <value>ওভারলোডের বিচার করার পদ্ধতি</value>
+    <value>ওভারলোডেড যানবাহন বিচার করার পদ্ধতি</value>
   </data>
   <data name="OverloadFilter" xml:space="preserve">
-    <value>ওভারলোড ফিল্টার</value>
+    <value>ওভারলোড যানবাহন জন্য ফিল্টার</value>
   </data>
   <data name="SQLQuery" xml:space="preserve">
     <value>SQL Query</value>

@@ -11,6 +11,7 @@ public interface ISQLQueriesService
     Task<SQLQueries> GetById(SQLQueries sQLQueries);
     Task<bool> InsertSqlQuery(SQLQueries obj, User user);
     Task<bool> UpdateSqlQuery(SQLQueries obj, User user);
+    Task<bool> DeleteSqlQuery(SQLQueries obj, User user);
     Task<DataTable> ExecuteSQLQuery(SQLQueries sQLSearch, Dictionary<string, object> parameters);
 }
 public class SQLQueriesService(IConfiguration config, ISqlDataAccess _db, IUserActivityService _userActivityService) : ISQLQueriesService
@@ -104,6 +105,17 @@ public class SQLQueriesService(IConfiguration config, ISqlDataAccess _db, IUserA
         }
 
         return isSuccess;
+    }
+    public async Task<bool> DeleteSqlQuery(SQLQueries obj, User user)
+    {
+        string sql = "DELETE FROM SQLQueries WHERE Id=@Id";
+        int count = await _db.DeleteData<SQLQueries, Object>(sql, new { obj.Id });
+        if (count > 0) 
+        {
+            UserActivity log = new UserActivity(user.Id, "SQL Queries deleted: " + (string.IsNullOrEmpty(obj.Title) ? obj.Query : obj.Title), LogActivity.Delete);
+            await _userActivityService.InsertUserActivity(log);
+        }
+        return count > 0;
     }
 
 }

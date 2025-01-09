@@ -3,6 +3,8 @@ using AxleLoadSystem.Api.Models;
 using BOL;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AxleLoadSystem.Api.Controllers;
 
@@ -259,22 +261,31 @@ public class ALCSController : ControllerBase
         //Get station id from authentication
         obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-        List<LoadData> validData = await this.CheckValidData(obj.StationId, new List<LoadData> { obj });
-        if (validData.Count > 0)
+        (List<LoadData> Data, string Message) validData = await this.CheckValidData(obj.StationId, new List<LoadData> { obj });
+
+        if (validData.Data.Count > 0)
         {
-            isSuccess = await _axleLoadService.Add(validData);
+            foreach (var loadData in validData.Data)
+            {
+                loadData.StationId = obj.StationId;
+            }
+
+            var isSuccess = await _axleLoadService.Add(validData.Data);
+
             if (isSuccess.Item1)
             {
-                return Ok("Axle load data insert successful");
+                return Ok("Axle load multiple data insert successful" + "|" + validData.Message);
             }
 
             _logger.LogError("Station " + obj.StationId + ": " + isSuccess.Item2);
-            return BadRequest(isSuccess.Item2);
+            return BadRequest(isSuccess.Item2 + "|" + validData.Message);
         }
-
-        _logger.LogError("Error: Axle load data validation failed");
-        return BadRequest("Error: Axle load data validation failed");
+        else
+        {
+            return BadRequest("No valid data to insert." + "|" + validData.Message);
+        }
     }
+
     [HttpPost("[action]")]
     public async Task<IActionResult> LoadDataMultiple(List<LoadData> obj)
     {
@@ -291,30 +302,40 @@ public class ALCSController : ControllerBase
         //Check station code
         int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-        List<LoadData> validData = await this.CheckValidData(stationId, obj);
-
-        if (validData.Count > 0)
+        // Lane Number validation
+        IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
+        if (obj.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
         {
-            foreach (var item in validData)
+            return BadRequest("Wrong Lane Number Count: " + obj.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)));
+        }
+
+        (List<LoadData> Data, string Message) validData = await this.CheckValidData(stationId, obj);
+
+        if (validData.Data.Count > 0)
+        {
+            foreach (var loadData in validData.Data)
             {
-                item.StationId = stationId;
+                loadData.StationId = stationId; 
             }
 
-            isSuccess = await _axleLoadService.Add(validData);
+            var isSuccess = await _axleLoadService.Add(validData.Data);
+
             if (isSuccess.Item1)
             {
-                return Ok("Axle load multiple data insert successful");
+                return Ok("Axle load multiple data inserted successfully"+ "|" + validData.Message);
             }
 
             _logger.LogError("Station " + stationId + ": " + isSuccess.Item2);
-            return BadRequest(isSuccess.Item2);
+            return BadRequest(isSuccess.Item2 + "|" + validData.Message);
         }
-
-        _logger.LogError("Error: Axle load multiple data validation failed");
-        return BadRequest("Error: Axle load multiple data validation failed");
+        else
+        {
+            return BadRequest("No valid data to insert." + "|" + validData.Message);
+        }
     }
-    private async Task<List<LoadData>> CheckValidData(int stationId, List<LoadData> data)
+    private async Task<(List<LoadData> ValidData, string Message)> CheckValidData(int stationId, List<LoadData> data)
     {
+        string message = "";
         //Data check
         data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
 
@@ -322,18 +343,40 @@ public class ALCSController : ControllerBase
         IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
         if (data.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
         {
-            _logger.LogInformation("Wrong Lane Number for station " + stationId + ". Count: " + data.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)));
-        }
-        data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+            _logger.LogInformation("Wrong Lane Number. station:" + stationId + ". Count:" + data.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)));
+            message += "Wrong Lane Number Count: " + data.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)) + "|";
+            data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+        }  
 
         //Check Number of Axle
         if (data.Any(d => d.NumberOfAxle < 2))
         {
-            _logger.LogInformation("Number of axle less then 2 for station " + stationId + ". Count: " + data.Count(d => d.NumberOfAxle < 2));
+            _logger.LogInformation("Number of axle less then 2. station: " + stationId + ". Count: " + data.Count(d => d.NumberOfAxle < 2));
+            message += " Number of axles must be 2 or higher. Count: " + data.Count(d => d.NumberOfAxle < 2) + "|";
+            data.RemoveAll(d => d.NumberOfAxle < 2);
         }
-        data.RemoveAll(d => d.NumberOfAxle < 2);
+        
+        //Check Load Data value zero for Axle 1 to 7
+        if (data.Any(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
+                l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0))
+        {
+            _logger.LogInformation("Axle 1 to Axle 7 must be provided for station " + stationId + ". Count: " + data.Count(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
+                l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0));
+            message += " Axle 1 to Axle 7  must be provided. Count: " + data.Count(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
+                l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0) + "|";
+            data.RemoveAll(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
+               l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0);
+        }
+       
+        //Check Load Data value zero for Axle Remaining
+        if (data.Any(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0))
+        {
+            _logger.LogInformation("Axle Remaining must be provided for station " + stationId + ". Count: " + data.Count(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0));
+            message += " Axle Remaining must be provided. Count: " + data.Count(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0) + "|";
+            data.RemoveAll(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0);
+        }
 
-        return data;
+        return (data, message);
     }
     private async Task<List<FinePayment>> CheckValidFineData(int stationId, List<FinePayment> data)
     {

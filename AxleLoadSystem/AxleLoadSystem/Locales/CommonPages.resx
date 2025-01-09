@@ -241,10 +241,10 @@
     <value>Parameter Value</value>
   </data>
   <data name="OverloadCondition" xml:space="preserve">
-    <value>Overload Condition</value>
+    <value>Method for judging overloaded vehicles</value>
   </data>
   <data name="OverloadFilter" xml:space="preserve">
-    <value>Overload Filter</value>
+    <value>Filter for overloaded vehicles</value>
   </data>
   <data name="SQLQuery" xml:space="preserve">
     <value>SQL Query</value>
