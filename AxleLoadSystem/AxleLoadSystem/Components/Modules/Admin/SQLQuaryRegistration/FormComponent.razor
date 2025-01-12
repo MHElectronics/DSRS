@@ -274,7 +274,7 @@
             if (await sqlQueryService.InsertSqlQuery(SqlSearch, currentUser))
             {
                 appState.SetNotification(this, new("Saved Successfully", Notification.NotificationType.Success));
-                await this.OnChange.InvokeAsync(false);
+                await this.OnChange.InvokeAsync(true);
             }
             else
             {
@@ -305,7 +305,7 @@
             if (await sqlQueryService.UpdateSqlQuery(SqlSearch, currentUser))
             {
                 appState.SetNotification(this, new("Updated Successfully", Notification.NotificationType.Success));
-                await this.OnChange.InvokeAsync(false);
+                await this.OnChange.InvokeAsync(true);
             }
             else
             {
