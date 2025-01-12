@@ -133,10 +133,10 @@
     <value>উত্তর</value>
   </data>
   <data name="FAQ.Link.AdminPage" xml:space="preserve">
-    <value>FAQ পরিচালনা করুন</value>
+    <value>ম্যানেজ FAQ</value>
   </data>
   <data name="FAQ.Link.MyQuestions" xml:space="preserve">
-    <value>আমার FAQ</value>
+    <value>মাই FAQ</value>
   </data>
   <data name="FAQ.List" xml:space="preserve">
     <value>প্রশ্নের তালিকা</value>
