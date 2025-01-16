@@ -336,56 +336,82 @@ public class ALCSController : ControllerBase
     private async Task<(List<LoadData> ValidData, string Message)> CheckValidData(int stationId, List<LoadData> data)
     {
         string message = "";
+        int count = 0;
+
         //Data check
-        data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
+        count = data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
+        if (count > 0)
+        {
+            message += "Wrong Date:" + count + "|";
+            count = 0;
+        }
 
         //Check lane number
         IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
-        if (data.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
+        count = data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+        if (count > 0)
         {
-            _logger.LogInformation("Wrong Lane Number. station:" + stationId + ". Count:" + data.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)));
-            message += "Wrong Lane Number Count: " + data.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)) + "|";
-            data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
-        }  
+            message += "Wrong Lane Number: " + count + "|";
+            count = 0;
+        }
 
         //Check Number of Axle
-        if (data.Any(d => d.NumberOfAxle < 2))
+        count = data.RemoveAll(d => d.NumberOfAxle < 2);
+        if (count > 0)
         {
-            _logger.LogInformation("Number of axle less then 2. station: " + stationId + ". Count: " + data.Count(d => d.NumberOfAxle < 2));
-            message += " Number of axles must be 2 or higher. Count: " + data.Count(d => d.NumberOfAxle < 2) + "|";
-            data.RemoveAll(d => d.NumberOfAxle < 2);
+            message += " Number of axles must be 2 or higher: " + count + "|";
+            count = 0;
         }
-        
+
         //Check Load Data value zero for Axle 1 to 7
-        if (data.Any(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
-                l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0))
+        count = data.RemoveAll(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 && l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0);
+        if (count > 0)
         {
-            _logger.LogInformation("Axle 1 to Axle 7 must be provided for station " + stationId + ". Count: " + data.Count(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
-                l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0));
-            message += " Axle 1 to Axle 7  must be provided. Count: " + data.Count(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
-                l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0) + "|";
-            data.RemoveAll(l => l.Axle1 == 0 && l.Axle2 == 0 && l.Axle3 == 0 &&
-               l.Axle4 == 0 && l.Axle5 == 0 && l.Axle6 == 0 && l.Axle7 == 0);
+            message += " Axle 1 to 7  must be provided: " + count + "|";
+            count = 0;
         }
        
         //Check Load Data value zero for Axle Remaining
-        if (data.Any(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0))
+        count = data.RemoveAll(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0);
+        if (count > 0)
         {
-            _logger.LogInformation("Axle Remaining must be provided for station " + stationId + ". Count: " + data.Count(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0));
-            message += " Axle Remaining must be provided. Count: " + data.Count(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0) + "|";
-            data.RemoveAll(l => l.NumberOfAxle >= 8 && l.AxleRemaining == 0);
+            message += " Axle Remaining must be provided: " + count + "|";
+            count = 0;
+        }
+
+        if (!string.IsNullOrEmpty(message))
+        {
+            _logger.LogInformation("Station: " + stationId + ". Invalid load data: " + message);
         }
 
         return (data, message);
     }
     private async Task<List<FinePayment>> CheckValidFineData(int stationId, List<FinePayment> data)
     {
+        int count = 0;
+        string message = string.Empty;
+        
         //Data check
-        data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
+        count = data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
+        if(count > 0)
+        {
+            message = "Wrong Date:" + count + "|";
+            count = 0;
+        }
 
         //Check lane number
         IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
-        data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+        count = data.RemoveAll(d => !wims.Any(w => w.LaneNumber == d.LaneNumber));
+        if (count > 0)
+        {
+            message += "Wrong Lane Number:" + count + "|";
+            count = 0;
+        }
+
+        if (!string.IsNullOrEmpty(message))
+        {
+            _logger.LogInformation("Station: " + stationId + ". Invalid fine data: " + message);
+        }
 
         return data;
     }
