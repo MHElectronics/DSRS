@@ -252,16 +252,11 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        // Single Datapoint entry is allowed only today's and yesterday's Data
-        if (obj.DateTime.Date != DateTime.Today && obj.DateTime.Date != DateTime.Today.AddDays(-1))
-        {
-            return BadRequest("Only today's and yesterday's data is allowed");
-        }
-
+        
         //Get station id from authentication
         obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-        (List<LoadData> Data, string Message) validData = await this.CheckValidData(obj.StationId, new List<LoadData> { obj });
+        (List<LoadData> Data, string Message) validData = await this.CheckValidData(obj.StationId, new List<LoadData> { obj }, false);
 
         if (validData.Data.Count > 0)
         {
@@ -274,18 +269,15 @@ public class ALCSController : ControllerBase
 
             if (isSuccess.Item1)
             {
-                return Ok("Axle load multiple data insert successful" + "|" + validData.Message);
+                return Ok("Axle load data insert successful");
             }
 
-            _logger.LogError("Station " + obj.StationId + ": " + isSuccess.Item2);
+            _logger.LogError("Axle Load single db insert failed - Station " + obj.StationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2 + "|" + validData.Message);
         }
-        else
-        {
-            return BadRequest("No valid data to insert." + "|" + validData.Message);
-        }
-    }
 
+        return BadRequest("No valid data found." + "|" + validData.Message);
+    }
     [HttpPost("[action]")]
     public async Task<IActionResult> LoadDataMultiple(List<LoadData> obj)
     {
@@ -293,29 +285,17 @@ public class ALCSController : ControllerBase
         {
             return new BadRequestResult();
         }
-        // Multiple Datapoint entry is allowed only today's and yesterday's Data
-        if (obj.Any(l => l.DateTime.Date != DateTime.Today && l.DateTime.Date != DateTime.Today.AddDays(-1)))
-        {
-            return BadRequest("Only today's and yesterday's data is allowed");
-        }
-
-        //Check station code
+        
+        //Check station id
         int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
 
-        // Lane Number validation
-        IEnumerable<WIMScale> wims = await _wimScaleService.GetByStation(new WIMScale() { StationId = stationId });
-        if (obj.Any(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)))
-        {
-            return BadRequest("Wrong Lane Number Count: " + obj.Count(d => !wims.Any(w => w.LaneNumber == d.LaneNumber)));
-        }
-
-        (List<LoadData> Data, string Message) validData = await this.CheckValidData(stationId, obj);
+        (List<LoadData> Data, string Message) validData = await this.CheckValidData(stationId, obj, true);
 
         if (validData.Data.Count > 0)
         {
             foreach (var loadData in validData.Data)
             {
-                loadData.StationId = stationId; 
+                loadData.StationId = stationId;
             }
 
             var isSuccess = await _axleLoadService.Add(validData.Data);
@@ -325,15 +305,13 @@ public class ALCSController : ControllerBase
                 return Ok("Axle load multiple data inserted successfully"+ "|" + validData.Message);
             }
 
-            _logger.LogError("Station " + stationId + ": " + isSuccess.Item2);
+            _logger.LogError("Axle Load multiple db insert failed - Station " + stationId + ": " + isSuccess.Item2);
             return BadRequest(isSuccess.Item2 + "|" + validData.Message);
         }
-        else
-        {
-            return BadRequest("No valid data to insert." + "|" + validData.Message);
-        }
+        
+        return BadRequest("No valid data found." + "|" + validData.Message);
     }
-    private async Task<(List<LoadData> ValidData, string Message)> CheckValidData(int stationId, List<LoadData> data)
+    private async Task<(List<LoadData> ValidData, string Message)> CheckValidData(int stationId, List<LoadData> data, bool isMultiple)
     {
         string message = "";
         int count = 0;
@@ -381,19 +359,77 @@ public class ALCSController : ControllerBase
 
         if (!string.IsNullOrEmpty(message))
         {
-            _logger.LogInformation("Station: " + stationId + ". Invalid load data: " + message);
+            _logger.LogInformation("Station: " + stationId + ". Invalid load data " + (isMultiple ? "multiple:" : "single:") + message);
         }
 
         return (data, message);
     }
-    private async Task<List<FinePayment>> CheckValidFineData(int stationId, List<FinePayment> data)
+    
+    [HttpPost("[action]")]
+    public async Task<IActionResult> FinePayment(FinePayment obj)
+    {
+        if (obj == null)
+        {
+            return new BadRequestResult();
+        }
+        
+        //Check station id
+        obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
+        (List<FinePayment> Data, string Message) validData = await this.CheckValidFineData(obj.StationId, new List<FinePayment> { obj }, false);
+        if (validData.Data.Count > 0)
+        {
+            isSuccess = await _finePaymentService.Add(validData.Data);
+            if (isSuccess.Item1)
+            {
+                return Ok("Fine payment data insert successful");
+            }
+
+            _logger.LogError("FinePayment single db insert failed - Station " + obj.StationId + ": " + isSuccess.Item2);
+            return BadRequest(isSuccess.Item2);
+        }
+
+        _logger.LogError("FinePayment single validation failed - Station " + obj.StationId);
+        return BadRequest("No valid data found." + "|" + validData.Message);
+    }
+    [HttpPost("[action]")]
+    public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
+    {
+        if (obj == null)
+        {
+            return new BadRequestResult();
+        }
+        
+        //Check station code
+        int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
+
+        (List<FinePayment> Data, string Message) validData = await this.CheckValidFineData(stationId, obj, true);
+        if (validData.Data.Count > 0)
+        {
+            foreach (var item in validData.Data)
+            {
+                item.StationId = stationId;
+            }
+
+            isSuccess = await _finePaymentService.Add(validData.Data);
+            if (isSuccess.Item1)
+            {
+                return Ok("Fine payment multiple data insert successful");
+            }
+
+            _logger.LogError("FinePayment multiple db insert failed - Station " + stationId + ": " + isSuccess.Item2);
+            return BadRequest(isSuccess.Item2 + "|" + validData.Message);
+        }
+
+        return BadRequest("No valid data found." + "|" + validData.Message);
+    }
+    private async Task<(List<FinePayment>, string Message)> CheckValidFineData(int stationId, List<FinePayment> data, bool isMultiple)
     {
         int count = 0;
         string message = string.Empty;
-        
+
         //Data check
         count = data.RemoveAll(d => d.DateTime.Date != DateTime.Today && d.DateTime.Date != DateTime.Today.AddDays(-1));
-        if(count > 0)
+        if (count > 0)
         {
             message = "Wrong Date:" + count + "|";
             count = 0;
@@ -410,78 +446,9 @@ public class ALCSController : ControllerBase
 
         if (!string.IsNullOrEmpty(message))
         {
-            _logger.LogInformation("Station: " + stationId + ". Invalid fine data: " + message);
+            _logger.LogInformation("Station: " + stationId + ". Invalid fine data " + (isMultiple ? "multiple:" : "single:") + message);
         }
 
-        return data;
-    }
-
-    [HttpPost("[action]")]
-    public async Task<IActionResult> FinePayment(FinePayment obj)
-    {
-        if (obj == null)
-        {
-            return new BadRequestResult();
-        }
-        // Single Datapoint entry is allowed only today's and yesterday's Data
-        if (obj.DateTime.Date != DateTime.Today && obj.DateTime.Date != DateTime.Today.AddDays(-1))
-        {
-            return BadRequest("Only today's and yesterday's data is allowed");
-        }
-
-        //Check station code
-        obj.StationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
-        List<FinePayment> validData = await this.CheckValidFineData(obj.StationId, new List<FinePayment> { obj });
-        if (validData.Count > 0)
-        {
-            isSuccess = await _finePaymentService.Add(obj);
-            if (isSuccess.Item1)
-            {
-                return Ok("Fine payment data insert successful");
-            }
-
-            _logger.LogError("FinePayment - Station " + obj.StationId + ": " + isSuccess.Item2);
-            return BadRequest(isSuccess.Item2);
-        }
-
-        _logger.LogError("Error: Fine payment validation failed");
-        return BadRequest("Error: Fine payment validation failed");
-    }
-    [HttpPost("[action]")]
-    public async Task<IActionResult> FinePaymentMultiple(List<FinePayment> obj)
-    {
-        if (obj == null)
-        {
-            return new BadRequestResult();
-        }
-        // Multiple Datapoint entry is allowed only today's and yesterday's Data
-        if (obj.Any(l => l.DateTime.Date != DateTime.Today && l.DateTime.Date != DateTime.Today.AddDays(-1)))
-        {
-            return BadRequest("Only today's and yesterday's data is allowed");
-        }
-
-        //Check station code
-        int stationId = Convert.ToInt32(this.HttpContext.Request.Headers["StationId"].ToString());
-
-        foreach (var item in obj)
-        {
-            item.StationId = stationId;
-        }
-
-        List<FinePayment> validData = await this.CheckValidFineData(stationId, obj);
-        if (validData.Count > 0)
-        {
-            isSuccess = await _finePaymentService.Add(obj);
-            if (isSuccess.Item1)
-            {
-                return Ok("Fine payment multiple data insert successful");
-            }
-
-            _logger.LogError("FinePayment - Station " + stationId + ": " + isSuccess.Item2);
-            return BadRequest(isSuccess.Item2);
-        }
-
-        _logger.LogError("Error: Fine payment multiple validation failed");
-        return BadRequest("Error: Fine payment multiple validation failed");
+        return (data, message);
     }
 }
