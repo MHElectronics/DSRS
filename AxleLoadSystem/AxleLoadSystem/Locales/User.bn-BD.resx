@@ -192,4 +192,7 @@
   <data name="WIMScale" xml:space="preserve">
     <value>WIM স্কেল</value>
   </data>
+  <data name="AdvancedUser" xml:space="preserve">
+    <value>বিশেষ ব্যবহারকারী</value>
+  </data>
 </root>

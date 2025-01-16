@@ -216,4 +216,7 @@
   <data name="Button.Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="Button.AddParameter" xml:space="preserve">
+    <value>Add Parameter</value>
+  </data>
 </root>

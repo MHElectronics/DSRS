@@ -160,7 +160,7 @@
     <value>ফাইলের ধরন</value>
   </data>
   <data name="Report.FilterByWeight" xml:space="preserve">
-    <value>ওজন দ্বারা ফিল্টার</value>
+    <value>ওজন অনুসারে ফিল্টার</value>
   </data>
   <data name="Report.Graph" xml:space="preserve">
     <value>গ্রাফ</value>
@@ -169,7 +169,7 @@
     <value>লাইন চার্ট</value>
   </data>
   <data name="Report.NumberofAxle" xml:space="preserve">
-    <value>অ্যাক্সেলের সংখ্যা</value>
+    <value>এক্সেলের সংখ্যা</value>
   </data>
   <data name="Report.Overload" xml:space="preserve">
     <value>শুধুমাত্র ওভারলোড দেখান?</value>
@@ -286,7 +286,7 @@
     <value>আরএফআইডি দ্বারা দেখান</value>
   </data>
   <data name="Report.Text" xml:space="preserve">
-    <value>ওভারলোডেড যানবাহন বিচার করার জন্য পদ্ধতি নির্বাচন করুন।</value>
+    <value>ওভারলোডেড যানবাহন নির্ধারন করার জন্য পদ্ধতি সিলেক্ট করুন</value>
   </data>
   <data name="Report.UserName" xml:space="preserve">
     <value>ব্যবহারকারীর নাম</value>

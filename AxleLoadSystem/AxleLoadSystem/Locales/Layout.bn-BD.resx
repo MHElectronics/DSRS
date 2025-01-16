@@ -160,7 +160,7 @@
     <value>ক্লাস স্ট্যাটাস</value>
   </data>
   <data name="Menu.Admin" xml:space="preserve">
-    <value>প্রশাসন</value>
+    <value>অ্যাডমিনিস্ট্রেশন</value>
   </data>
   <data name="Menu.AxleLoadSystem" xml:space="preserve">
     <value>এক্সেল লোড সিস্টেম</value>
@@ -172,7 +172,7 @@
     <value>প্রশ্নাবলী</value>
   </data>
   <data name="Menu.OverloadHistogram" xml:space="preserve">
-    <value>মোট যানবাহন ওজন</value>
+    <value>মোট যানবাহনের ওজন</value>
   </data>
   <data name="Menu.TimeSeries" xml:space="preserve">
     <value>টাইম সিরিজ</value>
@@ -181,13 +181,13 @@
     <value>এক্সেল সংখ্যা</value>
   </data>
   <data name="Menu.Pages" xml:space="preserve">
-    <value>ডেটা বিশ্লেষণ (সাধারণ উদ্দেশ্য)</value>
+    <value>ডেটা অ্যানালাইসিস (জেনারেল পারপাস)</value>
   </data>
   <data name="Menu.ReportConfig" xml:space="preserve">
     <value>রিপোর্ট কনফিগারেশন</value>
   </data>
   <data name="Menu.Pages2" xml:space="preserve">
-    <value>ডেটা বিশ্লেষণ (উদ্দেশ্য অনুসারে)</value>
+    <value>ডেটা অ্যানালাইসিস (বাই পারপাস)</value>
   </data>
   <data name="Menu.Tutorial" xml:space="preserve">
     <value>টিউটোরিয়াল</value>

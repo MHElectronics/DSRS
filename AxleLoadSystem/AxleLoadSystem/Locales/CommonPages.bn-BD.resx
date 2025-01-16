@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DailyData" xml:space="preserve">
-    <value>দৈনিক তথ্য</value>
+    <value>দৈনিক ডেটা</value>
   </data>
   <data name="DataByDate" xml:space="preserve">
-    <value>তারিখ অনুসারে তথ্য</value>
+    <value>তারিখ অনুসারে ডেটা</value>
   </data>
   <data name="DisplayOrder" xml:space="preserve">
-    <value>প্রদর্শন আদেশ</value>
+    <value>প্রদর্শন ক্রম</value>
   </data>
   <data name="FAQ.AdminFAQ" xml:space="preserve">
     <value>অ্যাডমিন FAQ প্যানেল</value>
@@ -166,7 +166,7 @@
     <value>টিউটোরিয়াল বর্ণনা</value>
   </data>
   <data name="Tutorial.Link.Admin" xml:space="preserve">
-    <value>টিউটোরিয়াল পরিচালনা করুন</value>
+    <value>টিউটোরিয়াল পরিচালনা</value>
   </data>
   <data name="Tutorial.List" xml:space="preserve">
     <value>টিউটোরিয়াল তথ্যের তালিকা</value>
@@ -190,7 +190,7 @@
     <value>টিউটোরিয়াল শ্রেণী</value>
   </data>
   <data name="Tutorial.CategoryList" xml:space="preserve">
-    <value>বিভাগের তালিকা</value>
+    <value>টিউটোরিয়াল শ্রেনীর তালিকা</value>
   </data>
   <data name="Menu.Category" xml:space="preserve">
     <value>টিউটোরিয়াল শ্রেণী</value>
@@ -205,13 +205,13 @@
     <value>ঠিকানা</value>
   </data>
   <data name="Dashboard.ALCSName" xml:space="preserve">
-    <value>ALCS নাম</value>
+    <value>ALCS এর নাম</value>
   </data>
   <data name="Dashboard.DrivingDirection" xml:space="preserve">
-    <value>ড্রাইভিং দিক</value>
+    <value>ড্রাইভিং এর দিক</value>
   </data>
   <data name="Dashboard.LaneNumber" xml:space="preserve">
-    <value>লেন সংখ্যা</value>
+    <value>লেন নাম্বার</value>
   </data>
   <data name="Dashboard.DataAnalysisChart" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ চার্ট</value>
@@ -262,6 +262,12 @@
     <value>বর্ণনা</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>শিরোনাম</value>
+    <value>নাম</value>
+  </data>
+  <data name="Dashboard.Text" xml:space="preserve">
+    <value>তথ্যসমূহ দেখতে ষ্টেশনে ক্লিক করুন</value>
+  </data>
+  <data name="SQL.Parameters" xml:space="preserve">
+    <value>প্যারামিটার (সমূহ)</value>
   </data>
 </root>

@@ -130,13 +130,13 @@
     <value>ফিরে যাও</value>
   </data>
   <data name="Button.Cancel" xml:space="preserve">
-    <value>বাতিল করুন</value>
+    <value>ক্যান্সেল</value>
   </data>
   <data name="Button.ChangePassword" xml:space="preserve">
     <value>পাসওয়ার্ড পরিবর্তন করুন</value>
   </data>
   <data name="Button.ChangeSelection" xml:space="preserve">
-    <value>নির্বাচন পরিবর্তন করুন</value>
+    <value>সিলেকশন পরিবর্তন</value>
   </data>
   <data name="Button.Daily" xml:space="preserve">
     <value>দৈনিক</value>
@@ -151,16 +151,16 @@
     <value>মাসিক</value>
   </data>
   <data name="Button.Save" xml:space="preserve">
-    <value>সংরক্ষণ</value>
+    <value>সেইভ</value>
   </data>
   <data name="Button.SaveSelection" xml:space="preserve">
     <value>নির্বাচন সংরক্ষণ করুন</value>
   </data>
   <data name="Button.Update" xml:space="preserve">
-    <value>আপডেট করুন</value>
+    <value>আপডেট</value>
   </data>
   <data name="Button.Weekly" xml:space="preserve">
-    <value>সপ্তাহের দিন</value>
+    <value>সাপ্তাহিক</value>
   </data>
   <data name="Button.Yearly" xml:space="preserve">
     <value>বার্ষিক</value>
@@ -199,7 +199,7 @@
     <value>চালান</value>
   </data>
   <data name="Button.Show" xml:space="preserve">
-    <value>দেখান</value>
+    <value>প্রদর্শন</value>
   </data>
   <data name="Button.Delete" xml:space="preserve">
     <value>মুছে দিন</value>
@@ -215,5 +215,8 @@
   </data>
   <data name="Button.Search" xml:space="preserve">
     <value>অনুসন্ধান করুন</value>
+  </data>
+  <data name="Button.AddParameter" xml:space="preserve">
+    <value>প্যারামিটার যোগ করুন</value>
   </data>
 </root>

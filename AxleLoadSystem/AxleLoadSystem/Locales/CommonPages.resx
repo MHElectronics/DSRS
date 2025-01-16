@@ -261,4 +261,10 @@
   <data name="Title" xml:space="preserve">
     <value>Title</value>
   </data>
+  <data name="Dashboard.Text" xml:space="preserve">
+    <value>Click on Station to view information</value>
+  </data>
+  <data name="SQL.Parameters" xml:space="preserve">
+    <value>Parameter(s)</value>
+  </data>
 </root>

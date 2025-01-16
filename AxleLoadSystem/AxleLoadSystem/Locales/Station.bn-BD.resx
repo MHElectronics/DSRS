@@ -121,7 +121,7 @@
     <value>ঠিকানা</value>
   </data>
   <data name="AuthKey" xml:space="preserve">
-    <value>এপিআই চাবি</value>
+    <value>এপিআই কী</value>
   </data>
   <data name="Button.AddStation" xml:space="preserve">
     <value>নতুন স্টেশন যোগ করুন</value>
@@ -133,7 +133,7 @@
     <value>সংকেত</value>
   </data>
   <data name="GenerateKey" xml:space="preserve">
-    <value>চাবি তৈরি করি</value>
+    <value>এপিআই কী তৈরি</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>নাম</value>
@@ -178,7 +178,7 @@
     <value>স্টেশন</value>
   </data>
   <data name="StationNames" xml:space="preserve">
-    <value>স্টেশনের নাম গুলি</value>
+    <value>স্টেশনের নাম (সমূহ)</value>
   </data>
   <data name="UserName" xml:space="preserve">
     <value>ব্যবহারকারীর নাম</value>
