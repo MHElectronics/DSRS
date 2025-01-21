@@ -32,7 +32,7 @@ else
                     <tr>
                         <th>@localizer["WimLaneNumber"]</th>
                         <th>@localizer["WimType"]</th>
-                        <th>@localizer["WimEquipmentCode"]</th>
+                        <th>@localizer["WimEquipmentDescription"]</th>
                         <th>@localizer["WimLaneDirection"]</th>
                         <th></th>
                     </tr>
@@ -43,7 +43,7 @@ else
                         <tr>
                             <td>Lane: @wim.LaneNumber</td>
                             <td>@(((WIMType)Enum.Parse(typeof(WIMType), wim.Type.ToString())).ToDescription())</td>
-                            <td>Eq. Code: @wim.EquipmentCode</td>
+                            <td>Eq. Description: @wim.EquipmentDescription</td>
                             <td>@(wim.IsUpbound ? "Upbound":"Downbound"): @wim.LaneDirection</td>
                             <td>
                                 <div class="btn-group float-right">

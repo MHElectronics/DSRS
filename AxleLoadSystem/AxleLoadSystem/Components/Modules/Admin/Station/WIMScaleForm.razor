@@ -50,14 +50,14 @@ else
                         <div class="form-group">
                             @if (formMode == FormMode.Details)
                             {
-                                <label for="WimEquipmentCode" class="form-label">@localizer["WimEquipmentCode"]</label>
-                                <label class="form-control">@wimScale.EquipmentCode</label>
+                                <label for="WimEquipmentDescription" class="form-label">@localizer["WimEquipmentDescription"]</label>
+                                <label class="form-control">@wimScale.EquipmentDescription</label>
                             }
                             else
                             {
-                                <label for="WimEquipmentCode" class="form-label">@localizer["WimEquipmentCode"]</label>
-                                <input type="text" @bind-value="wimScale.EquipmentCode" required class="form-control" placeholder="@localizer["WimEquipmentCode"]" id="WimEquipmentCode" maxlength="20" />
-                                <ValidationMessage For="() => wimScale.EquipmentCode" />
+                                <label for="WimEquipmentDescription" class="form-label">@localizer["WimEquipmentDescription"]</label>
+                                <input type="text" @bind-value="wimScale.EquipmentDescription" required class="form-control" placeholder="@localizer["WimEquipmentDescription"]" id="WimEquipmentDescription" maxlength="20" />
+                                <ValidationMessage For="() => wimScale.EquipmentDescription" />
                             }
                         </div>
                     </div>

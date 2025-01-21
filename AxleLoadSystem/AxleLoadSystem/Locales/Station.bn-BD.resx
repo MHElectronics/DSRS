@@ -150,8 +150,8 @@
   <data name="WimLaneNumber" xml:space="preserve">
     <value>লেন নম্বর</value>
   </data>
-  <data name="WimEquipmentCode" xml:space="preserve">
-    <value>সরঞ্জাম কোড</value>
+  <data name="WimEquipmentDescription" xml:space="preserve">
+    <value>সরঞ্জামের বর্ণনা</value>
   </data>
   <data name="WimLaneDirection" xml:space="preserve">
     <value>লেনের দিক</value>
@@ -159,8 +159,8 @@
   <data name="WimType" xml:space="preserve">
     <value>শ্রেণী</value>
   </data>
-  <data name="WIMScaleManagement" xml:space="preserve">
-    <value>WIM স্কেল ম্যানেজমেন্ট</value>
+  <data name="WIMScale" xml:space="preserve">
+    <value>WIM স্কেল</value>
   </data>
   <data name="MapX" xml:space="preserve">
     <value>মানচিত্র X অক্ষ</value>
@@ -170,6 +170,9 @@
   </data>
   <data name="ListofStation" xml:space="preserve">
     <value>স্টেশনের তালিকা</value>
+  </data>
+  <data name="WIMScaleManagement" xml:space="preserve">
+    <value>WIM স্কেল ম্যানেজমেন্ট</value>
   </data>
   <data name="StationAccess" xml:space="preserve">
     <value>স্টেশন অ্যাক্সেস</value>
@@ -200,9 +203,6 @@
   </data>
   <data name="Menu.Category" xml:space="preserve">
     <value>শ্রেণী</value>
-  </data>
-  <data name="WIMScale" xml:space="preserve">
-    <value>WIM স্কেল</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>ইমেইল</value>
