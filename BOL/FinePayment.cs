@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 namespace BOL;
 public class FinePayment
 {
-    public int Id { get; set; }
     public int StationId { get; set; }
     [Required]
     [MinValue(0)]

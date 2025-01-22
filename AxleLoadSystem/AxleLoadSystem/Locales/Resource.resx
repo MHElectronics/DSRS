@@ -219,4 +219,7 @@
   <data name="Button.AddParameter" xml:space="preserve">
     <value>Add Parameter</value>
   </data>
+  <data name="Button.LoadFinePaymentData" xml:space="preserve">
+    <value>Load and Fine Payment Data</value>
+  </data>
 </root>

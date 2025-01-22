@@ -7,6 +7,7 @@ namespace Services.Reports;
 public interface IOverloadReportService
 {
     Task<(IEnumerable<LoadData>, bool, string)> GetDataByDate(ReportParameters reportParameters, bool overloadCalculative,bool isOverloadedOnly);
+    Task<(IEnumerable<LoadFinePaymentData>, bool, string)> GetLoadFinePaymentDataByDate(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedTimeSeriesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedNumberOfAxlesReport(ReportParameters reportParameters);
     Task<(IEnumerable<AxleLoadReport>, bool, string)> GetDailyOverloadedHistogramReport(ReportParameters reportParameters);
@@ -96,7 +97,77 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         }
         return (null, isSuccess, message);
     }
-    
+    public async Task<(IEnumerable<LoadFinePaymentData>, bool, string)> GetLoadFinePaymentDataByDate(ReportParameters reportParameters, bool overloadCalculative, bool isOverloadedOnly)
+    {
+        bool isSuccess = false;
+        string overloSelectQuery = _overloadSelectQuery;
+        string overloadJoiningQuery = _overloadJoiningQuery;
+        string overloadWhereQuery = "";
+        if (!overloadCalculative)
+        {
+            overloSelectQuery = "IsOverloaded";
+            overloadJoiningQuery = "";
+        }
+        if (isOverloadedOnly)
+        {
+            if (overloadCalculative)
+            {
+                overloadWhereQuery = " AND AL.GrossVehicleWeight>OL.AllowedWeight";
+            }
+            else
+            {
+                overloadWhereQuery = " AND IsOverloaded=1";
+            }
+        }
+
+        string message = "";
+        string query = this.GetStationTableQuery(reportParameters) +
+        $@"SELECT SN.StationName,AL.TransactionNumber,AL.LaneNumber,AL.DateTime,AL.PlateZone,AL.PlateSeries
+        ,AL.PlateNumber,AL.NumberOfAxle,AL.VehicleSpeed,AL.Axle1,AL.Axle2,AL.Axle3,AL.Axle4,AL.Axle5,AL.Axle6
+        ,AL.Axle7,AL.AxleRemaining,AL.GrossVehicleWeight,AL.IsUnloaded,{overloSelectQuery} AS IsOverloaded 
+        ,AL.OverSizedModified,AL.Wheelbase,AL.ClassStatus,(CASE WHEN CS.Name is null THEN CAST(AL.ClassStatus AS VARCHAR(5)) ELSE CS.Name END) ClassStatusName
+        ,AL.RecognizedBy,AL.IsBRTAInclude,AL.LadenWeight,AL.UnladenWeight,AL.ReceiptNumber,AL.BillNumber,AL.Axle1Time
+        ,AL.Axle2Time,AL.Axle3Time,AL.Axle4Time,AL.Axle5Time,AL.Axle6Time,AL.Axle7Time
+        ,FP.PaymentTransactionId,FP.IsPaid,FP.FineAmount,FP.PaymentMethod,FP.WarehouseCharge,FP.DriversLicenseNumber,FP.TransportAgencyInformation 
+        FROM AxleLoad AS AL 
+        INNER JOIN Stations SN ON AL.StationId=SN.StationId 
+        LEFT JOIN ClassStatus CS ON AL.ClassStatus=CS.Id
+        LEFT JOIN FinePayment FP 
+            ON AL.TransactionNumber = FP.TransactionNumber
+            AND AL.StationId = FP.StationId            
+            AND AL.LaneNumber = FP.LaneNumber
+
+        {overloadJoiningQuery} ";
+
+        query += this.GetFilterClause(reportParameters);
+        query += overloadWhereQuery;
+
+        var parameters = new
+        {
+            StationIds = reportParameters.Stations,
+            DateStart = reportParameters.DateStart,
+            DateEnd = reportParameters.DateEnd,
+            NumberOfAxle = reportParameters.NumberOfAxle,
+            Wheelbase = reportParameters.Wheelbase,
+            ClassStatus = reportParameters.ClassStatus,
+            TimeStart = reportParameters.TimeStart.ToTimeSpan(),
+            TimeEnd = reportParameters.TimeEnd.ToTimeSpan(),
+        };
+
+        try
+        {
+            IEnumerable<LoadFinePaymentData> reports = await _db.LoadData<LoadFinePaymentData, object>(query, parameters);
+            isSuccess = true;
+            return (reports, isSuccess, message);
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            message = "Error: " + ex.Message;
+        }
+        return (null, isSuccess, message);
+    }
+
     #region Overloaded Histogram report query
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetYearlyOverloadedHistogramReport(ReportParameters reportParameters)
     {

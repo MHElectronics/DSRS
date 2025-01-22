@@ -190,7 +190,7 @@
     <value>WIM স্কেল</value>
   </data>
   <data name="Button.FinePaymentData" xml:space="preserve">
-    <value>জরিমানা পরিশোধ ডেটা</value>
+    <value>ফাইন পেমেন্ট ডেটা</value>
   </data>
   <data name="Button.LoadData" xml:space="preserve">
     <value>লোড ডেটা</value>
@@ -218,5 +218,8 @@
   </data>
   <data name="Button.AddParameter" xml:space="preserve">
     <value>প্যারামিটার যোগ করুন</value>
+  </data>
+  <data name="Button.LoadFinePaymentData" xml:space="preserve">
+    <value>লোড এবং ফাইন পেমেন্ট ডেটা</value>
   </data>
 </root>
