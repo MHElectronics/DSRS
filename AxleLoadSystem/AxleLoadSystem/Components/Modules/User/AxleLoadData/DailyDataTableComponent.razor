@@ -115,7 +115,6 @@
                 <QuickGrid Items="@filteredLoadFineRepaymentData" Virtualize="true">
                     <PropertyColumn Property="@(l => l.StationName)" Title="Station" Sortable="true" />
                     <PropertyColumn Property="@(l => l.TransactionNumber)" Title="Transaction No" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.PaymentTransactionId)" Title="Payment Transaction ID" Sortable="true" />
                     <PropertyColumn Property="@(l => l.LaneNumber)" Title="Lane No" Sortable="true" />
                     <PropertyColumn Property="@(l => l.DateString)" Title="Date" Sortable="true" />
                     <PropertyColumn Property="@(l => l.TimeString)" Title="Time" Sortable="true" />
@@ -142,15 +141,9 @@
                     <PropertyColumn Property="@(l => l.RecognizedBy)" Title="Recognized By" Sortable="true" />
                     <PropertyColumn Property="@(l => l.IsBRTAInclude)" Title="Is BRTA Included" Sortable="true" />
                     <PropertyColumn Property="@(l => l.LadenWeight)" Title="Laden Weight (kg)" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.UnladenWeight)" Title="Unladen Weight (kg)" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.IsPaid)" Title="Is Paid" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.FineAmount)" Title="Fine Amount (Tk)" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.PaymentMethod)" Title="Payment Method" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.UnladenWeight)" Title="Unladen Weight (kg)" Sortable="true" />                   
                     <PropertyColumn Property="@(l => l.ReceiptNumber)" Title="Receipt Number" Sortable="true" />
                     <PropertyColumn Property="@(l => l.BillNumber)" Title="Bill Number" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.WarehouseCharge)" Title="Warehouse Charge (Tk)" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Title="Driver License Number" Sortable="true" />
-                    <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Title="Transport Agency Information" Sortable="true" />
                     <PropertyColumn Property="@(l => l.Axle1Time)" Title="Axle 1 Time" Sortable="true" Format="yyyy/MM/dd HH:mm:ss tt" />
                     <PropertyColumn Property="@(l => l.Axle2Time)" Title="Axle 2 Time" Sortable="true" Format="yyyy/MM/dd HH:mm:ss tt" />
                     <PropertyColumn Property="@(l => l.Axle3Time)" Title="Axle 3 Time" Sortable="true" Format="yyyy/MM/dd HH:mm:ss tt" />
@@ -158,6 +151,13 @@
                     <PropertyColumn Property="@(l => l.Axle5Time)" Title="Axle 5 Time" Sortable="true" Format="yyyy/MM/dd HH:mm:ss tt" />
                     <PropertyColumn Property="@(l => l.Axle6Time)" Title="Axle 6 Time" Sortable="true" Format="yyyy/MM/dd HH:mm:ss tt" />
                     <PropertyColumn Property="@(l => l.Axle7Time)" Title="Axle 7 Time" Sortable="true" Format="yyyy/MM/dd HH:mm:ss tt" />
+                    <PropertyColumn Property="@(l => l.PaymentTransactionId)" Title="Payment Transaction ID" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.IsPaid)" Title="Is Paid" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.FineAmount)" Title="Fine Amount (Tk)" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.PaymentMethod)" Title="Payment Method" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.WarehouseCharge)" Title="Warehouse Charge (Tk)" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.DriversLicenseNumber)" Title="Driver License Number" Sortable="true" />
+                    <PropertyColumn Property="@(l => l.TransportAgencyInformation)" Title="Transport Agency Information" Sortable="true" />
                 </QuickGrid>
             }
         }
