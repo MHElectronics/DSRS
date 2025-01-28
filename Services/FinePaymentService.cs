@@ -46,7 +46,7 @@ public class FinePaymentService(ISqlDataAccess _db) : IFinePaymentService
                 overloadWhereQuery = " AND IsOverloaded=1";
             }
         }
-        string query = @"SELECT SN.StationName,FP.StationId,FP.TransactionNumber,FP.LaneNumber,FP.PaymentTransactionId,FP.DateTime,FP.IsPaid,FP.FineAmount,FP.PaymentMethod,FP.ReceiptNumber,FP.BillNumber,FP.WarehouseCharge,FP.DriversLicenseNumber,FP.TransportAgencyInformation,FP.EntryTime
+        string query = this.GetStationTableQuery(reportParameters) + $@"SELECT SN.StationName,FP.StationId,FP.TransactionNumber,FP.LaneNumber,FP.PaymentTransactionId,FP.DateTime,FP.IsPaid,FP.FineAmount,FP.PaymentMethod,FP.ReceiptNumber,FP.BillNumber,FP.WarehouseCharge,FP.DriversLicenseNumber,FP.TransportAgencyInformation,FP.EntryTime
                 FROM FinePayment FP INNER JOIN Stations SN ON FP.StationId=SN.StationId ";
 
         (string filterJoining, string filterWhere) filterQueries = this.GetFilterClause(reportParameters, isOverloadedOnly);
