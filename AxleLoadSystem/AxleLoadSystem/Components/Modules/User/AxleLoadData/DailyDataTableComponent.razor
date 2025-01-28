@@ -388,7 +388,6 @@
         {
             LoadFinePaymentData loadFinePaymentData = new();
             fields.Add(("Transaction Number", nameof(loadFinePaymentData.TransactionNumber), loadFinePaymentData.TransactionNumber.GetType()));
-            fields.Add(("Payment Transaction Id", nameof(loadFinePaymentData.PaymentTransactionId), loadFinePaymentData.PaymentTransactionId.GetType()));
             fields.Add(("Lane Number", nameof(loadFinePaymentData.LaneNumber), loadFinePaymentData.LaneNumber.GetType()));
             fields.Add(("Date", nameof(loadFinePaymentData.DateString), typeof(string)));
             fields.Add(("Time", nameof(loadFinePaymentData.TimeString), typeof(string)));
@@ -416,14 +415,8 @@
             fields.Add(("IsBRTAInclude", nameof(loadFinePaymentData.IsBRTAInclude), loadFinePaymentData.IsBRTAInclude.GetType()));
             fields.Add(("Laden Weight", nameof(loadFinePaymentData.LadenWeight), loadFinePaymentData.LadenWeight.GetType()));
             fields.Add(("Unladen Weight", nameof(loadFinePaymentData.UnladenWeight), loadFinePaymentData.UnladenWeight.GetType()));
-            fields.Add(("IsPaid", nameof(loadFinePaymentData.IsPaid), loadFinePaymentData.IsPaid.GetType()));
-            fields.Add(("Fine Amount", nameof(loadFinePaymentData.FineAmount), loadFinePaymentData.FineAmount.GetType()));
-            fields.Add(("Payment Method", nameof(loadFinePaymentData.PaymentMethod), loadFinePaymentData.PaymentMethod.GetType()));
             fields.Add(("Receipt Number", nameof(loadFinePaymentData.ReceiptNumber), loadFinePaymentData.ReceiptNumber.GetType()));
-            fields.Add(("Bill Number", nameof(loadFinePaymentData.BillNumber), loadFinePaymentData.BillNumber.GetType()));
-            fields.Add(("Warehouse Charge", nameof(loadFinePaymentData.WarehouseCharge), loadFinePaymentData.WarehouseCharge.GetType()));
-            fields.Add(("Drivers License Number", nameof(loadFinePaymentData.DriversLicenseNumber), loadFinePaymentData.DriversLicenseNumber.GetType()));
-            fields.Add(("Transport Agency Information", nameof(loadFinePaymentData.TransportAgencyInformation), loadFinePaymentData.TransportAgencyInformation.GetType()));
+            fields.Add(("Bill Number", nameof(loadFinePaymentData.BillNumber), loadFinePaymentData.BillNumber.GetType()));           
             fields.Add(("Axle1 Time", nameof(loadFinePaymentData.Axle1Time), typeof(DateTime?)));
             fields.Add(("Axle2 Time", nameof(loadFinePaymentData.Axle2Time), typeof(DateTime?)));
             fields.Add(("Axle3 Time", nameof(loadFinePaymentData.Axle3Time), typeof(DateTime?)));
@@ -431,6 +424,13 @@
             fields.Add(("Axle5 Time", nameof(loadFinePaymentData.Axle5Time), typeof(DateTime?)));
             fields.Add(("Axle6 Time", nameof(loadFinePaymentData.Axle6Time), typeof(DateTime?)));
             fields.Add(("Axle7 Time", nameof(loadFinePaymentData.Axle7Time), typeof(DateTime?)));
+            fields.Add(("Payment Transaction Id", nameof(loadFinePaymentData.PaymentTransactionId), loadFinePaymentData.PaymentTransactionId.GetType()));
+            fields.Add(("IsPaid", nameof(loadFinePaymentData.IsPaid), loadFinePaymentData.IsPaid.GetType()));
+            fields.Add(("Fine Amount", nameof(loadFinePaymentData.FineAmount), loadFinePaymentData.FineAmount.GetType()));
+            fields.Add(("Payment Method", nameof(loadFinePaymentData.PaymentMethod), loadFinePaymentData.PaymentMethod.GetType()));
+            fields.Add(("Warehouse Charge", nameof(loadFinePaymentData.WarehouseCharge), loadFinePaymentData.WarehouseCharge.GetType()));
+            fields.Add(("Drivers License Number", nameof(loadFinePaymentData.DriversLicenseNumber), loadFinePaymentData.DriversLicenseNumber.GetType()));
+            fields.Add(("Transport Agency Information", nameof(loadFinePaymentData.TransportAgencyInformation), loadFinePaymentData.TransportAgencyInformation.GetType()));
         }
 
 
