@@ -70,7 +70,7 @@ public class WIMScaleService : IWIMScaleService
         bool hasDuplicate = await this.CheckDuplicateEntry(obj);
         if (!hasDuplicate)
         {
-            string query = "INSERT INTO WIMScale(StationId,LaneNumber,Type,EquipmentCode,LaneDirection,IsUpbound) VALUES(@StationId,@LaneNumber,@Type,@EquipmentCode,@LaneDirection,@IsUpbound)";
+            string query = "INSERT INTO WIMScale(StationId,LaneNumber,Type,EquipmentDescription,LaneDirection,IsUpbound) VALUES(@StationId,@LaneNumber,@Type,@EquipmentDescription,@LaneDirection,@IsUpbound)";
             bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
             if(isSuccess)
             {
@@ -86,7 +86,7 @@ public class WIMScaleService : IWIMScaleService
     }
     public async Task<bool> Update(WIMScale obj, User user)
     {
-        string query = "UPDATE WIMScale SET StationId=@StationId,LaneNumber=@LaneNumber,Type=@Type,EquipmentCode=@EquipmentCode,LaneDirection=@LaneDirection,IsUpbound=@IsUpbound WHERE Id=@Id";
+        string query = "UPDATE WIMScale SET StationId=@StationId,LaneNumber=@LaneNumber,Type=@Type,EquipmentDescription=@EquipmentDescription,LaneDirection=@LaneDirection,IsUpbound=@IsUpbound WHERE Id=@Id";
         bool isSuccess = await _db.SaveData<WIMScale>(query, obj);
         if (isSuccess)
         {
