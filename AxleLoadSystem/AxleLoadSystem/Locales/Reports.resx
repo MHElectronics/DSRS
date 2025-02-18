@@ -297,4 +297,16 @@
   <data name="Report.VehicleType" xml:space="preserve">
     <value>Vehicle Type</value>
   </data>
+  <data name="Report.TotalNumberOfAxles" xml:space="preserve">
+    <value>Cumulative Number of Axle</value>
+  </data>
+  <data name="Report.Influence" xml:space="preserve">
+    <value>Influence</value>
+  </data>
+  <data name="Report.Influence2_Part1" xml:space="preserve">
+    <value>Equivalent to </value>
+  </data>
+  <data name="Report.Influence2_Part2" xml:space="preserve">
+    <value>t Axle</value>
+  </data>
 </root>

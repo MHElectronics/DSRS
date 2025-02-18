@@ -81,9 +81,9 @@ else if (Chartview && ChartData is not null)
                 <div class="tab-pane active" id="tab_graph">
                     <div class="row">
                         <div class="col-md-12 btn-group">
-                            <button class="btn @(chartType == "TotalNumberOfAxles" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("TotalNumberOfAxles"))">Cummilative Number of Axle</button>
-                            <button class="btn @(chartType == "Influence" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Influence"))">Influence</button>
-                            <button class="btn @(chartType == "Influence_2" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Influence_2"))">Equivalent to @(selectedEquivalentAxleLoad)t Axle</button>
+                            <button class="btn @(chartType == "TotalNumberOfAxles" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("TotalNumberOfAxles"))">@localizer["Report.TotalNumberOfAxles"]</button>
+                            <button class="btn @(chartType == "Influence" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Influence"))">@localizer["Report.Influence"]</button>
+                            <button class="btn @(chartType == "Influence_2" ? "btn-outline-success" : "btn-outline-info")" @onclick="@(() => ChartChanged("Influence_2"))">@localizer["Report.Influence2_Part1"] @(selectedEquivalentAxleLoad)@localizer["Report.Influence2_Part2"]</button>
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 text-center" style="padding-top:10px;">
