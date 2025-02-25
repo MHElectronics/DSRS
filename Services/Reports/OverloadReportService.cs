@@ -577,15 +577,15 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SET @CurrentYear = @CurrentYear + 1
         END
 
-        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[Year] INT,GrossVehicleWeight INT DEFAULT 0)
+        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[Year] INT)--,GrossVehicleWeight DECIMAL(18,0) DEFAULT 0)
 
-        INSERT INTO #T(NumberOfAxle,[Year],TotalVehicle,OverloadVehicle,GrossVehicleWeight)
+        INSERT INTO #T(NumberOfAxle,[Year],TotalVehicle,OverloadVehicle)--,GrossVehicleWeight)
         SELECT AL.NumberOfAxle,
             Y.[Year],
             COUNT(AL.StationId) AS TotalVehicle,
             --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            {_overloadCountQuery}  AS OverloadVehicle,         
-            SUM(AL.GrossVehicleWeight) AS GrossVehicleWeight
+            {_overloadCountQuery}  AS OverloadVehicle
+            --,SUM(CAST(AL.GrossVehicleWeight AS DECIMAL(18,0))) AS GrossVehicleWeight
         FROM @Years Y LEFT JOIN AxleLoad AL ON YEAR(AL.DateTime) = Y.[Year] {_overloadJoiningQuery}
         ";
 
@@ -628,15 +628,14 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
         bool isSuccess = false;
         string message = "";
         string query = this.GetStationTableQuery(reportParameters) +
-            $@" CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,Axle1 INT DEFAULT 0,Axle2 INT DEFAULT 0,Axle3 INT DEFAULT 0,Axle4 INT DEFAULT 0,Axle5 INT DEFAULT 0,Axle6 INT DEFAULT 0,Axle7 INT DEFAULT 0,AxleRemaining INT DEFAULT 0,GrossVehicleWeight INT DEFAULT 0)
+            $@" CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT)--,GrossVehicleWeight DECIMAL(18,0) DEFAULT 0)
             
-            INSERT INTO #T([DateUnit],NumberOfAxle,TotalVehicle,OverloadVehicle,Axle1,Axle2,Axle3,Axle4,Axle5,Axle6,Axle7,AxleRemaining,GrossVehicleWeight)
+            INSERT INTO #T([DateUnit],NumberOfAxle,TotalVehicle,OverloadVehicle)--,GrossVehicleWeight)
             SELECT 
             DATEPART(MONTH,DateTime) AS DateUnit,AL.NumberOfAxle
             ,COUNT(1) AS TotalVehicle
             ,{_overloadCountQuery}  AS OverloadVehicle 
-            ,SUM(Axle1) AS Axle1,SUM(Axle2) AS Axle2,SUM(Axle3) AS Axle3,SUM(Axle4) AS Axle4,SUM(Axle5) AS Axle5,SUM(Axle6) AS Axle6,SUM(Axle7) AS Axle7
-            ,SUM(AxleRemaining) AS AxleRemaining,SUM(GrossVehicleWeight) AS GrossVehicleWeight
+            --,SUM(CAST(GrossVehicleWeight AS DECIMAL(18,0))) AS GrossVehicleWeight
             FROM AxleLoad AL {_overloadJoiningQuery}";
 
         query += this.GetFilterClause(reportParameters);
@@ -662,7 +661,7 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
                 FROM @DateParts
                 WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
 
-                SELECT NumberOfAxle,OverloadVehicle,TotalVehicle,DateUnit,GrossVehicleWeight
+                SELECT NumberOfAxle,OverloadVehicle,TotalVehicle,DateUnit
                 ,(TotalVehicle - OverloadVehicle) AS NotOverloadVehicle,DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
                 FROM #T
                 --WHERE NumberOfAxle IS NOT NULL
@@ -709,15 +708,15 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate)
         END
 
-        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT,GrossVehicleWeight INT DEFAULT 0)
+        CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT)--,GrossVehicleWeight DECIMAL(18,0) DEFAULT 0)
 
-        INSERT INTO #T(NumberOfAxle,[DateUnit],TotalVehicle,OverloadVehicle,GrossVehicleWeight)
+        INSERT INTO #T(NumberOfAxle,[DateUnit],TotalVehicle,OverloadVehicle)--,GrossVehicleWeight)
         SELECT AL.NumberOfAxle,
             DATEPART(WEEKDAY, AL.DateTime) AS DateUnit,
             COUNT(1) AS TotalVehicle,
             --SUM(CAST(IsOverloaded AS INT)) AS OverloadVehicle,
-            {_overloadCountQuery}  AS OverloadVehicle, 
-            SUM(GrossVehicleWeight) AS GrossVehicleWeight
+            {_overloadCountQuery}  AS OverloadVehicle 
+            --,SUM(CAST(GrossVehicleWeight AS DECIMAL(18,0))) AS GrossVehicleWeight
         FROM AxleLoad AL {_overloadJoiningQuery}
         ";
 
