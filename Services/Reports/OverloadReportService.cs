@@ -627,48 +627,67 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
     {
         bool isSuccess = false;
         string message = "";
+
         string query = this.GetStationTableQuery(reportParameters) +
-            $@" CREATE TABLE #T(NumberOfAxle INT,TotalVehicle INT DEFAULT 0,OverloadVehicle INT DEFAULT 0,[DateUnit] INT)--,GrossVehicleWeight DECIMAL(18,0) DEFAULT 0)
-            
-            INSERT INTO #T([DateUnit],NumberOfAxle,TotalVehicle,OverloadVehicle)--,GrossVehicleWeight)
-            SELECT 
-            DATEPART(MONTH,DateTime) AS DateUnit,AL.NumberOfAxle
-            ,COUNT(1) AS TotalVehicle
-            ,{_overloadCountQuery}  AS OverloadVehicle 
-            --,SUM(CAST(GrossVehicleWeight AS DECIMAL(18,0))) AS GrossVehicleWeight
-            FROM AxleLoad AL {_overloadJoiningQuery}";
+        $@"
+        CREATE TABLE #T(NumberOfAxle INT, TotalVehicle INT DEFAULT 0, OverloadVehicle INT DEFAULT 0, [DateUnit] INT)
+
+        INSERT INTO #T([DateUnit], NumberOfAxle, TotalVehicle, OverloadVehicle)
+        SELECT 
+            (YEAR(DateTime) * 100 + MONTH(DateTime)) AS DateUnit,
+            AL.NumberOfAxle,
+            COUNT(1) AS TotalVehicle,
+            {_overloadCountQuery} AS OverloadVehicle
+        FROM AxleLoad AL {_overloadJoiningQuery}";
 
         query += this.GetFilterClause(reportParameters);
 
-        query += @" GROUP BY 
-                DATEPART(MONTH,DateTime),AL.NumberOfAxle
+        query += @"
+        GROUP BY YEAR(DateTime), MONTH(DateTime), AL.NumberOfAxle
 
-    
-                DECLARE @DateParts TABLE(MonthNumber INT)
+        -- Generate a sequence of months
+        DECLARE @DateParts TABLE(MonthNumber INT, YearNumber INT)
 
-                DECLARE @Min INT,@Max INT
-                SELECT @Min=DATEPART(MONTH,@DateStart),@Max=DATEPART(MONTH,@DateEnd)
+        DECLARE @MinMonth INT, @MaxMonth INT, @MinYear INT, @MaxYear INT
+        SELECT 
+            @MinMonth = DATEPART(MONTH, @DateStart), 
+            @MaxMonth = DATEPART(MONTH, @DateEnd),
+            @MinYear = DATEPART(YEAR, @DateStart),
+            @MaxYear = DATEPART(YEAR, @DateEnd)
 
-                INSERT INTO @DateParts
-                SELECT N.number
-                FROM master..spt_values as N
-                WHERE N.number >= @Min AND N.number <= @Max
-                AND N.type ='P'
-                AND N.number>0
+        INSERT INTO @DateParts
+        SELECT N.number, Y.number
+        FROM master..spt_values AS N
+        CROSS JOIN master..spt_values AS Y
+        WHERE (Y.number * 100 + N.number) BETWEEN (@MinYear * 100 + @MinMonth) 
+                                              AND (@MaxYear * 100 + @MaxMonth)
+        AND N.type = 'P' AND N.number BETWEEN 1 AND 12
+        AND Y.type = 'P' AND Y.number >= @MinYear AND Y.number <= @MaxYear
 
-                INSERT INTO #T(DateUnit)
-                SELECT MonthNumber
-                FROM @DateParts
-                WHERE MonthNumber NOT IN (SELECT DateUnit FROM #T)
+        -- Insert missing months into #T
+        INSERT INTO #T(DateUnit)
+        SELECT (YearNumber * 100 + MonthNumber)
+        FROM @DateParts
+        WHERE (YearNumber * 100 + MonthNumber) NOT IN (SELECT DateUnit FROM #T)
 
-                SELECT NumberOfAxle,OverloadVehicle,TotalVehicle,DateUnit
-                ,(TotalVehicle - OverloadVehicle) AS NotOverloadVehicle,DATENAME(month, DATEFROMPARTS(1900, DateUnit, 1)) AS DateUnitName
-                FROM #T
-                --WHERE NumberOfAxle IS NOT NULL
-                ORDER BY DateUnit
+        -- Select results with formatted month-year, ensuring valid values
+        SELECT 
+            NumberOfAxle, 
+            OverloadVehicle, 
+            TotalVehicle, 
+            DateUnit,
+            (TotalVehicle - OverloadVehicle) AS NotOverloadVehicle,
+            CASE 
+                WHEN YearNumber IS NOT NULL AND MonthNumber BETWEEN 1 AND 12 
+                THEN CONCAT(DATENAME(MONTH, DATEFROMPARTS(YearNumber, MonthNumber, 1)), ' ', YearNumber) 
+                ELSE 'Invalid Date' 
+            END AS DateUnitName
+        FROM #T
+        JOIN @DateParts ON DateUnit = (YearNumber * 100 + MonthNumber)
+        ORDER BY DateUnit
 
-                DROP TABLE #T
-                ";
+        DROP TABLE #T
+    ";
 
         var parameters = new
         {
@@ -692,8 +711,11 @@ public class OverloadReportService(ISqlDataAccess _db) : IOverloadReportService
             isSuccess = false;
             message = "Error: " + ex.Message;
         }
+
         return (null, isSuccess, message);
     }
+
+
     public async Task<(IEnumerable<AxleLoadReport>, bool, string)> GetWeeklyOverloadedTimeSeriesReport(ReportParameters reportParameters)
     {
         bool isSuccess = false;
