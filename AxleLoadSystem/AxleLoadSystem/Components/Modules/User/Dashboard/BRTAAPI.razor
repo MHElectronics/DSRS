@@ -79,7 +79,7 @@
     <div class="card card-primary card-outline">
         <div class="card-body">
             <div class="row">
-                @foreach (KeyValuePair<string, string> item in result)
+                @foreach (KeyValuePair<string, JsonElement> item in result)
                 {
                     string filedTitle = Regex.Replace(item.Key, "(\\B[A-Z])", " $1");
                     <div class="col-md-4">
@@ -96,14 +96,42 @@
 
 @code {
     private PayloadBRTA payloadBRTA { get; set; } = new() { userName = "AxleLoad", password = "Ax$@23L", bridgeOid = "3", rfid = "42525441FF021A151D6A0001", zone = "KHULNA METRO", series = "LA", Number = "12-9358" };
-    private Dictionary<string, string> result { get; set; } = null;
+    private Dictionary<string, JsonElement> result { get; set; } = null;
 
     private async Task ShowBrtaInfoByRfid()
     {
         try
         {
-            string resultString = await apiHelper.GetBRTAInformationByRFID(payloadBRTA);
-            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
+            // string resultString = await apiHelper.GetBRTAInformationByRFID(payloadBRTA);
+            string resultString = @"{""rhdClass"": {""className"": ""PICKUP"",""regSeries"": ""I"",
+        ""seriesBnName"": ""ঝ""
+    },
+    ""brtaClass"": {
+        ""className"": ""Private Passenger (Jeep/st. Wagn)"",
+        ""regSeries"": ""GHA"",
+        ""regSeriesBnName"": ""ঘ"",
+        ""seriesStartNumber"": 11,
+        ""seriesEndNumber"": 99
+    },
+    ""vehicleInfo"": {
+        ""vehicleRegistrationNumber"": ""DHAKA METRO-GHA-21-7530"",
+        ""noOfAxle"": ""2"",
+        ""unladenWeight"": ""1840"",
+        ""vehicleCC"": ""1990"",
+        ""ladenWeight"": ""2115"",
+        ""ownerName"": ""MINIMAX ENTERPRISE"",
+        ""vehicleType"": ""HARD JEEP"",
+        ""seatingCapacity"": ""5"",
+        ""rfid"": ""42525441FF021A151D6A0001"",
+        ""chassisNo"": ""GG****4967""
+    },
+    ""fareRate"": 90.00,
+    ""bridgeName"": ""MEGHNA AND MEGHNA-GOMOTI BRIDGE"",
+    ""bridgeOid"": ""3"",
+    ""returnFrom"": ""RHD""
+}";
+            // result = JsonConvert.DeserializeObject<Dictionary<string, JsonElement>>(resultString);
+            BRTAInfo info = JsonConvert.DeserializeObject<BRTAInfo>(resultString);
         }
         catch (Exception ex)
         {
@@ -116,7 +144,7 @@
         try
         {
             string resultString = await apiHelper.GetBRTAInformationByRegistrationNumber(payloadBRTA);
-            result = JsonConvert.DeserializeObject<Dictionary<string, string>>(resultString);
+            result = JsonConvert.DeserializeObject<Dictionary<string, JsonElement>>(resultString);
         }
         catch (Exception ex)
         {
@@ -127,23 +155,40 @@
 
     private class BRTAInfo
     {
-        public string vehicleRegistrationNumber { get; set; }
-        public string brtaSeries { get; set; }
-        public string brtaSeriesBnName { get; set; }
-        public string brtaClass { get; set; }
-        public string brtaType { get; set; }
-        public string rhdSeries { get; set; }
-        public string rhdSeriesBnName { get; set; }
-        public string rhdClass { get; set; }
-        public string bridgeName { get; set; }
-        public string fare { get; set; }
-        public string rfidNo { get; set; }
-        public string unladenWeight { get; set; }
-        public string ladenWeight { get; set; }
-        public string totalAxel { get; set; }
-        public string ownerName { get; set; }
-        public string vehicleCC { get; set; }
-        public string message { get; set; }
+        public RhdClass rhdClass;
+        public BrtaClass brtaClass;
+        public VehicleInfo vehicleInfo;
 
+        public string fareRate;
+        public string bridgeName;
+        public string bridgeOid;
+        public string returnFrom;
+    }
+    private class RhdClass
+    {
+        public string className;
+        public string regSeries;
+        public string seriesBnName;
+    }
+    private class BrtaClass
+    {
+        public string className;
+        public string regSeries;
+        public string regSeriesBnName;
+        public string seriesStartNumber;
+        public string seriesEndNumber;
+    }
+    private class VehicleInfo
+    {
+        public string vehicleRegistrationNumber;
+        public string noOfAxle;
+        public string unladenWeight;
+        public string vehicleCC;
+        public string ladenWeight;
+        public string ownerName;
+        public string vehicleType;
+        public string seatingCapacity;
+        public string rfid;
+        public string chassisNo;
     }
 }

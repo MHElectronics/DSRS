@@ -91,7 +91,7 @@ else if (selectionEnabled && reportParameters is not null && configuration is no
         </div>
         <div class="col-md-3">
             <label>@localizer["Report.StartTime"]</label>
-            <SfTimePicker TValue="TimeOnly" Placeholder="Select Start Time" Value="@reportParameters.TimeStart" Format="HH:mm" CssClass="form-control">
+            <SfTimePicker TValue="TimeOnly" Placeholder="Select Start Time" Value="@reportParameters.TimeStart" Format="HH:mm">
                 <TimePickerEvents TValue="TimeOnly" ValueChange="@onTimeStartChange"></TimePickerEvents>
             </SfTimePicker>
         </div>
@@ -99,12 +99,12 @@ else if (selectionEnabled && reportParameters is not null && configuration is no
 
         <div class="col-md-3">
             <label>@localizer["Report.EndTime"]</label>
-            <SfTimePicker TValue="TimeOnly" Placeholder="Select End Time" Value="@reportParameters.TimeEnd" Format="HH:mm" CssClass="form-control">
+            <SfTimePicker TValue="TimeOnly" Placeholder="Select End Time" Value="@reportParameters.TimeEnd" Format="HH:mm">
                 <TimePickerEvents TValue="TimeOnly" ValueChange="@onTimeEndChange"></TimePickerEvents>
             </SfTimePicker>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-xl-6 col-md-12">
             <label>@localizer["Report.WimScale"]</label>
             @if (selectedWIMScales is not null && wims is not null)
             {

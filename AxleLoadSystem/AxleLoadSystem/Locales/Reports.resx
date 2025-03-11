@@ -187,7 +187,7 @@
     <value>Weight (Kg) Minimum</value>
   </data>
   <data name="Report.WheelBase" xml:space="preserve">
-    <value>WheelBase</value>
+    <value>Wheelbase</value>
   </data>
   <data name="Report.WimScale" xml:space="preserve">
     <value>Lane No. (WIM Scale)</value>
