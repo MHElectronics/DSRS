@@ -13,7 +13,7 @@
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="" class="brand-link">
-            <img src="dist/img/RHDLogo.png" alt="RHD Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <img src="dist/img/DECOLogo.png" alt="DECO Logo" class="brand-image custom-logo">
             <span class="brand-text font-weight-light">@localizer["Menu.AxleLoadSystem"]</span>
         </a>
 
@@ -54,7 +54,7 @@
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer">
-        <strong>@localizer["Menu.Copyright"] &copy; @DateTime.Today.Year RHD.</strong>
+        <strong>@localizer["Menu.Copyright"] &copy; @DateTime.Today.Year DECO.</strong>
         @localizer["Menu.Rights"]
         <div class="float-right d-none d-sm-inline-block">
             <b>@localizer["Menu.Versions"]</b> 1.0
@@ -67,6 +67,17 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+<style>
+    .custom-logo {
+        width: 35px; /* Adjust as per your layout */
+        height: 35px; /* Maintain square shape */
+        border-radius: 6px; /* Optional: slight rounding for modern look */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle elevation */
+        opacity: 0.9; /* Matches original style */
+        object-fit: cover; /* Prevents distortion */
+    }
+</style>
 
 @code {
     ErrorBoundary errorBoundary;

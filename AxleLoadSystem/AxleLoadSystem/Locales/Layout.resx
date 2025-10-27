@@ -163,7 +163,7 @@
     <value>Administration</value>
   </data>
   <data name="Menu.AxleLoadSystem" xml:space="preserve">
-    <value>Axle Load System</value>
+    <value>DSRS</value>
   </data>
   <data name="Menu.DatabyDate" xml:space="preserve">
     <value>Data by Date</value>

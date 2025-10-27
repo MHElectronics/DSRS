@@ -130,7 +130,7 @@
     </AuthorizeView>
 
     <AuthorizeView>
-        <Authorized>
+        <NotAuthorized>
             <li class="nav-item">
                 <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.Prefix">
                     <i class="nav-icon fas fa-store"></i>
@@ -151,7 +151,7 @@
                     </p>
                 </NavLink>
             </li>
-        </Authorized>
+        </NotAuthorized>
     </AuthorizeView>
     <AuthorizeView Roles="Admin,AdvancedUser">
         <li class="nav-item">
@@ -163,8 +163,8 @@
             </NavLink>
         </li>
     </AuthorizeView>
-    <AuthorizeView Roles="Admin">
-        <Authorized>
+@*     <AuthorizeView Roles="Admin">
+        <NotAuthorized> *@
             <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("admin"))'>
                     <i class="nav-icon fas fa-user-tie"></i>
@@ -259,8 +259,8 @@
                     </li>
                 </ul>
             </li>
-        </Authorized>
-    </AuthorizeView>
+@*         </NotAuthorized>
+    </AuthorizeView> *@
 </ul>
 
 @code {
