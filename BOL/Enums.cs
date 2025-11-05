@@ -45,6 +45,13 @@ public enum WIMType
     [Description("Others")]
     Others = 5
 }
+public enum MeterType
+{
+    [Description("Gas Meter")]
+    GasMeter = 1,
+    [Description("GPRS Meter")]
+    GPRSMeter = 2
+}
 
 public static class EnumHelper
 {
