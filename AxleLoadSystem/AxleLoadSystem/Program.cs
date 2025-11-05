@@ -28,7 +28,8 @@ builder.Services.AddScoped<IRHDApiHelper, RHDApiHelper>();
 
 //Singleton for Notification
 builder.Services.AddSingleton<ILiveNotificationState, LiveNotificationState>();
-
+builder.Services.AddSingleton<IGasMeterService, GasMeterService>();
+builder.Services.AddSingleton<TcpSimulatorHelper>();
 //Add service dependencies
 builder.Services.AddServiceLayer();
 
