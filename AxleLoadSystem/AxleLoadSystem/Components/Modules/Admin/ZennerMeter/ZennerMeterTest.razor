@@ -1,0 +1,63 @@
+﻿@page "/metertest"
+@using AxleLoadSystem.Helpers
+@inject IGasMeterService MeterService
+@inject TcpSimulatorHelper Simulator
+
+<h3> Zenner GPRS Gas Meter Demo</h3>
+
+<div>
+    <label>Meter No: </label>
+    <input @bind="MeterNo" />
+</div>
+
+<div style="margin-top:10px;">
+    <button @onclick="Connect" disabled="@IsConnected">Connect</button>
+@*     <button @onclick="ReadData" disabled="!@IsConnected">Read Data</button>
+    <button @onclick="Disconnect" disabled="!@IsConnected">Disconnect</button> *@
+
+    <button @onclick="ReadData">Read Data</button>
+    <button @onclick="Disconnect">Disconnect</button>
+</div>
+
+<h4 style="margin-top:12px;">Real-time Log</h4>
+<div style="background:#f7f7f7; padding:10px; height:300px; overflow:auto;">
+    @foreach (var l in Logs)
+    {
+        <div>@l</div>
+    }
+</div>
+
+@code {
+    private string MeterNo = "0000000001";
+    private bool IsConnected = false;
+    private List<string> Logs = new();
+
+    protected override void OnInitialized()
+    {
+        // start simulator in background (for local testing)
+        Simulator.Start();
+    }
+
+    private async Task Connect()
+    {
+        IsConnected = await MeterService.ConnectAsync("127.0.0.1", 5000);
+        Logs.Insert(0, $"[{DateTime.Now:HH:mm:ss}] Connected: {IsConnected}");
+        StateHasChanged();
+    }
+
+    private async Task ReadData()
+    {
+        Logs.Insert(0, $"[{DateTime.Now:HH:mm:ss}] Sending ReadMeterData...");
+        var response = await MeterService.ReadMeterDataAsync(MeterNo);
+        Logs.Insert(0, $"[{DateTime.Now:HH:mm:ss}] Response: {response}");
+        StateHasChanged();
+    }
+
+    private async Task Disconnect()
+    {
+        await MeterService.DisconnectAsync();
+        IsConnected = false;
+        Logs.Insert(0, $"[{DateTime.Now:HH:mm:ss}] Disconnected");
+        StateHasChanged();
+    }
+}
