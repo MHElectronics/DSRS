@@ -29,6 +29,10 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, TutorialCategoryService>();
         services.AddScoped<IUserActivityService, UserActivityService>();
 
+        services.AddScoped<ICompanyService, CompanyService>();
+        services.AddScoped<IDCUService, DCUService>();
+        services.AddScoped<IMeterService, MeterService>();
+
         //Reports
         services.AddScoped<IOverloadReportService, OverloadReportService>();
 

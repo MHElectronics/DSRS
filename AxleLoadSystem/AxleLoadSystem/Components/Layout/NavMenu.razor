@@ -18,7 +18,7 @@
         </NotAuthorized>
     </AuthorizeView>
 
-    <AuthorizeView Roles="User">
+@*     <AuthorizeView Roles="User">
         <Authorized>
             <li class="nav-item">
                 <NavLink class="nav-link" href="map" Match="NavLinkMatch.All">
@@ -127,10 +127,26 @@
                 </ul>
             </li>
         </Authorized>
-    </AuthorizeView>
+    </AuthorizeView> *@
 
     <AuthorizeView>
         <Authorized>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon fas fa-money-bill"></i> 
+                    <p>
+                        Meter Recharge 
+                    </p>
+                </NavLink>
+            </li>
+            <li class="nav-item">
+                <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.Prefix">
+                    <i class="nav-icon fas fa-receipt"></i>
+                    <p>
+                        Recharge History
+                    </p>
+                </NavLink>
+            </li>
             <li class="nav-item">
                 <NavLink class="nav-link" href="tutorial" Match="NavLinkMatch.Prefix">
                     <i class="nav-icon fas fa-store"></i>
@@ -153,7 +169,7 @@
             </li>
         </Authorized>
     </AuthorizeView>
-    <AuthorizeView Roles="Admin,AdvancedUser">
+@*     <AuthorizeView Roles="Admin,AdvancedUser">
         <li class="nav-item">
             <NavLink class="nav-link" href="sqlexecution" Match="NavLinkMatch.All">
                 <i class="nav-icon fas fa-code"></i>
@@ -162,9 +178,9 @@
                 </p>
             </NavLink>
         </li>
-    </AuthorizeView>
+    </AuthorizeView> *@
     <AuthorizeView Roles="Admin">
-        <NotAuthorized>
+        <Authorized>
             <li class="nav-item @(selectedGroups.Contains("admin") ? " menu-is-opening menu-open" : "")">
                 <a class="nav-link" role="button" @onclick='(() => MenuHeaderClicked("admin"))'>
                     <i class="nav-icon fas fa-user-tie"></i>
@@ -191,17 +207,17 @@
                                     </p>
                                 </NavLink>
                             </li>
-                            <li class="nav-item">
+@*                             <li class="nav-item">
                                 <NavLink class="nav-link" href="stationaccess" Match="NavLinkMatch.All">
                                     <i class="nav-icon fas fa-key"></i>
                                     <p>
                                         @localizer["Menu.StationAccess"]
                                     </p>
                                 </NavLink>
-                            </li>
+                            </li> *@
                         </ul>
                     </li>
-                    <li class="nav-item">
+@*                     <li class="nav-item">
                         <NavLink class="nav-link" href="station" Match="NavLinkMatch.Prefix">
                             <i class="nav-icon fas fa-list"></i>
                             <p>
@@ -216,7 +232,16 @@
                                 @localizer["Menu.ClassStatus"]
                             </p>
                         </NavLink>
+                    </li> *@
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="company" Match="NavLinkMatch.Prefix">
+                            <i class="nav-icon fas fa-layer-group"></i>
+                            <p>
+                               company
+                            </p>
+                        </NavLink>
                     </li>
+@* 
                     <li class="nav-item">
                         <NavLink class="nav-link" href="SQLQueryRegistration" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-code"></i>
@@ -248,7 +273,7 @@
                                 @localizer["Menu.UploadedFiles"]
                             </p>
                         </NavLink>
-                    </li>
+                    </li> *@
                     <li class="nav-item">
                         <NavLink class="nav-link" href="logmanagement" Match="NavLinkMatch.All">
                             <i class="nav-icon fas fa-history"></i>
@@ -259,7 +284,7 @@
                     </li>
                 </ul>
             </li>
-        </NotAuthorized>
+        </Authorized>
     </AuthorizeView>
 </ul>
 

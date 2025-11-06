@@ -1,0 +1,48 @@
+﻿@page "/company/{mode?}/{id?}"
+@inject ICompanyService companyService
+
+@if (string.IsNullOrEmpty(Mode))
+{
+    <ListCompany/>
+}
+else
+{
+    <FormComponent company="company" Mode="SelectedFormMode" />
+}
+
+@code {
+    [Parameter]
+    public string Mode { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    private Company company { get; set; } = null;
+    private FormMode SelectedFormMode { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Mode))
+        {
+            return;
+        }
+
+        if (Mode.ToLower() == "new")
+        {
+            SelectedFormMode = FormMode.Add;
+            company = new();
+        }
+        else if (!string.IsNullOrEmpty(Id))
+        {
+            int id = Convert.ToInt32(Id);
+            company = await companyService.GetCompanyById(id);
+
+            if (Mode.ToLower() == "details")
+            {
+                SelectedFormMode = FormMode.Details;
+            }
+            else if (Mode.ToLower() == "edit")
+            {
+                SelectedFormMode = FormMode.Edit;
+            }
+        }
+    }
+}

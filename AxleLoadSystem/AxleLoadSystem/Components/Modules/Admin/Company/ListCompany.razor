@@ -1,0 +1,113 @@
+﻿@using System
+@using BOL
+@inject ICompanyService companyService
+@inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.CompanyList"]">
+    <NavLink class="btn btn-primary pull-right" href="/company/new" title="Add New">
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
+    </NavLink>
+</PageTitleComponent>
+
+@if (companyList is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["Id"]</th>
+                        <th>@localizer["Company.Name"]</th>
+                        <th>@localizer["Company.Description"]</th>
+                        <th>@localizer["Company.Address"]</th>
+                        <th>@localizer["Company.ContactNo"]</th>
+                        <th>@localizer["Company.MeterType"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var company in companyList.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@company.Id</td>
+                            <td><b>@company.Name</b></td>
+                            <td><b>@company.Description</b></td>
+                            <td><b>@company.Address</b></td>
+                            <td><b>@company.ContactNo</b></td>
+                            <td><b>@company.MeterType</b></td>
+
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/company/details/" + company.Id)" title="Details Information">
+                                        <i class="fas fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/company/edit/" + company.Id)" title="Edit Information">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteCompany(company))" title="Delete Information">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>    
+}
+<ConfirmDialog @ref="deleteConfirmationCompanyRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedCompany" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
+
+@code {
+    private IEnumerable<Company> companyList;
+    protected ConfirmDialog deleteConfirmationCompanyRef { get; set; }
+    private bool deleteClicked { get; set; } = false;
+    private Company SelectedCompany { get; set; } = new();
+    private User currentUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        await GetCompanyList();
+    }
+    private async Task GetCompanyList()
+    {
+        companyList = await companyService.GetCompanyList();
+    }
+    private async Task DeleteCompany(Company company)
+    {
+        deleteClicked = true;
+        SelectedCompany = company;
+        await deleteConfirmationCompanyRef.Show();
+    }
+    private async Task DeleteConfirmedCompany()
+    {
+        Notification notification = new();
+        if (await companyService.DeleteCompany(SelectedCompany.Id, currentUser))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Company Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Company Deletion";
+        }
+
+        appState.SetNotification(this, notification);
+        await GetCompanyList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
+    }
+}
