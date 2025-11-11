@@ -1,0 +1,161 @@
+﻿@using System
+@using BOL
+@inject IDCUService DCUService
+@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Reports> localizer
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.DCU"]"></PageTitleComponent>
+
+@if (DCU is null)
+{
+    <Loader/>
+}
+else
+{
+    <EditForm Model="@DCU" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
+        <DataAnnotationsValidator />
+        <div class="card card-primary card-outline">
+            <div class="card-body">
+                <div class="row">                   
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="name" class="form-label">@localizer["DCU.Name"]</label>
+                                <label class="form-control">@DCU.Name</label>
+                            }
+                            else
+                            {
+                                <label for="name" class="form-label">@localizer["DCU.Name"]</label>
+                                <input type="text" @bind="DCU.Name" required class="form-control" placeholder="Name of DCU" id="name" />
+                                <ValidationMessage For="() => DCU.Name" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="Description" class="form-label">@localizer["DCU.Description"]</label>
+                                <label class="form-control">@DCU.Description</label>
+                            }
+                            else
+                            {
+                                <label for="Description" class="form-label">@localizer["DCU.Description"]</label>
+                                <input type="text" @bind="DCU.Description" required class="form-control" placeholder="DCU Description" id="Description" />
+                                <ValidationMessage For="() => DCU.Name" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="Address" class="form-label">@localizer["DCU.Address"]</label>
+                                <label class="form-control">@DCU.Address</label>
+                            }
+                            else
+                            {
+                                <label for="Address" class="form-label">@localizer["DCU.Address"]</label>
+                                <input type="text" @bind="DCU.Address" required class="form-control" placeholder="DCU Address" id="Address" />
+                                <ValidationMessage For="() => DCU.Address" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="ContactNo" class="form-label">@localizer["DCU.ContactNo"]</label>
+                                <label class="form-control">@DCU.ContactNo</label>
+                            }
+                            else
+                            {
+                                <label for="ContactNo" class="form-label">@localizer["DCU.ContactNo"]</label>
+                                <input type="text" @bind="DCU.ContactNo" required class="form-control" placeholder="DCU Contact No" id="ContactNo" />
+                                <ValidationMessage For="() => DCU.ContactNo" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="MeterType" class="form-label">@localizer["DCU.MeterType"]</label>
+                                <label class="form-control">@DCU.MeterType</label>
+                            }
+                            else
+                            {
+                                <label for="MeterType" class="form-label">@localizer["DCU.MeterType"]</label>
+                                <input type="text" @bind="DCU.MeterType" required class="form-control" placeholder="DCU Meter Type" id="MeterType" />
+                                <ValidationMessage For="() => DCU.MeterType" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-4 col-sm-12 btn-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        string editLink = "/DCU/edit/" + DCU.Id;
+                        <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
+                    }
+                    <NavLink class="btn btn-primary" href="/DCU">@localizerResource["Button.Back"]</NavLink>
+                        @if (!string.IsNullOrEmpty(ValidationSummary))
+                    {
+                        <label class="error">@ValidationSummary</label>
+                    }
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public DCU DCU { get; set; } = new();
+    [Parameter]
+    public FormMode Mode { get; set; } = FormMode.Details;
+    private User currentUser { get; set; }
+    private bool isSuccess { get; set; }
+    string ValidationSummary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+    }
+
+    void OnInvalidSubmit()
+    {
+        ValidationSummary = "Please enter valid data";
+    }
+    async Task OnValidSubmit(EditContext editContext)
+    {
+        ValidationSummary = "";
+
+        if (Mode == FormMode.Edit)
+        {
+            await DCUService.UpdateDCU(DCU, currentUser);
+            ValidationSummary = "DCU Updated Successfully";
+        }
+        else
+        {
+            isSuccess = await DCUService.InsertDCU(DCU, currentUser);
+            if (isSuccess)
+            {
+                ValidationSummary = "New DCU added";
+            }
+            else
+            {
+                ValidationSummary = "New DCU added failed";
+            }
+        }
+    }
+}

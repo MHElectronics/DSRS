@@ -1,0 +1,113 @@
+﻿@using System
+@using BOL
+@inject ICustomerService CustomerService
+@inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.CustomerList"]">
+    <NavLink class="btn btn-primary pull-right" href="/Customer/new" title="Add New">
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
+    </NavLink>
+</PageTitleComponent>
+
+@if (CustomerList is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["Id"]</th>
+                        <th>@localizer["Customer.Name"]</th>
+                        <th>@localizer["Customer.Description"]</th>
+                        <th>@localizer["Customer.Address"]</th>
+                        <th>@localizer["Customer.ContactNo"]</th>
+                        <th>@localizer["Customer.MeterType"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Customer in CustomerList.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@Customer.Id</td>
+                            <td><b>@Customer.Name</b></td>
+                            <td><b>@Customer.Description</b></td>
+                            <td><b>@Customer.Address</b></td>
+                            <td><b>@Customer.ContactNo</b></td>
+                            <td><b>@Customer.MeterType</b></td>
+
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/Customer/details/" + Customer.Id)" title="Details Information">
+                                        <i class="fas fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/Customer/edit/" + Customer.Id)" title="Edit Information">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteCustomer(Customer))" title="Delete Information">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>    
+}
+<ConfirmDialog @ref="deleteConfirmationCustomerRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedCustomer" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
+
+@code {
+    private IEnumerable<Customer> CustomerList;
+    protected ConfirmDialog deleteConfirmationCustomerRef { get; set; }
+    private bool deleteClicked { get; set; } = false;
+    private Customer SelectedCustomer { get; set; } = new();
+    private User currentUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        await GetCustomerList();
+    }
+    private async Task GetCustomerList()
+    {
+        CustomerList = await CustomerService.GetcustomerList();
+    }
+    private async Task DeleteCustomer(Customer Customer)
+    {
+        deleteClicked = true;
+        SelectedCustomer = Customer;
+        await deleteConfirmationCustomerRef.Show();
+    }
+    private async Task DeleteConfirmedCustomer()
+    {
+        Notification notification = new();
+        if (await CustomerService.Deletecustomer(SelectedCustomer.Id, currentUser))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Customer Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Customer Deletion";
+        }
+
+        appState.SetNotification(this, notification);
+        await GetCustomerList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
+    }
+}

@@ -1,0 +1,113 @@
+﻿@using System
+@using BOL
+@inject IMeterService MeterService
+@inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.MeterList"]">
+    <NavLink class="btn btn-primary pull-right" href="/Meter/new" title="Add New">
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
+    </NavLink>
+</PageTitleComponent>
+
+@if (MeterList is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["Id"]</th>
+                        <th>@localizer["Meter.Name"]</th>
+                        <th>@localizer["Meter.Description"]</th>
+                        <th>@localizer["Meter.Address"]</th>
+                        <th>@localizer["Meter.ContactNo"]</th>
+                        <th>@localizer["Meter.MeterType"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Meter in MeterList.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@Meter.Id</td>
+                            <td><b>@Meter.Name</b></td>
+                            <td><b>@Meter.Description</b></td>
+                            <td><b>@Meter.Address</b></td>
+                            <td><b>@Meter.ContactNo</b></td>
+                            <td><b>@Meter.MeterType</b></td>
+
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/Meter/details/" + Meter.Id)" title="Details Information">
+                                        <i class="fas fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/Meter/edit/" + Meter.Id)" title="Edit Information">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteMeter(Meter))" title="Delete Information">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>    
+}
+<ConfirmDialog @ref="deleteConfirmationMeterRef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedMeter" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
+
+@code {
+    private IEnumerable<Meter> MeterList;
+    protected ConfirmDialog deleteConfirmationMeterRef { get; set; }
+    private bool deleteClicked { get; set; } = false;
+    private Meter SelectedMeter { get; set; } = new();
+    private User currentUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        await GetMeterList();
+    }
+    private async Task GetMeterList()
+    {
+        MeterList = await MeterService.GetMeterList();
+    }
+    private async Task DeleteMeter(Meter Meter)
+    {
+        deleteClicked = true;
+        SelectedMeter = Meter;
+        await deleteConfirmationMeterRef.Show();
+    }
+    private async Task DeleteConfirmedMeter()
+    {
+        Notification notification = new();
+        if (await MeterService.DeleteMeter(SelectedMeter.Id, currentUser))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "Meter Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error Meter Deletion";
+        }
+
+        appState.SetNotification(this, notification);
+        await GetMeterList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
+    }
+}

@@ -1,0 +1,48 @@
+﻿@page "/Meter/{mode?}/{id?}"
+@inject IMeterService MeterService
+
+@if (string.IsNullOrEmpty(Mode))
+{
+    <ListMeter/>
+}
+else
+{
+    <FormComponent Meter="Meter" Mode="SelectedFormMode" />
+}
+
+@code {
+    [Parameter]
+    public string Mode { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    private Meter Meter { get; set; } = null;
+    private FormMode SelectedFormMode { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Mode))
+        {
+            return;
+        }
+
+        if (Mode.ToLower() == "new")
+        {
+            SelectedFormMode = FormMode.Add;
+            Meter = new();
+        }
+        else if (!string.IsNullOrEmpty(Id))
+        {
+            int id = Convert.ToInt32(Id);
+            Meter = await MeterService.GetMeterById(id);
+
+            if (Mode.ToLower() == "details")
+            {
+                SelectedFormMode = FormMode.Details;
+            }
+            else if (Mode.ToLower() == "edit")
+            {
+                SelectedFormMode = FormMode.Edit;
+            }
+        }
+    }
+}

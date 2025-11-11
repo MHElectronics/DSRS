@@ -1,0 +1,48 @@
+﻿@page "/customer/{mode?}/{id?}"
+@inject ICustomerService customerService
+
+@if (string.IsNullOrEmpty(Mode))
+{
+    <Listcustomer/>
+}
+else
+{
+    <FormComponent customer="customer" Mode="SelectedFormMode" />
+}
+
+@code {
+    [Parameter]
+    public string Mode { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+    private Customer customer { get; set; } = null;
+    private FormMode SelectedFormMode { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Mode))
+        {
+            return;
+        }
+
+        if (Mode.ToLower() == "new")
+        {
+            SelectedFormMode = FormMode.Add;
+            customer = new();
+        }
+        else if (!string.IsNullOrEmpty(Id))
+        {
+            int id = Convert.ToInt32(Id);
+            customer = await customerService.GetcustomerById(id);
+
+            if (Mode.ToLower() == "details")
+            {
+                SelectedFormMode = FormMode.Details;
+            }
+            else if (Mode.ToLower() == "edit")
+            {
+                SelectedFormMode = FormMode.Edit;
+            }
+        }
+    }
+}

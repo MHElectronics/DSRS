@@ -1,0 +1,161 @@
+﻿@using System
+@using BOL
+@inject IcustomerService customerService
+@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Resource> localizerResource
+@inject IStringLocalizer<Locales.Reports> localizer
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.customer"]"></PageTitleComponent>
+
+@if (customer is null)
+{
+    <Loader/>
+}
+else
+{
+    <EditForm Model="@customer" OnValidSubmit=@OnValidSubmit OnInvalidSubmit="@OnInvalidSubmit">
+        <DataAnnotationsValidator />
+        <div class="card card-primary card-outline">
+            <div class="card-body">
+                <div class="row">                   
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="name" class="form-label">@localizer["customer.Name"]</label>
+                                <label class="form-control">@customer.Name</label>
+                            }
+                            else
+                            {
+                                <label for="name" class="form-label">@localizer["customer.Name"]</label>
+                                <input type="text" @bind="customer.Name" required class="form-control" placeholder="Name of customer" id="name" />
+                                <ValidationMessage For="() => customer.Name" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="Description" class="form-label">@localizer["customer.Description"]</label>
+                                <label class="form-control">@customer.Description</label>
+                            }
+                            else
+                            {
+                                <label for="Description" class="form-label">@localizer["customer.Description"]</label>
+                                <input type="text" @bind="customer.Description" required class="form-control" placeholder="customer Description" id="Description" />
+                                <ValidationMessage For="() => customer.Name" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="Address" class="form-label">@localizer["customer.Address"]</label>
+                                <label class="form-control">@customer.Address</label>
+                            }
+                            else
+                            {
+                                <label for="Address" class="form-label">@localizer["customer.Address"]</label>
+                                <input type="text" @bind="customer.Address" required class="form-control" placeholder="customer Address" id="Address" />
+                                <ValidationMessage For="() => customer.Address" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="ContactNo" class="form-label">@localizer["customer.ContactNo"]</label>
+                                <label class="form-control">@customer.ContactNo</label>
+                            }
+                            else
+                            {
+                                <label for="ContactNo" class="form-label">@localizer["customer.ContactNo"]</label>
+                                <input type="text" @bind="customer.ContactNo" required class="form-control" placeholder="customer Contact No" id="ContactNo" />
+                                <ValidationMessage For="() => customer.ContactNo" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="MeterType" class="form-label">@localizer["customer.MeterType"]</label>
+                                <label class="form-control">@customer.MeterType</label>
+                            }
+                            else
+                            {
+                                <label for="MeterType" class="form-label">@localizer["customer.MeterType"]</label>
+                                <input type="text" @bind="customer.MeterType" required class="form-control" placeholder="customer Meter Type" id="MeterType" />
+                                <ValidationMessage For="() => customer.MeterType" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="col-md-4 col-sm-12 btn-group">
+                    @if (Mode == FormMode.Details)
+                    {
+                        string editLink = "/customer/edit/" + customer.Id;
+                        <NavLink class="btn btn-primary" href="@editLink">@localizerResource["Button.Edit"]</NavLink>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">@(Mode == FormMode.Add ? @localizerResource["Button.Save"] : @localizerResource["Button.Update"])</button>
+                    }
+                    <NavLink class="btn btn-primary" href="/customer">@localizerResource["Button.Back"]</NavLink>
+                        @if (!string.IsNullOrEmpty(ValidationSummary))
+                    {
+                        <label class="error">@ValidationSummary</label>
+                    }
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public Customer customer { get; set; } = new();
+    [Parameter]
+    public FormMode Mode { get; set; } = FormMode.Details;
+    private User currentUser { get; set; }
+    private bool isSuccess { get; set; }
+    string ValidationSummary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+    }
+
+    void OnInvalidSubmit()
+    {
+        ValidationSummary = "Please enter valid data";
+    }
+    async Task OnValidSubmit(EditContext editContext)
+    {
+        ValidationSummary = "";
+
+        if (Mode == FormMode.Edit)
+        {
+            await customerService.Updatecustomer(customer, currentUser);
+            ValidationSummary = "customer Updated Successfully";
+        }
+        else
+        {
+            isSuccess = await customerService.Insertcustomer(customer, currentUser);
+            if (isSuccess)
+            {
+                ValidationSummary = "New customer added";
+            }
+            else
+            {
+                ValidationSummary = "New customer added failed";
+            }
+        }
+    }
+}

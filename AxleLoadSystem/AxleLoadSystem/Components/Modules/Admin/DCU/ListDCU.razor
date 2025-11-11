@@ -1,0 +1,113 @@
+﻿@using System
+@using BOL
+@inject IDCUService DCUService
+@inject IAppState appState
+@inject AuthenticationStateProvider authStateProvider
+@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Resource> localizerResource
+
+<PageTitleComponent Title="@localizer["ReportConfiguration.DCUList"]">
+    <NavLink class="btn btn-primary pull-right" href="/DCU/new" title="Add New">
+        <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
+    </NavLink>
+</PageTitleComponent>
+
+@if (DCUList is null)
+{
+    <Loader />
+}
+else
+{
+    <div class="card card-primary card-outline">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>@localizer["Id"]</th>
+                        <th>@localizer["DCU.Name"]</th>
+                        <th>@localizer["DCU.Description"]</th>
+                        <th>@localizer["DCU.Address"]</th>
+                        <th>@localizer["DCU.ContactNo"]</th>
+                        <th>@localizer["DCU.MeterType"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var DCU in DCUList.OrderBy(c => c.Id))
+                    {
+                        <tr>
+                            <td>@DCU.Id</td>
+                            <td><b>@DCU.Name</b></td>
+                            <td><b>@DCU.Description</b></td>
+                            <td><b>@DCU.Address</b></td>
+                            <td><b>@DCU.ContactNo</b></td>
+                            <td><b>@DCU.MeterType</b></td>
+
+                            <td>
+                                <div class="btn-group float-right">
+                                    <a class="btn btn-primary" href="@("/DCU/details/" + DCU.Id)" title="Details Information">
+                                        <i class="fas fa-info"></i>
+                                    </a>
+                                    <a class="btn btn-primary" href="@("/DCU/edit/" + DCU.Id)" title="Edit Information">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-primary" @onclick="(() => DeleteDCU(DCU))" title="Delete Information">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>    
+}
+<ConfirmDialog @ref="deleteConfirmationDCURef" ModalName="Delete Modal" ConfirmationButtonText="Delete" ConfirmationChanged="DeleteConfirmedDCU" OnClose="DeleteDeclined" ConfirmationMessage="Sure to Delete Class Status?" />
+
+@code {
+    private IEnumerable<DCU> DCUList;
+    protected ConfirmDialog deleteConfirmationDCURef { get; set; }
+    private bool deleteClicked { get; set; } = false;
+    private DCU SelectedDCU { get; set; } = new();
+    private User currentUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        currentUser = await customStateProvider.GetAuthorizedUser();
+        await GetDCUList();
+    }
+    private async Task GetDCUList()
+    {
+        DCUList = await DCUService.GetDCUList();
+    }
+    private async Task DeleteDCU(DCU DCU)
+    {
+        deleteClicked = true;
+        SelectedDCU = DCU;
+        await deleteConfirmationDCURef.Show();
+    }
+    private async Task DeleteConfirmedDCU()
+    {
+        Notification notification = new();
+        if (await DCUService.DeleteDCU(SelectedDCU.Id, currentUser))
+        {
+            notification.Type = Notification.NotificationType.Success;
+            notification.Message = "DCU Deletion Successful";
+        }
+        else
+        {
+            notification.Type = Notification.NotificationType.Failure;
+            notification.Message = "Error DCU Deletion";
+        }
+
+        appState.SetNotification(this, notification);
+        await GetDCUList();
+    }
+    private void DeleteDeclined()
+    {
+        deleteClicked = false;
+    }
+}
