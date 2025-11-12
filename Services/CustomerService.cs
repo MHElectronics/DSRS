@@ -33,12 +33,12 @@ public class CustomerService : ICustomerService
         bool hasDuplicate = await this.CheckDuplicatecustomer(customer);
         if (!hasDuplicate)
         {
-            string sql = @"INSERT INTO customer(Name,Description,Address,ContactNo,MeterType) VALUES(@Name,@Description,@Address,@ContactNo,@MeterType)";
+            string sql = @"INSERT INTO Customer(Name,MeterNumber,Email,ContactNo,Password,PasswordSalt,IsActive,IsApproved) VALUES(@Name,@MeterNumber,@Email,@ContactNo,@Password,@PasswordSalt,@IsActive,@IsApproved)";
             bool isSuccess = await _db.SaveData<Customer>(sql, customer);
 
             if (isSuccess)
             {
-                UserActivity log = new UserActivity(user.Id, customer.Name + "customer Added", LogActivity.Insert);
+                UserActivity log = new UserActivity(user.Id, customer.Name + "Customer Added", LogActivity.Insert);
                 await _userActivityService.InsertUserActivity(log);
             }
 
@@ -49,22 +49,22 @@ public class CustomerService : ICustomerService
 
     public async Task<Customer> Updatecustomer(Customer customer, User user)
     {
-        string sql = @"UPDATE customer SET Name=@Name, Description=@Description, Address=@Address, ContactNo=@ContactNo, MeterType=@MeterType  WHERE Id=@Id";
+        string sql = @"UPDATE Customer SET Name=@Name, MeterNumber=@MeterNumber, Email=@Email, ContactNo=@ContactNo, Password=@Password, PasswordSalt=@PasswordSalt, IsActive=@IsActive, IsApproved=@IsApproved WHERE Id=@Id";
         await _db.SaveData(sql, customer);
 
-        UserActivity log = new UserActivity(user.Id, customer.Name + "customer Updated", LogActivity.Update);
+        UserActivity log = new UserActivity(user.Id, customer.Name + "Customer Updated", LogActivity.Update);
         await _userActivityService.InsertUserActivity(log);
 
         return customer;
     }
     public async Task<bool> Deletecustomer(int id, User user)
     {
-        string query = "DELETE FROM customer WHERE Id=@Id";
+        string query = "DELETE FROM Customer WHERE Id=@Id";
         int count = await _db.DeleteData<Customer, object>(query, new { id });
 
         if (count > 0)
         {
-            UserActivity log = new UserActivity(user.Id, "customer Delete", LogActivity.Delete);
+            UserActivity log = new UserActivity(user.Id, "Customer Delete", LogActivity.Delete);
             await _userActivityService.InsertUserActivity(log);
         }
         return count > 0;
@@ -73,7 +73,7 @@ public class CustomerService : ICustomerService
 
     private async Task<bool> CheckDuplicatecustomer(Customer customer)
     {
-        string query = "SELECT COUNT(1) Count FROM customer WHERE(LOWER(Name)=LOWER(@Name) OR Id=@Id)";
+        string query = "SELECT COUNT(1) Count FROM Customer WHERE(LOWER(MeterNumber)=LOWER(@MeterNumber) OR Id=@Id)";
         return await _db.LoadSingleAsync<bool, object>(query, customer);
     }
 }

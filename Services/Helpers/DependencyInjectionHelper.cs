@@ -28,10 +28,12 @@ public static class DependencyInjection
         services.AddScoped<IConfigurationService, ConfigurationService>();
         services.AddScoped<ICategoryService, TutorialCategoryService>();
         services.AddScoped<IUserActivityService, UserActivityService>();
-
+        //
         services.AddScoped<ICompanyService, CompanyService>();
         services.AddScoped<IDCUService, DCUService>();
         services.AddScoped<IMeterService, MeterService>();
+        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<ITransactionService, TransactionService>();
 
         //Reports
         services.AddScoped<IOverloadReportService, OverloadReportService>();
