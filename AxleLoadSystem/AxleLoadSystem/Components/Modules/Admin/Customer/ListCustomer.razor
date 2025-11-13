@@ -25,10 +25,11 @@ else
                     <tr>
                         <th>@localizer["Id"]</th>
                         <th>@localizer["Customer.Name"]</th>
-                        <th>@localizer["Customer.Description"]</th>
-                        <th>@localizer["Customer.Address"]</th>
+                        <th>@localizer["Customer.MeterNumber"]</th>
+                        <th>@localizer["Customer.Email"]</th>
                         <th>@localizer["Customer.ContactNo"]</th>
-                        <th>@localizer["Customer.MeterType"]</th>
+                        <th>@localizer["Customer.IsActive"]</th>
+                        <th>@localizer["Customer.IsApproved"]</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -38,17 +39,17 @@ else
                         <tr>
                             <td>@Customer.Id</td>
                             <td><b>@Customer.Name</b></td>
-                            <td><b>@Customer.Description</b></td>
-                            <td><b>@Customer.Address</b></td>
+                            <td><b>@Customer.MeterNumber</b></td>
+                            <td><b>@Customer.Email</b></td>
                             <td><b>@Customer.ContactNo</b></td>
-                            <td><b>@Customer.MeterType</b></td>
-
+                            <td><b>@Customer.IsActive</b></td>
+                            <td><b>@Customer.IsApproved</b></td>
                             <td>
                                 <div class="btn-group float-right">
-                                    <a class="btn btn-primary" href="@("/Customer/details/" + Customer.Id)" title="Details Information">
+                                    <a class="btn btn-primary" href="@("/customer/details/" + Customer.Id)" title="Details Information">
                                         <i class="fas fa-info"></i>
                                     </a>
-                                    <a class="btn btn-primary" href="@("/Customer/edit/" + Customer.Id)" title="Edit Information">
+                                    <a class="btn btn-primary" href="@("/customer/edit/" + Customer.Id)" title="Edit Information">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <a class="btn btn-primary" @onclick="(() => DeleteCustomer(Customer))" title="Delete Information">

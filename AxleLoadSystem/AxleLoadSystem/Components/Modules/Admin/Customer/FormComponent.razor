@@ -37,14 +37,14 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="Description" class="form-label">@localizer["customer.Description"]</label>
-                                <label class="form-control">@customer.Description</label>
+                                <label for="MeterNumber" class="form-label">@localizer["customer.MeterNumber"]</label>
+                                <label class="form-control">@customer.MeterNumber</label>
                             }
                             else
                             {
-                                <label for="Description" class="form-label">@localizer["customer.Description"]</label>
-                                <input type="text" @bind="customer.Description" required class="form-control" placeholder="customer Description" id="Description" />
-                                <ValidationMessage For="() => customer.Name" />
+                                <label for="MeterNumber" class="form-label">@localizer["customer.MeterNumber"]</label>
+                                <input type="text" @bind="customer.MeterNumber" required class="form-control" placeholder="customer MeterNumber" id="MeterNumber" />
+                                <ValidationMessage For="() => customer.MeterNumber" />
                             }
                         </div>
                     </div>
@@ -52,14 +52,14 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="Address" class="form-label">@localizer["customer.Address"]</label>
-                                <label class="form-control">@customer.Address</label>
+                                <label for="Email" class="form-label">@localizer["customer.Email"]</label>
+                                <label class="form-control">@customer.Email</label>
                             }
                             else
                             {
-                                <label for="Address" class="form-label">@localizer["customer.Address"]</label>
-                                <input type="text" @bind="customer.Address" required class="form-control" placeholder="customer Address" id="Address" />
-                                <ValidationMessage For="() => customer.Address" />
+                                <label for="Email" class="form-label">@localizer["customer.Email"]</label>
+                                <input type="text" @bind="customer.Email" required class="form-control" placeholder="customer Email" id="Email" />
+                                <ValidationMessage For="() => customer.Email" />
                             }
                         </div>
                     </div>
@@ -80,19 +80,42 @@ else
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
+                            <label for="IsActive" class="form-label">@localizer["customer.IsActive"]</label>
+
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="MeterType" class="form-label">@localizer["customer.MeterType"]</label>
-                                <label class="form-control">@customer.MeterType</label>
+                                <label class="form-control">@((customer.IsActive) ? "Yes" : "No")</label>
                             }
                             else
                             {
-                                <label for="MeterType" class="form-label">@localizer["customer.MeterType"]</label>
-                                <input type="text" @bind="customer.MeterType" required class="form-control" placeholder="customer Meter Type" id="MeterType" />
-                                <ValidationMessage For="() => customer.MeterType" />
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="IsActive" @bind="customer.IsActive" />
+                                    <label class="form-check-label" for="IsActive">@localizer["customer.IsActive"]</label>
+                                </div>
+                                <ValidationMessage For="() => customer.IsActive" />
                             }
                         </div>
                     </div>
+
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label for="IsApproved" class="form-label">@localizer["customer.IsApproved"]</label>
+
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label class="form-control">@((customer.IsApproved) ? "Yes" : "No")</label>
+                            }
+                            else
+                            {
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="IsApproved" @bind="customer.IsApproved" />
+                                    <label class="form-check-label" for="IsApproved">@localizer["customer.IsApproved"]</label>
+                                </div>
+                                <ValidationMessage For="() => customer.IsApproved" />
+                            }
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="card-footer">
