@@ -1,4 +1,4 @@
-﻿namespace AxleLoadSystem.Models;
+﻿namespace DSRSystem.Models;
 
 public class PayloadBRTA
 {

@@ -1,7 +1,7 @@
 ﻿using BOL;
 using System.ComponentModel.DataAnnotations;
 
-namespace AxleLoadSystem.Api.Models;
+namespace DSRSystem.Api.Models;
 
 public class FileUploadModel
 {

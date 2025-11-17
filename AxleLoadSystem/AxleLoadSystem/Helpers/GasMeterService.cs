@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-namespace AxleLoadSystem.Helpers;
+namespace DSRSystem.Helpers;
 
 public interface IGasMeterService
 {

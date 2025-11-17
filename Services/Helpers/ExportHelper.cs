@@ -315,7 +315,7 @@ public class ExportHelper : IExportHelper
     //{
     //    //Initialize HTML to PDF converter.
     //    HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
-    //    //string baseUrl = @"D:/Projects/AxleLoadSystemSolution/AxleLoadSystem/AxleLoadSystem/wwwroot/";
+    //    //string baseUrl = @"D:/Projects/DSRSystemSolution/DSRSystem/DSRSystem/wwwroot/";
     //    string baseUrl = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
     //    string htmlPage = WrapHtmlInPage(html);
     //    //Convert URL to PDF document.
@@ -349,7 +349,7 @@ public class ExportHelper : IExportHelper
     //    <link rel=""stylesheet"" href=""dist/css/adminlte.min.css"">
     //    <link href=""_content/Syncfusion.Blazor.Themes/bootstrap5.css"" rel=""stylesheet"" />
 
-    //    <link rel=""stylesheet"" href=""AxleLoadSystem.styles.css"" />
+    //    <link rel=""stylesheet"" href=""DSRSystem.styles.css"" />
     //    <!-- Customization-->
     //    <link rel=""stylesheet"" href=""css/style.css"" />
     //</head>

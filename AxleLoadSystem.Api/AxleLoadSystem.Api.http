@@ -1,6 +1,6 @@
-@AxleLoadSystem.Api_HostAddress = http://localhost:5064
+@DSRSystem.Api_HostAddress = http://localhost:5064
 
-GET {{AxleLoadSystem.Api_HostAddress}}/weatherforecast/
+GET {{DSRSystem.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

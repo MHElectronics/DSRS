@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace AxleLoadSystem.Data
+namespace DSRSystem.Data
 {
     // Simple local TCP simulator that responds with sample meter JSON.
     // The service will start a background listener on 127.0.0.1:5000.

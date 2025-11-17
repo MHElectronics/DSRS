@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34227.203
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxleLoadSystem", "AxleLoadSystem\AxleLoadSystem\AxleLoadSystem.csproj", "{061F7400-7885-479F-A02C-766A999584CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSRSystem", "AxleLoadSystem\AxleLoadSystem\DSRSystem.csproj", "{061F7400-7885-479F-A02C-766A999584CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxleLoadSystem.Client", "AxleLoadSystem\AxleLoadSystem.Client\AxleLoadSystem.Client.csproj", "{88DCD7D9-4BF7-4A39-AB4E-D30595D53083}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSRSystem.Client", "AxleLoadSystem\AxleLoadSystem.Client\DSRSystem.Client.csproj", "{88DCD7D9-4BF7-4A39-AB4E-D30595D53083}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxleLoadSystem.Api", "AxleLoadSystem.Api\AxleLoadSystem.Api.csproj", "{368FDEC4-EC2C-455B-849C-F64E9EC50478}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSRSystem.Api", "AxleLoadSystem.Api\DSRSystem.Api.csproj", "{368FDEC4-EC2C-455B-849C-F64E9EC50478}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{39286BE6-E80C-44D0-9DF2-6CB950924369}"
 EndProject

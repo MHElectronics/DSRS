@@ -1,8 +1,8 @@
-using AxleLoadSystem.Authentication;
-using AxleLoadSystem.Client.Pages;
-using AxleLoadSystem.Components;
-using AxleLoadSystem.Helpers;
-using AxleLoadSystem.Store;
+using DSRSystem.Authentication;
+using DSRSystem.Client.Pages;
+using DSRSystem.Components;
+using DSRSystem.Helpers;
+using DSRSystem.Store;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;

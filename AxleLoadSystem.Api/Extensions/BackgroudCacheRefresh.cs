@@ -1,7 +1,7 @@
 ﻿using BOL;
 using Services;
 
-namespace AxleLoadSystem.Api.Extensions;
+namespace DSRSystem.Api.Extensions;
 
 public class BackgroudCacheRefresh : IHostedService, IDisposable
 {

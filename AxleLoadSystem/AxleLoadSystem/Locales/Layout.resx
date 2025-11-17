@@ -162,7 +162,7 @@
   <data name="Menu.Admin" xml:space="preserve">
     <value>Administration</value>
   </data>
-  <data name="Menu.AxleLoadSystem" xml:space="preserve">
+  <data name="Menu.DSRSystem" xml:space="preserve">
     <value>DSRS</value>
   </data>
   <data name="Menu.DatabyDate" xml:space="preserve">

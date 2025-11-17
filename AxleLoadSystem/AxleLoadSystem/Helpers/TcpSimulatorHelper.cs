@@ -1,5 +1,5 @@
-﻿using AxleLoadSystem.Data;
-namespace AxleLoadSystem.Helpers;
+﻿using DSRSystem.Data;
+namespace DSRSystem.Helpers;
 
 
 public class TcpSimulatorHelper

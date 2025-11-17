@@ -1,4 +1,4 @@
-﻿namespace AxleLoadSystem.Locales;
+﻿namespace DSRSystem.Locales;
 
 public class Layout
 {

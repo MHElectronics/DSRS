@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-namespace AxleLoadSystem.Helpers;
+namespace DSRSystem.Helpers;
 
 public class CustomFieldClassProvider : FieldCssClassProvider
 {

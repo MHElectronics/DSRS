@@ -1,6 +1,6 @@
 ﻿using BOL;
-using AxleLoadSystem.Models;
-namespace AxleLoadSystem.Helpers;
+using DSRSystem.Models;
+namespace DSRSystem.Helpers;
 
 public interface IRHDApiHelper
 {

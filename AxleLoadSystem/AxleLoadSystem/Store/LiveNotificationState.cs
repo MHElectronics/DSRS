@@ -1,4 +1,4 @@
-﻿namespace AxleLoadSystem.Store;
+﻿namespace DSRSystem.Store;
 
 public interface ILiveNotificationState
 {

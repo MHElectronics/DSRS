@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
 
-namespace AxleLoadSystem.Authentication;
+namespace DSRSystem.Authentication;
 
 public class CustomAuthenticationHandler(AuthenticationStateProvider authStateProvider, IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
     : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)

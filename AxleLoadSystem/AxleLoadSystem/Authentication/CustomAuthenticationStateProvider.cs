@@ -4,7 +4,7 @@ using System.Security.Claims;
 using BOL;
 using Blazored.LocalStorage;
 
-namespace AxleLoadSystem.Authentication;
+namespace DSRSystem.Authentication;
 
 public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {

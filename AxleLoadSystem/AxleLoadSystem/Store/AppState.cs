@@ -1,10 +1,10 @@
-﻿using AxleLoadSystem.Models;
+﻿using DSRSystem.Models;
 using Blazored.LocalStorage;
 using BOL.CustomModels;
 using Microsoft.AspNetCore.Components;
-using static AxleLoadSystem.Models.Notification;
+using static DSRSystem.Models.Notification;
 
-namespace AxleLoadSystem.Store;
+namespace DSRSystem.Store;
 
 public interface IAppState
 {

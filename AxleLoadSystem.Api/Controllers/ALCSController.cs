@@ -1,12 +1,12 @@
-﻿using AxleLoadSystem.Api.Extensions;
-using AxleLoadSystem.Api.Models;
+﻿using DSRSystem.Api.Extensions;
+using DSRSystem.Api.Models;
 using BOL;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using System.Collections.Generic;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace AxleLoadSystem.Api.Controllers;
+namespace DSRSystem.Api.Controllers;
 
 [CustomAuthorize]
 [ApiController]

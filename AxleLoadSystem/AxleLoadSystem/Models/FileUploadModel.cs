@@ -1,6 +1,6 @@
 ﻿using BOL;
 
-namespace AxleLoadSystem.Models;
+namespace DSRSystem.Models;
 
 public class FileUploadModel : UploadedFile
 {

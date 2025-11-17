@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Services;
 using System.Web.Http;
 
-namespace AxleLoadSystem.Api.Extensions
+namespace DSRSystem.Api.Extensions
 {
     public class CustomAuthorizeAttribute : Attribute, IAuthorizationFilter
     {

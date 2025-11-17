@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Text.Json;
 
-namespace AxleLoadSystem.Api.Extensions;
+namespace DSRSystem.Api.Extensions;
 
 public class JsonModelBinder: IModelBinder
 {
