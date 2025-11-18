@@ -117,61 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Menu.Map" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Customer.Address" xml:space="preserve">
+    <value>কোম্পানির ঠিকানা</value>
   </data>
-  <data name="Menu.UserGroup" xml:space="preserve">
-    <value>User Management</value>
+  <data name="Customer.ContactNo" xml:space="preserve">
+    <value>কোম্পানির যোগাযোগ নম্বর</value>
   </data>
-  <data name="Menu.ChangePassword" xml:space="preserve">
-    <value>Change Password</value>
+  <data name="Customer.Description" xml:space="preserve">
+    <value>কোম্পানির বিবরণ</value>
   </data>
-  <data name="Menu.FileUpload" xml:space="preserve">
-    <value>File Upload</value>
+  <data name="Customer.MeterType" xml:space="preserve">
+    <value>কোম্পানির মিটারের ধরণ</value>
   </data>
-  <data name="Menu.Copyright" xml:space="preserve">
-    <value>Copyright</value>
+  <data name="Customer.Name" xml:space="preserve">
+    <value>কোম্পানির নাম</value>
   </data>
-  <data name="Menu.Versions" xml:space="preserve">
-    <value>Version</value>
+  <data name="Customer.title" xml:space="preserve">
+    <value>কোম্পানির তথ্য</value>
   </data>
-  <data name="Menu.Admin" xml:space="preserve">
-    <value>Administration</value>
-  </data>
-  <data name="Menu.DSRSystem" xml:space="preserve">
-    <value>Deco Smart Recharging System</value>
-  </data>
-  <data name="Menu.FAQ" xml:space="preserve">
-    <value>FAQ</value>
-  </data>
-  <data name="Menu.Users" xml:space="preserve">
-    <value>Users</value>
-  </data>
-  <data name="Menu.Category" xml:space="preserve">
-    <value>Tutorial Category</value>
-  </data>
-  <data name="Category.Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="Category.Title" xml:space="preserve">
-    <value>Title</value>
-  </data>
-  <data name="Menu.LogManagement" xml:space="preserve">
-    <value>Log Management</value>
-  </data>
-  <data name="Menu.Histogram" xml:space="preserve">
-    <value>Histogram</value>
-  </data>
-  <data name="Menu.Company" xml:space="preserve">
-    <value>Company</value>
-  </data>
-  <data name="Menu.Customer" xml:space="preserve">
-    <value>Customer</value>
-  </data>
-  <data name="Menu.DCU" xml:space="preserve">
-    <value>DCU</value>
-  </data>
-  <data name="Menu.Meter" xml:space="preserve">
-    <value>Meter</value>
+  <data name="Id" xml:space="preserve">
+    <value>আইডি</value>
   </data>
 </root>

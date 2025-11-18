@@ -3,9 +3,9 @@
 @inject ICompanyService companyService
 @inject AuthenticationStateProvider authStateProvider
 @inject IStringLocalizer<Locales.Resource> localizerResource
-@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Company> localizer
 
-<PageTitleComponent Title="@localizer["ReportConfiguration.company"]"></PageTitleComponent>
+<PageTitleComponent Title="@localizer["Company.title"]"></PageTitleComponent>
 
 @if (company is null)
 {
@@ -22,12 +22,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="name" class="form-label">@localizer["company.Name"]</label>
+                                <label for="name" class="form-label">@localizer["Company.Name"]</label>
                                 <label class="form-control">@company.Name</label>
                             }
                             else
                             {
-                                <label for="name" class="form-label">@localizer["company.Name"]</label>
+                                <label for="name" class="form-label">@localizer["Company.Name"]</label>
                                 <input type="text" @bind="company.Name" required class="form-control" placeholder="Name of company" id="name" />
                                 <ValidationMessage For="() => company.Name" />
                             }
@@ -37,12 +37,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="Description" class="form-label">@localizer["company.Description"]</label>
+                                <label for="Description" class="form-label">@localizer["Company.Description"]</label>
                                 <label class="form-control">@company.Description</label>
                             }
                             else
                             {
-                                <label for="Description" class="form-label">@localizer["company.Description"]</label>
+                                <label for="Description" class="form-label">@localizer["Company.Description"]</label>
                                 <input type="text" @bind="company.Description" required class="form-control" placeholder="Company Description" id="Description" />
                                 <ValidationMessage For="() => company.Name" />
                             }
@@ -52,12 +52,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="Address" class="form-label">@localizer["company.Address"]</label>
+                                <label for="Address" class="form-label">@localizer["Company.Address"]</label>
                                 <label class="form-control">@company.Address</label>
                             }
                             else
                             {
-                                <label for="Address" class="form-label">@localizer["company.Address"]</label>
+                                <label for="Address" class="form-label">@localizer["Company.Address"]</label>
                                 <input type="text" @bind="company.Address" required class="form-control" placeholder="Company Address" id="Address" />
                                 <ValidationMessage For="() => company.Address" />
                             }
@@ -67,12 +67,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="ContactNo" class="form-label">@localizer["company.ContactNo"]</label>
+                                <label for="ContactNo" class="form-label">@localizer["Company.ContactNo"]</label>
                                 <label class="form-control">@company.ContactNo</label>
                             }
                             else
                             {
-                                <label for="ContactNo" class="form-label">@localizer["company.ContactNo"]</label>
+                                <label for="ContactNo" class="form-label">@localizer["Company.ContactNo"]</label>
                                 <input type="text" @bind="company.ContactNo" required class="form-control" placeholder="Company Contact No" id="ContactNo" />
                                 <ValidationMessage For="() => company.ContactNo" />
                             }
@@ -82,12 +82,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="MeterType" class="form-label">@localizer["company.MeterType"]</label>
+                                <label for="MeterType" class="form-label">@localizer["Company.MeterType"]</label>
                                 <label class="form-control">@company.MeterType</label>
                             }
                             else
                             {
-                                <label for="MeterType" class="form-label">@localizer["company.MeterType"]</label>
+                                <label for="MeterType" class="form-label">@localizer["Company.MeterType"]</label>
                                 <input type="text" @bind="company.MeterType" required class="form-control" placeholder="Company Meter Type" id="MeterType" />
                                 <ValidationMessage For="() => company.MeterType" />
                             }

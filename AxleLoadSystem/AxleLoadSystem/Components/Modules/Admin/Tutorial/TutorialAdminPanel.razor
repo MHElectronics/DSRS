@@ -4,7 +4,6 @@
 @inject IAppState appState
 @inject ITutorialService tutorialService
 @inject ICategoryService categoryService
-@inject IFileStoreHelper fileStoreHelper
 @inject ICategoryService categoryService
 @inject AuthenticationStateProvider authStateProvider
 @inject IStringLocalizer<Locales.Resource> localizerResource
@@ -195,8 +194,8 @@
                     {
                         tutorial.Date = DateTime.Now;
                         tutorial.FileName = file.Name;
-                        fileStoreHelper.CreatetutorialDirectory(tutorial);
-                        tutorial.FileLocation = fileStoreHelper.GetNewFileLocation(file.Name, tutorial);
+                        //fileStoreHelper.CreatetutorialDirectory(tutorial);
+                        //tutorial.FileLocation = fileStoreHelper.GetNewFileLocation(file.Name, tutorial);
                         int bufferSize = 1024 * 10;
 
                         //decimal progressPercent = 0;
@@ -216,7 +215,7 @@
                             buffer.CopyTo(byteFullFile, totalRead);
                             totalRead += bytesRead;
 
-                            await fileStoreHelper.UploadFileInPartsAsync(buffer, tutorial.FileLocation);
+                            //await fileStoreHelper.UploadFileInPartsAsync(buffer, tutorial.FileLocation);
                             //progressPercent = Decimal.Divide(totalRead, file.Size);
                             uploadProgress = Convert.ToInt32((double)totalRead / file.Size * 100);
                             StateHasChanged();
@@ -263,7 +262,7 @@
             {
                 if (!string.Equals(tutorial.FileLocation, previousFileLocation, StringComparison.OrdinalIgnoreCase))
                 {
-                    fileStoreHelper.DeleteFile(previousFileLocation);
+                    //fileStoreHelper.DeleteFile(previousFileLocation);
                 }
                 if (await tutorialService.UpdateTutorial(tutorial, currentUser))
                 {
@@ -294,8 +293,8 @@
     }
     private async Task SubmitForDownload(Tutorial tutorial)
     {
-        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
-        await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
+        //byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
+       // await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
     }
     private async Task SubmitForDelete(Tutorial tutorial)
     {
@@ -304,7 +303,7 @@
     }
     private async void DeleteConfirmed()
     {
-        fileStoreHelper.DeleteFile(temptutorial.FileLocation);
+        //fileStoreHelper.DeleteFile(temptutorial.FileLocation);
         await tutorialService.DeleteTutorial(temptutorial, currentUser);
         tutorials.Remove(temptutorial);
 

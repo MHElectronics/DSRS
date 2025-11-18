@@ -1,5 +1,5 @@
 ﻿namespace DSRSystem.Locales;
 
-public class Station
+public class Customer
 {
 }

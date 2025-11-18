@@ -3,7 +3,6 @@
 @using Services.Helpers
 @inject ITutorialService tutorialService
 @inject ICategoryService categoryService
-@inject IFileStoreHelper fileStoreHelper
 @inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime jsRuntime
 @inject IStringLocalizer<Locales.CommonPages> localizerCommon
@@ -80,7 +79,7 @@
     }
     private async Task SubmitForDownload(Tutorial tutorial)
     {
-        byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
-        await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
+       // byte[] fileBytes = await fileStoreHelper.GetFileContentAsync(tutorial.FileLocation);
+       // await jsRuntime.InvokeVoidAsync("downloadFileFromString", tutorial.FileName, Convert.ToBase64String(fileBytes));
     }
 }

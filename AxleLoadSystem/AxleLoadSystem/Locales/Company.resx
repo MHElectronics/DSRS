@@ -117,106 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Address" xml:space="preserve">
-    <value>ঠিকানা</value>
+  <data name="Company.Address" xml:space="preserve">
+    <value>Company Address</value>
   </data>
-  <data name="AuthKey" xml:space="preserve">
-    <value>এপিআই কী</value>
+  <data name="Company.ContactNo" xml:space="preserve">
+    <value>Company Contact No</value>
   </data>
-  <data name="Button.AddStation" xml:space="preserve">
-    <value>নতুন স্টেশন যোগ করুন</value>
+  <data name="Company.Description" xml:space="preserve">
+    <value>Company Description</value>
   </data>
-  <data name="Button.AddWim" xml:space="preserve">
-    <value>নতুন WIM স্কেল যোগ করুন</value>
+  <data name="Company.MeterType" xml:space="preserve">
+    <value>Company MeterType</value>
   </data>
-  <data name="Code" xml:space="preserve">
-    <value>সংকেত</value>
+  <data name="Company.Name" xml:space="preserve">
+    <value>Company Name</value>
   </data>
-  <data name="GenerateKey" xml:space="preserve">
-    <value>এপিআই কী তৈরি</value>
+  <data name="Company.title" xml:space="preserve">
+    <value>Company Information</value>
   </data>
-  <data name="Name" xml:space="preserve">
-    <value>নাম</value>
-  </data>
-  <data name="StationId" xml:space="preserve">
-    <value>স্টেশন নং</value>
-  </data>
-  <data name="StationList" xml:space="preserve">
-    <value>স্টেশনের তালিকা</value>
-  </data>
-  <data name="StationManagement" xml:space="preserve">
-    <value>স্টেশন ম্যানেজমেন্ট</value>
-  </data>
-  <data name="WimLaneNumber" xml:space="preserve">
-    <value>লেন নম্বর</value>
-  </data>
-  <data name="WimEquipmentDescription" xml:space="preserve">
-    <value>সরঞ্জামের বর্ণনা</value>
-  </data>
-  <data name="WimLaneDirection" xml:space="preserve">
-    <value>লেনের দিক</value>
-  </data>
-  <data name="WimType" xml:space="preserve">
-    <value>শ্রেণী</value>
-  </data>
-  <data name="WIMScale" xml:space="preserve">
-    <value>WIM স্কেল</value>
-  </data>
-  <data name="MapX" xml:space="preserve">
-    <value>মানচিত্র X অক্ষ</value>
-  </data>
-  <data name="MapY" xml:space="preserve">
-    <value>মানচিত্র Y অক্ষ</value>
-  </data>
-  <data name="ListofStation" xml:space="preserve">
-    <value>স্টেশনের তালিকা</value>
-  </data>
-  <data name="WIMScaleManagement" xml:space="preserve">
-    <value>WIM স্কেল ম্যানেজমেন্ট</value>
-  </data>
-  <data name="StationAccess" xml:space="preserve">
-    <value>স্টেশন অ্যাক্সেস</value>
-  </data>
-  <data name="Station" xml:space="preserve">
-    <value>স্টেশন</value>
-  </data>
-  <data name="StationNames" xml:space="preserve">
-    <value>স্টেশনের নাম (সমূহ)</value>
-  </data>
-  <data name="UserName" xml:space="preserve">
-    <value>ব্যবহারকারীর নাম</value>
-  </data>
-  <data name="Category.Name" xml:space="preserve">
-    <value>নাম</value>
-  </data>
-  <data name="Category.Title" xml:space="preserve">
-    <value>শিরোনাম</value>
-  </data>
-  <data name="SQLDirectSearch" xml:space="preserve">
-    <value>SQL সরাসরি অনুসন্ধান</value>
-  </data>
-  <data name="Tutorial.Category" xml:space="preserve">
-    <value>শ্রেণী</value>
-  </data>
-  <data name="Tutorial.CategoryList" xml:space="preserve">
-    <value>বিভাগের তালিকা</value>
-  </data>
-  <data name="Menu.Category" xml:space="preserve">
-    <value>শ্রেণী</value>
-  </data>
-  <data name="Email" xml:space="preserve">
-    <value>ইমেইল</value>
-  </data>
-  <data name="Downbound" xml:space="preserve">
-    <value>ডাউনবাউন্ড</value>
-  </data>
-  <data name="DrivingDirection" xml:space="preserve">
-    <value>ড্রাইভিং দিক</value>
-  </data>
-  <data name="Upbound" xml:space="preserve">
-    <value>আপবাউন্ড</value>
-  </data>
-  <data name="WIMScaleList" xml:space="preserve">
-    <value>WIM স্কেল তালিকা</value>
+  <data name="Id" xml:space="preserve">
+    <value>Id</value>
   </data>
 </root>

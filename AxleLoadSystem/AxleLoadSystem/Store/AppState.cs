@@ -1,6 +1,5 @@
 ﻿using DSRSystem.Models;
 using Blazored.LocalStorage;
-using BOL.CustomModels;
 using Microsoft.AspNetCore.Components;
 using static DSRSystem.Models.Notification;
 
@@ -15,9 +14,6 @@ public interface IAppState
     void NotifyProfileImageChange();
     Notification GetNotification();
 
-    Task<bool> IsReportParametersSet();
-    Task SetReportParameters(ReportParameters param);
-    Task<ReportParameters> GetReportParameters();
 }
 public class AppState : IAppState
 {
@@ -28,7 +24,6 @@ public class AppState : IAppState
 
     private Notification _notification { get; set; }
 
-    private ReportParameters _reportParameters { get; set; }
 
     public AppState(ILocalStorageService storageService)
     {
@@ -58,31 +53,6 @@ public class AppState : IAppState
     }
 
     #region Report Parameters
-    public async Task<bool> IsReportParametersSet()
-    {
-        return await _storage.ContainKeyAsync("ReportSelection");
-    }
-    public async Task SetReportParameters(ReportParameters param)
-    {
-        await _storage.SetItemAsync("ReportSelection", param);
-        _reportParameters = param;
-    }
-    public async Task<ReportParameters> GetReportParameters()
-    {
-        try {
-            if (await _storage.ContainKeyAsync("ReportSelection"))
-            {
-                _reportParameters = await _storage.GetItemAsync<ReportParameters>("ReportSelection") ?? new();
-                return _reportParameters;
-            }
-
-            return new();
-        }
-        catch (Exception ex)
-        {
-            return new();
-            //throw ex;
-        }
-    }
+   
     #endregion
 }

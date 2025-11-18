@@ -117,23 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Menu.Counter" xml:space="preserve">
-    <value>কাউন্টার</value>
-  </data>
-  <data name="Menu.Counter2" xml:space="preserve">
-    <value>কাউন্টার দুই</value>
-  </data>
   <data name="Menu.Map" xml:space="preserve">
     <value>ড্যাশবোর্ড</value>
   </data>
-  <data name="Menu.Station" xml:space="preserve">
-    <value>স্টেশন ব্যবস্থাপনা</value>
-  </data>
   <data name="Menu.UserGroup" xml:space="preserve">
     <value>ব্যবহারকারী ব্যবস্থাপনা</value>
-  </data>
-  <data name="Menu.UploadedFiles" xml:space="preserve">
-    <value>ডেটা ব্যবস্থাপনা</value>
   </data>
   <data name="Menu.ChangePassword" xml:space="preserve">
     <value>পাসওয়ার্ড পরিবর্তন করুন</value>
@@ -141,59 +129,26 @@
   <data name="Menu.FileUpload" xml:space="preserve">
     <value>ফাইল আপলোড</value>
   </data>
-  <data name="Menu.BRTA" xml:space="preserve">
-    <value>বিআরটিএ</value>
-  </data>
   <data name="Menu.Copyright" xml:space="preserve">
     <value>কপিরাইট</value>
-  </data>
-  <data name="Menu.Rights" xml:space="preserve">
-    <value>সমস্ত অধিকার সংরক্ষিত.</value>
   </data>
   <data name="Menu.Versions" xml:space="preserve">
     <value>সংস্করণ</value>
   </data>
-  <data name="Menu.StationAccess" xml:space="preserve">
-    <value>স্টেশন অ্যাক্সেস</value>
-  </data>
-  <data name="Menu.ClassStatus" xml:space="preserve">
-    <value>ক্লাস স্ট্যাটাস</value>
-  </data>
   <data name="Menu.Admin" xml:space="preserve">
     <value>অ্যাডমিনিস্ট্রেশন</value>
   </data>
-  <data name="Menu.AxleLoadSystem" xml:space="preserve">
-    <value>এক্সেল লোড সিস্টেম</value>
-  </data>
-  <data name="Menu.DatabyDate" xml:space="preserve">
-    <value>তারিখ অনুসারে ডেটা</value>
+  <data name="Menu.DSRSystem" xml:space="preserve">
+    <value>ডেকো স্মার্ট রিচার্জিং সিস্টেম</value>
   </data>
   <data name="Menu.FAQ" xml:space="preserve">
     <value>প্রশ্নাবলী</value>
   </data>
-  <data name="Menu.OverloadHistogram" xml:space="preserve">
-    <value>মোট যানবাহনের ওজন</value>
-  </data>
-  <data name="Menu.TimeSeries" xml:space="preserve">
-    <value>টাইম সিরিজ</value>
-  </data>
-  <data name="Menu.NumberOfAxle" xml:space="preserve">
-    <value>এক্সেল সংখ্যা</value>
-  </data>
-  <data name="Menu.Pages" xml:space="preserve">
-    <value>ডেটা অ্যানালাইসিস (জেনারেল পারপাস)</value>
-  </data>
-  <data name="Menu.ReportConfig" xml:space="preserve">
-    <value>রিপোর্ট কনফিগারেশন</value>
-  </data>
-  <data name="Menu.Pages2" xml:space="preserve">
-    <value>ডেটা অ্যানালাইসিস (বাই পারপাস)</value>
-  </data>
-  <data name="Menu.Tutorial" xml:space="preserve">
-    <value>টিউটোরিয়াল</value>
-  </data>
   <data name="Menu.Users" xml:space="preserve">
     <value>ব্যবহারকারী</value>
+  </data>
+  <data name="Menu.Category" xml:space="preserve">
+    <value>টিউটোরিয়াল শ্রেণী</value>
   </data>
   <data name="Category.Name" xml:space="preserve">
     <value>নাম</value>
@@ -201,37 +156,22 @@
   <data name="Category.Title" xml:space="preserve">
     <value>শিরোনাম</value>
   </data>
-  <data name="SQLDirectSearch" xml:space="preserve">
-    <value>SQL সরাসরি অনুসন্ধান</value>
-  </data>
-  <data name="Menu.Category" xml:space="preserve">
-    <value>টিউটোরিয়াল শ্রেণী</value>
-  </data>
-  <data name="WIMScale" xml:space="preserve">
-    <value>WIM স্কেল</value>
-  </data>
-  <data name="Menu.OverloadedRatio" xml:space="preserve">
-    <value>ওভারলোড অনুপাত</value>
-  </data>
-  <data name="Menu.SQLDirectSearch" xml:space="preserve">
-    <value>SQL সরাসরি অনুসন্ধান</value>
-  </data>
   <data name="Menu.LogManagement" xml:space="preserve">
     <value>লগ ম্যানেজমেন্ট</value>
-  </data>
-  <data name="Menu.Reports" xml:space="preserve">
-    <value>রিপোর্ট</value>
-  </data>
-  <data name="Menu.AxleWiseHistogram" xml:space="preserve">
-    <value>একক এক্সেল লোড</value>
-  </data>
-  <data name="Menu.OverloadedWeightRatio" xml:space="preserve">
-    <value>ওভারলোডিং ওজন অনুপাত</value>
   </data>
   <data name="Menu.Histogram" xml:space="preserve">
     <value>হিস্টোগ্রাম</value>
   </data>
-  <data name="Menu.SQLQueryRegistration" xml:space="preserve">
-    <value>স্থায়ী SQL নিবন্ধন</value>
+  <data name="Menu.Company" xml:space="preserve">
+    <value>কোম্পানি</value>
+  </data>
+  <data name="Menu.Customer" xml:space="preserve">
+    <value>গ্রাহক</value>
+  </data>
+  <data name="Menu.DCU" xml:space="preserve">
+    <value>ডিসিইউ</value>
+  </data>
+  <data name="Menu.Meter" xml:space="preserve">
+    <value>মিটার</value>
   </data>
 </root>

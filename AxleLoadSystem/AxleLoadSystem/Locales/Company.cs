@@ -1,5 +1,5 @@
 ﻿namespace DSRSystem.Locales;
 
-public class Reports
+public class Company
 {
 }
