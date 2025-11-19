@@ -22,5 +22,6 @@ public class User
     // for Customer 
     public string MeterNumber { get; set; }
     public string ContactNo { get; set; }
+    public List<Meter> Meters { get; set; }
 
 }

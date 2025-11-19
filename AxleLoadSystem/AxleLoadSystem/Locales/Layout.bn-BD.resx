@@ -174,4 +174,7 @@
   <data name="Menu.Meter" xml:space="preserve">
     <value>মিটার</value>
   </data>
+  <data name="Menu.Rights" xml:space="preserve">
+    <value>সর্বস্বত্ব সংরক্ষিত</value>
+  </data>
 </root>

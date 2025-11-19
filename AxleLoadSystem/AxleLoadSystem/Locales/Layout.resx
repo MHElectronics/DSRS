@@ -174,4 +174,7 @@
   <data name="Menu.Meter" xml:space="preserve">
     <value>Meter</value>
   </data>
+  <data name="Menu.Rights" xml:space="preserve">
+    <value>All rights reserved</value>
+  </data>
 </root>

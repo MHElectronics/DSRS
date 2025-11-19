@@ -11,8 +11,9 @@ public enum FormMode
 public enum UserRole
 {
     Admin,
-    User,
-    AdvancedUser
+    Executive,
+    Accountant,
+    Customer
 }
 public enum LogActivity
 { 
