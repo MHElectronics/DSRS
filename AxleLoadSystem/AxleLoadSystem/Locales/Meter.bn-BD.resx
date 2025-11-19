@@ -117,28 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Company.Address" xml:space="preserve">
-    <value>Company Address</value>
+  <data name="Meter.MeterNumber" xml:space="preserve">
+    <value>ডিসিইউ নম্বর</value>
   </data>
-  <data name="Company.ContactNo" xml:space="preserve">
-    <value>Company Contact No</value>
+  <data name="Meter.Address" xml:space="preserve">
+    <value>ডিসিইউ ঠিকানা</value>
   </data>
-  <data name="Company.Description" xml:space="preserve">
-    <value>Company Description</value>
+  <data name="Meter.MeterType" xml:space="preserve">
+    <value>ডিসিইউ টাইপ</value>
   </data>
-  <data name="Company.List" xml:space="preserve">
-    <value>Company List</value>
+  <data name="Meter.CompanyName" xml:space="preserve">
+    <value>কোম্পানির নাম</value>
   </data>
-  <data name="Company.MeterType" xml:space="preserve">
-    <value>Company MeterType</value>
-  </data>
-  <data name="Company.Name" xml:space="preserve">
-    <value>Company Name</value>
-  </data>
-  <data name="Company.title" xml:space="preserve">
-    <value>Company Information</value>
+  <data name="Meter.IsActive" xml:space="preserve">
+    <value>সক্রিয়</value>
   </data>
   <data name="Id" xml:space="preserve">
-    <value>Id</value>
+    <value>আইডি</value>
+  </data>
+  <data name="Meter.Title" xml:space="preserve">
+    <value>ডিসিইউ</value>
+  </data>
+  <data name="Meter.Dcuid" xml:space="preserve">
+    <value>ডিসিইউ আইডি</value>
+  </data>
+  <data name="Meter.CustomerName" xml:space="preserve">
+    <value>গ্রাহকের নাম</value>
   </data>
 </root>

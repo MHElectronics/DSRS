@@ -4,9 +4,9 @@
 @inject IDCUService DCUService
 @inject AuthenticationStateProvider authStateProvider
 @inject IStringLocalizer<Locales.Resource> localizerResource
-@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.DCU> localizer
 
-<PageTitleComponent Title="@localizer["ReportConfiguration.DCU"]"></PageTitleComponent>
+<PageTitleComponent Title="@localizer["DCU.Title"]"></PageTitleComponent>
 
 @if (DCU is null)
 {
@@ -68,12 +68,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="CompanyId" class="form-label">@localizer["DCU.CompanyId"]</label>
+                                <label for="CompanyId" class="form-label">@localizer["DCU.CompanyName"]</label>
                                 <label class="form-control">@DCU.CompanyId</label>
                             }
                             else
                             {
-                                <label for="CompanyId" class="form-label">@localizer["DCU.CompanyId"]</label>
+                                <label for="CompanyId" class="form-label">@localizer["DCU.CompanyName"]</label>
                                 <input type="text" @bind="DCU.CompanyId" required class="form-control" placeholder="DCU CompanyId" id="CompanyId" />
                                 <ValidationMessage For="() => DCU.CompanyId" />
                             }

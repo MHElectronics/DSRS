@@ -126,8 +126,17 @@
   <data name="Customer.Description" xml:space="preserve">
     <value>Customer Description</value>
   </data>
-  <data name="Customer.MeterType" xml:space="preserve">
-    <value>Customer MeterType</value>
+  <data name="Customer.Email" xml:space="preserve">
+    <value>Customer Email</value>
+  </data>
+  <data name="Customer.IsActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Customer.IsApproved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Customer.MeterNumber" xml:space="preserve">
+    <value>Customer Meter Number</value>
   </data>
   <data name="Customer.Name" xml:space="preserve">
     <value>Customer Name</value>

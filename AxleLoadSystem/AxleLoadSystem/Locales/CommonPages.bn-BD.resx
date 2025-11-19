@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Category.Name" xml:space="preserve">
+    <value>নাম</value>
+  </data>
+  <data name="Category.Title" xml:space="preserve">
+    <value>শিরোনাম</value>
+  </data>
   <data name="DailyData" xml:space="preserve">
     <value>দৈনিক ডেটা</value>
   </data>
@@ -159,8 +165,17 @@
   <data name="Publish" xml:space="preserve">
     <value>প্রকাশ করবেন?</value>
   </data>
+  <data name="SQLQueryRegistration" xml:space="preserve">
+    <value>স্থায়ী SQL নিবন্ধন</value>
+  </data>
   <data name="Tutorial.AdminPanel" xml:space="preserve">
     <value>অ্যাডমিন টিউটোরিয়াল প্যানেল</value>
+  </data>
+  <data name="Tutorial.Category" xml:space="preserve">
+    <value>টিউটোরিয়াল শ্রেণী</value>
+  </data>
+  <data name="Tutorial.CategoryList" xml:space="preserve">
+    <value>টিউটোরিয়াল শ্রেনীর তালিকা</value>
   </data>
   <data name="Tutorial.Description" xml:space="preserve">
     <value>টিউটোরিয়াল বর্ণনা</value>
@@ -176,21 +191,6 @@
   </data>
   <data name="Tutorial.Upload" xml:space="preserve">
     <value>টিউটোরিয়াল ফাইল আপলোড করুন</value>
-  </data>
-  <data name="Category.Name" xml:space="preserve">
-    <value>নাম</value>
-  </data>
-  <data name="Category.Title" xml:space="preserve">
-    <value>শিরোনাম</value>
-  </data>
-  <data name="SQLDirectSearch" xml:space="preserve">
-    <value>SQL সরাসরি অনুসন্ধান</value>
-  </data>
-  <data name="Tutorial.Category" xml:space="preserve">
-    <value>টিউটোরিয়াল শ্রেণী</value>
-  </data>
-  <data name="Tutorial.CategoryList" xml:space="preserve">
-    <value>টিউটোরিয়াল শ্রেনীর তালিকা</value>
   </data>
   <data name="Menu.Category" xml:space="preserve">
     <value>টিউটোরিয়াল শ্রেণী</value>
@@ -216,9 +216,6 @@
   <data name="Dashboard.DataAnalysisChart" xml:space="preserve">
     <value>ডেটা বিশ্লেষণ চার্ট</value>
   </data>
-  <data name="Category.Id" xml:space="preserve">
-    <value>আইডি</value>
-  </data>
   <data name="Dashboard.ALCSInformation" xml:space="preserve">
     <value>ALCS তথ্য</value>
   </data>
@@ -234,17 +231,14 @@
   <data name="Tutorial.UploadedTime" xml:space="preserve">
     <value>আপলোডের সময়</value>
   </data>
+  <data name="Category.Id" xml:space="preserve">
+    <value>আইডি</value>
+  </data>
   <data name="Parameter.Name" xml:space="preserve">
     <value>প্যারামিটারের নাম</value>
   </data>
   <data name="Parameter.Value" xml:space="preserve">
     <value>প্যারামিটার মান</value>
-  </data>
-  <data name="Activity" xml:space="preserve">
-    <value>কার্যকলাপ</value>
-  </data>
-  <data name="DateRange" xml:space="preserve">
-    <value>তারিখ পরিসীমা</value>
   </data>
   <data name="OverloadCondition" xml:space="preserve">
     <value>ওভারলোডেড যানবাহন বিচার করার পদ্ধতি</value>
@@ -255,8 +249,11 @@
   <data name="SQLQuery" xml:space="preserve">
     <value>SQL Query</value>
   </data>
-  <data name="SQLQueryRegistration" xml:space="preserve">
-    <value>স্থায়ী SQL নিবন্ধন</value>
+  <data name="Activity" xml:space="preserve">
+    <value>কার্যকলাপ</value>
+  </data>
+  <data name="DateRange" xml:space="preserve">
+    <value>তারিখ পরিসীমা</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>বর্ণনা</value>

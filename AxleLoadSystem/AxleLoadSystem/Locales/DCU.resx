@@ -117,28 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Company.Address" xml:space="preserve">
-    <value>Company Address</value>
+  <data name="DCU.DCUNumber" xml:space="preserve">
+    <value>DCU Number</value>
   </data>
-  <data name="Company.ContactNo" xml:space="preserve">
-    <value>Company Contact No</value>
+  <data name="DCU.DCUAddress" xml:space="preserve">
+    <value>DCU Address</value>
   </data>
-  <data name="Company.Description" xml:space="preserve">
-    <value>Company Description</value>
+  <data name="DCU.DCUType" xml:space="preserve">
+    <value>DCU Type</value>
   </data>
-  <data name="Company.List" xml:space="preserve">
-    <value>Company List</value>
-  </data>
-  <data name="Company.MeterType" xml:space="preserve">
-    <value>Company MeterType</value>
-  </data>
-  <data name="Company.Name" xml:space="preserve">
+  <data name="DCU.CompanyName" xml:space="preserve">
     <value>Company Name</value>
   </data>
-  <data name="Company.title" xml:space="preserve">
-    <value>Company Information</value>
+  <data name="DCU.IsActive" xml:space="preserve">
+    <value>Active</value>
   </data>
   <data name="Id" xml:space="preserve">
     <value>Id</value>
+  </data>
+  <data name="DCU.Title" xml:space="preserve">
+    <value>DCU</value>
   </data>
 </root>

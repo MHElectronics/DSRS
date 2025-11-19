@@ -3,7 +3,7 @@
 @inject IMeterService MeterService
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
-@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Meter> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
 <PageTitleComponent Title="@localizer["ReportConfiguration.MeterList"]">
@@ -27,9 +27,9 @@ else
                         <th>@localizer["Meter.MeterNumber"]</th>
                         <th>@localizer["Meter.Address"]</th>
                         <th>@localizer["Meter.MeterType"]</th>
-                        <th>@localizer["Meter.CompanyId"]</th>
+                        <th>@localizer["Meter.CompanyName"]</th>
                         <th>@localizer["Meter.Dcuid"]</th>
-                        <th>@localizer["Meter.CustomerId"]</th>
+                        <th>@localizer["Meter.CustomerName"]</th>
                         <th>@localizer["Meter.IsActive"]</th>
                         <th></th>
                     </tr>

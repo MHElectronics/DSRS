@@ -18,4 +18,9 @@ public class User
 
         return Role.Split(',').Contains(role.ToString(), StringComparer.OrdinalIgnoreCase);
     }
+
+    // for Customer 
+    public string MeterNumber { get; set; }
+    public string ContactNo { get; set; }
+
 }

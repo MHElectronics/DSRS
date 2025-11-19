@@ -10,7 +10,7 @@
 @inject IStringLocalizer<Locales.Company> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
-<PageTitleComponent Title="@localizer["ReportConfiguration.CompanyList"]">
+<PageTitleComponent Title="@localizer["Company.List"]">
     <NavLink class="btn btn-primary pull-right" href="/company/new" title="Add New">
         <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
     </NavLink>
@@ -41,11 +41,11 @@ else
                     {
                         <tr>
                             <td>@company.Id</td>
-                            <td><b>@company.Name</b></td>
-                            <td><b>@company.Description</b></td>
-                            <td><b>@company.Address</b></td>
-                            <td><b>@company.ContactNo</b></td>
-                            <td><b>@company.MeterType</b></td>
+                            <td>@company.Name</td>
+                            <td>@company.Description</td>
+                            <td>@company.Address</td>
+                            <td>@company.ContactNo</td>
+                            <td>@company.MeterType</td>
 
                             <td>
                                 <div class="btn-group float-right">

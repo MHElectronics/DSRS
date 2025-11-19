@@ -5,10 +5,10 @@
 @inject IDCUService DCUService
 @inject IAppState appState
 @inject AuthenticationStateProvider authStateProvider
-@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.DCU> localizer
 @inject IStringLocalizer<Locales.Resource> localizerResource
 
-<PageTitleComponent Title="@localizer["ReportConfiguration.DCUList"]">
+<PageTitleComponent Title="@localizer["DCU.List"]">
     <NavLink class="btn btn-primary pull-right" href="/DCU/new" title="Add New">
         <i class="fa fa-plus"></i> @localizerResource["Button.AddNew"]
     </NavLink>
@@ -29,7 +29,7 @@ else
                         <th>@localizer["DCU.DCUNumber"]</th>
                         <th>@localizer["DCU.DCUAddress"]</th>
                         <th>@localizer["DCU.DCUType"]</th>
-                        <th>@localizer["DCU.CompanyId"]</th>
+                        <th>@localizer["DCU.CompanyName"]</th>
                         <th>@localizer["DCU.IsActive"]</th>
                         <th></th>
                     </tr>

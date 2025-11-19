@@ -3,9 +3,9 @@
 @inject IMeterService MeterService
 @inject AuthenticationStateProvider authStateProvider
 @inject IStringLocalizer<Locales.Resource> localizerResource
-@inject IStringLocalizer<Locales.Reports> localizer
+@inject IStringLocalizer<Locales.Meter> localizer
 
-<PageTitleComponent Title="@localizer["ReportConfiguration.Meter"]"></PageTitleComponent>
+<PageTitleComponent Title="@localizer["Meter.Title"]"></PageTitleComponent>
 
 @if (Meter is null)
 {
@@ -52,21 +52,6 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="Address" class="form-label">@localizer["Meter.Address"]</label>
-                                <label class="form-control">@Meter.Address</label>
-                            }
-                            else
-                            {
-                                <label for="Address" class="form-label">@localizer["Meter.Address"]</label>
-                                <input type="text" @bind="Meter.Address" required class="form-control" placeholder="Meter Address" id="Address" />
-                                <ValidationMessage For="() => Meter.Address" />
-                            }
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-12">
-                        <div class="form-group">
-                            @if (Mode == FormMode.Details)
-                            {
                                 <label for="MeterType" class="form-label">@localizer["Meter.MeterType"]</label>
                                 <label class="form-control">@Meter.MeterType</label>
                             }
@@ -82,12 +67,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="CompanyId" class="form-label">@localizer["Meter.CompanyId"]</label>
+                                <label for="CompanyId" class="form-label">@localizer["Meter.CompanyName"]</label>
                                 <label class="form-control">@Meter.CompanyId</label>
                             }
                             else
                             {
-                                <label for="CompanyId" class="form-label">@localizer["Meter.CompanyId"]</label>
+                                <label for="CompanyId" class="form-label">@localizer["Meter.CompanyName"]</label>
                                 <input type="text" @bind="Meter.CompanyId" required class="form-control" placeholder="Meter Company Id" id="CompanyId" />
                                 <ValidationMessage For="() => Meter.CompanyId" />
                             }
@@ -112,12 +97,12 @@ else
                         <div class="form-group">
                             @if (Mode == FormMode.Details)
                             {
-                                <label for="CustomerId" class="form-label">@localizer["Meter.CustomerId"]</label>
+                                <label for="CustomerId" class="form-label">@localizer["Meter.CustomerName"]</label>
                                 <label class="form-control">@Meter.CustomerId</label>
                             }
                             else
                             {
-                                <label for="CustomerId" class="form-label">@localizer["Meter.CustomerId"]</label>
+                                <label for="CustomerId" class="form-label">@localizer["Meter.CustomerName"]</label>
                                 <input type="text" @bind="Meter.CustomerId" required class="form-control" placeholder="Meter Customer Id" id="CustomerId" />
                                 <ValidationMessage For="() => Meter.CustomerId" />
                             }
