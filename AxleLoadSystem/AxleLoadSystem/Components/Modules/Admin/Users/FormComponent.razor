@@ -105,6 +105,42 @@ else
                             }
                         </div>
                     </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="MeterNumber" class="form-label">@localizer["MeterNumber"]</label>
+                                <label class="form-control">@user.MeterNumber</label>
+                            }
+                            else
+                            {
+                                <label for="MeterNumber" class="form-label">@localizer["MeterNumber"]</label>
+                                <input type="text" @bind-value="user.MeterNumber" required class="form-control" placeholder="Name of useMeterNumberr" id="MeterNumber" min="5" maxlength="50" />
+                                <ValidationMessage For="() => user.MeterNumber" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            @if (Mode == FormMode.Details)
+                            {
+                                <label for="ContactNo" class="form-label">@localizer["ContactNo"]</label>
+                                <label class="form-control">@user.ContactNo</label>
+                            }
+                            else
+                            {
+                                <label for="ContactNo" class="form-label">@localizer["ContactNo"]</label>
+                                <div class="form-control">
+                                    <div class="col-12">
+                                        <div class="icheck-primary d-inline">
+                                            <input type="text" id="ContactNo" @bind="@user.ContactNo" />
+                                            <label for="ContactNo">@localizer["ContactNo"]</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                     @if (Mode == FormMode.Add)
                     {
                         <div class="col-md-6 col-sm-12">
