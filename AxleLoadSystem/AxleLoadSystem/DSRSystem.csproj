@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\Modules\Admin\Configuration\**" />
     <Compile Remove="images\**" />
+    <Content Remove="Components\Modules\Admin\Configuration\**" />
     <Content Remove="images\**" />
+    <EmbeddedResource Remove="Components\Modules\Admin\Configuration\**" />
     <EmbeddedResource Remove="images\**" />
+    <None Remove="Components\Modules\Admin\Configuration\**" />
     <None Remove="images\**" />
   </ItemGroup>
 
@@ -36,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="Components\Layout\Locales\" />
-    <Folder Include="Components\Modules\Admin\Configuration\" />
     <Folder Include="Components\Modules\User\Dashboard\" />
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>

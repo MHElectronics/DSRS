@@ -13,8 +13,8 @@
 <EditForm Model="@loginModel" OnValidSubmit="LoginUser" OnInvalidSubmit="OnInvalidSubmit">
     <DataAnnotationsValidator />
     <div class="form">
-        <label for="email">Email</label>
-        <input type="email" id="email" @bind="@loginModel.Email" autofocus>
+        <label for="email">Email/Meter No</label>
+        <input type="text" id="email" @bind="@loginModel.Email" autofocus>
         <label for="password">Password <i class="fas fa-eye" @onclick="@(() => {showPassword = !showPassword;})" title="Click to show/hide password text"></i></label>
         <input type="@(showPassword ? "text" : "password")" id="password" @bind="@loginModel.Password">
         <input type="submit" id="submit" value="Submit">
@@ -57,7 +57,19 @@
         try
         {
             User user = new();
-            user.Email = loginModel.Email;
+            
+            if (!string.IsNullOrWhiteSpace(loginModel.Email))
+            {
+                if (loginModel.Email.Contains("@"))
+                {
+                    user.Email = loginModel.Email;
+                }
+                else
+                {
+                    user.MeterNumber = loginModel.Email;
+                }
+            }
+
             user.Password = loginModel.Password;
 
             if (await userService.AuthenticateUser(user))

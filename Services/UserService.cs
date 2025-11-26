@@ -31,24 +31,63 @@ public class UserService : IUserService
 
     public async Task<bool> AuthenticateUser(User user)
     {
-        User? checkUser = await GetByEmail(user);
-        if (checkUser is not null)
+        // Determine identifier type
+        bool isEmail = !string.IsNullOrEmpty(user.Email) && user.Email.Contains("@");
+
+        // Load user by email or meter number
+        User? checkUser;
+
+        if (isEmail)
         {
-            user.Password = new SecurityHelper().CreatePasswordHash(user.Password, checkUser.PasswordSalt);
-            var results = await _db.LoadData<User, dynamic>("SELECT * FROM Users WHERE Email=@Email AND Password=@Password", new { Email = user.Email, Password = user.Password });
-            return results.Any();
+            // Login using Email
+            checkUser = await _db.LoadSingleAsync<User, dynamic>(
+                "SELECT * FROM Users WHERE Email=@Email",
+                new { Email = user.Email }
+            );
         }
-        return false;
+        else
+        {
+            // Login using MeterNumber
+            checkUser = await _db.LoadSingleAsync<User, dynamic>(
+                "SELECT * FROM Users WHERE MeterNumber=@MeterNumber",
+                new { MeterNumber = user.MeterNumber }  
+            );
+        }
+
+        if (checkUser is null)
+            return false;
+
+        // Validate password
+        var hashedPassword = new SecurityHelper().CreatePasswordHash(
+            user.Password,
+            checkUser.PasswordSalt
+        );
+
+        bool match = hashedPassword == checkUser.Password;
+
+        return match;
     }
     public async Task<IEnumerable<User>> GetUsers() =>
         await _db.LoadData<User, dynamic>("SELECT * FROM Users", new { });
 
-
-    public async Task<User?> GetUser(User user)
+    public async Task<User> GetUser(User user)
     {
-        user = await _db.LoadSingleAsync<User, dynamic>("SELECT * FROM Users WHERE Id=@Id OR Email=@Email", new { Id = user.Id, Email = user.Email });
-        user.Password = "";
-        return user;
+        bool isEmail = !string.IsNullOrEmpty(user.Email) && user.Email.Contains("@");
+
+        if (isEmail)
+        {
+            return await _db.LoadSingleAsync<User, dynamic>(
+                "SELECT * FROM Users WHERE Email=@Email",
+                new { Email = user.Email }
+            );
+        }
+        else
+        {
+            return await _db.LoadSingleAsync<User, dynamic>(
+                "SELECT * FROM Users WHERE MeterNumber=@MeterNumber",
+                new { MeterNumber = user.MeterNumber }
+            );
+        }
     }
     public async Task<User?> GetUserById(int id)
     {

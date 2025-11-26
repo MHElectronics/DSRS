@@ -115,7 +115,7 @@ else
                             else
                             {
                                 <label for="MeterNumber" class="form-label">@localizer["MeterNumber"]</label>
-                                <input type="text" @bind-value="user.MeterNumber" required class="form-control" placeholder="Name of useMeterNumberr" id="MeterNumber" min="5" maxlength="50" />
+                                <input type="text" @bind-value="user.MeterNumber" required class="form-control" placeholder="Meter Number" id="MeterNumber" min="5" maxlength="50" />
                                 <ValidationMessage For="() => user.MeterNumber" />
                             }
                         </div>
@@ -130,14 +130,8 @@ else
                             else
                             {
                                 <label for="ContactNo" class="form-label">@localizer["ContactNo"]</label>
-                                <div class="form-control">
-                                    <div class="col-12">
-                                        <div class="icheck-primary d-inline">
-                                            <input type="text" id="ContactNo" @bind="@user.ContactNo" />
-                                            <label for="ContactNo">@localizer["ContactNo"]</label>
-                                        </div>
-                                    </div>
-                                </div>
+                                <input type="text" @bind-value="user.ContactNo" required class="form-control" placeholder="Contact No" id="ContactNo" min="5" maxlength="50" />
+                                <ValidationMessage For="() => user.ContactNo" />
                             }
                         </div>
                     </div>

@@ -25,6 +25,7 @@ else
                 <thead>
                     <tr>
                         <th>@localizer["Email"]</th>
+                        <th>Meter Number</th>
                         <th>@localizer["Name"]</th>
                         <th>@localizer["Roles"]</th>
                         <th>@localizer["Active"]/@localizer["Inactive"]</th>
@@ -36,6 +37,7 @@ else
                     {
                         <tr>
                             <td>@user.Email</td>
+                            <td>@user.MeterNumber</td>
                             <td>@user.Name</td>
                             <td>@user.Role</td>
                             <td>@(user.IsActive ? @localizer["Active"] : @localizer["Inactive"])</td>
